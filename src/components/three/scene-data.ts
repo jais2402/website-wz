@@ -73,6 +73,9 @@ export const INT: Array<{ hue: Hue; title: string }> = (S.integration?.items ?? 
   }),
 );
 
+/** Countries served — the names in the regions chapter. One marker each. */
+export const REGIONS: string[] = (S.regions?.layers ?? []) as string[];
+
 export const CASES = content.cases.map((c) => ({
   hue: (c.hue ?? 'blueprint') as Hue,
   region: c.region,
@@ -99,22 +102,30 @@ export const SCENE_ALIAS: Record<string, SceneKey> = {
   architecture: 'tech',
   questions: 'faq',
   start: 'contact',
+  regions: 'regions',
 };
 
 /** Scene order. */
 export const SCENES = [
   'hero', 'build', 'ai', 'moment', 'principles', 'range', 'how',
-  'price', 'evidence', 'work', 'integration', 'tech', 'faq', 'contact',
+  'price', 'evidence', 'regions', 'work', 'integration', 'tech', 'faq', 'contact',
 ] as const;
 
 export type SceneKey = (typeof SCENES)[number];
 
 /**
+ * NOTE for centred chapters: the stage computes scale as
+ * clamp(0.42, 1.1, (stageWidth / W) / 0.45 * boost), and a centred stage is the
+ * full width — so any boost above ~0.5 hits the 1.1 cap and does nothing.
+ * Pricing's 0.3 gives ~0.67: a model that fits under a taller text block.
+ *
  * Per-scene camera scale multiplier. The prototype tuned these by eye against
  * the reading column; they are design values.
  */
 export const BOOST: Record<string, number> = {
-  hero: 0.8, build: 1.06, ai: 0.72, moment: 0.6, principles: 0.82,
-  range: 1.28, how: 0.88, pricing: 0.92, evidence: 0.85, work: 0.86,
+  hero: 0.8, build: 0.78, ai: 0.72, moment: 0.6, principles: 0.82,
+  range: 1.28, how: 0.88, pricing: 0.3, evidence: 0.85, work: 0.86,
   integration: 0.92, tech: 0.92, faq: 0.9, contact: 0.9,
+  // Centred: see the note above — below ~0.5 is where the value takes effect.
+  regions: 0.34,
 };

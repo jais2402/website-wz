@@ -200,8 +200,20 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
         // A centred chapter: the model sits below the headline. The prototype
         // used -0.34 because the hook also carried three proof figures and a
         // CTA; with those removed the model landed at ~84% of the viewport and
-        // was cut off by the fold. -0.24 puts it just under the headline.
-        else { oy = -Hh * 0.24; tl = tr = -1; gu = 0; }
+        // was cut off by the fold. -0.13 (owner, 2026-09-28: "move the 3D up")
+        // seats it directly under the headline and fully above the fold.
+        else {
+          // Centred chapter: the model sits in the space BELOW the text. The
+          // offset is computed from where this section's text actually ends
+          // (measured with the section's top at the top of the viewport), so
+          // it holds for a one-line hook and a taller block alike, on any
+          // screen height. It replaced fixed guesses (-0.34, -0.24, -0.13)
+          // that each suited one section and one screen and no other.
+          const bodyBottom = bd.bottom - r.top;
+          const centre = bodyBottom + Math.max(0, Hh - bodyBottom) * 0.53;
+          oy = -(centre - Hh / 2);
+          tl = tr = -1; gu = 0;
+        }
       } else { oy = Hh * 0.17; }
       if (!mobile && side !== 'c') oy += Hh * 0.05;
       const stageW = mobile ? W : (side === 'l' ? W - tr - gu : (side === 'r' ? tl - gu : W));

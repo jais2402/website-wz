@@ -16,6 +16,13 @@ export interface ButtonProps {
    * header CTA. Pass explicitly to override.
    */
   arrow?: boolean;
+  /**
+   * A contact topic code ("new", "connect", "vendor"). Emitted as data-topic;
+   * the contact form listens for clicks on it and preselects the matching chip
+   * — WCAG 2.2 SC 3.3.7, Redundant Entry. A data attribute rather than an
+   * onClick keeps this a server component.
+   */
+  topic?: string | undefined;
 }
 
 /**
@@ -43,6 +50,7 @@ export function Button({
   onClick,
   className,
   arrow,
+  topic,
 }: ButtonProps) {
   const showArrow = arrow ?? (Boolean(href) && size === 'default');
 
@@ -77,7 +85,7 @@ export function Button({
     const internal = href.startsWith('/') || href.startsWith('#');
     if (internal) {
       return (
-        <Link className={classes} href={href}>
+        <Link className={classes} href={href} data-topic={topic}>
           {content}
         </Link>
       );

@@ -34,6 +34,12 @@ export interface SequenceSectionProps {
    * static; build and range are sequences.
    */
   mode?: 'sequence' | 'static' | undefined;
+  /**
+   * Static mode only. `grid` lays the rows out two across on desktop — used for
+   * the disciplines, whose 3D model is itself a 4×2 grid of modules, so the
+   * list reads as the model's legend.
+   */
+  layout?: 'list' | 'grid' | undefined;
 }
 
 /** Scroll distance each row holds the screen for — the prototype's `--sh`. */
@@ -54,7 +60,7 @@ const TRACK_VH: Record<string, number> = { build: 34, range: 42 };
  * row, not a scroll listener (architecture.md §5).
  */
 export function SequenceSection({
-  id, side, scene, headline, items, link, countUnit, mode = 'sequence',
+  id, side, scene, headline, items, link, countUnit, mode = 'sequence', layout = 'list',
 }: SequenceSectionProps) {
   const isStatic = mode === 'static';
   const [openIndex, setOpenIndex] = useState(0);
@@ -115,7 +121,7 @@ export function SequenceSection({
 
   const rows = (
     <div
-      className="mt-9"
+      className={isStatic && layout === 'grid' ? 'mt-9 grid gap-x-8 sm:grid-cols-2' : 'mt-9'}
       onMouseLeave={() => { setPinned(null); lastPointer.current = null; }}
       onBlur={() => setPinned(null)}
     >

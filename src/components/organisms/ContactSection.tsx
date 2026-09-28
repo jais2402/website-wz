@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Swatch } from '@/components/atoms';
 import { Field, HeadlineSplit, TopicChips } from '@/components/molecules';
 import { Section } from './Section';
@@ -27,6 +27,8 @@ export interface ContactSectionProps {
   /** Said once, instead of "(required)" on every label. From content. */
   requiredNote?: string | undefined;
   topicLabel?: string | undefined;
+  /** Topic code on a CTA → the chip it preselects. From content. */
+  topicCodes?: Record<string, string> | undefined;
 }
 
 const AUTOCOMPLETE: Record<string, string> = { name: 'name', email: 'email' };
@@ -51,9 +53,24 @@ const AUTOCOMPLETE: Record<string, string> = { name: 'name', email: 'email' };
  */
 export function ContactSection({
   id, side, scene, headline, topics, fields, submit, promise, note, requiredNote,
-  topicLabel = 'What is this about?',
+  topicLabel = 'What is this about?', topicCodes,
 }: ContactSectionProps) {
   const [topic, setTopic] = useState<string | null>(null);
+
+  // A CTA elsewhere on the page ("Talk to us about your stack") carries a topic
+  // code; following it preselects the matching chip, so the reader does not
+  // tell us twice (context.md §5, WCAG 2.2 SC 3.3.7).
+  useEffect(() => {
+    if (!topicCodes) return;
+    function onClick(event: MouseEvent) {
+      const el = (event.target as Element | null)?.closest<HTMLElement>('[data-topic]');
+      const code = el?.dataset.topic;
+      const label = code ? topicCodes?.[code] : undefined;
+      if (label && topics.includes(label)) setTopic(label);
+    }
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [topicCodes, topics]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const titleId = `${id}-title`;
 

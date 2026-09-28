@@ -41,6 +41,73 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-28 — Countries, pricing, build grid, colour, and the BA's bug findings
+**Type:** delivery
+**Owner:** Designer + Content Steward + 3D Engineer
+
+**New fact from the owner — countries served (11):** India, USA, UK, Singapore,
+Thailand, Australia, Netherlands, UAE, Malaysia, Saudi Arabia, Czech Republic.
+- A new centred chapter `#regions` after `#evidence`: "Work delivered for
+  clients in eleven countries." with the list beneath, and its own scene —
+  eleven markers on a shared plate. Marker heights encode nothing.
+- `hero.facts` and `evidence.rows` now read "11 countries" (one full list, not
+  three copies). `meta.markets` and the footer markets carry all eleven, so the
+  Organization JSON-LD `areaServed` lists eleven. `context.md` §1 and CLAUDE.md
+  updated. The study cohorts in §2 are unchanged — that is who was studied.
+
+**Pricing as a centred chapter** at the owner's request, like the hook: large
+centred headline, the three steps in one row, then the note. The lead was cut to
+its first sentence; removed: "The number comes out of the Shape stage, once we
+understand your process — so it is priced on the system you actually need rather
+than on a rate card." Kept verbatim, asserted: "No build starts before that
+number is agreed." (a measured supporting line).
+
+**Centred-chapter model placement is now computed**, from where that section's
+text ends, instead of a fixed offset. Three hand-tuned values (-0.34, -0.24,
+-0.13) had each suited one section on one screen height. **Also found:** the
+scale formula caps a centred stage at 1.1 for any boost above ~0.5, so two
+earlier "shrink the model" edits changed nothing at all. Noted in scene-data.
+
+**What we build → a two-column grid.** The eight-step sticky sequence (~2.7
+screens of scroll) became a static grid of all eight disciplines, mirroring the
+model's own 4×2 layout. Its callout column was removed — eight labels with
+crossing leader lines — since each item now carries its swatch. design.md §5.3
+updated.
+
+**Brand colours at rest.** design.md §5.1 revised from "neutral by default" to
+"brand pastel by default, full colour on attention": resting hue shares are
+lifted halfway toward 62%; the pointed-at part stays at 100%. Signal removed
+from the resting rotation so the lift cannot multiply orange.
+
+**3D growth from the bottom:** principles' new layers rise out of the base, and
+the how-we-build modules rise out of the footprint, rather than dropping in from
+above.
+
+**Business Analyst review (9dcd712) — four bugs confirmed in source and fixed:**
+1. `/capabilities` passed `item.body` for range rows, which carry `systems`, so
+   the "thirty systems" page showed five bare titles.
+2. Footer links to `/capabilities#custom-business-software`, `#system-integration`
+   and `#websites` pointed at anchors that did not exist. Blocks now carry
+   slugged ids.
+3. CTA `topic` codes were never read, so "preselects the subject" did not
+   happen. Buttons emit `data-topic`; the form maps it through
+   `contact.topicCodes` (in content, asserted against the chip labels).
+4. The header CTA was sourced from `hero.actions[0]`; reordering the hero would
+   have changed it site-wide. Now `nav.cta`.
+
+**BA findings NOT acted on — they need the owner:** the form delivers nowhere
+while three places promise a one-working-day reply; none of the five
+business-fact components exist (context.md §3/§6 claim they appear when a slot
+is filled — they do not); first outcome proof is now ~screen 12 after the hook
+removal; pricing has no next step; several checkable claims ("zero unplanned
+downtime", "data stored in-country", "still running for the clients who
+commissioned them"); case numbering 02/01/03/04 visible on /work; the placeholder
+"sarah@agency.com" uses the word agency; the OG image does not exist. Also: the
+header CTA is hidden below 640px — **this matches the prototype**, which hides it
+below 620px, so it is a parity choice rather than a regression.
+
+---
+
 ## 2026-09-28 — Owner review round: composition, CTAs, FAQ, form, highlight
 **Type:** delivery
 **Owner:** Designer + 3D Engineer + Content Steward

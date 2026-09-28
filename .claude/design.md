@@ -160,12 +160,17 @@ molecule may not import an organism; nothing below `templates` may import
 
 One model, fifteen states, blended by scroll. It is a diagram, not decoration.
 
-1. **Neutral by default, colour on attention.** Parts render in the model
-   material. The part you point at — or the item the scroll has opened — takes
-   its hue at full strength. Everything else dims toward the model colour.
+1. **Brand pastel by default, full colour on attention.** *(Revised
+   2026-09-28 at the owner's request — the prototype rested near-white, with
+   most parts at 10–18% of their hue, and the brand colours did not read.)*
+   Resting parts carry a soft share of their hue: every resting share is lifted
+   halfway toward 62% (`REST_CAP` / `REST_LIFT` in `three/states.ts`). The part
+   you point at — or the item the scroll has opened — takes its hue at 100%, so
+   it still stands clearly apart. Signal is never in the resting rotation; it is
+   placed deliberately (rule 2).
 2. **One signal piece.** Orange marks the exception, the missing piece, the thing
    being fixed. Never two.
-3. **Labels only where you point.** Callouts exist in the four sections that
+3. **Labels only where you point.** *(2026-09-28: build no longer carries a callout column — its two-column list is the legend.)* Callouts exist in the four sections that
    invite pointing (`build`, `range`, `integration`, and where a list maps to
    geometry). Everywhere else the model carries no text. Labels are 10px mono in
    an aligned column outside the model, joined to a 4px dot by a 1px leader.

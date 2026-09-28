@@ -21,7 +21,7 @@ export default function NotFound() {
     <DocumentTemplate
       header={<SiteHeader
           nav={nav.primary}
-          cta={primaryCta}
+          cta={nav.cta}
           wordmark={footer.wordmark}
           name={content.meta.name}
           since={content.meta.since}

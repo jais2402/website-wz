@@ -38,7 +38,7 @@ export function StatementSection({
       <p className="mt-6 max-w-[52ch] text-lead text-ink-2">{lead}</p>
       {link ? (
         <div className="mt-8">
-          <Button href={link.href} variant="secondary">
+          <Button href={link.href} variant="secondary" topic={link.topic}>
             {link.label}
           </Button>
         </div>

@@ -4,6 +4,8 @@ import { Button } from '@/components/atoms';
 import { AreaAccordion, HeadlineSplit } from '@/components/molecules';
 import { SiteFooter, SiteHeader } from '@/components/organisms';
 import { DocumentTemplate } from '@/components/templates';
+import { toHue } from '@/lib/hue';
+import { slug } from '@/lib/slug';
 
 const page = pages.capabilities;
 
@@ -36,7 +38,7 @@ export default function CapabilitiesPage() {
     <DocumentTemplate
       header={<SiteHeader
           nav={nav.primary}
-          cta={primaryCta}
+          cta={nav.cta}
           wordmark={footer.wordmark}
           name={content.meta.name}
           since={content.meta.since}
@@ -68,9 +70,10 @@ export default function CapabilitiesPage() {
               {build.items.map((item: { title: string; body: string; hue?: string }) => (
                 <AreaAccordion
                   key={item.title}
+                  id={slug(item.title)}
                   title={item.title}
                   body={item.body}
-                  hue={item.hue as never}
+                  hue={toHue(item.hue)}
                 />
               ))}
             </div>
@@ -90,12 +93,13 @@ export default function CapabilitiesPage() {
               <p className="mt-5 max-w-[58ch] text-lead text-ink-2">{page.rangeIntro}</p>
             ) : null}
             <div className="mt-7 grid gap-x-10 lg:grid-cols-2">
-              {range.items.map((item: { title: string; body: string; hue?: string }) => (
+              {range.items.map((item: { title: string; systems?: string[]; hue?: string }) => (
                 <AreaAccordion
                   key={item.title}
+                  id={slug(item.title)}
                   title={item.title}
-                  body={item.body}
-                  hue={item.hue as never}
+                  systems={item.systems}
+                  hue={toHue(item.hue)}
                 />
               ))}
             </div>

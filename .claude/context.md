@@ -9,8 +9,12 @@
 ## 1. The business
 
 Wezigns builds custom software for businesses that have outgrown spreadsheets,
-message threads and manual steps. Operating since 2012. Clients in India,
-Singapore and the UAE. Work arrives referral-led.
+message threads and manual steps. Operating since 2012. Work arrives
+referral-led. Clients in eleven countries *(updated 2026-09-28 from the
+owner)*: India, USA, UK, Singapore, Thailand, Australia, Netherlands, UAE,
+Malaysia, Saudi Arabia, Czech Republic. The study cohorts in §2 were drawn
+from India, Singapore and the UAE — that describes who was studied, not where
+the company works.
 
 The company sells **systems that run an operation**, not websites — even though
 90+ websites is the larger number in its history. Every layout decision has to

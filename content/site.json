@@ -9,8 +9,16 @@
     "email": "hello@wezigns.com",
     "markets": [
       "India",
+      "USA",
+      "UK",
       "Singapore",
-      "UAE"
+      "Thailand",
+      "Australia",
+      "Netherlands",
+      "UAE",
+      "Malaysia",
+      "Saudi Arabia",
+      "Czech Republic"
     ],
     "locale": "en",
     "siteUrl": "https://wezigns.com",
@@ -92,7 +100,7 @@
       },
       {
         "label": "Clients in",
-        "value": "India · Singapore · UAE"
+        "value": "11 countries"
       }
     ],
     "builtWith": {
@@ -347,14 +355,14 @@
     {
       "id": "pricing",
       "scene": "price",
-      "side": "l",
+      "side": "c",
       "pattern": "prose",
       "eyebrow": "How we price",
       "headline": {
         "lead": "Priced on the system,",
         "accent": "once we understand it."
       },
-      "lead": "You see scope, price and timeline together, in writing, before anything is built. The number comes out of the Shape stage, once we understand your process — so it is priced on the system you actually need rather than on a rate card.",
+      "lead": "You see scope, price and timeline together, in writing, before anything is built.",
       "points": [
         {
           "hue": "blueprint",
@@ -402,7 +410,7 @@
         },
         {
           "k": "Countries",
-          "v": "India · Singapore · UAE"
+          "v": "11 countries"
         },
         {
           "k": "How work arrives",
@@ -417,6 +425,30 @@
         "label": "Tell us what is not working",
         "href": "/#contact"
       }
+    },
+    {
+      "id": "regions",
+      "scene": "regions",
+      "side": "c",
+      "pattern": "prose",
+      "eyebrow": "Where we work",
+      "headline": {
+        "lead": "Work delivered for clients in",
+        "accent": "eleven countries."
+      },
+      "layers": [
+        "India",
+        "USA",
+        "UK",
+        "Singapore",
+        "Thailand",
+        "Australia",
+        "Netherlands",
+        "UAE",
+        "Malaysia",
+        "Saudi Arabia",
+        "Czech Republic"
+      ]
     },
     {
       "id": "work",
@@ -629,7 +661,12 @@
         "rest": "They can talk through your process and what a system for it would involve."
       },
       "note": "No generic pitch deck. No pressure. Price and timeline are agreed before anything is built.",
-      "requiredNote": "All fields are required."
+      "requiredNote": "All fields are required.",
+      "topicCodes": {
+        "new": "A new system",
+        "connect": "Connecting our tools",
+        "vendor": "Vendor review"
+      }
     }
   ],
   "cases": [
@@ -754,8 +791,16 @@
       "body": "Tell us what is not working. A senior person from our team replies within one working day.",
       "markets": [
         "India",
+        "USA",
+        "UK",
         "Singapore",
-        "UAE"
+        "Thailand",
+        "Australia",
+        "Netherlands",
+        "UAE",
+        "Malaysia",
+        "Saudi Arabia",
+        "Czech Republic"
       ]
     },
     "columns": [

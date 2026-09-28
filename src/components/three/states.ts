@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CASES, DISC, DISC_HEIGHT, INT, PROC, RANGE, SCENES, type SceneKey } from './scene-data';
+import { CASES, DISC, DISC_HEIGHT, INT, PROC, RANGE, REGIONS, SCENES, type SceneKey } from './scene-data';
 import type { Palette, PaletteColour } from './palette';
 
 /**
@@ -63,7 +63,10 @@ export function smooth(x: number) { x = Math.min(1, Math.max(0, x)); return x * 
 function ease(x: number) { x = Math.min(1, Math.max(0, x)); return 1 - Math.pow(1 - x, 3); }
 
 /** Labels appear only where the page invites you to point at something. */
-const LABELLED: Partial<Record<SceneKey, 1>> = { build: 1, range: 1, integration: 1 };
+// Build dropped its callout column on 2026-09-28: its eight labels fanned out
+// with crossing leader lines, and the two-column list now carries each hue as a
+// swatch, so the list is the legend.
+const LABELLED: Partial<Record<SceneKey, 1>> = { range: 1, integration: 1 };
 
 export const SCENE_TITLE: Record<SceneKey, string> = {
   hero: 'Workarounds', build: 'Eight disciplines', ai: 'Intelligence inside',
@@ -71,13 +74,33 @@ export const SCENE_TITLE: Record<SceneKey, string> = {
   how: 'Understand to run', price: 'How we price', evidence: 'Built since 2012',
   work: 'Selected work', integration: 'Connected tools', tech: 'Architecture',
   faq: 'Questions', contact: 'Start a conversation',
+  regions: 'Where we work',
 };
 
 export function buildState(P: Palette) {
-  const MIX = ['blueprint', 'pine', 'ochre', 'plum', 'rose', 'signal'] as const;
+  /**
+   * Resting colour. The owner asked for the brand colours to be visible in the
+   * model (2026-09-28), replacing the prototype's near-white rest state where
+   * most parts kept only 10–18% of their hue. Every resting hue share is lifted
+   * halfway toward REST_CAP, so parts read as soft brand pastels; the part the
+   * reader points at still goes to 100%, so "colour on attention" keeps its
+   * contrast. Shares already above the cap are left alone. See design.md §5.1.
+   */
+  const REST_CAP = 0.62;
+  const REST_LIFT = 0.5;
+  const restShare = (share: number) =>
+    share < REST_CAP ? share + (REST_CAP - share) * REST_LIFT : share;
+
+  // Signal is NOT in the resting rotation. It is the scarcity token — one per
+  // screen, placed on purpose — and lifting the rest colours would otherwise
+  // spread orange across every scene that cycles hues.
+  const MIX = ['blueprint', 'pine', 'ochre', 'plum', 'rose'] as const;
   const hueOf = (h: string): THREE.Color => P[h as PaletteColour] ?? P.blueprint;
-  const dimmed = (c: THREE.Color, k: number) => c.clone().lerp(P.model, k);
-  const tint = (i: number, k: number) => P[MIX[i % MIX.length]!].clone().lerp(P.model, 1 - k);
+  /** `k` is how far toward the model material; the hue share is 1 − k. */
+  const dimmed = (c: THREE.Color, k: number) => c.clone().lerp(P.model, 1 - restShare(1 - k));
+  /** `k` is the hue share. */
+  const tint = (i: number, k: number) =>
+    P[MIX[i % MIX.length]!].clone().lerp(P.model, 1 - restShare(k));
 
   function put(o: SceneState, i: number, x: number, y: number, z: number,
                sx: number, sy: number, sz: number, c: THREE.Color,
@@ -201,7 +224,12 @@ export function buildState(P: Palette) {
         for (let gy2 = 0; gy2 < 4; gy2 += 1) for (let gz2 = 0; gz2 < 2; gz2 += 1) for (let gx2 = 0; gx2 < 2; gx2 += 1) {
           const up = gy2 >= 2, g = up ? grow : 1;
           const c3 = up ? dimmed(P.blueprint, 0.25 + sec * 0.25) : P.model;
-          put(o, k++, (gx2 - 0.5) * 1.24, 0.6 + gy2 * 1.26 + (1 - g) * 1.6, (gz2 - 0.5) * 1.24,
+          // The new layers GROW UP out of the top of the base (owner,
+          // 2026-09-28: "start from the bottom"). The prototype dropped them in
+          // from 1.6 above; here each starts inside the top base layer and
+          // rises into place as it scales up — the building grows upward.
+          const y = 0.6 + gy2 * 1.26 - (up ? (gy2 - 1) * 1.26 * (1 - g) : 0);
+          put(o, k++, (gx2 - 0.5) * 1.24, y, (gz2 - 0.5) * 1.24,
             1.18 * Math.max(g, 1e-4), 1.18 * Math.max(g, 1e-4), 1.18 * Math.max(g, 1e-4), c3);
         }
         o.lines.cage = sec;
@@ -245,7 +273,12 @@ export function buildState(P: Palette) {
         for (let by = 0; by < 3; by += 1) for (let bz = 0; bz < 3; bz += 1) for (let bx = 0; bx < 3; bx += 1) {
           const loc = ease(f - k);
           const run = sub >= 3 && (k === 4 || k === 13 || k === 22);
-          put(o, k, (bx - 1) * 0.84, 0.42 + by * 0.84 + (1 - loc) * 2.4, (bz - 1) * 0.84,
+          // Each module rises out of the footprint into its place (owner,
+          // 2026-09-28: "start from the bottom"). The prototype dropped them in
+          // from 2.4 above. Order is unchanged — k runs bottom layer first — so
+          // the block now assembles upward from the ground.
+          const home = 0.42 + by * 0.84;
+          put(o, k, (bx - 1) * 0.84, home * loc, (bz - 1) * 0.84,
             0.8 * Math.max(loc, 1e-4), 0.8 * Math.max(loc, 1e-4), 0.8 * Math.max(loc, 1e-4),
             run ? P.signal : ((bx + by + bz) % 2 ? P.model : tint(bx * 3 + by + bz * 2, 0.3)));
           k += 1;
@@ -351,6 +384,24 @@ export function buildState(P: Palette) {
           put(o, k++, sl, ly2, 0, 2.6, 0.3, 2.6, lc);
         }
         o.look = 1.8; o.dist = 18; o.yaw = -0.32; o.parts = '9 layers';
+        break;
+      }
+
+      case 'regions': {
+        // One marker per country served, standing on a shared plate: many
+        // places, one practice. Heights vary so the row reads as a skyline
+        // rather than a bar chart — they encode nothing, and nothing here is
+        // a fact the page does not state in text.
+        const count = Math.max(1, REGIONS.length || 11);
+        put(o, k++, 0, 0.06, 0, count * 0.5 + 0.6, 0.12, 2.2, P.model2.clone().lerp(P.model, 0.55));
+        for (i = 0; i < count; i += 1) {
+          const x = (i - (count - 1) / 2) * 0.5;
+          const z = Math.sin(i * 1.7) * 0.5;
+          const h = 0.45 + R[i]![2]! * 1.05;
+          put(o, k++, x, 0.12 + h / 2, z, 0.36, h, 0.36, tint(i, 0.6));
+        }
+        o.look = 0.7; o.dist = 16; o.yaw = 0.3 + Math.sin(t * 0.1) * 0.08;
+        o.parts = `${count} countries`;
         break;
       }
 

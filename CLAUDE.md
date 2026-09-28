@@ -5,7 +5,7 @@ Guidance for Claude Code working in this repository.
 ## Project
 
 **Wezigns** — marketing website. Custom software company operating since 2012,
-clients in India, Singapore and the UAE, referral-led. The site sells *systems
+clients in eleven countries (see `context.md` §1), referral-led. The site sells *systems
 that run an operation*, not websites — every decision protects that distinction,
 because readers reach for "web agency" the moment they are given the chance.
 

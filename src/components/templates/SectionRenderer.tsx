@@ -20,7 +20,15 @@ type SectionData = SiteContent['sections'][number];
  * (`.rows`), not a sticky sequence; making it scroll-gated added 1200px of
  * track and bled into the section below.
  */
-const STATIC_LISTS = new Set(['integration']);
+const STATIC_LISTS = new Set(['integration', 'build']);
+
+/**
+ * Static lists laid out two across. The disciplines' model is a 4×2 grid of
+ * modules; a two-column grid of all eight shows them at once and reads as the
+ * model's legend. It replaced an eight-step sticky sequence — about 2.7 screens
+ * of scroll just to walk the list — at the owner's request (2026-09-28).
+ */
+const GRID_LISTS = new Set(['build']);
 
 export interface SectionRendererProps {
   sections: SectionData[];
@@ -57,6 +65,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 link={s.link}
                 countUnit={s.countUnit}
                 mode={STATIC_LISTS.has(s.id) ? 'static' : 'sequence'}
+                layout={GRID_LISTS.has(s.id) ? 'grid' : 'list'}
               />
             );
 
@@ -150,6 +159,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 promise={s.promise}
                 note={s.note}
                 requiredNote={s.requiredNote}
+                topicCodes={s.topicCodes}
               />
             );
 
