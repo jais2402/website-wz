@@ -41,6 +41,95 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-28 — Removed the proof statistics from the hook screen
+**Type:** decision
+**Owner:** CEO (owner's request) · Content Steward
+**Context:** The owner asked for the three figures under the hook to be removed —
+−80% administrative work, 40,000 requests a minute, 300 → 4,500 sellers.
+**Flagged before doing it:** context.md §3 records "proof arrives early" as one
+of the four changes that moved five-second comprehension from 26% to 80%. The
+hook screen carrying the three hardest numbers is what put the first proof beat
+at screen 5 instead of screen 12. This removes that beat from the hook screen.
+**Decision:** removed, as requested. The figures still appear in the case
+studies on `/work` and in each case panel, so the proof is not gone — it arrives
+later.
+**Made reversible on purpose:** `proof` is now optional on
+`StatementProofSection` and renders nothing when absent. Restoring it is a
+one-line content edit in `content/site.json`, with no code change. The removed
+values are recorded here so they can be put back exactly:
+`−80%` Administrative work, national safety-training operation ·
+`40,000` Requests a minute at peak, national tourism platform ·
+`300 → 4,500` Sellers, with no extra support headcount.
+**Recommend:** re-run the five-second comprehension test against this change
+before launch (research-analyst). It is the measure this edit is most likely to
+move.
+
+---
+
+## 2026-09-28 — Four scroll and layout faults, and two measurement traps
+**Type:** delivery
+**Owner:** 3D Engineer + Designer
+
+**1. The work section never switched case on scroll.** It had no
+`[data-step]`, so the stage's progress was always 0 and the carousel always
+showed case 1. Rebuilt with a scroll track — one 54vh segment per case, each
+carrying `[data-step]` — which does two jobs: an IntersectionObserver switches
+the panel, and the stage turns the carousel. Panel and model now show the same
+case. Tabs jump by scrolling to their segment, not just swapping the panel, or
+the model would disagree with it. Verified: a continuous scroll reaches India →
+Singapore → Dubai → Retail in order.
+
+**2. Range rows were empty when open.** They carry `count` and a `systems` list,
+not a `body`, so `DisciplineRow` revealed nothing — the open row looked broken
+and out of step with the lit row in the model. The row now renders either shape.
+**The first attempt at this fix failed silently:** the edit that passed
+`systems`/`count` down targeted indentation from before `SequenceSection` was
+rebuilt, matched nothing, and was not asserted. The type declared the props; the
+call site never passed them. Every scripted edit is now asserted.
+
+**3. The model spun.** Three scenes used an *accumulating* yaw —
+`moment`/`faq` `t * 0.045`, `evidence` `0.4 + t * 0.025`, `integration`
+`t * 0.03`. After a minute on the page the block had turned ~160°, and blending
+into the next scene whipped it round. Replaced with bounded sways, in line with
+design.md §5.5 ("slow yaw, sub-degree drift"). Yaw is also now blended along the
+shortest arc, because the work carousel deliberately turns through −1.5π and a
+plain lerp out of it swung the model almost a full turn the long way.
+**This deviates from the approved prototype**, which spins. The owner reported
+it as a fault, and it contradicts the design system, so the design system wins.
+
+**4. A resting pointer froze the sequence.** Rows pinned on `mouseenter`, but
+the list is sticky — it does not move under a stationary cursor — so whichever
+row the pointer rested on stayed open for the whole section and scroll could
+never advance it. Now: rows pin only on real pointer *movement* (coordinates
+compared, because Chromium can dispatch a synthetic mousemove after a scroll),
+and a scroll step always reclaims control. Regression test in
+`tests/e2e/sequence.spec.ts`.
+
+**Also:** sticky blocks are now anchored at `top: 116px` like the prototype's
+`.seq-in`, instead of an `h-screen` block centred vertically — centring pushed
+the lower rows below the fold whenever an open row made the block tall. Track
+height per step now follows the prototype's `--sh`: build 34vh, range 42vh,
+work 54vh.
+
+**Measurement trap 1 — smooth scrolling.** The site sets `scroll-behavior:
+smooth`, so every `window.scrollTo(0, y)` used in testing *animated*. Anything
+measured in the following second was measured mid-flight: a row reported
+`y = 3466`, a screenshot showed the fixed header halfway down the viewport, and
+several earlier screenshots came back blank. Tests and reviews must use
+`scrollTo({ top, behavior: 'instant' })`.
+
+**Measurement trap 2 — Playwright's `hover()`.** Its actionability check
+scrolls the element into view first, and that scroll fires the
+IntersectionObserver after the hover lands — which correctly reclaims the
+sequence and clears the pin the hover just set. Use `page.mouse.move` when the
+test is about hover-versus-scroll.
+
+**State:** `pnpm verify:full` green — 18 unit, 49 Playwright, axe clean,
+167.8 KB initial / 119.1 KB 3D. Committed as 2aa7a1f. A parity review against
+the prototype is running; its findings are the next piece of work.
+
+---
+
 ## 2026-09-28 — The assembly never played: steps in a grid broke scroll progress
 **Type:** delivery
 **Owner:** 3D Engineer
