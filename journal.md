@@ -41,6 +41,48 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Integration labels sit beside their parts; tech stack is labelled
+**Type:** delivery
+**Owner:** 3D Engineer + Designer
+**Context:** Owner reported an overlap on the integration block: the right-hand
+module ran under the reading column, and the column-style callouts drew every
+leader line across the model. The owner also asked to "make this block better" for
+the tech block, which was an oversized, unlabelled pastel stack.
+**Options:** keep the label column and shrink the model; or give radial scenes
+their own label layout.
+**Decision:** a new `beside` label mode (`SceneState.beside`, handled in
+`stage.ts` `drawCallouts`). Each label sits just outside its own group, pushed away
+from the hub. If there is no room it becomes a caption under the group, and it
+never enters the reading column. There are no leader lines. The ring is 3.1 → 2.7
+and `BOOST.integration` is 0.92 → 0.64. For tech: nine thin plates with air between
+them, one per named layer (`TECH` from `tech.layers`), labelled in the right-hand
+column. The new client `organisms/LayerList.tsx` lights a plate when its name is
+pointed at. `BOOST.tech` is 0.92 → 0.74.
+**Because:** a radial model has no single side for a label column. Every leader
+crossed the model, so the labels read as noise rather than a diagram. The tech
+plates now show the same nine names as the text, so the model explains something
+instead of decorating the page (study finding, design.md §5).
+**Consequences:** the model's pixel size scales with viewport height and the text
+column with width. Wide model shapes need a lower boost, so check them at 1280×760,
+not only at large sizes. Verified at 2000×1000 and 1280×760.
+
+---
+
+## 2026-09-29 — Session: integration overlap, tech block redesign
+**Type:** session
+**Done:** `three/states.ts` (beside flag, integration ring and label anchors, tech
+rebuilt as a labelled exploded stack, `LABELLED.tech`); `three/stage.ts` (beside
+layout and fallback, no gutter for beside scenes); `three/scene-data.ts` (`TECH`,
+boosts); new `organisms/LayerList.tsx`; `organisms/ProseSection.tsx` uses it.
+**State:** verify:full is green: 18 unit tests and 56 Playwright tests. Budgets:
+172.0 / 180 KB initial, 119.6 / 320 KB for 3D.
+**Next:** a design-reviewer pass on both blocks in dark theme and at 1000px, where
+a caption may hide if it would touch the text. The signal-orange connector pulses
+on integration are still the open §5.2 question.
+**Blocked:** unchanged from the previous close-out (owner decisions).
+
+---
+
 ## 2026-09-29 — Motion: react-mini only, for reveals and the case indicator
 **Type:** decision
 **Owner:** Designer + 3D Engineer (budget)

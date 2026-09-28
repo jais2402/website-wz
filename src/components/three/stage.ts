@@ -173,7 +173,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       state(i, 0, 0, -1, tmp);
       let mw = 0;
       for (const l of tmp.labels) mw = Math.max(mw, l.t.length);
-      GUT.push(mw ? Math.min(250, mw * 6.5 + 44) : 0);
+      GUT.push(mw && !tmp.beside ? Math.min(250, mw * 6.5 + 44) : 0);
     }
   }
 
@@ -398,6 +398,34 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       if (sx < mnx) mnx = sx;
       if (sx > mxx) mxx = sx;
       if (co.w > mtw) mtw = co.w;
+    }
+
+    if (dom.beside && vis.length) {
+      // Beside mode: each label just outside its own part, pushed away from
+      // the model's centre. No leaders — the label is next to what it names.
+      tv.copy(dom.hub.p).applyMatrix4(group.matrixWorld).project(camera);
+      const hx = (tv.x + 1) / 2 * W, hy = (1 - tv.y) / 2 * Hh;
+      for (const v of vis) {
+        const c2 = v.co, dx = v.ax - hx, dy = v.ay - hy;
+        const clash = (x: number) => x < 10 || x + c2.w > W - 10 || (x < ta.tr && x + c2.w > ta.tl);
+        let lx: number, ly: number;
+        const side = Math.abs(dx) > Math.abs(dy) * 0.9;
+        lx = dx > 0 ? v.ax + 14 : v.ax - 14 - c2.w;
+        ly = v.ay - 9;
+        // Beside the part when it points sideways and there is room; otherwise
+        // a caption centred under (or over) it — never into the reading column.
+        if (!side || clash(lx)) {
+          lx = Math.max(10, Math.min(W - 10 - c2.w, v.ax - c2.w / 2));
+          ly = dy < 0 && !side ? v.ay - 30 : v.ay + 16;
+        }
+        if (clash(lx)) { hideCo(c2); continue; }
+        c2.el.style.transform = `translate(${lx.toFixed(1)}px,${ly.toFixed(1)}px)`;
+        c2.el.style.opacity = (fade * (v.lb.hot ? 1 : 0.88)).toFixed(3);
+        c2.el.classList.toggle('hot', v.lb.hot);
+        c2.dot.style.opacity = '0';
+        c2.path.style.opacity = '0';
+      }
+      return;
     }
 
     const right = ta.side !== 'r';

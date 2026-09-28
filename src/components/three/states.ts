@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CASES, DISC, DISC_HEIGHT, INT, PROC, RANGE, REGIONS, SCENES, type SceneKey } from './scene-data';
+import { CASES, DISC, DISC_HEIGHT, INT, PROC, RANGE, REGIONS, SCENES, TECH, type SceneKey } from './scene-data';
 import type { Palette, PaletteColour } from './palette';
 
 /**
@@ -28,6 +28,13 @@ export interface SceneState {
   scale: number;
   labels: Array<{ t: string; p: THREE.Vector3; hot: boolean; left: boolean }>;
   lab: number;
+  /**
+   * Label layout. 0: a column beside the model, with leader lines. 1: each
+   * label sits just outside its own part, pushed away from the model's
+   * centre — for radial arrangements, where a column would draw every leader
+   * across the model.
+   */
+  beside: number;
   name: string;
   parts: string;
 }
@@ -39,7 +46,7 @@ export function blank(): SceneState {
     pp: [], ps: [],
     lines: { foot: 0, frame: 0, cage: 0, slot: 0 },
     yaw: 0, look: 1, dist: 15, scale: 1,
-    labels: [], lab: 0, name: '', parts: '',
+    labels: [], lab: 0, beside: 0, name: '', parts: '',
   };
   for (let i = 0; i < N; i += 1) {
     o.p.push(new THREE.Vector3());
@@ -66,7 +73,7 @@ function ease(x: number) { x = Math.min(1, Math.max(0, x)); return 1 - Math.pow(
 // Build dropped its callout column on 2026-09-28: its eight labels fanned out
 // with crossing leader lines, and the two-column list now carries each hue as a
 // swatch, so the list is the legend.
-const LABELLED: Partial<Record<SceneKey, 1>> = { range: 1, integration: 1 };
+const LABELLED: Partial<Record<SceneKey, 1>> = { range: 1, integration: 1, tech: 1 };
 
 export const SCENE_TITLE: Record<SceneKey, string> = {
   hero: 'Workarounds', build: 'Eight disciplines', ai: 'Intelligence inside',
@@ -138,6 +145,7 @@ export function buildState(P: Palette) {
     const keyName = SCENES[ix]!;
     o.labels.length = 0;
     o.lab = LABELLED[keyName] ? 1 : 0;
+    o.beside = 0;
     o.hub.on = 0; o.hub.p.set(0, 0.5, 0); o.hub.s.set(1, 1, 1);
     o.lines.foot = o.lines.frame = o.lines.cage = o.lines.slot = 0;
     for (let j = 0; j < NP; j += 1) { o.ps[j] = 0; o.pp[j]!.set(0, 0, 0); }
@@ -354,7 +362,7 @@ export function buildState(P: Palette) {
         o.hub.on = 1; o.hub.p.set(0, 0.56, 0); o.hub.s.set(1.12, 1.12, 1.12);
         for (let g5 = 0; g5 < 5; g5 += 1) {
           a = (g5 / 5) * Math.PI * 2 + 0.4;
-          const r3 = 3.1, sx5 = Math.sin(a) * r3, sz5 = Math.cos(a) * r3;
+          const r3 = 2.7, sx5 = Math.sin(a) * r3, sz5 = Math.cos(a) * r3;
           const gcf = hueOf(INT[g5]?.hue ?? 'blueprint');
           const gc = hl === g5 ? gcf : dimmed(gcf, hl >= 0 ? 0.72 : 0.42);
           const ul = hl === g5 ? 0.25 : 0;
@@ -368,22 +376,31 @@ export function buildState(P: Palette) {
             o.pp[g5 * 2 + j]!.set(Math.sin(a) * d2, 0.1, Math.cos(a) * d2);
             o.ps[g5 * 2 + j] = 0.075;
           }
-          label(o, INT[g5]?.title ?? '', sx5, 1.25 + ul, sz5, hl === g5);
+          // Anchored just outboard of the group, so the label sits beside it.
+          const ro = r3 + 0.62;
+          label(o, INT[g5]?.title ?? '', Math.sin(a) * ro, 0.25 + ul, Math.cos(a) * ro, hl === g5);
         }
         // Bounded, as above. Was t * 0.03. The pulses travelling the
         // connectors already carry the motion; the hub does not need to turn.
+        o.beside = 1;
         o.look = 0.4; o.dist = 16.5; o.yaw = 0.3 + Math.sin(t * 0.1) * 0.12;
         o.parts = '5 connected groups';
         break;
       }
 
       case 'tech': {
-        for (i = 0; i < 9; i += 1) {
-          const ly2 = 0.16 + (8 - i) * 0.4, sl = hl === i ? 0.9 : 0;
-          const lc = hl === i ? hueOf(MIX[i % MIX.length]!) : tint(i, hl >= 0 ? 0.26 : 0.46);
-          put(o, k++, sl, ly2, 0, 2.6, 0.3, 2.6, lc);
+        // The nine layers the section names, top to bottom, as an exploded
+        // stack: thin plates with air between them, so each reads as a layer
+        // and carries its label. The one the reader points at slides out in
+        // full hue.
+        const n = Math.max(1, Math.min(9, TECH.length || 9));
+        for (i = 0; i < n; i += 1) {
+          const ly2 = 0.12 + (n - 1 - i) * 0.46, sl = hl === i ? 0.7 : 0;
+          const lc = hl === i ? hueOf(MIX[i % MIX.length]!) : tint(i, hl >= 0 ? 0.3 : 0.62);
+          put(o, k++, sl, ly2, 0, 2.4, 0.2, 2.4, lc);
+          label(o, TECH[i] ?? '', sl + 1.2, ly2, 1.2, hl === i);
         }
-        o.look = 1.8; o.dist = 18; o.yaw = -0.32; o.parts = '9 layers';
+        o.look = 1.9; o.dist = 19; o.yaw = -0.32; o.parts = `${n} layers`;
         break;
       }
 

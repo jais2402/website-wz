@@ -1,5 +1,6 @@
 import { Button, Eyebrow, Swatch } from '@/components/atoms';
 import { AreaAccordion, HeadlineSplit } from '@/components/molecules';
+import { LayerList } from './LayerList';
 import { Section } from './Section';
 import type { Headline, Hue, Link as ContentLink, Side } from '@/types/content';
 
@@ -128,13 +129,7 @@ export function ProseSection({
       ) : null}
 
       {layers?.length ? (
-        <ul className="mt-9 flex flex-wrap gap-x-5 gap-y-2.5 border-t border-line pt-5">
-          {layers.map((layer) => (
-            <li key={layer} className="text-[14.5px] text-ink-2">
-              {layer}
-            </li>
-          ))}
-        </ul>
+        <LayerList layers={layers} scene={scene} />
       ) : null}
 
       {pillars?.length ? (
