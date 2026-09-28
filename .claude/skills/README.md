@@ -49,6 +49,19 @@ the 180 KB initial-route budget. Use the skill for easing, timing and choreograp
 guidance, and implement it through `useAnimate` (see `atoms/Reveal.tsx` and
 `molecules/CaseTabs.tsx`). `architecture.md` §1 records the constraint.
 
+## `impeccable` (installed 2026-09-29, owner request)
+
+From `pbakaus/impeccable` v4.4.0, Apache-2.0 (LICENSE copied in). A design
+direction, critique, audit and polish skill with sub-commands such as `audit`,
+`critique`, `polish`, `animate` and `colorize`. **Supply chain:**
+`scripts/impeccable` downloads a prebuilt engine binary from the repo's GitHub
+releases on first run and checks it against a `.sha256` file published in the
+same place. That check proves the download is intact, not who built it. The
+launcher was not run at install time; if it is refused, the skill falls back to
+reading the docs directly. **Precedence:** the skill says "the brief wins", and
+here the brief is `.claude/`. Its "go bold" defaults never override design.md
+(one signal per screen, tokens only, WCAG gate) or context.md copy rules.
+
 ## Deliberately never installed
 
 **`motion-foundations`, `motion-patterns`, `motion-advanced`** — built on the

@@ -41,6 +41,43 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Bright resting colours; tech block cut down; impeccable skill
+**Type:** delivery
+**Owner:** Designer + Content Steward
+**Context:** The owner asked for "Use the bright colours" on the model, and for
+the tech block to be "more concise" and its content "optimised". Then: install
+`pbakaus/impeccable`.
+**Decision:**
+- *Colour:* the resting hue curve is now `min(1, 0.2 + 2.2·s)` (`three/states.ts`),
+  so resting parts show 86–100% of their brand hue. The build rest share went
+  from 0.82 to 0.55 dim, integration's dim-on-highlight from 0.72 to 0.85, and
+  tech's from 0.3 to 0.12, so pointing at a part still stands out.
+  design.md §5.1 is rewritten; this reverses the pastel entry from 2026-09-28.
+- *Tech copy (`content/site.json`):* a one-line lead; pillars cut from 4 to 2 (the
+  two cut repeated the lead); trust items cut from 4 to 3 (monitoring and review
+  merged); the duplicate "Talk to us about your stack" link removed, so the block
+  has one CTA; the nine layers are kept because they map to the 3D plates.
+- *Skill:* `.claude/skills/impeccable/` installed; audit notes are in the skills README.
+**Consequences:** the Legacy group on integration carries `hue: "signal"` in
+content, so at full brightness it now reads as solid orange next to the orange
+pulses. Rule 2 (one signal) needs an owner call: move Legacy to rose, or keep it
+as the deliberate exception.
+
+---
+
+## 2026-09-29 — Session: bright colours, concise tech block, impeccable
+**Type:** session
+**Done:** `three/states.ts`, `.claude/design.md` §5.1, `content/site.json` (tech),
+`.claude/skills/impeccable/`, `.claude/skills/README.md`.
+**State:** verify:full is green: 18 unit tests and 56 Playwright tests. Budgets:
+171.9 / 180 KB initial, 119.5 / 320 KB for 3D. The impeccable launcher has not been
+run.
+**Next:** the owner's call on Legacy's orange. Optionally run `/impeccable audit`
+on the home page as a second design-review pass.
+**Blocked:** as before (owner decisions), plus Legacy's hue.
+
+---
+
 ## 2026-09-29 — Integration labels sit beside their parts; tech stack is labelled
 **Type:** delivery
 **Owner:** 3D Engineer + Designer
