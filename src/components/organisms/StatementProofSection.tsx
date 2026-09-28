@@ -7,7 +7,12 @@ export interface StatementProofSectionProps {
   id: string;
   scene?: string | undefined;
   statement: { text: string; emphasis?: string | undefined };
-  proof: Metric[];
+  /**
+   * Optional. Removed from the hook screen on 2026-09-28 at the owner's
+   * request — restore by putting `proof` back on the section in
+   * content/site.json and nothing else. See journal.md and context.md §3.
+   */
+  proof?: Metric[] | undefined;
   link?: ContentLink | undefined;
 }
 
@@ -40,11 +45,13 @@ export function StatementProofSection({
           <em className="not-italic text-blueprint-t">{statement.emphasis}</em>
         ) : null}
       </h2>
-      {/* Proof and the next step are narrower than the headline, so the three
-          figures read as a row rather than drifting to the screen edges. */}
-      <div className="mx-auto max-w-[900px]">
-        <ProofStrip items={proof} />
-      </div>
+      {/* Proof, when present, is narrower than the headline so the figures read
+          as a row rather than drifting to the screen edges. */}
+      {proof?.length ? (
+        <div className="mx-auto max-w-[900px]">
+          <ProofStrip items={proof} />
+        </div>
+      ) : null}
       {link ? (
         <div className="mx-auto mt-9 flex max-w-[900px] justify-center">
           <Button href={link.href} variant="secondary">

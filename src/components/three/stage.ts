@@ -24,6 +24,15 @@ export interface StageHandle {
 
 const LABEL_COUNT = 12;
 
+/** Signed difference b − a, wrapped to (−π, π] so rotation takes the short way. */
+function shortestAngle(a: number, b: number): number {
+  const TAU = Math.PI * 2;
+  let d = (b - a) % TAU;
+  if (d > Math.PI) d -= TAU;
+  else if (d <= -Math.PI) d += TAU;
+  return d;
+}
+
 export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, leads: SVGElement): StageHandle | null {
   const root = document.documentElement;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -314,8 +323,11 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     });
 
     /* camera */
-    const yaw = A.yaw * (1 - w) + B.yaw * w;
-    camS.yaw += (yaw - camS.yaw) * K;
+    // Yaw is blended and damped along the SHORTEST arc. The work scene turns
+    // its carousel through -1.5π on purpose; a plain lerp out of it into a
+    // scene near 0 would swing the model almost a full turn the long way.
+    const yaw = A.yaw + shortestAngle(A.yaw, B.yaw) * w;
+    camS.yaw += shortestAngle(camS.yaw, yaw) * K;
     camS.look += ((A.look * (1 - w) + B.look * w) - camS.look) * K;
     camS.dist += ((A.dist * (1 - w) + B.dist * w) - camS.dist) * K;
     camS.scale += (((A.scale * (1 - w) + B.scale * w) * (mobile ? 0.74 : (an.ss * (1 - w) + bn.ss * w))) - camS.scale) * K;

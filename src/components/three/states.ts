@@ -186,7 +186,12 @@ export function buildState(P: Palette) {
           }
           o.parts = '27 modules, running';
         } else o.parts = '27 modules, one system';
-        o.look = 1.2; o.dist = keyName === 'moment' ? 20 : 16; o.yaw = t * 0.045;
+        // A bounded sway, not a spin. The prototype used t * 0.045, which
+        // accumulates without limit — after a minute the block had turned
+        // ~160°, and blending into the next scene whipped it round.
+        // design.md §5.5 asks for slow yaw and sub-degree drift.
+        o.look = 1.2; o.dist = keyName === 'moment' ? 20 : 16;
+        o.yaw = 0.35 + Math.sin(t * 0.12) * 0.12;
         break;
       }
 
@@ -273,7 +278,9 @@ export function buildState(P: Palette) {
             i === 7 ? P.signal : (R[i]![4]! > 0.42 ? tint(i, 0.3) : P.model));
         }
         label(o, '20+ systems since 2012', ((tallIx % 5) - 2) * 1.02, tall + 0.15, (Math.floor(tallIx / 5) - 1.5) * 1.02, true);
-        o.look = 0.9; o.dist = 19.5; o.yaw = 0.4 + t * 0.025; o.scale = 0.9; o.parts = '20+ systems';
+        // Bounded, as above. Was 0.4 + t * 0.025.
+        o.look = 0.9; o.dist = 19.5; o.yaw = 0.4 + Math.sin(t * 0.1) * 0.1;
+        o.scale = 0.9; o.parts = '20+ systems';
         break;
       }
 
@@ -325,7 +332,10 @@ export function buildState(P: Palette) {
           }
           label(o, INT[g5]?.title ?? '', sx5, 1.25 + ul, sz5, hl === g5);
         }
-        o.look = 0.4; o.dist = 16.5; o.yaw = t * 0.03; o.parts = '5 connected groups';
+        // Bounded, as above. Was t * 0.03. The pulses travelling the
+        // connectors already carry the motion; the hub does not need to turn.
+        o.look = 0.4; o.dist = 16.5; o.yaw = 0.3 + Math.sin(t * 0.1) * 0.12;
+        o.parts = '5 connected groups';
         break;
       }
 

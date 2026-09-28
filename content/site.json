@@ -195,20 +195,6 @@
         "text": "Our systems and products are built for the moment when the business ",
         "emphasis": "outgrows the workaround."
       },
-      "proof": [
-        {
-          "value": "−80%",
-          "label": "Administrative work, national safety-training operation"
-        },
-        {
-          "value": "40,000",
-          "label": "Requests a minute at peak, national tourism platform"
-        },
-        {
-          "value": "300 → 4,500",
-          "label": "Sellers, with no extra support headcount"
-        }
-      ],
       "link": {
         "label": "Read what changed in each one",
         "href": "/work"

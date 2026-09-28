@@ -11,7 +11,11 @@ export interface SequenceItem {
   n?: string | undefined;
   hue?: Hue | undefined;
   title: string;
-  body: string;
+  /** Disciplines and integration rows carry a paragraph. */
+  body?: string | undefined;
+  /** Range rows carry a list of systems and a count instead. */
+  systems?: string[] | undefined;
+  count?: number | undefined;
 }
 
 export interface SequenceSectionProps {
@@ -36,6 +40,8 @@ export interface SequenceSectionProps {
  * per item, not by a scroll listener — architecture.md §5. The sentinels are
  * empty, aria-hidden, and exist only in the tall desktop track.
  */
+const TRACK_VH: Record<string, number> = { build: 34, range: 42 };
+
 export function SequenceSection({
   id,
   side,
@@ -48,7 +54,27 @@ export function SequenceSection({
   /** Set by hover/focus; suppresses scroll-driven opening until the pointer leaves. */
   const [pinned, setPinned] = useState<number | null>(null);
   const sentinels = useRef<Array<HTMLDivElement | null>>([]);
+  const lastPointer = useRef<{ x: number; y: number } | null>(null);
+
+  /**
+   * Pin a row to the pointer — but only for a real movement. Chromium can
+   * dispatch a synthetic mousemove after a scroll to refresh hover state; it
+   * carries the same coordinates as the last real one, and without this check
+   * it would re-pin the row under a resting cursor on every scroll.
+   * Keyboard focus (no point) always opens the row.
+   */
+  function pin(index: number, point?: { x: number; y: number }) {
+    if (point) {
+      const last = lastPointer.current;
+      lastPointer.current = point;
+      if (last && last.x === point.x && last.y === point.y) return;
+    }
+    setPinned(index);
+  }
   const titleId = `${id}-title`;
+  // Scroll distance each row holds the screen for — the prototype's per-section
+  // `--sh`. Shorter lists move faster so the section does not outstay itself.
+  const trackVh = TRACK_VH[id] ?? 44;
 
   useEffect(() => {
     // Desktop only: below lg the list is open and there is nothing to drive.
@@ -62,7 +88,13 @@ export function SequenceSection({
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
           const index = Number((entry.target as HTMLElement).dataset.index);
-          if (!Number.isNaN(index)) setOpenIndex(index);
+          if (Number.isNaN(index)) continue;
+          setOpenIndex(index);
+          // Scroll takes control back from hover. The list is sticky, so it
+          // does not move under a resting pointer — without this, whichever
+          // row the cursor happened to rest on stayed pinned for the entire
+          // section and scrolling could never advance it.
+          setPinned(null);
         }
       },
       // A thin trigger band across the middle of the viewport.
@@ -96,7 +128,7 @@ export function SequenceSection({
         className="lg:relative"
         style={{ ['--items' as string]: items.length }}
       >
-        <div className="hidden lg:block lg:h-[calc((var(--items)+1)*44vh)]">
+        <div className="hidden lg:block">
           {items.map((item, index) => (
             <div
               key={`sentinel-${item.title}`}
@@ -105,13 +137,19 @@ export function SequenceSection({
               }}
               data-index={index}
               aria-hidden="true"
-              className="h-[44vh]"
+              style={{ height: `${trackVh}vh` }}
             />
           ))}
         </div>
 
         <div className="lg:absolute lg:inset-0 lg:h-full">
-          <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-center lg:py-[clamp(96px,14vh,132px)]">
+          {/*
+            Anchored, not centred — the prototype's `.seq-in { position: sticky;
+            top: 116px }`. Centring an h-screen block pushed the bottom rows
+            below the fold whenever an open row made the block taller than the
+            viewport. 116px clears the 76px header with room to breathe.
+          */}
+          <div className="lg:sticky lg:top-[116px]">
             <HeadlineSplit headline={headline} id={titleId} />
 
             <div
@@ -126,8 +164,10 @@ export function SequenceSection({
                   hue={item.hue}
                   title={item.title}
                   body={item.body}
+                  systems={item.systems}
+                  count={item.count}
                   open={active === index}
-                  onOpen={() => setPinned(index)}
+                  onOpen={(point) => pin(index, point)}
                 />
               ))}
             </div>
