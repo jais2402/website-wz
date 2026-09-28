@@ -157,7 +157,7 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
                   {active.tags.map((tag) => (
                     <li
                       key={tag}
-                      className="rounded-full border border-line-2 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.06em] text-ink-2"
+                      className="rounded-full border border-line-2 px-2.5 py-1 font-mono text-[10px] tracking-[0.06em] text-ink-2"
                     >
                       {tag}
                     </li>

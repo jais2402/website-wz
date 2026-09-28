@@ -23,7 +23,13 @@ export default function HomePage() {
     <>
     <JsonLd schema={schema} />
     <SplitScrollTemplate
-      header={<SiteHeader nav={nav.primary} cta={primaryCta} wordmark={content.meta.name} />}
+      header={<SiteHeader
+          nav={nav.primary}
+          cta={primaryCta}
+          wordmark={footer.wordmark}
+          name={content.meta.name}
+          since={content.meta.since}
+        />}
       scene={<SceneCanvas />}
       footer={
         <SiteFooter

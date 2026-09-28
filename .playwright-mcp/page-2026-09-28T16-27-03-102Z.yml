@@ -1,0 +1,516 @@
+- generic [active] [ref=f6e1]:
+  - link "Skip to content" [ref=f6e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=f6e3]:
+    - generic [ref=f6e4]:
+      - link "Wezigns" [ref=f6e5] [cursor=pointer]:
+        - /url: /
+      - navigation "Primary" [ref=f6e6]:
+        - list [ref=f6e7]:
+          - listitem [ref=f6e8]:
+            - link "What we build" [ref=f6e9] [cursor=pointer]:
+              - /url: /#build
+          - listitem [ref=f6e10]:
+            - link "The range" [ref=f6e11] [cursor=pointer]:
+              - /url: /#range
+          - listitem [ref=f6e12]:
+            - link "How we build" [ref=f6e13] [cursor=pointer]:
+              - /url: /#how
+          - listitem [ref=f6e14]:
+            - link "Work" [ref=f6e15] [cursor=pointer]:
+              - /url: /work/
+          - listitem [ref=f6e16]:
+            - link "Questions" [ref=f6e17] [cursor=pointer]:
+              - /url: /#faq
+      - generic [ref=f6e18]:
+        - button "Switch to dark theme" [ref=f6e19]
+        - button "Pause motion" [ref=f6e22]:
+          - generic [aria-hidden] [ref=f6e23]: ❙❙
+        - link "Tell us what is not working" [ref=f6e25] [cursor=pointer]:
+          - /url: /#contact
+  - main [ref=f6e27]:
+    - region [ref=f6e28]:
+      - generic [ref=f6e29]:
+        - heading "Custom software, built around how your business already works." [level=1] [ref=f6e30]
+        - paragraph [ref=f6e31]: Wezigns builds the systems that replace the spreadsheets, message threads and manual steps a growing business has outgrown.
+        - generic [ref=f6e32]:
+          - link "Tell us what is not working" [ref=f6e33] [cursor=pointer]:
+            - /url: /#contact
+          - link "Explore our work" [ref=f6e34] [cursor=pointer]:
+            - /url: /work/
+        - paragraph [ref=f6e35]: Simplify the process. Scale from day one. Build with security in mind.
+        - generic [ref=f6e36]:
+          - generic [ref=f6e37]:
+            - term [ref=f6e38]:
+              - paragraph [ref=f6e39]: Building since
+            - definition [ref=f6e40]: "2012"
+          - generic [ref=f6e41]:
+            - term [ref=f6e42]:
+              - paragraph [ref=f6e43]: Running at peak
+            - definition [ref=f6e44]: 40,000 req/min
+          - generic [ref=f6e45]:
+            - term [ref=f6e46]:
+              - paragraph [ref=f6e47]: Clients in
+            - definition [ref=f6e48]: India · Singapore · UAE
+        - generic [ref=f6e49]:
+          - paragraph [ref=f6e50]: We build with
+          - generic [ref=f6e51]: Razorpay
+          - generic [ref=f6e52]: Google Cloud
+          - generic [ref=f6e53]: Stripe
+          - generic [ref=f6e54]: AWS
+    - region [ref=f6e55]:
+      - generic [ref=f6e68]:
+        - heading "What we build, and when each one is the answer." [level=2] [ref=f6e69]
+        - generic [ref=f6e70]:
+          - generic [ref=f6e71]:
+            - generic [ref=f6e72]:
+              - paragraph [ref=f6e74]: "01"
+              - heading "Custom business software" [level=3] [ref=f6e75]
+            - paragraph [ref=f6e78]: Software built around a business process that off-the-shelf tools cannot handle well.
+          - generic [ref=f6e79]:
+            - generic [ref=f6e80]:
+              - paragraph [ref=f6e82]: "02"
+              - heading "Business process automation" [level=3] [ref=f6e83]
+            - paragraph [ref=f6e84]: Repetitive steps move into the system. The system handles the routine and people handle the exceptions.
+          - generic [ref=f6e85]:
+            - generic [ref=f6e86]:
+              - paragraph [ref=f6e88]: "03"
+              - heading "System integration" [level=3] [ref=f6e89]
+            - paragraph [ref=f6e90]: We connect the software you already use, so records move between tools without being typed in twice.
+          - generic [ref=f6e91]:
+            - generic [ref=f6e92]:
+              - paragraph [ref=f6e94]: "04"
+              - heading "Data and reporting systems" [level=3] [ref=f6e95]
+            - paragraph [ref=f6e96]: Your data already exists. We turn it into reports and dashboards people can use without building them by hand.
+          - generic [ref=f6e97]:
+            - generic [ref=f6e98]:
+              - paragraph [ref=f6e100]: "05"
+              - heading "Customer and partner platforms" [level=3] [ref=f6e101]
+            - paragraph [ref=f6e102]: Portals and apps for customers, partners, operators and members.
+          - generic [ref=f6e103]:
+            - generic [ref=f6e104]:
+              - paragraph [ref=f6e106]: "06"
+              - heading "Cloud hosting, support and maintenance" [level=3] [ref=f6e107]
+            - paragraph [ref=f6e108]: We host, monitor and maintain the systems we build, and take over systems built by others.
+          - generic [ref=f6e109]:
+            - generic [ref=f6e110]:
+              - paragraph [ref=f6e112]: "07"
+              - heading "AI and Gen-AI integrations" [level=3] [ref=f6e113]
+            - paragraph [ref=f6e114]: AI added to the steps in a process where it saves real work, with a person checking the exceptions.
+          - generic [ref=f6e115]:
+            - generic [ref=f6e116]:
+              - paragraph [ref=f6e118]: "08"
+              - heading "Websites" [level=3] [ref=f6e119]
+            - paragraph [ref=f6e120]: Websites designed and built one at a time. We have delivered more than 90.
+        - link "See all capabilities" [ref=f6e122] [cursor=pointer]:
+          - /url: /capabilities/
+    - region [ref=f6e123]:
+      - generic [ref=f6e124]:
+        - heading "AI inside the system, not beside it." [level=2] [ref=f6e125]
+        - paragraph [ref=f6e126]: We build the intelligence into the product itself. It runs on your own data, inside the screens your team already uses, and a person stays in control of the decisions that matter.
+        - link "Show us your process" [ref=f6e128] [cursor=pointer]:
+          - /url: /#contact
+    - region [ref=f6e129]:
+      - generic [ref=f6e130]:
+        - heading [level=2] [ref=f6e131]:
+          - text: Our systems and products are built for the moment when the business
+          - emphasis [ref=f6e132]: outgrows the workaround.
+        - link "Read what changed in each one" [ref=f6e134] [cursor=pointer]:
+          - /url: /work/
+    - region [ref=f6e135]:
+      - generic [ref=f6e136]:
+        - heading "Every system we build follows three rules." [level=2] [ref=f6e137]
+        - generic [ref=f6e138]:
+          - generic [ref=f6e139]:
+            - heading "Simplify" [level=3] [ref=f6e140]
+            - paragraph [ref=f6e141]: Make complicated work easier to understand and easier to finish.
+            - paragraph [ref=f6e142]: Fewer steps for the people who use it every day.
+          - generic [ref=f6e143]:
+            - heading "Scale" [level=3] [ref=f6e144]
+            - paragraph [ref=f6e145]: Build the first version with the next version in mind.
+            - paragraph [ref=f6e146]: Start focused. Build the foundation properly. Grow from there.
+          - generic [ref=f6e147]:
+            - heading "Secure" [level=3] [ref=f6e148]
+            - paragraph [ref=f6e149]: Design security into the product from the first version.
+            - paragraph [ref=f6e150]: Then keep reviewing and maintaining it after launch.
+    - region [ref=f6e151]:
+      - generic [ref=f6e161]:
+        - heading "The systems a business runs on. One way of building them." [level=2] [ref=f6e162]
+        - generic [ref=f6e163]:
+          - generic [ref=f6e164]:
+            - generic [ref=f6e165]:
+              - heading "People & workforce" [level=3] [ref=f6e167]
+              - generic [ref=f6e168]: "6"
+            - list [ref=f6e171]:
+              - listitem [ref=f6e172]: HR and employee records
+              - listitem [ref=f6e173]: Payroll and filings
+              - listitem [ref=f6e174]: Attendance and leave
+              - listitem [ref=f6e175]: Appraisals and goals
+              - listitem [ref=f6e176]: Training and certification
+              - listitem [ref=f6e177]: Hiring and onboarding
+          - generic [ref=f6e178]:
+            - generic [ref=f6e179]:
+              - heading "Revenue & customers" [level=3] [ref=f6e181]
+              - generic [ref=f6e182]: "6"
+            - list [ref=f6e183]:
+              - listitem [ref=f6e184]: CRM and pipelines
+              - listitem [ref=f6e185]: Quotations and pricing
+              - listitem [ref=f6e186]: Billing and subscriptions
+              - listitem [ref=f6e187]: Support desk and SLAs
+              - listitem [ref=f6e188]: Renewals and retention
+              - listitem [ref=f6e189]: Partner portals
+          - generic [ref=f6e190]:
+            - generic [ref=f6e191]:
+              - heading "Operations & supply chain" [level=3] [ref=f6e193]
+              - generic [ref=f6e194]: "6"
+            - list [ref=f6e195]:
+              - listitem [ref=f6e196]: Order management
+              - listitem [ref=f6e197]: Inventory and stock
+              - listitem [ref=f6e198]: Warehouse and picking
+              - listitem [ref=f6e199]: Procurement and vendors
+              - listitem [ref=f6e200]: Production and work orders
+              - listitem [ref=f6e201]: Assets and maintenance
+          - generic [ref=f6e202]:
+            - generic [ref=f6e203]:
+              - heading "Finance & governance" [level=3] [ref=f6e205]
+              - generic [ref=f6e206]: "6"
+            - list [ref=f6e207]:
+              - listitem [ref=f6e208]: Accounts and ledgers
+              - listitem [ref=f6e209]: Expenses and claims
+              - listitem [ref=f6e210]: Dashboards and reporting
+              - listitem [ref=f6e211]: Audit and compliance
+              - listitem [ref=f6e212]: Projects and budgets
+              - listitem [ref=f6e213]: Documents and approvals
+          - generic [ref=f6e214]:
+            - generic [ref=f6e215]:
+              - heading "Industry systems" [level=3] [ref=f6e217]
+              - generic [ref=f6e218]: "6"
+            - list [ref=f6e219]:
+              - listitem [ref=f6e220]: Hospitals and clinics
+              - listitem [ref=f6e221]: Schools and colleges
+              - listitem [ref=f6e222]: Property and hotels
+              - listitem [ref=f6e223]: Lending and finance
+              - listitem [ref=f6e224]: Restaurant and retail POS
+              - listitem [ref=f6e225]: Logistics and fleet
+        - link "See all thirty systems" [ref=f6e227] [cursor=pointer]:
+          - /url: /capabilities/#range
+    - region [ref=f6e228]:
+      - generic [ref=f6e229]:
+        - heading "Understand. Shape. Build. Run." [level=2] [ref=f6e230]
+        - paragraph [ref=f6e231]: We don't start with technology. We start with the business.
+        - generic [ref=f6e232]:
+          - generic [ref=f6e233]:
+            - paragraph [ref=f6e236]: "01"
+            - heading "Understand" [level=3] [ref=f6e237]
+            - paragraph [ref=f6e238]: We get inside the process. The people, workflows, systems, dependencies, exceptions, constraints and the outcome the business actually needs.
+            - paragraph [ref=f6e239]: A clear picture of the problem.
+          - generic [ref=f6e240]:
+            - paragraph [ref=f6e243]: "02"
+            - heading "Shape" [level=3] [ref=f6e244]
+            - paragraph [ref=f6e245]: We turn the problem into a product. What matters now, what can wait, how it should work, and what the architecture has to support.
+            - paragraph [ref=f6e246]: Scope, priorities, direction, timeline and price.
+          - generic [ref=f6e247]:
+            - paragraph [ref=f6e250]: "03"
+            - heading "Build" [level=3] [ref=f6e251]
+            - paragraph [ref=f6e252]: We design and develop in working pieces. The people who understand the project stay close to the build.
+            - paragraph [ref=f6e253]: A working product you can test and review.
+          - generic [ref=f6e254]:
+            - paragraph [ref=f6e257]: "04"
+            - heading "Run" [level=3] [ref=f6e258]
+            - paragraph [ref=f6e259]: After launch we host, monitor, maintain, support and keep improving what we built.
+            - paragraph [ref=f6e260]: A product that keeps serving the business.
+    - region [ref=f6e261]:
+      - generic [ref=f6e262]:
+        - paragraph [ref=f6e263]: How we price
+        - heading "Priced on the system, once we understand it." [level=2] [ref=f6e264]
+        - paragraph [ref=f6e265]: You see scope, price and timeline together, in writing, before anything is built. The number comes out of the Shape stage, once we understand your process — so it is priced on the system you actually need rather than on a rate card.
+        - generic [ref=f6e266]:
+          - generic [ref=f6e267]:
+            - heading "Understand the system first" [level=3] [ref=f6e270]
+            - paragraph [ref=f6e271]: We map how the work happens today and what the first version has to do.
+          - generic [ref=f6e272]:
+            - heading "Price the value and the build" [level=3] [ref=f6e275]
+            - paragraph [ref=f6e276]: The price reflects the outcome the system delivers and the work it takes to build it properly.
+          - generic [ref=f6e277]:
+            - heading "Agree it before we build" [level=3] [ref=f6e280]
+            - paragraph [ref=f6e281]: Scope, price and timeline arrive together, in writing, before development starts.
+        - paragraph [ref=f6e282]: No build starts before that number is agreed.
+    - region [ref=f6e283]:
+      - generic [ref=f6e284]:
+        - heading "What we have built since 2012." [level=2] [ref=f6e285]
+        - generic [ref=f6e286]:
+          - generic [ref=f6e287]:
+            - paragraph [ref=f6e288]: 20+
+            - paragraph [ref=f6e289]: Products, portals and platforms in daily use — the oldest of them running since 2012.
+          - generic [ref=f6e290]:
+            - paragraph [ref=f6e291]: 90+
+            - paragraph [ref=f6e292]: Websites, designed and built one at a time.
+        - generic [ref=f6e293]:
+          - generic [ref=f6e294]:
+            - term [ref=f6e295]:
+              - paragraph [ref=f6e296]: Building since
+            - definition [ref=f6e297]: "2012"
+          - generic [ref=f6e298]:
+            - term [ref=f6e299]:
+              - paragraph [ref=f6e300]: Countries
+            - definition [ref=f6e301]: India · Singapore · UAE
+          - generic [ref=f6e302]:
+            - term [ref=f6e303]:
+              - paragraph [ref=f6e304]: How work arrives
+            - definition [ref=f6e305]: Referral-led
+          - generic [ref=f6e306]:
+            - term [ref=f6e307]:
+              - paragraph [ref=f6e308]: Still running
+            - definition [ref=f6e309]: For the clients who commissioned them
+        - link "Tell us what is not working" [ref=f6e311] [cursor=pointer]:
+          - /url: /#contact
+    - region [ref=f6e312]:
+      - generic [ref=f6e321]:
+        - heading "Our recent products and systems." [level=2] [ref=f6e322]
+        - tablist "Case studies" [ref=f6e324]:
+          - tab "India · Safety training" [selected] [ref=f6e325]
+          - tab "Singapore · Tourism" [ref=f6e327]
+          - tab "Dubai · Engineering event" [ref=f6e329]
+          - tab "Retail · Marketplace" [ref=f6e331]
+        - tabpanel "India · Safety training" [ref=f6e333]:
+          - paragraph [ref=f6e336]: India · Safety training
+          - heading "From spreadsheets to one operating system" [level=3] [ref=f6e337]
+          - paragraph [ref=f6e338]: A nationwide safety training operation ran on messaging apps and spreadsheets. We built the system that now runs it, from session registration and trainer scheduling to compliance reporting.
+          - paragraph [ref=f6e339]: Administrative work fell by 80%. The system handles more than 100,000 certifications a year, with proctored audits built in.
+          - generic [ref=f6e340]:
+            - generic [ref=f6e341]:
+              - definition [ref=f6e342]: −80%
+              - term [ref=f6e343]: Administrative work
+            - generic [ref=f6e344]:
+              - definition [ref=f6e345]: 100,000+
+              - term [ref=f6e346]: Certifications a year
+          - list [ref=f6e347]:
+            - listitem [ref=f6e348]: Registration
+            - listitem [ref=f6e349]: Scheduling
+            - listitem [ref=f6e350]: Compliance
+        - generic [ref=f6e351]:
+          - link "Discuss a similar system" [ref=f6e352] [cursor=pointer]:
+            - /url: /#contact
+          - link "Open all four case studies" [ref=f6e353] [cursor=pointer]:
+            - /url: /work/
+    - region [ref=f6e354]:
+      - generic [ref=f6e364]:
+        - heading "Your business already has software. We make it work together." [level=2] [ref=f6e365]
+        - generic [ref=f6e366]:
+          - generic [ref=f6e367]:
+            - heading "Finance and accounting" [level=3] [ref=f6e370]
+            - paragraph [ref=f6e373]: Accounting and ledger software, payroll, tax portals, invoicing, and payment gateways such as Stripe and Razorpay.
+          - generic [ref=f6e374]:
+            - heading "Sales and customers" [level=3] [ref=f6e377]
+            - paragraph [ref=f6e378]: CRMs, support desks, marketing tools and ticketing, so a customer record is the same everywhere.
+          - generic [ref=f6e379]:
+            - heading "Operations" [level=3] [ref=f6e382]
+            - paragraph [ref=f6e383]: Inventory, warehouse, order fulfilment, shipment tracking and supply-chain systems.
+          - generic [ref=f6e384]:
+            - heading "External services" [level=3] [ref=f6e387]
+            - paragraph [ref=f6e388]: Government portals, identity verification services and maps.
+          - generic [ref=f6e389]:
+            - heading "Legacy" [level=3] [ref=f6e392]
+            - paragraph [ref=f6e393]: Older databases and desktop tools your team still depends on and cannot switch off.
+    - region [ref=f6e394]:
+      - generic [ref=f6e395]:
+        - heading "Built on infrastructure you already trust." [level=2] [ref=f6e396]
+        - paragraph [ref=f6e397]: We build on AWS and Google Cloud, integrate payments through Stripe and Razorpay, and pick the rest of the stack per problem — established frameworks with long-term support and a good security record.
+        - list [ref=f6e398]:
+          - listitem [ref=f6e399]: Web applications
+          - listitem [ref=f6e400]: Cloud infrastructure
+          - listitem [ref=f6e401]: APIs
+          - listitem [ref=f6e402]: Databases
+          - listitem [ref=f6e403]: Integrations
+          - listitem [ref=f6e404]: Reporting
+          - listitem [ref=f6e405]: Role-based access
+          - listitem [ref=f6e406]: Automation workflows
+          - listitem [ref=f6e407]: Monitoring
+        - generic [ref=f6e408]:
+          - generic [ref=f6e409]:
+            - heading "Technology-agnostic" [level=3] [ref=f6e410]
+            - paragraph [ref=f6e411]: We choose the stack around the problem rather than forcing every project into the same one.
+          - generic [ref=f6e412]:
+            - heading "Established and maintained" [level=3] [ref=f6e413]
+            - paragraph [ref=f6e414]: Frameworks with long-term support and a track record on security.
+          - generic [ref=f6e415]:
+            - heading "Built to be handed over" [level=3] [ref=f6e416]
+            - paragraph [ref=f6e417]: Conventional, documented and readable, so the next team can pick it up without us.
+          - generic [ref=f6e418]:
+            - heading "Room to grow" [level=3] [ref=f6e419]
+            - paragraph [ref=f6e420]: Built so the next stage of the business does not need a rebuild.
+        - generic [ref=f6e421]:
+          - heading "Security and continuity" [level=3] [ref=f6e422]
+          - generic [ref=f6e423]:
+            - generic [ref=f6e424]:
+              - heading "Access designed by role" [level=3] [ref=f6e426]
+              - paragraph [ref=f6e427]: Who can see and change what is planned into the system from the start.
+            - generic [ref=f6e428]:
+              - heading "Backups and recovery" [level=3] [ref=f6e430]
+              - paragraph [ref=f6e431]: Managed backups and a way back when something goes wrong.
+            - generic [ref=f6e432]:
+              - heading "Monitoring and patching" [level=3] [ref=f6e434]
+              - paragraph [ref=f6e435]: Performance monitoring and security patching as part of running the system.
+            - generic [ref=f6e436]:
+              - heading "Maintained and reviewed" [level=3] [ref=f6e438]
+              - paragraph [ref=f6e439]: Security is reviewed and improved for as long as we run the system.
+          - link "Send us your questions and we will answer them in writing" [ref=f6e441] [cursor=pointer]:
+            - /url: /#contact
+        - link "Talk to us about your stack" [ref=f6e443] [cursor=pointer]:
+          - /url: /#contact
+    - region [ref=f6e444]:
+      - generic [ref=f6e445]:
+        - heading "Some answers before reaching us." [level=2] [ref=f6e446]
+        - generic [ref=f6e447]:
+          - group [ref=f6e448]:
+            - generic "What does Wezigns do?" [ref=f6e449] [cursor=pointer]:
+              - text: What does Wezigns do?
+              - generic [aria-hidden] [ref=f6e450]: +
+          - group [ref=f6e451]:
+            - generic "Does Wezigns build internal business systems?" [ref=f6e452] [cursor=pointer]:
+              - text: Does Wezigns build internal business systems?
+              - generic [aria-hidden] [ref=f6e453]: +
+          - group [ref=f6e454]:
+            - generic "Does Wezigns provide business process automation?" [ref=f6e455] [cursor=pointer]:
+              - text: Does Wezigns provide business process automation?
+              - generic [aria-hidden] [ref=f6e456]: +
+          - group [ref=f6e457]:
+            - generic "Can Wezigns integrate CRM, ERP, accounting or payment gateways?" [ref=f6e458] [cursor=pointer]:
+              - text: Can Wezigns integrate CRM, ERP, accounting or payment gateways?
+              - generic [aria-hidden] [ref=f6e459]: +
+          - group [ref=f6e460]:
+            - generic "Does Wezigns build scalable software?" [ref=f6e461] [cursor=pointer]:
+              - text: Does Wezigns build scalable software?
+              - generic [aria-hidden] [ref=f6e462]: +
+          - group [ref=f6e463]:
+            - generic "How does Wezigns approach software security?" [ref=f6e464] [cursor=pointer]:
+              - text: How does Wezigns approach software security?
+              - generic [aria-hidden] [ref=f6e465]: +
+          - group [ref=f6e466]:
+            - generic "Does Wezigns provide cloud hosting?" [ref=f6e467] [cursor=pointer]:
+              - text: Does Wezigns provide cloud hosting?
+              - generic [aria-hidden] [ref=f6e468]: +
+          - group [ref=f6e469]:
+            - generic "Can Wezigns take over software built by another company?" [ref=f6e470] [cursor=pointer]:
+              - text: Can Wezigns take over software built by another company?
+              - generic [aria-hidden] [ref=f6e471]: +
+          - group [ref=f6e472]:
+            - generic "Does Wezigns work with small businesses?" [ref=f6e473] [cursor=pointer]:
+              - text: Does Wezigns work with small businesses?
+              - generic [aria-hidden] [ref=f6e474]: +
+          - group [ref=f6e475]:
+            - generic "How much does custom software development cost?" [ref=f6e476] [cursor=pointer]:
+              - text: How much does custom software development cost?
+              - generic [aria-hidden] [ref=f6e477]: +
+          - group [ref=f6e478]:
+            - generic "How long does it take?" [ref=f6e479] [cursor=pointer]:
+              - text: How long does it take?
+              - generic [aria-hidden] [ref=f6e480]: +
+          - group [ref=f6e481]:
+            - generic "Does Wezigns build websites?" [ref=f6e482] [cursor=pointer]:
+              - text: Does Wezigns build websites?
+              - generic [aria-hidden] [ref=f6e483]: +
+          - group [ref=f6e484]:
+            - generic "Where does Wezigns operate?" [ref=f6e485] [cursor=pointer]:
+              - text: Where does Wezigns operate?
+              - generic [aria-hidden] [ref=f6e486]: +
+    - region [ref=f6e487]:
+      - generic [ref=f6e488]:
+        - heading "Tell us what is not working." [level=2] [ref=f6e489]
+        - generic [ref=f6e490]:
+          - group [ref=f6e491]:
+            - paragraph [ref=f6e493]: What is this about
+            - generic [ref=f6e494]:
+              - button "A new system" [ref=f6e495]
+              - button "Fixing a process" [ref=f6e496]
+              - button "Connecting our tools" [ref=f6e497]
+              - button "A website" [ref=f6e498]
+              - button "Hosting and support" [ref=f6e499]
+              - button "Vendor review" [ref=f6e500]
+          - generic [aria-hidden] [ref=f6e501]:
+            - text: Do not fill this in
+            - textbox [ref=f6e502]
+          - generic [ref=f6e503]:
+            - generic [ref=f6e504]:
+              - generic [ref=f6e505]: Your name(required)
+              - textbox "Your name(required)" [ref=f6e506]:
+                - /placeholder: Sarah Jenkins
+            - generic [ref=f6e507]:
+              - generic [ref=f6e508]: Work email(required)
+              - textbox "Work email(required)" [ref=f6e509]:
+                - /placeholder: sarah@agency.com
+            - generic [ref=f6e510]:
+              - generic [ref=f6e511]: What is happening today?(required)
+              - textbox "What is happening today?(required)" [ref=f6e512]:
+                - /placeholder: Our current scheduling process relies on two manual sheets. As our volume has scaled, entries are getting missed and our team is spending hours correcting bookings…
+          - button "Start a conversation" [ref=f6e514]
+          - paragraph [ref=f6e515]: A senior person from our team replies within one working day. They can talk through your process and what a system for it would involve.
+        - paragraph [ref=f6e516]: No generic pitch deck. No pressure. Price and timeline are agreed before anything is built.
+  - contentinfo [ref=f6e517]:
+    - generic [ref=f6e518]:
+      - generic [ref=f6e519]:
+        - heading "Start a conversation" [level=2] [ref=f6e520]
+        - paragraph [ref=f6e521]: Tell us what is not working. A senior person from our team replies within one working day.
+        - generic [ref=f6e522]:
+          - link "Tell us what is not working" [ref=f6e523] [cursor=pointer]:
+            - /url: /#contact
+          - link "hello@wezigns.com" [ref=f6e524] [cursor=pointer]:
+            - /url: mailto:hello@wezigns.com
+        - list [ref=f6e525]:
+          - listitem [ref=f6e526]:
+            - paragraph [ref=f6e527]: India
+          - listitem [ref=f6e528]:
+            - paragraph [ref=f6e529]: Singapore
+          - listitem [ref=f6e530]:
+            - paragraph [ref=f6e531]: UAE
+      - generic [ref=f6e532]:
+        - navigation "Explore" [ref=f6e533]:
+          - paragraph [ref=f6e534]: Explore
+          - list [ref=f6e535]:
+            - listitem [ref=f6e536]:
+              - link "What we build" [ref=f6e537] [cursor=pointer]:
+                - /url: /capabilities/
+            - listitem [ref=f6e538]:
+              - link "Work" [ref=f6e539] [cursor=pointer]:
+                - /url: /work/
+            - listitem [ref=f6e540]:
+              - link "How we build" [ref=f6e541] [cursor=pointer]:
+                - /url: /#how
+            - listitem [ref=f6e542]:
+              - link "How we price" [ref=f6e543] [cursor=pointer]:
+                - /url: /#pricing
+        - navigation "Capabilities" [ref=f6e544]:
+          - paragraph [ref=f6e545]: Capabilities
+          - list [ref=f6e546]:
+            - listitem [ref=f6e547]:
+              - link "Custom software" [ref=f6e548] [cursor=pointer]:
+                - /url: /capabilities/#custom-business-software
+            - listitem [ref=f6e549]:
+              - link "AI in the product" [ref=f6e550] [cursor=pointer]:
+                - /url: /#ai
+            - listitem [ref=f6e551]:
+              - link "Integration" [ref=f6e552] [cursor=pointer]:
+                - /url: /capabilities/#system-integration
+            - listitem [ref=f6e553]:
+              - link "Websites" [ref=f6e554] [cursor=pointer]:
+                - /url: /capabilities/#websites
+        - navigation "Company" [ref=f6e555]:
+          - paragraph [ref=f6e556]: Company
+          - list [ref=f6e557]:
+            - listitem [ref=f6e558]:
+              - link "Case studies" [ref=f6e559] [cursor=pointer]:
+                - /url: /work/
+            - listitem [ref=f6e560]:
+              - link "Since 2012" [ref=f6e561] [cursor=pointer]:
+                - /url: /#evidence
+            - listitem [ref=f6e562]:
+              - link "How we price" [ref=f6e563] [cursor=pointer]:
+                - /url: /#pricing
+            - listitem [ref=f6e564]:
+              - link "Questions" [ref=f6e565] [cursor=pointer]:
+                - /url: /#faq
+    - paragraph [aria-hidden] [ref=f6e566]: wezigns
+    - generic [ref=f6e567]:
+      - paragraph [ref=f6e568]: Copyright © 2026 Wezigns. All rights reserved.
+      - paragraph [ref=f6e569]: Simplify the process. Scale from day one. Build with security in mind.
+  - alert [ref=f6e570]

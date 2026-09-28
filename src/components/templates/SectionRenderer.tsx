@@ -14,6 +14,14 @@ import { toHue } from '@/lib/hue';
 
 type SectionData = SiteContent['sections'][number];
 
+/**
+ * Sections whose `sequence` pattern renders as a static list — every row open,
+ * no scroll track. The approved prototype builds integration as a plain list
+ * (`.rows`), not a sticky sequence; making it scroll-gated added 1200px of
+ * track and bled into the section below.
+ */
+const STATIC_LISTS = new Set(['integration']);
+
 export interface SectionRendererProps {
   sections: SectionData[];
   cases: CaseStudy[];
@@ -47,6 +55,8 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 headline={s.headline}
                 items={s.items.map((i: { hue?: string }) => ({ ...i, hue: toHue(i.hue) }))}
                 link={s.link}
+                countUnit={s.countUnit}
+                mode={STATIC_LISTS.has(s.id) ? 'static' : 'sequence'}
               />
             );
 
@@ -80,6 +90,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 {...common}
                 headline={s.headline}
                 lead={s.lead}
+                outputLabel={s.outputLabel}
                 items={s.items.map((i: { hue?: string }) => ({ ...i, hue: toHue(i.hue) }))}
               />
             );

@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/cn';
-import { Eyebrow, Swatch } from '@/components/atoms';
+import { Swatch } from '@/components/atoms';
 import type { Hue } from '@/types/content';
 
 export interface DisciplineRowProps {
@@ -14,8 +14,16 @@ export interface DisciplineRowProps {
   systems?: string[] | undefined;
   /** How many systems the row covers, shown at the end of the title line. */
   count?: number | undefined;
+  /** The unit after the count — "systems". From content, never hard-coded. */
+  countUnit?: string | undefined;
   /** Desktop only. Below lg every row is open and this is ignored. */
   open: boolean;
+  /**
+   * For static lists, where every row is open: whether this row is the one
+   * pointed at. Drives the swatch and title emphasis. Omit for sequences, where
+   * `open` does that job.
+   */
+  highlighted?: boolean | undefined;
   /** `point` is present for pointer moves and absent for keyboard focus. */
   onOpen?: (point?: { x: number; y: number }) => void;
 }
@@ -36,8 +44,9 @@ export interface DisciplineRowProps {
  * content exists for search, for assistive tech, and with JS off.
  */
 export function DisciplineRow({
-  n, hue, title, body, systems, count, open, onOpen,
+  hue, title, body, systems, count, countUnit, open, highlighted, onOpen,
 }: DisciplineRowProps) {
+  const emphasised = highlighted ?? open;
   return (
     <div
       data-step=""
@@ -51,20 +60,21 @@ export function DisciplineRow({
       onFocus={() => onOpen?.()}
     >
       <div className="flex items-baseline gap-3">
-        {hue ? <Swatch hue={hue} active={open} className="translate-y-[3px]" /> : null}
-        {n ? <Eyebrow className="tabular-nums">{n}</Eyebrow> : null}
+        {/* No numeric prefix: the prototype's rows carry a swatch and a title
+            only. `n` stays in the content for other uses. */}
+        {hue ? <Swatch hue={hue} active={emphasised} className="translate-y-[3px]" /> : null}
         <h3
           className={cn(
             'text-[17px] font-medium tracking-tight transition-colors duration-300 ease-[var(--ease-brand)]',
             'text-ink lg:text-ink-3',
-            open && 'lg:text-ink',
+            (emphasised || highlighted === false) && 'lg:text-ink',
           )}
         >
           {title}
         </h3>
         {count ? (
           <span className="ml-auto font-mono text-[10px] tabular-nums text-ink-3">
-            {count}
+            {countUnit ? `${count} ${countUnit}` : count}
           </span>
         ) : null}
       </div>

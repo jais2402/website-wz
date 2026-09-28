@@ -74,6 +74,7 @@ test.describe('sticky sequences', () => {
     await page.goto('/');
     const open = page.locator('#range [data-step]').first();
     await expect(open.locator('ul li')).toHaveCount(6);
-    await expect(open.getByText('6', { exact: true })).toBeVisible();
+    // "6 systems", with the unit from content — the prototype's wording.
+    await expect(open.getByText('6 systems', { exact: true })).toBeVisible();
   });
 });

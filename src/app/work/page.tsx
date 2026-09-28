@@ -31,7 +31,13 @@ export default function WorkPage() {
     <>
     <JsonLd schema={caseStudySchema()} />
     <DocumentTemplate
-      header={<SiteHeader nav={nav.primary} cta={primaryCta} wordmark={content.meta.name} />}
+      header={<SiteHeader
+          nav={nav.primary}
+          cta={primaryCta}
+          wordmark={footer.wordmark}
+          name={content.meta.name}
+          since={content.meta.since}
+        />}
       footer={
         <SiteFooter
           cta={footer.cta}

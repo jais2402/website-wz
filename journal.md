@@ -41,6 +41,58 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-28 — Parity pass against the prototype: nine findings, all fixed
+**Type:** delivery
+**Owner:** Design Reviewer (review) · Designer + 3D Engineer (fixes)
+**Context:** The owner asked for every component to work the same as the
+approved prototype. The design reviewer compared both builds section by section
+— with cache-busting and instant scrolling this time, the two traps that
+corrupted the previous review — and returned nine findings. Each was checked
+against the prototype's source before acting on it, then verified in the live
+page by DOM measurement.
+
+1. **Integration was scroll-gated; the prototype's is a static list.** Added a
+   `static` mode to `SequenceSection`: every row open, no scroll track, hover
+   still lights the matching part of the model. Section height 1980px → 826px
+   (prototype 785px), which also cured the bleed into the tech section below.
+2. **No scroll-spy.** The nav now underlines the link whose target section is
+   in view — the prototype's rule, exactly: current section = last one whose top
+   has passed mid-viewport, and a link is current only if that is its target.
+3. **Header transparent at the top**, background from 20px of scroll, as the
+   prototype's `.top.stuck`.
+4. **Wordmark** lowercase `wezigns` with `SINCE 2012`, from content
+   (`footer.wordmark`, `meta.since`). The accessible name stays "Wezigns" — the
+   entity name for search and AI citation.
+5. **Controls** reordered to pause, then theme; both circular. The pause toggle
+   had been restyled last round **but that edit failed silently** — the third
+   unasserted edit in this project to do so. Rewritten as a whole file.
+6. **No numeric prefixes** on the discipline rows; the prototype has none.
+7. **Stages** carry `01 / 04` and a labelled output line, and the step in view
+   gets a 2px rule in its hue instead of a colour chip.
+8. **Range counts** read `6 systems`.
+9. **Case tags** in sentence case.
+**Content additions:** `range.countUnit: "systems"` and
+`how.outputLabel: "Output"`. The prototype hard-codes both; the project rule is
+no visitor-readable string in a component.
+
+**Rule adopted:** a scripted edit is either asserted or the whole file is
+rewritten. Three silent failures — the range systems list, the pause toggle, and
+an earlier toggle pass — all came from string replacements that matched nothing
+and reported success.
+
+**Reviewer's own caveats, still open:** it did not cover the dark theme, reduced
+motion, no-WebGL, the topic chips, a keyboard pass, or a side-by-side mobile
+comparison. The automated suite covers several of these (axe in both themes,
+the reduced-motion and no-WebGL perf tests, mobile layout), but not a visual
+side-by-side. A second pass on those axes is the next review.
+
+**Noted, not changed:** the integration scene shows ten signal-orange pulses at
+once, and the build scene four orange pegs. Both are in the approved prototype
+and both contradict design.md §5.2's one-signal-per-screen rule. Still waiting
+on a decision.
+
+---
+
 ## 2026-09-28 — Removed the proof statistics from the hook screen
 **Type:** decision
 **Owner:** CEO (owner's request) · Content Steward

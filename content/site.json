@@ -306,7 +306,8 @@
       "link": {
         "label": "See all thirty systems",
         "href": "/capabilities#range"
-      }
+      },
+      "countUnit": "systems"
     },
     {
       "id": "how",
@@ -348,7 +349,8 @@
           "body": "After launch we host, monitor, maintain, support and keep improving what we built.",
           "output": "A product that keeps serving the business."
         }
-      ]
+      ],
+      "outputLabel": "Output"
     },
     {
       "id": "pricing",
