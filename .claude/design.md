@@ -160,14 +160,16 @@ molecule may not import an organism; nothing below `templates` may import
 
 One model, fifteen states, blended by scroll. It is a diagram, not decoration.
 
-1. **Brand pastel by default, full colour on attention.** *(Revised
-   2026-09-28 at the owner's request — the prototype rested near-white, with
-   most parts at 10–18% of their hue, and the brand colours did not read.)*
-   Resting parts carry a soft share of their hue: every resting share is lifted
-   halfway toward 62% (`REST_CAP` / `REST_LIFT` in `three/states.ts`). The part
-   you point at — or the item the scroll has opened — takes its hue at 100%, so
-   it still stands clearly apart. Signal is never in the resting rotation; it is
-   placed deliberately (rule 2).
+1. **Bright brand colour by default; the rest dims when you point.** *(Revised
+   twice at the owner's request. On 2026-09-28 the near-white prototype rest,
+   where most parts kept 10–18% of their hue, became soft pastels. On 2026-09-29
+   ("Use the bright colours") the pastels became bright.)* Every hue share a scene
+   asks for is mapped through `min(1, 0.2 + 2.2·s)` (`REST_FLOOR` / `REST_GAIN` in
+   `three/states.ts`), so resting parts show 86–100% of their brand hue. When the
+   reader points at one part, the others drop to around 42–50% and the one pointed
+   at stays at 100%. Contrast on attention now comes from dimming the rest, not
+   from lifting one part out of white. Signal is never in the resting rotation; it
+   is placed deliberately (rule 2).
 2. **One signal piece.** Orange marks the exception, the missing piece, the thing
    being fixed. Never two.
 3. **Labels only where you point.** *(2026-09-28: build no longer carries a callout column — its two-column list is the legend.)* Callouts exist in the four sections that

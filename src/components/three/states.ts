@@ -86,17 +86,19 @@ export const SCENE_TITLE: Record<SceneKey, string> = {
 
 export function buildState(P: Palette) {
   /**
-   * Resting colour. The owner asked for the brand colours to be visible in the
-   * model (2026-09-28), replacing the prototype's near-white rest state where
-   * most parts kept only 10–18% of their hue. Every resting hue share is lifted
-   * halfway toward REST_CAP, so parts read as soft brand pastels; the part the
-   * reader points at still goes to 100%, so "colour on attention" keeps its
-   * contrast. Shares already above the cap are left alone. See design.md §5.1.
+   * Resting colour. The owner asked for BRIGHT brand colours in the model
+   * (2026-09-29: "Use the bright colours"), replacing the soft pastels of
+   * 2026-09-28, which themselves replaced the prototype's near-white rest.
+   *
+   * Every hue share the scenes ask for is mapped onto a bright curve:
+   * s → min(1, 0.2 + 2.2·s). A resting part (share ~0.3–0.6) now shows
+   * 86–100% of its brand hue. The order between shares is kept, so a
+   * part dimmed because the reader points at another one still reads as
+   * quieter (0.1 → 42%), and the part pointed at stays at 100%. See design.md §5.1.
    */
-  const REST_CAP = 0.62;
-  const REST_LIFT = 0.5;
-  const restShare = (share: number) =>
-    share < REST_CAP ? share + (REST_CAP - share) * REST_LIFT : share;
+  const REST_FLOOR = 0.2;
+  const REST_GAIN = 2.2;
+  const restShare = (share: number) => Math.min(1, REST_FLOOR + share * REST_GAIN);
 
   // Signal is NOT in the resting rotation. It is the scarcity token — one per
   // screen, placed on purpose — and lifting the rest colours would otherwise
@@ -179,7 +181,7 @@ export function buildState(P: Palette) {
           const cx = ((i % 4) - 1.5) * 1.55, cz = (Math.floor(i / 4) - 0.5) * 1.62, h = DISC_HEIGHT[i]!;
           const lift = hl === i ? 0.38 : 0;
           const full = hueOf(DISC[i]?.hue ?? 'blueprint');
-          const cc = hl === i ? full : dimmed(full, hl >= 0 ? 0.9 : 0.82);
+          const cc = hl === i ? full : dimmed(full, hl >= 0 ? 0.9 : 0.55);
           put(o, k++, cx, h / 2 + lift, cz, 1.16, h, 1.16, cc);
           label(o, DISC[i]?.short ?? '', cx, h + lift + 0.12, cz, hl === i);
         }
@@ -364,7 +366,7 @@ export function buildState(P: Palette) {
           a = (g5 / 5) * Math.PI * 2 + 0.4;
           const r3 = 2.7, sx5 = Math.sin(a) * r3, sz5 = Math.cos(a) * r3;
           const gcf = hueOf(INT[g5]?.hue ?? 'blueprint');
-          const gc = hl === g5 ? gcf : dimmed(gcf, hl >= 0 ? 0.72 : 0.42);
+          const gc = hl === g5 ? gcf : dimmed(gcf, hl >= 0 ? 0.85 : 0.42);
           const ul = hl === g5 ? 0.25 : 0;
           put(o, k++, sx5, 0.35 + ul, sz5, 0.7, 0.7, 0.7, gc, -a);
           put(o, k++, sx5 + Math.cos(a) * 0.55, 0.19 + ul, sz5 - Math.sin(a) * 0.55, 0.38, 0.38, 0.38, gc, -a);
@@ -396,7 +398,7 @@ export function buildState(P: Palette) {
         const n = Math.max(1, Math.min(9, TECH.length || 9));
         for (i = 0; i < n; i += 1) {
           const ly2 = 0.12 + (n - 1 - i) * 0.46, sl = hl === i ? 0.7 : 0;
-          const lc = hl === i ? hueOf(MIX[i % MIX.length]!) : tint(i, hl >= 0 ? 0.3 : 0.62);
+          const lc = hl === i ? hueOf(MIX[i % MIX.length]!) : tint(i, hl >= 0 ? 0.12 : 0.62);
           put(o, k++, sl, ly2, 0, 2.4, 0.2, 2.4, lc);
           label(o, TECH[i] ?? '', sl + 1.2, ly2, 1.2, hl === i);
         }

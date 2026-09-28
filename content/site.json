@@ -517,7 +517,7 @@
         "lead": "Built on infrastructure",
         "accent": "you already trust."
       },
-      "lead": "We build on AWS and Google Cloud, integrate payments through Stripe and Razorpay, and pick the rest of the stack per problem — established frameworks with long-term support and a good security record.",
+      "lead": "AWS and Google Cloud, Stripe and Razorpay, and established frameworks chosen for the problem, not by habit.",
       "layers": [
         "Web applications",
         "Cloud infrastructure",
@@ -529,51 +529,34 @@
         "Automation workflows",
         "Monitoring"
       ],
-      "link": {
-        "label": "Talk to us about your stack",
-        "href": "/#contact",
-        "topic": "connect"
-      },
       "pillars": [
         {
-          "title": "Technology-agnostic",
-          "body": "We choose the stack around the problem rather than forcing every project into the same one."
-        },
-        {
-          "title": "Established and maintained",
-          "body": "Frameworks with long-term support and a track record on security."
-        },
-        {
-          "title": "Built to be handed over",
-          "body": "Conventional, documented and readable, so the next team can pick it up without us."
+          "title": "Handed over, not locked in",
+          "body": "Conventional, documented code the next team can pick up without us."
         },
         {
           "title": "Room to grow",
-          "body": "Built so the next stage of the business does not need a rebuild."
+          "body": "The next stage of the business does not need a rebuild."
         }
       ],
       "trust": {
         "title": "Security and continuity",
         "items": [
           {
-            "title": "Access designed by role",
-            "body": "Who can see and change what is planned into the system from the start."
+            "title": "Access by role",
+            "body": "Who can see and change what is set from the start."
           },
           {
             "title": "Backups and recovery",
-            "body": "Managed backups and a way back when something goes wrong."
+            "body": "A way back when something goes wrong."
           },
           {
-            "title": "Monitoring and patching",
-            "body": "Performance monitoring and security patching as part of running the system."
-          },
-          {
-            "title": "Maintained and reviewed",
-            "body": "Security is reviewed and improved for as long as we run the system."
+            "title": "Patched and reviewed",
+            "body": "Monitoring, patching and security reviews for as long as we run it."
           }
         ],
         "link": {
-          "label": "Send us your questions and we will answer them in writing",
+          "label": "Send your security questions. We answer in writing.",
           "href": "/#contact",
           "topic": "vendor"
         }
