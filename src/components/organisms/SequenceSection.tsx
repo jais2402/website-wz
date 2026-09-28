@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/atoms';
 import { DisciplineRow, HeadlineSplit } from '@/components/molecules';
 import { Section } from './Section';
+import { setHighlight } from '@/components/three/highlight';
 import type { Headline, Hue, Link as ContentLink, Side } from '@/types/content';
 
 export interface SequenceItem {
@@ -73,6 +74,13 @@ export function SequenceSection({
   }, [items.length]);
 
   const active = pinned ?? openIndex;
+
+  // The scene brings the pointed-at part to full hue and dims the rest.
+  useEffect(() => {
+    if (!scene) return;
+    setHighlight(scene, active);
+    return () => setHighlight(null, -1);
+  }, [scene, active]);
 
   return (
     <Section

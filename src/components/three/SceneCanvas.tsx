@@ -1,75 +1,91 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { getMotion, subscribe } from '@/lib/prefs';
+import { onHighlight } from './highlight';
+import { SCENE_ALIAS } from './scene-data';
+import type { StageHandle } from './stage';
 
 /**
  * Mounts the scene, but only when it has earned its place.
  *
- * Four fallbacks, per architecture.md §4 — in each case this renders nothing
- * and the page is complete without it:
+ * Four fallbacks (architecture.md §4). In each the page is complete without it:
+ *  1. No WebGL — createStage returns null and nothing mounts.
+ *  2. Reduced motion — the stage renders on scroll only, never continuously.
+ *  3. Low power — DPR and shadow map are clamped inside the stage.
+ *  4. Below lg — the model is not the point on a phone; the chunk never loads.
  *
- * 1. **No WebGL** — capability-checked before the chunk is imported.
- * 2. **Reduced motion / paused** — the user's explicit or system choice.
- *    (The scene also honours `paused` internally by snapping instead of easing;
- *    this is the stronger case: never download it at all.)
- * 3. **Low-power** — handled inside Scene via DPR clamping.
- * 4. **Below lg** — the split layout does not exist on a phone, and the model
- *    is not the point there. Also saves the whole chunk on mobile data.
- *
- * The import is dynamic with ssr:false and only fires after first paint, so the
- * three/R3F chunk is never in the critical path.
+ * The stage module is imported dynamically after first paint, so three.js is
+ * never in the critical path.
  */
-const Scene = dynamic(() => import('./Scene'), { ssr: false });
-
-function hasWebGL(): boolean {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext('webgl2') || canvas.getContext('webgl'))
-    );
-  } catch {
-    return false;
-  }
-}
-
 export function SceneCanvas() {
-  const [ready, setReady] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const calloutsRef = useRef<HTMLDivElement>(null);
+  const leadsRef = useRef<SVGSVGElement>(null);
+  const stageRef = useRef<StageHandle | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     const wide = window.matchMedia('(min-width: 1000px)');
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    function evaluate() {
-      const paused = document.documentElement.dataset.motion === 'paused';
-      const ok = wide.matches && !reduced.matches && !paused && hasWebGL();
-      setReady(ok);
-      // The no-3D class lets CSS reflow to a single column (architecture.md §4).
-      document.documentElement.classList.toggle('no3d', !ok);
+    async function start() {
+      if (cancelled || stageRef.current) return;
+      if (!wide.matches) { document.documentElement.classList.add('no3d'); return; }
+      const canvas = canvasRef.current, callouts = calloutsRef.current, leads = leadsRef.current;
+      if (!canvas || !callouts || !leads) return;
+
+      const { createStage } = await import('./stage');
+      if (cancelled) return;
+
+      const stage = createStage(canvas, callouts, leads);
+      if (!stage) { document.documentElement.classList.add('no3d'); return; }
+      stageRef.current = stage;
+      stage.setPaused(getMotion() === 'paused');
+      document.documentElement.classList.remove('no3d');
+      setMounted(true);
     }
 
-    // After first paint, so the chunk never competes with the LCP element.
-    // requestIdleCallback is unavailable on Safari < 17, hence the fallback.
-    const ric: typeof window.requestIdleCallback | undefined =
-      'requestIdleCallback' in window ? window.requestIdleCallback : undefined;
+    // After first paint — the LCP element must not wait on this.
+    const ric = 'requestIdleCallback' in window ? window.requestIdleCallback : undefined;
     const idle: number = ric
-      ? ric(evaluate, { timeout: 1200 })
-      : (setTimeout(evaluate, 400) as unknown as number);
+      ? ric(() => void start(), { timeout: 1500 })
+      : (setTimeout(() => void start(), 500) as unknown as number);
 
-    wide.addEventListener('change', evaluate);
-    reduced.addEventListener('change', evaluate);
-    window.addEventListener('wz:prefs', evaluate);
+    const unsubscribe = subscribe(() => {
+      stageRef.current?.setPaused(getMotion() === 'paused');
+    });
+
+    const unsubscribeHighlight = onHighlight((scene, index) => {
+      stageRef.current?.setHighlight(scene ? (SCENE_ALIAS[scene] ?? null) : null, index);
+    });
+
+    const onWide = () => { if (wide.matches) void start(); };
+    wide.addEventListener('change', onWide);
 
     return () => {
+      cancelled = true;
       if (ric && 'cancelIdleCallback' in window) window.cancelIdleCallback(idle);
       else clearTimeout(idle);
-      wide.removeEventListener('change', evaluate);
-      reduced.removeEventListener('change', evaluate);
-      window.removeEventListener('wz:prefs', evaluate);
+      wide.removeEventListener('change', onWide);
+      unsubscribe();
+      unsubscribeHighlight();
+      stageRef.current?.destroy();
+      stageRef.current = null;
     };
   }, []);
 
-  if (!ready) return null;
-  return <Scene />;
+  return (
+    <>
+      <canvas
+        ref={canvasRef}
+        id="stage"
+        aria-hidden="true"
+        className={mounted ? 'ready' : undefined}
+      />
+      <div ref={calloutsRef} id="callouts" aria-hidden="true">
+        <svg ref={leadsRef} id="leads" aria-hidden="true" />
+      </div>
+    </>
+  );
 }

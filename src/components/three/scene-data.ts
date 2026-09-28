@@ -1,0 +1,120 @@
+import { content } from '@/lib/content';
+import type { Hue } from '@/types/content';
+
+/**
+ * The scene's view of the content.
+ *
+ * Hues, titles and ordering come from content/site.json so the model can never
+ * disagree with the page. The geometric constants below are the approved
+ * prototype's — they are the design, not parameters to tune.
+ */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const S: Record<string, any> = Object.fromEntries(
+  content.sections.map((s) => [(s as any).id, s]),
+);
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+/** Single-letter hue codes used by the range rows in the content file. */
+const HUE_CODE: Record<string, Hue> = {
+  '': 'blueprint',
+  o: 'ochre',
+  p: 'pine',
+  u: 'plum',
+  s: 'signal',
+};
+
+export interface Disc {
+  hue: Hue;
+  /** Short label for the 3D callout — the full title is too long beside a module. */
+  short: string;
+}
+
+/** Module heights for the eight disciplines. From the prototype. */
+export const DISC_HEIGHT = [1.3, 0.9, 1.1, 1.6, 0.8, 1.2, 1.0, 0.7];
+
+/** Callout labels, shortened. The full titles live in the DOM. */
+const DISC_SHORT = [
+  'Custom software',
+  'Automation',
+  'Integration',
+  'Data and reporting',
+  'Platforms',
+  'Hosting and support',
+  'AI and Gen-AI',
+  'Websites',
+];
+
+export const DISC: Disc[] = (S.build?.items ?? []).map(
+  (item: { hue?: Hue }, i: number) => ({
+    hue: item.hue ?? 'blueprint',
+    short: DISC_SHORT[i] ?? '',
+  }),
+);
+
+export const RANGE: Array<{ hue: Hue; title: string }> = (S.range?.items ?? []).map(
+  (item: { hue?: string; title: string }) => ({
+    hue: HUE_CODE[item.hue ?? ''] ?? 'blueprint',
+    title: item.title,
+  }),
+);
+
+export const PROC: Array<{ title: string; output: string }> = (S.how?.items ?? []).map(
+  (item: { title: string; output?: string }) => ({
+    title: item.title,
+    output: item.output ?? '',
+  }),
+);
+
+export const INT: Array<{ hue: Hue; title: string }> = (S.integration?.items ?? []).map(
+  (item: { hue?: Hue; title: string }) => ({
+    hue: item.hue ?? 'blueprint',
+    title: item.title,
+  }),
+);
+
+export const CASES = content.cases.map((c) => ({
+  hue: (c.hue ?? 'blueprint') as Hue,
+  region: c.region,
+  sector: c.sector,
+}));
+
+/**
+ * content/site.json names its scenes for what they depict; the prototype's
+ * state functions are keyed by the section they belong to. This maps one to
+ * the other, so the content file keeps its own vocabulary.
+ */
+export const SCENE_ALIAS: Record<string, SceneKey> = {
+  workarounds: 'hero',
+  disciplines: 'build',
+  intelligence: 'ai',
+  onesystem: 'moment',
+  principles: 'principles',
+  range: 'range',
+  stages: 'how',
+  price: 'price',
+  since2012: 'evidence',
+  cases: 'work',
+  connected: 'integration',
+  architecture: 'tech',
+  questions: 'faq',
+  start: 'contact',
+};
+
+/** Scene order. */
+export const SCENES = [
+  'hero', 'build', 'ai', 'moment', 'principles', 'range', 'how',
+  'price', 'evidence', 'work', 'integration', 'tech', 'faq', 'contact',
+] as const;
+
+export type SceneKey = (typeof SCENES)[number];
+
+/**
+ * Per-scene camera scale multiplier. The prototype tuned these by eye against
+ * the reading column; they are design values.
+ */
+export const BOOST: Record<string, number> = {
+  hero: 0.8, build: 1.06, ai: 0.72, moment: 0.72, principles: 0.82,
+  range: 1.28, how: 0.88, pricing: 0.92, evidence: 0.85, work: 0.86,
+  integration: 0.92, tech: 0.92, faq: 0.9, contact: 0.9,
+};

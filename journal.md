@@ -41,6 +41,78 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-28 — The 3D scene was invented, not ported. Rebuilt from the prototype.
+**Type:** reversal
+**Owner:** 3D Engineer
+**Context:** The owner's verdict on the first scene: "The 3D is worst — have seen
+the artifact." Correct. The `wezigns-web.zip` handed over contained only
+`three/README.md`, so the scene was built by inventing geometry from the scene
+*names* in site.json. That is guessing at a design that already existed and had
+been through a 200-user study.
+**Found:** the approved prototype, artifact `MDeoPeFivbdbmWepXpZKH3` ("Wezigns
+Build"), 1803 lines, plain three.js r128.
+**What the real design is:** an architectural diagram that assembles itself. A
+footprint is drawn with draughtsman's overshoot at the corners; a 3×3×3 lattice
+frame rises; twenty-seven modules drop into it one at a time as you scroll the
+four stages; corner pegs retract; pulses then run through the finished block. A
+cage closes around it for "secure". The contact scene is the same block with one
+corner **missing**, the piece hovering beside it and the empty slot outlined.
+Bevelled rounded boxes via ExtrudeGeometry, soft shadows on a ShadowMaterial
+ground, ACES tone mapping, and callout labels in a column joined to the parts by
+leader lines.
+**Decision:** ported it faithfully — all fifteen states, the camera, the blend,
+the callouts.
+**Consequences:** **Dropped `@react-three/fiber` and `@react-three/drei`.** The
+prototype is imperative three.js; the scene is one object mutated every frame,
+and expressing that declaratively would fight both the design and the
+no-allocation rule. This deviates from architecture.md §1, which lists R3F — the
+deviation is deliberate and is recorded here. It also cut the 3D chunk from
+195.5 KB to 119.1 KB brotli.
+
+---
+
+## 2026-09-28 — Three r128 → r186: two porting bugs that changed how it looks
+**Type:** decision
+**Owner:** 3D Engineer
+**Context:** The first port ran but looked wrong beside the prototype — dark and
+over-saturated where the original is pale and soft. Both causes are version
+migration, not design.
+**1. Double sRGB conversion.** The prototype calls `convertSRGBToLinear()` on
+every colour, correct for r128 where colour management was off. From r152
+`THREE.ColorManagement` is enabled by default and `Color.set()` already converts
+a CSS string into working space. Converting again darkened and over-saturated
+every colour. Removed.
+**2. Light intensities.** r128 had `useLegacyLights` true, where ambient,
+hemisphere and directional irradiance was not divided by PI. That default
+flipped in r155 and the option was later removed, so the prototype's numbers
+render roughly a third as bright. Multiplied by PI, with the reason at the
+constant.
+**Because:** both are invisible in code review — the port was line-for-line
+correct and still wrong. Only rendering the prototype side by side at the same
+scroll position showed it.
+
+---
+
+## 2026-09-28 — Reversed: a live scene does not idle
+**Type:** reversal
+**Owner:** 3D Engineer
+**Context:** An earlier entry today resolved architecture.md §4 ("an idle page
+renders nothing") against design.md §5.5 ("motion is ambient") by making the
+drift fade out and the loop stop after 2.5s.
+**Decision:** Reversed. The approved prototype runs continuously while the scene
+is live and idles only when **paused** — and pausing is what the header control
+and `prefers-reduced-motion` both do.
+**Because:** the earlier resolution was my invention. The design has genuine
+continuous motion — a slow yaw, pulses travelling connectors, work flowing
+through the model in the AI scene. Stopping it is not a refinement of the design,
+it removes part of it. "An idle page renders nothing" is honoured by the pause
+state, which is one click away and automatic under reduced motion.
+**Consequences:** `tests/perf/scene.spec.ts` rewritten: it now asserts zero draw
+calls **when paused** and **under reduced motion**, rather than after a live page
+settles. The old assertion is gone, and the reason is in the file.
+
+---
+
 ## 2026-09-28 — Resolving "ambient motion" against "an idle page renders nothing"
 **Type:** decision
 **Owner:** 3D Engineer

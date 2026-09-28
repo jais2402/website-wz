@@ -27,6 +27,7 @@ export interface DisciplineRowProps {
 export function DisciplineRow({ n, hue, title, body, open, onOpen }: DisciplineRowProps) {
   return (
     <div
+      data-step=""
       className="border-t border-line py-4 lg:cursor-default"
       onMouseEnter={onOpen}
       onFocus={onOpen}

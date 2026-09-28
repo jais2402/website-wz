@@ -32,7 +32,7 @@ export function HeroSection({
       aria-labelledby="hero-title"
       className="relative min-h-[74vh] px-6 pt-[clamp(140px,19vh,210px)] pb-[clamp(36px,5vh,72px)] pl-[max(24px,5.4vw)]"
     >
-      <div className="w-full lg:w-[calc(50vw-max(24px,5.4vw))]">
+      <div data-body="" className="w-full lg:w-[calc(50vw-max(24px,5.4vw))]">
         <HeadlineSplit headline={headline} level="d1" as="h1" id="hero-title" />
         <p className="mt-[26px] max-w-[34ch] text-[17.5px] leading-relaxed text-ink">{sub}</p>
 

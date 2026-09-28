@@ -35,6 +35,7 @@ export function Section({ id, side = 'l', scene, labelledBy, children, className
       )}
     >
       <div
+        data-body=""
         className={cn(
           'w-full',
           side === 'c'

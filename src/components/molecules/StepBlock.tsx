@@ -16,7 +16,7 @@ export interface StepBlockProps {
  */
 export function StepBlock({ n, hue, title, body, note, output }: StepBlockProps) {
   return (
-    <div className="border-t border-line pt-5">
+    <div data-step="" className="border-t border-line pt-5">
       <div className="flex items-center gap-2.5">
         {hue ? <Swatch hue={hue} active /> : null}
         {n ? <Eyebrow>{n}</Eyebrow> : null}
