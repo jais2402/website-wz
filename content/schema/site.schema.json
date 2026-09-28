@@ -1,0 +1,412 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wezigns.com/schema/site.schema.json",
+  "title": "Wezigns site content",
+  "description": "Every word a visitor can read. Nothing here may be a placeholder; optional facts are null.",
+  "type": "object",
+  "required": [
+    "meta",
+    "nav",
+    "hero",
+    "sections",
+    "cases",
+    "footer",
+    "pages"
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "hue": {
+      "enum": [
+        "blueprint",
+        "pine",
+        "ochre",
+        "plum",
+        "rose",
+        "signal"
+      ]
+    },
+    "link": {
+      "type": "object",
+      "required": [
+        "label",
+        "href"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/copy"
+        },
+        "href": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "variant": {
+          "enum": [
+            "primary",
+            "secondary"
+          ]
+        }
+      }
+    },
+    "copy": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Reader-facing text. Must not contain a bracketed placeholder, Lorem, TODO or TBD.",
+      "not": {
+        "pattern": "(\\[[^\\]]*\\]|Lorem|TODO:|TBD)"
+      }
+    },
+    "headline": {
+      "type": "object",
+      "required": [
+        "lead"
+      ],
+      "properties": {
+        "lead": {
+          "$ref": "#/$defs/copy"
+        },
+        "accent": {
+          "$ref": "#/$defs/copy"
+        },
+        "muteFirst": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": [
+        "name",
+        "since",
+        "email",
+        "markets",
+        "siteUrl"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/copy"
+        },
+        "since": {
+          "type": "integer"
+        },
+        "tagline": {
+          "$ref": "#/$defs/copy"
+        },
+        "description": {
+          "$ref": "#/$defs/copy"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "markets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "siteUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "TODO_business_facts": {
+          "type": "object",
+          "description": "Facts only the business can supply. null means the matching component does not render. Never fill with a placeholder.",
+          "properties": {
+            "phone": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "whatsapp": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "priceBand": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "shapeStagePaid": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "offices": {
+              "type": "array"
+            },
+            "namedClients": {
+              "type": "array"
+            },
+            "team": {
+              "type": "array"
+            },
+            "certifications": {
+              "type": "array"
+            }
+          }
+        }
+      }
+    },
+    "nav": {
+      "type": "object",
+      "required": [
+        "primary",
+        "cta"
+      ],
+      "properties": {
+        "primary": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        "cta": {
+          "$ref": "#/$defs/link"
+        }
+      }
+    },
+    "hero": {
+      "type": "object",
+      "required": [
+        "id",
+        "headline",
+        "sub",
+        "actions"
+      ],
+      "properties": {
+        "id": {
+          "const": "hero"
+        },
+        "scene": {
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "l",
+            "r",
+            "c"
+          ]
+        },
+        "headline": {
+          "$ref": "#/$defs/headline"
+        },
+        "sub": {
+          "$ref": "#/$defs/copy"
+        },
+        "caption": {
+          "$ref": "#/$defs/copy"
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/link"
+          }
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "value"
+            ]
+          }
+        },
+        "builtWith": {
+          "type": "object"
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "pattern"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$",
+            "description": "Also the anchor id. Public URL surface: do not rename without a redirect."
+          },
+          "scene": {
+            "type": "string"
+          },
+          "side": {
+            "enum": [
+              "l",
+              "r",
+              "c"
+            ]
+          },
+          "pattern": {
+            "enum": [
+              "sequence",
+              "statement",
+              "statement-proof",
+              "steps",
+              "figures",
+              "cases",
+              "faq",
+              "form",
+              "prose"
+            ]
+          },
+          "headline": {
+            "$ref": "#/$defs/headline"
+          },
+          "lead": {
+            "$ref": "#/$defs/copy"
+          },
+          "eyebrow": {
+            "$ref": "#/$defs/copy"
+          },
+          "link": {
+            "$ref": "#/$defs/link"
+          }
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "slug",
+          "region",
+          "sector",
+          "title",
+          "body",
+          "metrics"
+        ],
+        "properties": {
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "hue": {
+            "$ref": "#/$defs/hue"
+          },
+          "region": {
+            "$ref": "#/$defs/copy"
+          },
+          "sector": {
+            "$ref": "#/$defs/copy"
+          },
+          "title": {
+            "$ref": "#/$defs/copy"
+          },
+          "body": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/copy"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "value",
+                "label"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "testimonials": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "items"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "quote",
+              "name",
+              "role"
+            ],
+            "properties": {
+              "quote": {
+                "$ref": "#/$defs/copy"
+              },
+              "name": {
+                "$ref": "#/$defs/copy"
+              },
+              "role": {
+                "$ref": "#/$defs/copy"
+              },
+              "tag": {
+                "type": "string"
+              },
+              "hue": {
+                "$ref": "#/$defs/hue"
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "footer": {
+      "type": "object",
+      "required": [
+        "cta",
+        "columns",
+        "wordmark"
+      ]
+    },
+    "pages": {
+      "type": "object",
+      "required": [
+        "work",
+        "capabilities"
+      ]
+    }
+  }
+}

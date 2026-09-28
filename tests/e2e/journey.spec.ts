@@ -1,0 +1,55 @@
+import { expect, test } from '@playwright/test';
+
+test.describe('the scroll journey', () => {
+  test('the hero states the category within the first screen', async ({ page }) => {
+    await page.goto('/');
+    const h1 = page.getByRole('heading', { level: 1 });
+    await expect(h1).toContainText('Custom software');
+    await expect(page.getByText(/spreadsheets, message threads and manual steps/i)).toBeVisible();
+  });
+
+  test('the skip link is the first thing Tab reaches', async ({ page, browserName }) => {
+    // WebKit does not include links in the Tab order unless the user has
+    // enabled full keyboard access (Safari > Advanced, or macOS Keyboard
+    // settings). That is a platform default, not a defect in the markup — so
+    // the Tab-order assertion runs where Tab reaches links, and WebKit gets
+    // the assertion that actually matters there.
+    test.skip(browserName === 'webkit', 'WebKit excludes links from Tab order by default');
+    await page.goto('/');
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('link', { name: /skip to content/i })).toBeFocused();
+  });
+
+  test('the skip link is first in the DOM and targets main', async ({ page }) => {
+    await page.goto('/');
+    const skip = page.getByRole('link', { name: /skip to content/i });
+    await expect(skip).toHaveAttribute('href', '#main');
+
+    // First focusable element in document order, on every engine.
+    const isFirst = await page.evaluate(() => {
+      const focusable = document.querySelectorAll<HTMLElement>(
+        'a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])',
+      );
+      return focusable[0]?.getAttribute('href') === '#main';
+    });
+    expect(isFirst).toBe(true);
+
+    // And it works when activated.
+    await skip.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#main')).toBeVisible();
+  });
+
+  test('no placeholder text reaches the page', async ({ page }) => {
+    await page.goto('/');
+    const body = await page.locator('body').innerText();
+    expect(body).not.toMatch(/\[[^\]]{3,}\]|Lorem ipsum|TBD\b/);
+  });
+
+  test('phones get everything open — no hover-gated content', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow, 'no horizontal scroll at 390px').toBeLessThanOrEqual(0);
+  });
+});

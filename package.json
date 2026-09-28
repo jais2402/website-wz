@@ -1,0 +1,62 @@
+{
+  "name": "wezigns-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Wezigns \u2014 custom software built around how your business already works. Static Next.js site with a scroll-driven WebGL scene.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "npx serve out",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier --write .",
+    "content:validate": "node scripts/validate-content.mjs",
+    "content:types": "json2ts content/schema/site.schema.json -o src/types/content.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test tests/a11y",
+    "size": "node scripts/check-size.mjs",
+    "lhci": "lhci autorun",
+    "verify": "pnpm typecheck && pnpm lint && pnpm content:validate && pnpm test && pnpm build && pnpm size",
+    "test:perf": "playwright test tests/perf",
+    "verify:full": "pnpm verify && pnpm test:e2e"
+  },
+  "dependencies": {
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.1",
+    "next": "16.3.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tailwind-merge": "3.3.1",
+    "three": "0.186.1",
+    "zod": "3.24.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.1",
+    "@lhci/cli": "0.14.0",
+    "@playwright/test": "1.49.1",
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.1.0",
+    "@types/node": "22.10.2",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
+    "@types/three": "0.186.0",
+    "eslint": "9.17.0",
+    "eslint-config-next": "16.3.6",
+    "jsdom": "25.0.1",
+    "json-schema-to-typescript": "15.0.3",
+    "prettier": "3.4.2",
+    "prettier-plugin-tailwindcss": "0.6.9",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.7.2",
+    "typescript-eslint": "8.18.2",
+    "vitest": "2.1.8"
+  }
+}

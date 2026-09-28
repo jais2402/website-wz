@@ -1,0 +1,61 @@
+@import './tokens.css';
+
+/* Self-hosted, latin subset, variable — one file per family.
+   architecture.md §7: no Google Fonts request. font-display: swap so text is
+   never invisible while a face loads. Licences in public/fonts/LICENSES.md. */
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/outfit-latin-var.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/jetbrains-mono-latin-var.woff2') format('woff2-variations');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  html {
+    /* Next 16 no longer forces this; the scroll journey needs it.
+       Pair with <html data-scroll-behavior="smooth"> in layout.tsx. */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-blueprint-t);
+    outline-offset: 3px;
+  }
+
+  /* 2.4.11 Focus Not Obscured: clear the sticky header. */
+  :target,
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

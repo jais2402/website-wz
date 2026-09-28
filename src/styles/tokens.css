@@ -1,0 +1,119 @@
+/* Design tokens. Single source: .claude/design.md §1.
+   Tailwind v4 is CSS-first: @theme entries generate utilities AND emit
+   custom properties on :root. Never hard-code a value in a component. */
+
+@import 'tailwindcss';
+
+@theme {
+  /* surfaces and ink */
+  --color-ground: #eceef4;
+  --color-ground-a: rgb(236 238 244 / 0.82);
+  --color-chip: rgb(236 238 244 / 0.95);
+  --color-panel: #f1f2f7;
+  --color-raised: #f8f9fc;
+  --color-ink: #1a1c20;
+  --color-ink-2: #454952;
+  --color-ink-3: #5d6169;
+  --color-line: rgb(26 28 32 / 0.12);
+  --color-line-2: rgb(26 28 32 / 0.26);
+  /* The oversized footer wordmark. It is decorative, but it is still rendered
+     text, so it must clear 3:1 against --color-panel for large text
+     (WCAG 2.2 AA 1.4.3). --color-line-2 measured 1.64:1 light / 2.04:1 dark
+     and failed the axe gate. These are 3.31:1 and 3.06:1. */
+  --color-wordmark: #7f8592;
+
+  /* palette — surface values (3D, swatches) */
+  --color-blueprint: #3350f0;
+  --color-pine: #10a37c;
+  --color-ochre: #f4a40b;
+  --color-plum: #8a55e8;
+  --color-rose: #ec4d86;
+  --color-signal: #ff5a1f;
+
+  /* palette — text values (contrast-safe on ground) */
+  --color-blueprint-t: #2a44d6;
+  --color-pine-t: #0a7556;
+  --color-ochre-t: #8f5a00;
+  --color-plum-t: #6536c9;
+  --color-rose-t: #b8245c;
+  --color-signal-t: #e2470d;
+
+  /* model materials */
+  --color-model: #f7f8fb;
+  --color-model-2: #d9dce7;
+
+  /* type */
+  --font-display: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-d1: clamp(38px, 4.3vw, 72px);
+  --text-d1--line-height: 0.98;
+  --text-d1--letter-spacing: -0.04em;
+  --text-d1--font-weight: 500;
+
+  --text-d2: clamp(28px, 2.7vw, 44px);
+  --text-d2--line-height: 1.06;
+  --text-d2--letter-spacing: -0.032em;
+  --text-d2--font-weight: 500;
+
+  --text-statement: clamp(26px, 2.6vw, 42px);
+  --text-statement--line-height: 1.12;
+  --text-statement--letter-spacing: -0.03em;
+
+  --text-fig: clamp(54px, 5.4vw, 88px);
+  --text-fig--line-height: 0.9;
+  --text-fig--letter-spacing: -0.05em;
+
+  --text-lead: 16.5px;
+  --text-lead--line-height: 1.6;
+  --text-meta: 10px;
+  --text-meta--letter-spacing: 0.14em;
+  --text-callout: 10px;
+  --text-callout--letter-spacing: 0.055em;
+
+  /* motion + layout */
+  --ease-brand: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --breakpoint-lg: 1000px; /* the split-layout and scroll-gating line */
+}
+
+/* Dark mode redefines the same properties, so every utility follows. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-ground: #12141b;
+    --color-ground-a: rgb(18 20 27 / 0.82);
+    --color-chip: rgb(18 20 27 / 0.95);
+    --color-panel: #191c25;
+    --color-raised: #20242e;
+    --color-ink: #ebebe7;
+    --color-ink-2: #b8bbc1;
+    --color-ink-3: #9a9ea6;
+    --color-line: rgb(235 235 231 / 0.11);
+    --color-line-2: rgb(235 235 231 / 0.24);
+    --color-wordmark: #636876;
+    --color-blueprint: #7d90ff;
+    --color-pine: #3fd1a4;
+    --color-ochre: #ffc24d;
+    --color-plum: #b590ff;
+    --color-rose: #ff7aa8;
+    --color-signal: #ff7a45;
+    --color-blueprint-t: #8c9dff;
+    --color-signal-t: #ff9466;
+    --color-model: #a7acba;
+    --color-model-2: #636a7c;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-ground: #12141b;
+  --color-ink: #ebebe7;
+  --color-ink-2: #b8bbc1;
+  --color-ink-3: #9a9ea6;
+  --color-line: rgb(235 235 231 / 0.11);
+  --color-line-2: rgb(235 235 231 / 0.24);
+  --color-wordmark: #636876;
+  --color-model: #a7acba;
+  --color-model-2: #636a7c;
+  color-scheme: dark;
+  /* keep in sync with the media query block above */
+}
