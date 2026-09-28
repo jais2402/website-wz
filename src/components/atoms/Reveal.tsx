@@ -14,7 +14,7 @@ export interface RevealProps {
 }
 
 const EASE = [0.22, 0.61, 0.36, 1] as const; // --ease-brand
-const RISE = 18; // px
+const RISE = 12; // px — a short rise reads as settling, a long one as arriving late
 
 /**
  * Atom (client). Fades content up as it enters the viewport, children in turn.

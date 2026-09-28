@@ -14,7 +14,7 @@ const atomicBoundaries = (level, forbidden) => ({
 });
 
 const config = [
-  { ignores: ['out/**', '.next/**', 'node_modules/**', 'next-env.d.ts'] },
+  { ignores: ['out/**', '.next/**', 'node_modules/**', 'next-env.d.ts', '.claude/**'] },
   ...next,
   atomicBoundaries('atoms', ['molecules', 'organisms', 'templates']),
   atomicBoundaries('molecules', ['organisms', 'templates']),

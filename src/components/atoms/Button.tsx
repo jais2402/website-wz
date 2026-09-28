@@ -34,8 +34,9 @@ export interface ButtonProps {
  *
  * Motion, all transform or colour so it stays off the main thread
  * (design.md §6), and all flattened by the global reduced-motion rule:
- * - colour and border ease over 300ms on the brand curve;
- * - the arrow slides 4px on hover over 350ms — the prototype's `.btn .ar`;
+ * - colour and border ease over 200ms on the brand curve;
+ * - the arrow slides 4px on hover over 200ms (the prototype's `.btn .ar` was
+ *   350ms; shortened on review — hover feedback should feel instant);
  * - a press settles to 98% so the click is felt, then springs back.
  *
  * Primary is blueprint, and it never hovers to signal: the CTA is on every
@@ -58,7 +59,7 @@ export function Button({
     'group inline-flex items-center gap-3 rounded-[2px] border font-medium tracking-tight',
     // `scale`, not `transform`: Tailwind v4's scale utilities set the standalone
     // CSS scale property, so transitioning `transform` left the press snapping.
-    'transition-[background-color,border-color,color,scale] duration-300 ease-[var(--ease-brand)]',
+    'transition-[background-color,border-color,color,scale] duration-200 ease-[var(--ease-brand)]',
     'active:scale-[0.98] active:duration-100',
     size === 'small' ? 'min-h-[38px] px-4 text-[13px]' : 'min-h-12 px-[22px] text-sm',
     variant === 'primary'
@@ -73,7 +74,7 @@ export function Button({
       {showArrow ? (
         <span
           aria-hidden="true"
-          className="transition-transform duration-[350ms] ease-[var(--ease-brand)] group-hover:translate-x-1 group-focus-visible:translate-x-1"
+          className="transition-transform duration-200 ease-[var(--ease-brand)] group-hover:translate-x-1 group-focus-visible:translate-x-1"
         >
           &#8594;
         </span>

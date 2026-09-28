@@ -20,6 +20,10 @@
 }
 
 @layer base {
+  /* Mobile: no grey flash on tap. Focus-visible rings still carry keyboard focus. */
+  html { -webkit-tap-highlight-color: transparent; }
+  /* Body copy avoids one-word last lines (headings already balance). */
+  p { text-wrap: pretty; }
   html {
     /* Next 16 no longer forces this; the scroll journey needs it.
        Pair with <html data-scroll-behavior="smooth"> in layout.tsx. */

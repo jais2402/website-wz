@@ -113,7 +113,7 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
                       'inline-flex min-h-10 items-center text-[13px] text-ink-2',
                       // The underline grows from the left, as in the prototype.
                       'bg-[linear-gradient(var(--color-ink),var(--color-ink))] bg-[length:0_1px] bg-left-bottom bg-no-repeat',
-                      'transition-[color,background-size] duration-[350ms] ease-[var(--ease-brand)]',
+                      'transition-[color,background-size] duration-200 ease-[var(--ease-brand)]',
                       'hover:bg-[length:100%_1px] hover:text-ink',
                       isCurrent && 'bg-[length:100%_1px] text-ink',
                     )}

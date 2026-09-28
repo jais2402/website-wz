@@ -43,7 +43,7 @@ export function Field({
     'aria-invalid': error ? (true as const) : undefined,
     'aria-describedby': error ? errorId : undefined,
     className: cn(
-      'w-full rounded-[2px] border bg-raised px-3.5 py-[13px] text-[15px] leading-normal text-ink',
+      'w-full rounded-[2px] border bg-raised px-3.5 py-[13px] text-base leading-normal lg:text-[15px] text-ink',
       'placeholder:text-ink-3 transition-[border-color,box-shadow] duration-300 ease-[var(--ease-brand)]',
       'focus:border-blueprint-t focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-blueprint)_22%,transparent)] focus:outline-none',
       error ? 'border-signal-t' : 'border-line-2 hover:border-ink-3',
