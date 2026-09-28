@@ -62,6 +62,27 @@ reading the docs directly. **Precedence:** the skill says "the brief wins", and
 here the brief is `.claude/`. Its "go bold" defaults never override design.md
 (one signal per screen, tokens only, WCAG gate) or context.md copy rules.
 
+## Emil Kowalski skills (installed 2026-09-29, owner request)
+
+From `emilkowalski/skill` @ d16ebe6, MIT (LICENSE copied into each). Markdown
+only, no scripts. Installed: `emil-design-eng` (plus `performance-cheatsheet.md`),
+`animate`, `find-animation-opportunities`, `improve-animations`,
+`review-animations`, `animation-vocabulary`, `apple-design`, `mobile-native`.
+**Not installed:** `write-swift`, `animate-expo` and `ask-sonner` (not this stack),
+`pick-ui-library` (adding a dependency needs an architecture.md decision), and
+`prototype`. Any library these skills suggest must fit the budget: Motion is
+`motion/react-mini` only (architecture.md §1).
+
+## master5d/claude-design-skills (installed 2026-09-29, owner request)
+
+@ 5cf7b69. **No licence file.** The repo compiles other authors' skills
+(ibelick/ui-skills and others) for local use only. Installed:
+`fixing-motion-performance`, `baseline-ui`, `fixing-accessibility`,
+`fixing-metadata`. **Not installed:** its `emil-design-eng`, which duplicates the
+upstream copy above, and `interface-design`, which says it is not for marketing
+sites. Where `baseline-ui` or `fixing-metadata` disagree with design.md tokens or
+the seo-specialist's metadata, `.claude/` wins.
+
 ## Deliberately never installed
 
 **`motion-foundations`, `motion-patterns`, `motion-advanced`** — built on the

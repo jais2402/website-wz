@@ -41,6 +41,21 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Session: more skills installed (Emil Kowalski, master5d)
+**Type:** session
+**Done:** 8 skills from `emilkowalski/skill` and 4 from
+`master5d/claude-design-skills` are in `.claude/skills/`, with audit notes, the
+list of what was skipped and why, and licence status in `.claude/skills/README.md`.
+Both repos were cloned and read rather than installed with `npx skills add`, so
+no npm CLI was executed.
+**State:** 21 entries in `.claude/skills/`. No code changed; verify:full was
+last green at commit 1ac7f01.
+**Next:** the owner's call on Legacy's signal-orange hue; optionally run
+`review-animations` on `atoms/Reveal.tsx` and `molecules/CaseTabs.tsx`.
+**Blocked:** unchanged.
+
+---
+
 ## 2026-09-29 — Bright resting colours; tech block cut down; impeccable skill
 **Type:** delivery
 **Owner:** Designer + Content Steward
