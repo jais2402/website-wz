@@ -41,6 +41,59 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Skill review; world map for regions; colours pop
+**Type:** delivery
+**Owner:** Designer + 3D Engineer
+**Context:** The owner asked for a review of the site with the new skills, then
+"make this in world map with the blocks representing the countries" (regions) and
+"make the colours to popout more".
+**Review (baseline-ui, fixing-accessibility, fixing-motion-performance,
+review-animations, mobile-native, fixing-metadata):**
+- *Fixed:* form inputs are 16px below lg, because iOS Safari zooms the page on
+  focusing a smaller input (`molecules/Field.tsx`); tap highlight is off, with
+  focus-visible kept (`globals.css`); body paragraphs use `text-wrap: pretty`;
+  hover feedback is now 200ms, down from 300–350ms (Button colour and arrow, nav
+  underline); the Reveal rise is 12px, down from 18px; ESLint ignores `.claude/**`
+  because vendored skill JS was failing lint.
+- *Open, owner or 3D-engineer call:*
+  (1) The WebGL loop draws every frame unless paused (`stage.ts` loop). That
+  breaks CLAUDE.md rule 4 (`frameloop="demand"`) and costs battery on an idle
+  page. Fix option: stop drawing after ~6s without scroll or pointer input, which
+  freezes the ambient pulses and sway.
+  (2) There is no favicon or app icon, and it needs a brand asset.
+  (3) There is still no OG image.
+  (4) The DisciplineRow accordion animates grid rows over 550ms. That is a layout
+  animation on a small surface; it is acceptable, but it is the slowest
+  interaction on the site.
+  (5) Signal orange appears more than once on integration (Legacy and the pulses).
+**World map:** new `three/world.ts` holds a hand-drawn 5° land mask (80°N–55°S) and
+a lat/lon point for each country. `stage.ts` adds one InstancedMesh of low tiles
+(`o.map` scales them up out of the ground). `states.ts` regions places one block
+per country at its point. The blocks share a height, because different heights on
+a map would read as a quantity and there is none to show. The country list in the
+centred prose now uses `LayerList`, so pointing at a name lifts its block.
+**Colour:** tone mapping changed from ACES to `NeutralToneMapping`, exposure 0.92.
+design.md §5.1 notes it.
+**Consequences:** 3D chunk 120.1 KB (+0.6). Countries not in `COUNTRY_POINTS` get
+no marker, so adding a country to `regions.layers` needs a point in `world.ts`.
+
+---
+
+## 2026-09-29 — Session: skill review, world map, colour
+**Type:** session
+**Done:** `molecules/Field.tsx`, `atoms/Button.tsx`, `atoms/Reveal.tsx`,
+`organisms/SiteHeader.tsx`, `styles/globals.css`, `eslint.config.mjs`, new
+`three/world.ts`, `three/stage.ts`, `three/states.ts`, `three/scene-data.ts`
+(regions boost 0.44), `organisms/LayerList.tsx`, `organisms/ProseSection.tsx`,
+`.claude/design.md`.
+**State:** verify:full is green: 18 unit tests and 56 Playwright tests. Budgets:
+171.9 / 180 KB initial, 120.1 / 320 KB for 3D. Map verified in both themes at 1440.
+**Next:** the owner's decision on the idle render loop (review item 1). Then the
+favicon and OG image once brand assets exist. Check the map at 1000px and 2000px.
+**Blocked:** favicon/OG (brand asset), Legacy hue, loop behaviour — all owner.
+
+---
+
 ## 2026-09-29 — Session: more skills installed (Emil Kowalski, master5d)
 **Type:** session
 **Done:** 8 skills from `emilkowalski/skill` and 4 from

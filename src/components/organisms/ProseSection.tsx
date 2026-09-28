@@ -75,11 +75,12 @@ export function ProseSection({
           // No separator dots: a dot between items cannot know where the line
           // wraps, and one landed at the start of the second line. Spacing does
           // the separating instead.
-          <ul className="mx-auto mt-10 flex max-w-[920px] flex-wrap justify-center gap-x-9 gap-y-3 text-[clamp(18px,1.6vw,24px)] tracking-tight text-ink">
-            {layers.map((name) => (
-              <li key={name}>{name}</li>
-            ))}
-          </ul>
+          <LayerList
+            layers={layers}
+            scene={scene}
+            className="mx-auto mt-10 flex max-w-[920px] flex-wrap justify-center gap-x-9 gap-y-3 text-[clamp(18px,1.6vw,24px)] tracking-tight"
+            restClassName="text-ink-2"
+          />
         ) : null}
 
         {points?.length ? (

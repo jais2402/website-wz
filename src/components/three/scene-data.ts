@@ -130,5 +130,5 @@ export const BOOST: Record<string, number> = {
   range: 1.28, how: 0.88, pricing: 0.3, evidence: 0.85, work: 0.86,
   integration: 0.64, tech: 0.74, faq: 0.9, contact: 0.9,
   // Centred: see the note above — below ~0.5 is where the value takes effect.
-  regions: 0.34,
+  regions: 0.44,
 };

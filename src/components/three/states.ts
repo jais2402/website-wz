@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CASES, DISC, DISC_HEIGHT, INT, PROC, RANGE, REGIONS, SCENES, TECH, type SceneKey } from './scene-data';
 import type { Palette, PaletteColour } from './palette';
+import { COUNTRY_HUE, COUNTRY_POINTS, project } from './world';
 
 /**
  * The fifteen scene states, ported from the approved prototype.
@@ -35,6 +36,8 @@ export interface SceneState {
    * across the model.
    */
   beside: number;
+  /** The world map's height, 0–1 (regions only). */
+  map: number;
   name: string;
   parts: string;
 }
@@ -46,7 +49,7 @@ export function blank(): SceneState {
     pp: [], ps: [],
     lines: { foot: 0, frame: 0, cage: 0, slot: 0 },
     yaw: 0, look: 1, dist: 15, scale: 1,
-    labels: [], lab: 0, beside: 0, name: '', parts: '',
+    labels: [], lab: 0, beside: 0, map: 0, name: '', parts: '',
   };
   for (let i = 0; i < N; i += 1) {
     o.p.push(new THREE.Vector3());
@@ -148,6 +151,7 @@ export function buildState(P: Palette) {
     o.labels.length = 0;
     o.lab = LABELLED[keyName] ? 1 : 0;
     o.beside = 0;
+    o.map = 0;
     o.hub.on = 0; o.hub.p.set(0, 0.5, 0); o.hub.s.set(1, 1, 1);
     o.lines.foot = o.lines.frame = o.lines.cage = o.lines.slot = 0;
     for (let j = 0; j < NP; j += 1) { o.ps[j] = 0; o.pp[j]!.set(0, 0, 0); }
@@ -407,20 +411,23 @@ export function buildState(P: Palette) {
       }
 
       case 'regions': {
-        // One marker per country served, standing on a shared plate: many
-        // places, one practice. Heights vary so the row reads as a skyline
-        // rather than a bar chart — they encode nothing, and nothing here is
-        // a fact the page does not state in text.
-        const count = Math.max(1, REGIONS.length || 11);
-        put(o, k++, 0, 0.06, 0, count * 0.5 + 0.6, 0.12, 2.2, P.model2.clone().lerp(P.model, 0.55));
-        for (i = 0; i < count; i += 1) {
-          const x = (i - (count - 1) / 2) * 0.5;
-          const z = Math.sin(i * 1.7) * 0.5;
-          const h = 0.45 + R[i]![2]! * 1.05;
-          put(o, k++, x, 0.12 + h / 2, z, 0.36, h, 0.36, tint(i, 0.6));
-        }
-        o.look = 0.7; o.dist = 16; o.yaw = 0.3 + Math.sin(t * 0.1) * 0.08;
-        o.parts = `${count} countries`;
+        // The countries served, each a block standing on a world map. The
+        // land is a separate low-relief tile layer (stage.ts, `o.map`). The
+        // markers share one height on purpose: different heights on a map
+        // read as a quantity per country, and there is none to show.
+        // Pointing at a name in the list lifts its block.
+        o.map = 1;
+        REGIONS.forEach((name, n) => {
+          const pt = COUNTRY_POINTS[name];
+          if (!pt) return;
+          const [x, z] = project(pt[0], pt[1]);
+          const up = hl === n ? 0.35 : 0;
+          const hue = COUNTRY_HUE[name] ?? MIX[n % MIX.length]!;
+          const c = hl >= 0 && hl !== n ? hueOf(hue).clone().lerp(P.model, 0.7) : hueOf(hue);
+          put(o, k++, x, 0.02 + (0.62 + up) / 2, z, 0.12, 0.62 + up, 0.12, c);
+        });
+        o.look = 0.2; o.dist = 16; o.yaw = 0.74 + Math.sin(t * 0.1) * 0.04;
+        o.parts = `${REGIONS.length} countries`;
         break;
       }
 

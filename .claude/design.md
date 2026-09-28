@@ -170,6 +170,8 @@ One model, fifteen states, blended by scroll. It is a diagram, not decoration.
    at stays at 100%. Contrast on attention now comes from dimming the rest, not
    from lifting one part out of white. Signal is never in the resting rotation; it
    is placed deliberately (rule 2).
+   *Tone mapping is PBR Neutral, not ACES (2026-09-29). ACES bleached the
+   brand hues toward white; Neutral keeps them saturated.*
 2. **One signal piece.** Orange marks the exception, the missing piece, the thing
    being fixed. Never two.
 3. **Labels only where you point.** *(2026-09-28: build no longer carries a callout column — its two-column list is the legend.)* Callouts exist in the four sections that

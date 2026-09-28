@@ -3,6 +3,7 @@ import { createPalette, readPalette } from './palette';
 import { lineSegmentPositions, roundedBox } from './geometry';
 import { N, NP, blank, buildState, smooth, type SceneState } from './states';
 import { BOOST, SCENES, SCENE_ALIAS } from './scene-data';
+import { CELL, LAND_CELLS } from './world';
 
 /**
  * The stage: renderer, model, camera and the per-frame blend.
@@ -52,8 +53,12 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
 
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.98;
+  // PBR Neutral, not ACES. ACES pulls bright saturated colours toward white,
+  // which is what made the brand hues read as pastel even at 100% (owner,
+  // 2026-09-29: "make the colours pop out more"). Neutral keeps hue and
+  // saturation and only compresses the very top of the range.
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 0.92;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -129,6 +134,26 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   slot.position.set(0.84, 0.42 + 1.68, 0.84);
   group.add(slot);
   const LINES = { foot, frame: lattice, cage, slot } as const;
+
+  // The world map for the regions scene: one low tile per 5° land cell. It
+  // rises out of the ground as the scene arrives (y-scale follows o.map) and
+  // is hidden the rest of the time.
+  const mapMat = new THREE.MeshStandardMaterial({ roughness: 0.9, metalness: 0 });
+  const mapTiles = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mapMat, LAND_CELLS.length);
+  mapTiles.receiveShadow = true;
+  {
+    const tile = new THREE.Object3D();
+    LAND_CELLS.forEach(([x, z], i) => {
+      tile.position.set(x, 0.04, z);
+      tile.scale.set(CELL * 0.8, 0.08, CELL * 0.8); tile.updateMatrix();
+      mapTiles.setMatrixAt(i, tile.matrix);
+    });
+  }
+  const mapGroup = new THREE.Group();
+  mapGroup.add(mapTiles);
+  mapGroup.visible = false;
+  group.add(mapGroup);
+  let mapCur = 0;
 
   /* ── palette ───────────────────────────────────────── */
   const P = readPalette(createPalette());
@@ -338,6 +363,11 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       (LINES[ln].material as THREE.LineBasicMaterial).opacity = lineCur[ln];
       LINES[ln].visible = lineCur[ln] > 0.01;
     });
+
+    mapCur += ((A.map * (1 - w) + B.map * w) - mapCur) * K;
+    mapGroup.visible = mapCur > 0.01;
+    mapGroup.scale.set(1, Math.max(1e-4, mapCur), 1);
+    mapMat.color.copy(P.model2).lerp(P.ink, 0.1);
 
     /* camera */
     // Yaw is blended and damped along the SHORTEST arc. The work scene turns
