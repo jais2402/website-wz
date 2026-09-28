@@ -41,6 +41,40 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-28 — Section rhythm and the case tab strip, both missed in the port
+**Type:** delivery
+**Owner:** Designer
+**Context:** Two spacing faults reported after the scene port. Both were parts of
+the prototype's CSS that the component rebuild never carried across — the scene
+was ported carefully and the layout around it was not.
+
+**1. Sections had no floor height.** The prototype sets `.ch { min-height: 74vh }`
+and `[data-side="c"] { min-height: 100vh }`, with asymmetric padding — more above
+than below. Without them the centred chapter collapsed to its content, so the
+hook, the three proof figures and the CTA were crammed together and the model,
+offset downward by design, landed on top of them. Ported, along with the centred
+body width (1100px, not 62ch), the larger hook type on desktop (capped at 19ch so
+it breaks into three lines) and the 900px cap on the proof row.
+
+**2. The case tabs were boxed and wrapped badly.** Built as bordered buttons
+carrying the full case headline and its number. The prototype is an underline
+strip on a hairline, the selected tab marked by a 2px rule in that case's hue,
+and — the part that matters — labelled `region · sector` ("Singapore · Tourism"),
+not the headline. Four headlines cannot sit in a half-width reading column; four
+short labels can. Also ported: tags as pills, metrics as a divided pair, and the
+prototype's type sizes for the panel.
+
+**Noted, not changed:** the case numbering reads 02, 01, 03, 04 in the strip.
+That is in the approved content — India is `n: '02'` and first in the array in
+both `site.json` and the prototype. Renumbering is a content decision, so it is
+flagged here rather than quietly corrected.
+
+**Lesson:** the scene was compared against the prototype side by side, which
+caught the colour and lighting faults. The surrounding layout was not, and that
+is exactly where these slipped through. Compare the page, not just the canvas.
+
+---
+
 ## 2026-09-28 — The 3D scene was invented, not ported. Rebuilt from the prototype.
 **Type:** reversal
 **Owner:** 3D Engineer

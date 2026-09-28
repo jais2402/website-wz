@@ -36,7 +36,11 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
 
       <div className="mt-8">
         <CaseTabs
-          items={cases.map((c) => ({ slug: c.slug, n: c.n, title: c.title, hue: c.hue }))}
+          items={cases.map((c) => ({
+            slug: c.slug,
+            label: [c.region, c.sector].filter(Boolean).join(' · '),
+            hue: c.hue,
+          }))}
           activeSlug={active.slug}
           onSelect={setActiveSlug}
         />
@@ -47,25 +51,25 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
         id={`panel-${active.slug}`}
         aria-labelledby={`tab-${active.slug}`}
         tabIndex={0}
-        className="mt-8 border-t border-line pt-6"
+        className="pt-7"
       >
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           {active.hue ? <Swatch hue={active.hue} active /> : null}
           <Eyebrow>{[active.region, active.sector].filter(Boolean).join(' · ')}</Eyebrow>
         </div>
 
-        <h3 className="mt-3 text-[22px] font-medium tracking-tight text-ink">{active.title}</h3>
+        <h3 className="mt-2.5 text-[clamp(24px,2vw,30px)] font-medium leading-[1.15] tracking-[-0.025em] text-ink">{active.title}</h3>
 
         {active.body.map((paragraph) => (
-          <p key={paragraph} className="mt-3 max-w-[56ch] text-[15px] leading-relaxed text-ink-2">
+          <p key={paragraph} className="mt-3 max-w-[58ch] text-[17px] leading-relaxed text-ink-2">
             {paragraph}
           </p>
         ))}
 
         {active.metrics?.length ? (
-          <dl className="mt-6 grid gap-5 sm:grid-cols-2">
+          <dl className="mt-6 grid grid-cols-2 border-t border-line">
             {active.metrics.map((metric) => (
-              <div key={metric.label} className="border-t border-line pt-3">
+              <div key={metric.label} className="border-line pr-4 pt-3.5 [&+div]:border-l [&+div]:pl-4">
                 <dd className="text-[24px] font-medium tabular-nums tracking-tight text-ink">
                   {metric.value}
                 </dd>
@@ -76,9 +80,12 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
         ) : null}
 
         {active.tags?.length ? (
-          <ul className="mt-6 flex flex-wrap gap-x-4 gap-y-2">
+          <ul className="mt-6 flex flex-wrap gap-1.5">
             {active.tags.map((tag) => (
-              <li key={tag} className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3">
+              <li
+                key={tag}
+                className="rounded-full border border-line-2 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.06em] text-ink-2"
+              >
                 {tag}
               </li>
             ))}

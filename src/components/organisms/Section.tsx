@@ -30,7 +30,14 @@ export function Section({ id, side = 'l', scene, labelledBy, children, className
       data-scene={scene}
       aria-labelledby={labelledBy}
       className={cn(
-        'relative px-[max(24px,5.4vw)] py-[clamp(100px,12vh,140px)]',
+        // Section rhythm from the prototype: a floor height so the scene has
+        // scroll travel to move through, and asymmetric padding — more above
+        // than below, so a heading clears the sticky header.
+        'relative min-h-[74vh] px-[max(24px,5.4vw)]',
+        'pt-[clamp(100px,12vh,140px)] pb-[clamp(36px,5vh,72px)]',
+        // A centred chapter owns a full screen: the reading column sits in the
+        // upper half and the model is offset below it.
+        side === 'c' && 'lg:min-h-screen',
         className,
       )}
     >
@@ -39,7 +46,7 @@ export function Section({ id, side = 'l', scene, labelledBy, children, className
         className={cn(
           'w-full',
           side === 'c'
-            ? 'mx-auto max-w-[62ch] text-center'
+            ? 'mx-auto max-w-[1100px] text-center'
             : 'lg:w-[calc(50vw-max(24px,5.4vw))]',
           side === 'r' && 'lg:ml-auto',
         )}

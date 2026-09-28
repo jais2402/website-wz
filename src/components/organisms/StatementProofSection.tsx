@@ -29,15 +29,24 @@ export function StatementProofSection({
   const titleId = `${id}-title`;
   return (
     <Section id={id} side="c" scene={scene} labelledBy={titleId}>
-      <h2 id={titleId} className="text-statement text-balance font-normal text-ink">
+      {/* The hook carries the screen: larger and tighter on desktop, capped at
+          19ch so it breaks into three readable lines. */}
+      <h2
+        id={titleId}
+        className="mx-auto text-statement text-balance font-medium text-ink lg:max-w-[19ch] lg:text-[clamp(40px,4.4vw,76px)] lg:leading-[1.03]"
+      >
         {statement.text}
         {statement.emphasis ? (
           <em className="not-italic text-blueprint-t">{statement.emphasis}</em>
         ) : null}
       </h2>
-      <ProofStrip items={proof} />
+      {/* Proof and the next step are narrower than the headline, so the three
+          figures read as a row rather than drifting to the screen edges. */}
+      <div className="mx-auto max-w-[900px]">
+        <ProofStrip items={proof} />
+      </div>
       {link ? (
-        <div className="mt-9 flex justify-center">
+        <div className="mx-auto mt-9 flex max-w-[900px] justify-center">
           <Button href={link.href} variant="secondary">
             {link.label}
           </Button>
