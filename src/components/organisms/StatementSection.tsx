@@ -23,7 +23,17 @@ export function StatementSection({
 }: StatementSectionProps) {
   const titleId = `${id}-title`;
   return (
-    <Section id={id} side={side} scene={scene} labelledBy={titleId}>
+    // A statement is short — a headline, a paragraph, a link — so on desktop it
+    // takes a full screen and centres vertically, level with the model beside
+    // it, instead of sitting at the top with the lower half of the screen
+    // empty. Symmetric padding so "centre" means the optical centre.
+    <Section
+      id={id}
+      side={side}
+      scene={scene}
+      labelledBy={titleId}
+      className="lg:flex lg:min-h-screen lg:flex-col lg:justify-center lg:py-[clamp(100px,12vh,140px)]"
+    >
       <HeadlineSplit headline={headline} id={titleId} />
       <p className="mt-6 max-w-[52ch] text-lead text-ink-2">{lead}</p>
       {link ? (

@@ -114,7 +114,7 @@ export type SceneKey = (typeof SCENES)[number];
  * the reading column; they are design values.
  */
 export const BOOST: Record<string, number> = {
-  hero: 0.8, build: 1.06, ai: 0.72, moment: 0.72, principles: 0.82,
+  hero: 0.8, build: 1.06, ai: 0.72, moment: 0.6, principles: 0.82,
   range: 1.28, how: 0.88, pricing: 0.92, evidence: 0.85, work: 0.86,
   integration: 0.92, tech: 0.92, faq: 0.9, contact: 0.9,
 };

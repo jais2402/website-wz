@@ -149,6 +149,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 submit={s.submit}
                 promise={s.promise}
                 note={s.note}
+                requiredNote={s.requiredNote}
               />
             );
 

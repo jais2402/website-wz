@@ -194,10 +194,6 @@
       "statement": {
         "text": "Our systems and products are built for the moment when the business ",
         "emphasis": "outgrows the workaround."
-      },
-      "link": {
-        "label": "Read what changed in each one",
-        "href": "/work"
       }
     },
     {
@@ -303,10 +299,6 @@
           ]
         }
       ],
-      "link": {
-        "label": "See all thirty systems",
-        "href": "/capabilities#range"
-      },
       "countUnit": "systems"
     },
     {
@@ -570,28 +562,8 @@
           "a": "We design, build, host and maintain custom software systems for businesses that have outgrown sheets and manual processes. We specialise in operational portals, internal tools, automation pipelines, and complex data integrations."
         },
         {
-          "q": "Does Wezigns build internal business systems?",
-          "a": "Yes. Internal applications, workflow and approval systems, operations platforms, role-based applications and custom dashboards built around how a particular business actually works."
-        },
-        {
-          "q": "Does Wezigns provide business process automation?",
-          "a": "Yes. Workflow automation, approval journeys, exception handling, scheduled processes, notifications and automated status updates, so the routine runs and people handle the exceptions."
-        },
-        {
-          "q": "Can Wezigns integrate CRM, ERP, accounting or payment gateways?",
-          "a": "Yes. CRM, ERP, accounting and finance systems, payment gateways such as Stripe and Razorpay, government portals, third-party APIs, and older systems without modern APIs."
-        },
-        {
-          "q": "Does Wezigns build scalable software?",
-          "a": "The first version is built with the next version in mind: users, workflows, data, integrations, permissions, reporting and future change are considered from the start rather than retrofitted."
-        },
-        {
           "q": "How does Wezigns approach software security?",
           "a": "We build security into access design, data handling, system connections, testing and maintenance. No software stays secure without upkeep, so we keep maintaining, reviewing and improving it."
-        },
-        {
-          "q": "Does Wezigns provide cloud hosting?",
-          "a": "Yes. Managed cloud hosting, monitoring, backups and recovery, security patching, performance monitoring, maintenance and technical support."
         },
         {
           "q": "Can Wezigns take over software built by another company?",
@@ -608,14 +580,6 @@
         {
           "q": "How long does it take?",
           "a": "Also a Shape-stage answer. Work is delivered in working pieces rather than one long build, so there is something to test and review early."
-        },
-        {
-          "q": "Does Wezigns build websites?",
-          "a": "Yes. We have designed and built 90+ handcrafted websites, one at a time. Most of our work is operational systems, and we will tell you which one your problem needs."
-        },
-        {
-          "q": "Where does Wezigns operate?",
-          "a": "India, Singapore and the UAE."
         }
       ]
     },
@@ -664,7 +628,8 @@
         "strong": "A senior person from our team replies within one working day.",
         "rest": "They can talk through your process and what a system for it would involve."
       },
-      "note": "No generic pitch deck. No pressure. Price and timeline are agreed before anything is built."
+      "note": "No generic pitch deck. No pressure. Price and timeline are agreed before anything is built.",
+      "requiredNote": "All fields are required."
     }
   ],
   "cases": [

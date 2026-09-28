@@ -33,7 +33,17 @@ export function StatementProofSection({
 }: StatementProofSectionProps) {
   const titleId = `${id}-title`;
   return (
-    <Section id={id} side="c" scene={scene} labelledBy={titleId}>
+    // The hook owns a full screen: the headline sits in the upper part with
+    // clear air under the header, and the model occupies the lower part (the
+    // stage offsets it down for a centred chapter). Anchored from the top
+    // rather than centred, so the headline never drifts into the model.
+    <Section
+      id={id}
+      side="c"
+      scene={scene}
+      labelledBy={titleId}
+      className="lg:flex lg:min-h-screen lg:flex-col lg:justify-start lg:pt-[18vh]"
+    >
       {/* The hook carries the screen: larger and tighter on desktop, capped at
           19ch so it breaks into three readable lines. */}
       <h2

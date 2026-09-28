@@ -110,7 +110,7 @@ export function SequenceSection({
   useEffect(() => {
     if (!scene) return;
     setHighlight(scene, active);
-    return () => setHighlight(null, -1);
+    return () => setHighlight(scene, -1);
   }, [scene, active]);
 
   const rows = (
@@ -155,7 +155,7 @@ export function SequenceSection({
   }
 
   return (
-    <Section id={id} side={side} scene={scene} labelledBy={titleId} className="lg:py-0">
+    <Section id={id} side={side} scene={scene} labelledBy={titleId} className="lg:pb-0">
       <div className="lg:relative">
         {/* Desktop track: one sentinel per row. Collapsed below lg. */}
         <div className="hidden lg:block">

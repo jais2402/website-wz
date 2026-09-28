@@ -19,7 +19,7 @@ export interface StageHandle {
   /** Wake the loop — scroll, pointer, theme change. */
   poke(): void;
   setPaused(paused: boolean): void;
-  setHighlight(scene: string | null, index: number): void;
+  setHighlight(scene: string, index: number): void;
 }
 
 const LABEL_COUNT = 12;
@@ -197,7 +197,11 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       if (!mobile) {
         if (side === 'l') ox = -(((tr + W - gu) / 2) - W / 2);
         else if (side === 'r') ox = W / 2 - (tl + gu) / 2;
-        else { oy = -Hh * 0.34; tl = tr = -1; gu = 0; }
+        // A centred chapter: the model sits below the headline. The prototype
+        // used -0.34 because the hook also carried three proof figures and a
+        // CTA; with those removed the model landed at ~84% of the viewport and
+        // was cut off by the fold. -0.24 puts it just under the headline.
+        else { oy = -Hh * 0.24; tl = tr = -1; gu = 0; }
       } else { oy = Hh * 0.17; }
       if (!mobile && side !== 'c') oy += Hh * 0.05;
       const stageW = mobile ? W : (side === 'l' ? W - tr - gu : (side === 'r' ? tl - gu : W));
@@ -233,7 +237,8 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
 
   /* ── loop state ────────────────────────────────────── */
   let paused = false, frozen = 0;
-  let highlightScene: string | null = null, highlight = -1;
+  // Per-scene highlight. See three/highlight.ts for why it is not one slot.
+  const highlights = new Map<string, number>();
 
   const A = blank(), B = blank(), cur = blank();
   const curQ: THREE.Quaternion[] = [];
@@ -268,8 +273,8 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     const an = anchors[ia], bn = anchors[ib];
     if (!an || !bn) return;
 
-    const hlA = highlightScene === SCENES[an.sc] ? highlight : -1;
-    const hlB = highlightScene === SCENES[bn.sc] ? highlight : -1;
+    const hlA = highlights.get(SCENES[an.sc] ?? '') ?? -1;
+    const hlB = highlights.get(SCENES[bn.sc] ?? '') ?? -1;
     state(an.sc, t, subOf(an, probe), hlA, A);
     state(bn.sc, t, subOf(bn, probe), hlB, B);
     const K = (first || reduce) ? 1 : 1 - Math.exp(-dt * 5.2);
@@ -511,6 +516,6 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     },
     poke,
     setPaused(p) { paused = p; frozen = performance.now(); poke(); },
-    setHighlight(sceneKey, index) { highlightScene = sceneKey; highlight = index; poke(); },
+    setHighlight(sceneKey, index) { highlights.set(sceneKey, index); poke(); },
   };
 }

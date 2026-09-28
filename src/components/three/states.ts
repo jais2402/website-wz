@@ -223,7 +223,12 @@ export function buildState(P: Palette) {
               0.3 + lf + (hl === row ? Math.sin(t * 3 + cl * 0.7) * 0.04 : 0),
               (row - 2) * 0.9, 0.6, 0.6, 0.6, c4);
           }
-          label(o, RANGE[row]?.title ?? '', 2.3, 0.3, (row - 2) * 0.9, hl === row);
+          // The label follows the row's LIFT. The prototype anchored it at a
+          // fixed y of 0.3, so when a row rose to show it was selected, its dot
+          // stayed behind and pointed at the row underneath. x sits on the
+          // right face of the last cube: (5 - 2.5) * 0.78 + 0.3 = 2.25.
+          const rowLift = hl === row ? 0.34 : 0;
+          label(o, RANGE[row]?.title ?? '', 2.26, 0.3 + rowLift, (row - 2) * 0.9, hl === row);
         }
         o.look = 0.3; o.dist = 16.5; o.yaw = 0.74; o.scale = 0.74; o.parts = '30 systems in 5 areas';
         break;

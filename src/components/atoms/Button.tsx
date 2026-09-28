@@ -10,6 +10,12 @@ export interface ButtonProps {
   type?: 'button' | 'submit';
   onClick?: () => void;
   className?: string;
+  /**
+   * The trailing arrow. Defaults on for links at default size — they go
+   * somewhere, and the arrow says so — and off for form buttons and the small
+   * header CTA. Pass explicitly to override.
+   */
+  arrow?: boolean;
 }
 
 /**
@@ -18,6 +24,15 @@ export interface ButtonProps {
  * Renders a button when there is no href. With one it renders a link: next/link
  * for anything internal, a plain anchor with rel="noopener noreferrer" for
  * anything that leaves the site. Links navigate, buttons act — never swapped.
+ *
+ * Motion, all transform or colour so it stays off the main thread
+ * (design.md §6), and all flattened by the global reduced-motion rule:
+ * - colour and border ease over 300ms on the brand curve;
+ * - the arrow slides 4px on hover over 350ms — the prototype's `.btn .ar`;
+ * - a press settles to 98% so the click is felt, then springs back.
+ *
+ * Primary is blueprint, and it never hovers to signal: the CTA is on every
+ * screen, and signal is the scarcity token (design.md §1.2).
  */
 export function Button({
   children,
@@ -27,18 +42,35 @@ export function Button({
   type = 'button',
   onClick,
   className,
+  arrow,
 }: ButtonProps) {
+  const showArrow = arrow ?? (Boolean(href) && size === 'default');
+
   const classes = cn(
-    'inline-flex items-center gap-3 rounded-[2px] border font-medium tracking-tight',
-    'transition-colors duration-300 ease-[var(--ease-brand)]',
+    'group inline-flex items-center gap-3 rounded-[2px] border font-medium tracking-tight',
+    // `scale`, not `transform`: Tailwind v4's scale utilities set the standalone
+    // CSS scale property, so transitioning `transform` left the press snapping.
+    'transition-[background-color,border-color,color,scale] duration-300 ease-[var(--ease-brand)]',
+    'active:scale-[0.98] active:duration-100',
     size === 'small' ? 'min-h-[38px] px-4 text-[13px]' : 'min-h-12 px-[22px] text-sm',
-    // Primary is blueprint, per the approved design's final pass — and it must
-    // not hover to signal: the CTA is on every screen, and signal is the
-    // scarcity token (design.md §1.2).
     variant === 'primary'
       ? 'border-transparent bg-blueprint text-on-brand hover:bg-act-d'
       : 'border-line-2 text-ink hover:border-ink',
     className,
+  );
+
+  const content = (
+    <>
+      {children}
+      {showArrow ? (
+        <span
+          aria-hidden="true"
+          className="transition-transform duration-[350ms] ease-[var(--ease-brand)] group-hover:translate-x-1 group-focus-visible:translate-x-1"
+        >
+          &#8594;
+        </span>
+      ) : null}
+    </>
   );
 
   if (href) {
@@ -46,20 +78,20 @@ export function Button({
     if (internal) {
       return (
         <Link className={classes} href={href}>
-          {children}
+          {content}
         </Link>
       );
     }
     return (
       <a className={classes} href={href} rel="noopener noreferrer">
-        {children}
+        {content}
       </a>
     );
   }
 
   return (
     <button className={classes} type={type} onClick={onClick}>
-      {children}
+      {content}
     </button>
   );
 }

@@ -84,7 +84,7 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
   if (!active) return null;
 
   return (
-    <Section id={id} side={side} scene={scene} labelledBy={titleId} className="lg:py-0">
+    <Section id={id} side={side} scene={scene} labelledBy={titleId} className="lg:pb-0">
       <div className="lg:relative" style={{ ['--cases' as string]: cases.length }}>
         {/* Desktop track: one segment per case. Collapsed below lg. */}
         <div className="hidden lg:block" aria-hidden="true">

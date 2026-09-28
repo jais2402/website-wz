@@ -42,6 +42,12 @@ export function SceneCanvas() {
       if (!stage) { document.documentElement.classList.add('no3d'); return; }
       stageRef.current = stage;
       stage.setPaused(getMotion() === 'paused');
+      // Sections set their highlights on mount, before the lazy stage exists;
+      // re-subscribing replays them into it.
+      onHighlight((scene, index) => {
+        const key = SCENE_ALIAS[scene];
+        if (key) stage.setHighlight(key, index);
+      })();
       document.documentElement.classList.remove('no3d');
       setMounted(true);
     }
@@ -57,7 +63,8 @@ export function SceneCanvas() {
     });
 
     const unsubscribeHighlight = onHighlight((scene, index) => {
-      stageRef.current?.setHighlight(scene ? (SCENE_ALIAS[scene] ?? null) : null, index);
+      const key = SCENE_ALIAS[scene];
+      if (key) stageRef.current?.setHighlight(key, index);
     });
 
     const onWide = () => { if (wide.matches) void start(); };

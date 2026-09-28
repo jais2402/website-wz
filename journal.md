@@ -41,6 +41,62 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-28 — Owner review round: composition, CTAs, FAQ, form, highlight
+**Type:** delivery
+**Owner:** Designer + 3D Engineer + Content Steward
+
+**Removed at the owner's request** (values kept here so they can be restored):
+- Hook CTA — `{label: "Read what changed in each one", href: "/work"}`
+- Range CTA — `{label: "See all thirty systems", href: "/capabilities#range"}`
+- **FAQ 13 → 6.** Kept by evidence, not taste: *What does Wezigns do* (the
+  category answer the five-second test hinges on), *security* (cohorts B/C,
+  blocker #5), *take over software built elsewhere* (the gatekeeper's legacy
+  question), *small businesses* (carries "Sometimes it is not, and we will say
+  so", the highest trust-per-word line — asserted in the edit so it could not
+  be dropped), *cost* (blocker #1, ~45 of 200), *how long* (cohort B delivery
+  risk). Removed: internal systems, automation, integrations, scalability,
+  hosting, websites, where we operate — each answered elsewhere on the page.
+  Full text is in git history. **Cost:** the FAQPage JSON-LD shrinks with it, so
+  fewer answers are extractable by AI engines (see geo-specialist).
+
+**Composition:**
+- The AI statement takes a full screen and centres vertically — measured: text
+  midpoint at exactly the viewport midpoint.
+- The hook had been composed around proof figures and a CTA, both now gone, so
+  the prototype's `-0.34` vertical offset dropped the model to ~84% of the
+  viewport and the fold cut it off. Offset now `-0.24`, model scale 0.72 → 0.6,
+  headline anchored at 18vh.
+- Sticky sections (build, range, work) had `lg:py-0`, stripping their top
+  padding too, so each heading butted against the section above (~45px).
+  Now `lg:pb-0`: 153–189px, as the prototype's `.ch` padding gives.
+
+**Two real 3D bugs the owner found by looking:**
+1. *"People is not pointing there."* The range label was anchored at a fixed
+   `y = 0.3` while the selected row lifts 0.34, so the dot stayed behind and
+   pointed at the row underneath. The prototype has the same bug. Label now
+   follows the lift.
+2. Deeper: People never lit at all. The highlight was **one slot for the whole
+   page**; every sequence wrote to it on mount, integration last, and range only
+   re-asserted when its row changed — so its first row never reached the model.
+   The channel is now keyed by scene.
+
+**Form, grouped as the prototype groups it:** name and email share a row,
+full-width submit, the reply promise in one ruled block with its swatch, and the
+requirement stated once (`contact.requiredNote`) instead of "(required)" on
+three labels — still WCAG 2.2 SC 3.3.2. Focus is a blueprint border plus ring.
+
+**CTA transitions:** link buttons carry the prototype's arrow, which slides 4px
+on hover over 350ms; a press settles to 98%. **Caught by measuring rather than
+looking:** the press first transitioned `transform`, but Tailwind v4's scale
+utilities set the standalone CSS `scale` property, so it snapped. Now
+transitions `scale`. Same lesson as the arrow check: read the property that
+actually changes.
+
+**State:** verify:full green — 18 unit, 49 Playwright, axe clean, 168.8 KB /
+119.1 KB. Business Analyst review requested next.
+
+---
+
 ## 2026-09-28 — Parity pass against the prototype: nine findings, all fixed
 **Type:** delivery
 **Owner:** Design Reviewer (review) · Designer + 3D Engineer (fixes)
