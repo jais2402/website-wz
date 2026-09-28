@@ -41,6 +41,36 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Design colours on all blocks; white and pastel removed
+**Type:** reversal (of the pastel curve and the white checker fills)
+**Owner:** Designer
+**Context:** Owner: "use orginal design colors on the 3d blocks, reduce the pastal
+and white colors".
+**Decision:** in `three/states.ts`, the hue curve is now `min(1, 0.62 + 1.2·s)`.
+The white `P.model` fills are replaced with brand hues in the monolith (hero,
+moment, contact), the FAQ cube and evidence. Principles has a pine base with
+blueprint growth. The work plates show their own hue (inactive ones are 28%
+toward white). Dimmed regions markers are 30% toward white, down from 70%.
+design.md §5.1 is rewritten.
+**Because:** the owner wants the brand palette to carry the model. Attention still
+reads through the lift and the label.
+**Consequences:** contrast on attention is now weaker by colour alone. If a
+review finds the pointed-at part does not stand out, raise the lift rather than
+bring white back. Signal-coloured content hues (a discipline on build, Legacy on
+integration) are now very visible, and they remain an open rule-2 question.
+
+---
+
+## 2026-09-29 — Session: design colours on 3D
+**Type:** session
+**Done:** `three/states.ts`, `.claude/design.md` §5.1.
+**State:** verify:full is green. A contact sheet of all 15 scenes was checked
+at 1440.
+**Next:** the owner's call on the signal-hued content items and the idle render loop.
+**Blocked:** unchanged.
+
+---
+
 ## 2026-09-29 — Skill review; world map for regions; colours pop
 **Type:** delivery
 **Owner:** Designer + 3D Engineer

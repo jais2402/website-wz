@@ -160,16 +160,16 @@ molecule may not import an organism; nothing below `templates` may import
 
 One model, fifteen states, blended by scroll. It is a diagram, not decoration.
 
-1. **Bright brand colour by default; the rest dims when you point.** *(Revised
-   twice at the owner's request. On 2026-09-28 the near-white prototype rest,
-   where most parts kept 10–18% of their hue, became soft pastels. On 2026-09-29
-   ("Use the bright colours") the pastels became bright.)* Every hue share a scene
-   asks for is mapped through `min(1, 0.2 + 2.2·s)` (`REST_FLOOR` / `REST_GAIN` in
-   `three/states.ts`), so resting parts show 86–100% of their brand hue. When the
-   reader points at one part, the others drop to around 42–50% and the one pointed
-   at stays at 100%. Contrast on attention now comes from dimming the rest, not
-   from lifting one part out of white. Signal is never in the resting rotation; it
-   is placed deliberately (rule 2).
+1. **Design colours on every block; no white fills, no pastels.** *(Owner,
+   2026-09-29: "use original design colors on the 3d blocks, reduce the pastel
+   and white colors". Before that, the same day: bright. 2026-09-28: pastel. The
+   prototype: near-white.)* Parts take a brand hue (blueprint, pine, ochre, plum,
+   rose) and are never filled with the white model material. Hue shares map
+   through `min(1, 0.62 + 1.2·s)` (`REST_FLOOR` / `REST_GAIN` in
+   `three/states.ts`): 94–100% at rest, and about 74% when another part is
+   pointed at. The part pointed at shows its attention by lift and label, not by
+   draining the others to white. Structural pieces (connectors, map tiles) stay
+   neutral grey, and the hub stays ink. Signal is never in the rotation (rule 2).
    *Tone mapping is PBR Neutral, not ACES (2026-09-29). ACES bleached the
    brand hues toward white; Neutral keeps them saturated.*
 2. **One signal piece.** Orange marks the exception, the missing piece, the thing

@@ -89,18 +89,20 @@ export const SCENE_TITLE: Record<SceneKey, string> = {
 
 export function buildState(P: Palette) {
   /**
-   * Resting colour. The owner asked for BRIGHT brand colours in the model
-   * (2026-09-29: "Use the bright colours"), replacing the soft pastels of
-   * 2026-09-28, which themselves replaced the prototype's near-white rest.
+   * Colour. The owner asked for the design colours on the blocks, with less
+   * pastel and less white (2026-09-29). That followed "bright" (same day),
+   * "pastel" (2026-09-28), and the prototype's near-white.
    *
-   * Every hue share the scenes ask for is mapped onto a bright curve:
-   * s → min(1, 0.2 + 2.2·s). A resting part (share ~0.3–0.6) now shows
-   * 86–100% of its brand hue. The order between shares is kept, so a
-   * part dimmed because the reader points at another one still reads as
-   * quieter (0.1 → 42%), and the part pointed at stays at 100%. See design.md §5.1.
+   * Every hue share a scene asks for maps through s → min(1, 0.62 + 1.2·s).
+   * A resting part shows 94–100% of its brand hue. A part dimmed because the
+   * reader points at another keeps about 70% (0.1 → 74%), so it stays a design
+   * colour, not a pastel. Parts are no longer filled with the white model
+   * material; each takes a brand hue. Attention now comes mostly from the lift
+   * and the label of the part pointed at, not from draining the others to
+   * white. See design.md §5.1.
    */
-  const REST_FLOOR = 0.2;
-  const REST_GAIN = 2.2;
+  const REST_FLOOR = 0.62;
+  const REST_GAIN = 1.2;
   const restShare = (share: number) => Math.min(1, REST_FLOOR + share * REST_GAIN);
 
   // Signal is NOT in the resting rotation. It is the scarcity token — one per
@@ -140,7 +142,7 @@ export function buildState(P: Palette) {
         o.c[k]!.copy(P.model); o.r[k]!.set(0, 0, 0); k += 1; continue;
       }
       put(o, k, (gx - 1) * 0.84, 0.42 + gy * 0.84, (gz - 1) * 0.84, 0.8, 0.8, 0.8,
-        corner ? P.signal : ((gx + gy + gz) % 2 ? P.model : tint(gx * 3 + gy + gz * 2, 0.3)));
+        corner ? P.signal : tint(gx * 3 + gy + gz * 2, 0.6));
       k += 1;
     }
     return k;
@@ -237,7 +239,7 @@ export function buildState(P: Palette) {
         const grow = smooth((sub - 0.75) / 0.5), sec = smooth((sub - 1.75) / 0.5);
         for (let gy2 = 0; gy2 < 4; gy2 += 1) for (let gz2 = 0; gz2 < 2; gz2 += 1) for (let gx2 = 0; gx2 < 2; gx2 += 1) {
           const up = gy2 >= 2, g = up ? grow : 1;
-          const c3 = up ? dimmed(P.blueprint, 0.25 + sec * 0.25) : P.model;
+          const c3 = up ? dimmed(P.blueprint, 0.25 + sec * 0.25) : P.pine;
           // The new layers GROW UP out of the top of the base (owner,
           // 2026-09-28: "start from the bottom"). The prototype dropped them in
           // from 1.6 above; here each starts inside the top base layer and
@@ -294,7 +296,7 @@ export function buildState(P: Palette) {
           const home = 0.42 + by * 0.84;
           put(o, k, (bx - 1) * 0.84, home * loc, (bz - 1) * 0.84,
             0.8 * Math.max(loc, 1e-4), 0.8 * Math.max(loc, 1e-4), 0.8 * Math.max(loc, 1e-4),
-            run ? P.signal : ((bx + by + bz) % 2 ? P.model : tint(bx * 3 + by + bz * 2, 0.3)));
+            run ? P.signal : tint(bx * 3 + by + bz * 2, 0.6));
           k += 1;
         }
         const peg = 1 - smooth((sub - 1.6) / 0.4);
@@ -327,7 +329,7 @@ export function buildState(P: Palette) {
           if (i === 7) th = 2.9;
           if (th > tall) { tall = th; tallIx = i; }
           put(o, k++, ex, th / 2, ez, 0.78, th, 0.78,
-            i === 7 ? P.signal : (R[i]![4]! > 0.42 ? tint(i, 0.3) : P.model));
+            i === 7 ? P.signal : tint(i, 0.6));
         }
         label(o, '20+ systems since 2012', ((tallIx % 5) - 2) * 1.02, tall + 0.15, (Math.floor(tallIx / 5) - 1.5) * 1.02, true);
         // Bounded, as above. Was 0.4 + t * 0.025.
@@ -346,7 +348,7 @@ export function buildState(P: Palette) {
           const on = cs2 === act, lift2 = on ? 0.2 : 0;
           const hc = hueOf(CASES[cs2]?.hue ?? 'blueprint');
           const mc = on ? hc : dimmed(hc, 0.6);
-          put(o, k++, px, 0.08 + lift2, pz, 1.7, 0.16, 1.7, hc.clone().lerp(P.model, on ? 0.35 : 0.62), -a);
+          put(o, k++, px, 0.08 + lift2, pz, 1.7, 0.16, 1.7, hc.clone().lerp(P.model, on ? 0 : 0.28), -a);
           const top = 0.16 + lift2;
           const ca = Math.cos(-a), sa = Math.sin(-a);
           const place = (lx: number, ly: number, lz: number, sx: number, sy: number, sz: number) => {
@@ -423,7 +425,7 @@ export function buildState(P: Palette) {
           const [x, z] = project(pt[0], pt[1]);
           const up = hl === n ? 0.35 : 0;
           const hue = COUNTRY_HUE[name] ?? MIX[n % MIX.length]!;
-          const c = hl >= 0 && hl !== n ? hueOf(hue).clone().lerp(P.model, 0.7) : hueOf(hue);
+          const c = hl >= 0 && hl !== n ? hueOf(hue).clone().lerp(P.model, 0.3) : hueOf(hue);
           put(o, k++, x, 0.02 + (0.62 + up) / 2, z, 0.12, 0.62 + up, 0.12, c);
         });
         o.look = 0.2; o.dist = 16; o.yaw = 0.74 + Math.sin(t * 0.1) * 0.04;
