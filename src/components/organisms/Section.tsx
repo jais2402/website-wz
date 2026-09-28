@@ -1,4 +1,5 @@
 import { cn } from '@/lib/cn';
+import { Reveal } from '@/components/atoms';
 import type { ReactNode } from 'react';
 import type { Side } from '@/types/content';
 
@@ -51,7 +52,7 @@ export function Section({ id, side = 'l', scene, labelledBy, children, className
           side === 'r' && 'lg:ml-auto',
         )}
       >
-        {children}
+        <Reveal>{children}</Reveal>
       </div>
     </section>
   );

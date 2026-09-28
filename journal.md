@@ -41,6 +41,48 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Motion: react-mini only, for reveals and the case indicator
+**Type:** decision
+**Owner:** Designer + 3D Engineer (budget)
+**Context:** Owner asked to install the `motion-framer` skill and use it for smooth animation.
+The initial route already stood at 169.0 / 180 KB brotli.
+**Options:** full `motion` component (37.2 KB), `LazyMotion` + `domAnimation` (25.8 KB),
+`motion/react-mini` `useAnimate` (2.9 KB), or stay CSS-only.
+**Decision:** `motion@12.23.12`, imported only as `motion/react-mini`. Two uses:
+`atoms/Reveal.tsx` (each section body's children fade up 18px in a 70ms stagger, 0.6s,
+brand ease) wired in `organisms/Section.tsx`, and a gliding indicator in
+`molecules/CaseTabs.tsx` (translate + scaleX on a 1px bar, tinted to the case hue,
+replacing the per-tab border).
+**Because:** only the mini build fits the budget. Transform/opacity only stays on the
+compositor. Reveal hides nothing that is already on screen, nothing with JS off, and
+nothing under reduced motion or pause, so it can only cost an animation, never content.
+**Consequences:** initial route 171.9 / 180 KB, leaving 8.1 KB of headroom. Importing
+`motion/react` or `framer-motion` is now a budget failure. Recorded in `architecture.md`
+§1 and `.claude/skills/README.md`. Also corrected the stale R3F row in `architecture.md` §1.
+
+---
+
+## 2026-09-29 — Session: motion-framer skill, reveals, case-tab indicator
+**Type:** session
+**Done:** `.claude/skills/motion-framer/` installed (MIT, scripts audited);
+`motion` added; new `src/components/atoms/Reveal.tsx` (exported from atoms);
+`organisms/Section.tsx` wraps body in `<Reveal>`; `molecules/CaseTabs.tsx` rewritten
+with a gliding indicator; new `tests/e2e/motion.spec.ts` (reveal ends visible,
+reduced motion never hides, indicator lands under the active tab);
+`architecture.md` §1 and the skills README updated.
+**State:** `pnpm verify:full` is green, with 49 Playwright tests plus the 7 new motion
+tests passing across three projects. Budgets: 171.9 / 180 KB initial, 119.3 / 320 KB for 3D.
+Headless screenshots confirm the stagger and the pine indicator under "Singapore · Tourism".
+**Next:** design-reviewer pass on the reveal timing in both themes. If the owner wants
+more motion, the 8.1 KB of headroom must come from `useAnimate` only.
+**Blocked:** on the owner. Signal-orange pulses and pegs vs design.md §5.2; the
+AI-crawler stance; the form transport (the form currently delivers nothing); the
+five business facts; the first proof sitting around screen 12; no next step after
+pricing; case numbering on /work; the "sarah@agency.com" placeholder; the OG image;
+Lighthouse CI.
+
+---
+
 ## 2026-09-28 — Countries, pricing, build grid, colour, and the BA's bug findings
 **Type:** delivery
 **Owner:** Designer + Content Steward + 3D Engineer

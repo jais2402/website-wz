@@ -39,12 +39,21 @@ To restore any of them:
 git clone --depth 1 https://github.com/affaan-m/ECC.git /tmp/ecc && cp -R /tmp/ecc/skills/<name> .claude/skills/
 ```
 
+## `motion-framer` (installed 2026-09-29, owner request)
+
+From `freshtechbro/claudedesignskills`, MIT. Scripts audited: they import only
+argparse, sys and json. **This project may use only `motion/react-mini`
+(`useAnimate`).** The skill's `motion.div`, variants, `AnimatePresence` and
+layout examples use the full component, which measured 37.2 KB brotli and breaks
+the 180 KB initial-route budget. Use the skill for easing, timing and choreography
+guidance, and implement it through `useAnimate` (see `atoms/Reveal.tsx` and
+`molecules/CaseTabs.tsx`). `architecture.md` §1 records the constraint.
+
 ## Deliberately never installed
 
-**`motion-foundations`, `motion-patterns`, `motion-advanced`** — built on
-`motion/react` (Framer Motion). This project has **no animation library**:
-`architecture.md` §5 requires CSS `transform`/`opacity` only, and adding one needs
-a recorded decision. These would push a dependency the project forbids.
+**`motion-foundations`, `motion-patterns`, `motion-advanced`** — built on the
+full `motion/react` component API. Still not installed: see `motion-framer` below
+for the one Motion surface the budget allows.
 
 **`frontend-patterns`** — overlaps `react-patterns` with nothing added for this stack.
 

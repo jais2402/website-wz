@@ -4,6 +4,7 @@ export { Eyebrow, type EyebrowProps } from './Eyebrow';
 export { Figure, type FigureProps } from './Figure';
 export { JsonLd, type JsonLdProps } from './JsonLd';
 export { MotionToggle } from './MotionToggle';
+export { Reveal, type RevealProps } from './Reveal';
 export { Rule, type RuleProps } from './Rule';
 export { Swatch, type SwatchProps } from './Swatch';
 export { TextLink, type TextLinkProps } from './TextLink';

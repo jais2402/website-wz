@@ -13,7 +13,8 @@ current majors; pin exact versions in `package.json` and bump deliberately.
 | UI runtime | **React** | 19.3.x | Required by Next 16; R3F 9 peer range is `>=19 <19.4`, so do **not** move to 19.4 without checking R3F |
 | Language | **TypeScript** | 5.7+ | `strict: true`, no `any` in `src/` |
 | Styling | **Tailwind CSS** | 4.3.x | CSS-first `@theme`; tokens become both utilities and custom properties |
-| 3D | **three.js** + **@react-three/fiber** + **@react-three/drei** | r186 / 9.8.x / 10.7.x | R3F 9 is the React 19 line |
+| 3D | **three.js**, imperative (`src/components/three/stage.ts`) | r186 | R3F and drei were removed when the prototype's scene was ported — one loop, no reconciler |
+| Motion | **motion** — `motion/react-mini` only (`useAnimate`, WAAPI) | 12.23.x | Section reveals and the case-tab indicator. Transform and opacity only. The mini build is 2.9 KB brotli; `LazyMotion`+`domAnimation` (25.8 KB) and the full `motion` component (37.2 KB) do not fit the 180 KB initial-route budget (§8). Importing `motion/react` or `framer-motion` is a budget failure, not a style choice. Everything must stay visible with JS off and under reduced motion |
 | Scroll | Native scroll + `IntersectionObserver` + a single rAF loop | — | No scroll-hijacking library. The 3D reads scroll; it never drives it |
 | Content | **JSON** (`content/site.json`) validated against a JSON Schema | — | One file, typed, no CMS until there is a reason |
 | Forms | Progressive: a static POST endpoint (Formspree-class) or a serverless function on the host | — | Static export has no server. See §6 |

@@ -2,7 +2,7 @@
   "name": "wezigns-web",
   "version": "0.1.0",
   "private": true,
-  "description": "Wezigns \u2014 custom software built around how your business already works. Static Next.js site with a scroll-driven WebGL scene.",
+  "description": "Wezigns — custom software built around how your business already works. Static Next.js site with a scroll-driven WebGL scene.",
   "type": "module",
   "engines": {
     "node": ">=20.9"
@@ -28,6 +28,7 @@
     "verify:full": "pnpm verify && pnpm test:e2e"
   },
   "dependencies": {
+    "motion": "12.23.12",
     "next": "16.3.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
