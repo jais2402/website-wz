@@ -41,6 +41,160 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-28 — Resolving "ambient motion" against "an idle page renders nothing"
+**Type:** decision
+**Owner:** 3D Engineer
+**Context:** Two project rules were in direct tension once the scene existed.
+`architecture.md` §4: *frameloop="demand"; an idle page renders nothing.*
+`design.md` §5.5: *motion is ambient — slow yaw, sub-degree drift.* A continuous
+drift means the demand loop never sleeps. Measured: ~1 draw call per frame,
+forever.
+**Options:** (a) drop the ambient drift, (b) accept a permanently running loop,
+(c) let the drift settle.
+**Decision:** (c). The drift runs while the reader is moving and for 2.5s after
+the scroll state last changed, easing out over that window; then the loop stops
+and issues no further frames until the next scroll, pointer move or theme change.
+**Because:** design.md describes the *character* of motion when it happens, not a
+requirement that it never stop. architecture.md's rule is about battery and
+thermals and is unambiguous. Easing the drift out rather than cutting it keeps
+the ambient quality without holding the GPU awake on a page nobody is reading.
+**Verified:** `tests/perf/scene.spec.ts` counts draw calls at the WebGL level and
+asserts exactly zero after settling. It passes.
+
+---
+
+## 2026-09-28 — Bundle budget: content-based, not glob-based
+**Type:** reversal
+**Owner:** Test Engineer
+**Context:** The 3D budget was wired to `out/_next/static/chunks/3d_*.js`. It
+matched once and then silently stopped, because Turbopack names chunks with
+opaque content hashes — the `3d_` prefix was coincidence, not semantics. The
+initial-route budget then swallowed the 3D chunk and reported 366 kB against a
+180 kB limit.
+**Decision:** Replaced `size-limit` with `scripts/check-size.mjs`, which
+identifies the 3D chunk by markers in its contents (`InstancedMesh`,
+`WebGLRenderer`, `BufferGeometry`) and brotli-compresses each file itself.
+`size-limit` and `@size-limit/preset-app` removed.
+**Because:** a budget that silently measures the wrong thing is worse than no
+budget. Nothing about the chunk's *name* is stable; what is in it is.
+**Consequences:** `pnpm size` reports both budgets and names the file it
+identified, so a future mis-identification is visible rather than silent.
+Current: initial 162.5 KB / 180, 3D 195.5 KB / 320.
+
+---
+
+## 2026-09-28 — Footer wordmark failed the contrast gate
+**Type:** delivery
+**Owner:** Designer
+**Context:** axe flagged the oversized footer wordmark at 2.03:1 against
+`--color-panel`, under the 3:1 floor for large text (WCAG 2.2 AA 1.4.3). It used
+`--color-line-2`, a hairline token never intended to carry text.
+**Decision:** Added `--color-wordmark` — `#7f8592` light (3.31:1), `#636876` dark
+(3.06:1), both computed rather than eyeballed.
+**Because:** the element is decorative and `aria-hidden`, which is an argument
+for exempting it — but it is still rendered text, axe treats it as such, and
+standards.md makes zero serious violations a hard gate rather than a judgement
+call. A new token is also the correct answer under design.md: a value needed for
+a purpose the existing tokens do not serve is a token, not an override.
+
+---
+
+## 2026-09-28 — WebKit excludes links from the Tab order
+**Type:** decision
+**Owner:** Test Engineer
+**Context:** The skip-link test failed on webkit only: Tab did not reach it.
+**Finding:** This is a Safari/WebKit platform default — links are not in the Tab
+sequence unless the user enables full keyboard access. The markup is correct and
+the skip link is first in the DOM.
+**Decision:** The Tab-order assertion is skipped on webkit with the reason
+written at the skip; a second test, running on every engine, asserts the skip
+link is the first focusable element in document order, targets `#main`, and works
+when activated.
+**Because:** skipping a test because it fails is how a suite rots. Skipping it
+because the behaviour under test belongs to the platform, while asserting the
+thing that is actually ours, is not the same move — but only if the replacement
+assertion is real.
+
+---
+
+## 2026-09-28 — Session: the site is complete and committed
+**Type:** session
+**Owner:** PM
+
+**Done**
+- **Fonts** self-hosted: Outfit and JetBrains Mono, latin variable woff2, one
+  file each (31 KB), preloaded, `font-display: swap`. Licences recorded in
+  `public/fonts/LICENSES.md` (both OFL). No Google Fonts request.
+- **Phase 4:** `not-found.tsx`, `sitemap.ts`, `robots.ts`,
+  `lib/structured-data.ts` and a `JsonLd` atom. Organization + WebSite + FAQPage
+  on `/`, CreativeWork per case on `/work`.
+- **Phase 3 — the 3D scene**, the whole subsystem: `materials.ts` (pooled
+  linear-space colours, one geometry, one material), `states.ts` (14 scene
+  layouts, auto-fitted to the stage), `useScrollState.ts` (the single rAF loop),
+  `Instances.tsx` (one InstancedMesh, N=64), `Scene.tsx`, `SceneCanvas.tsx`.
+- **Playwright installed** (chromium + webkit) and the matrix run for the first
+  time: 45 passed, 6 skipped. axe clean on all three routes, both themes.
+- `scripts/check-size.mjs` replacing size-limit; `verify:full` script.
+- **`git init` and the first commit** — 119 files.
+
+**Bugs found and fixed while building the scene**
+1. Model overlapped the reading column. Fixed by measuring every layout and
+   scaling it to fit the stage — `fitToStage` — so design.md §5.4 is a property
+   of the system rather than of the author's care. The first attempt still
+   overlapped because it measured box *centres*: a rotating cube's corner
+   reaches `s·0.87`, and boxes at positive z are magnified by perspective.
+2. Ambient yaw accumulated without bound instead of drifting. design.md §5.5
+   asks for sub-degree drift; it now oscillates within ±2.9°.
+3. Every instance was coloured, against design.md §5.1's *neutral by default,
+   colour on attention*. Hues are now mixed 22% into the model material; only
+   the single signal piece takes its hue at full strength.
+4. `signal` appeared in the rotating hue list, so several scenes had four or six
+   orange pieces — directly against the scarcity rule. Hue rotations are now
+   modulo 5 and signal is reserved.
+5. React 19's compiler lint rejected mutating a `useMemo` result. Correct, and
+   the fix is a ref: R3F requires mutation, and a ref is the honest primitive.
+
+**State**
+- **`pnpm verify:full` passes**: typecheck, lint, content validation, 18 unit and
+  integration tests, static build, both bundle budgets, 45 Playwright tests
+  across chromium, webkit and mobile chrome.
+- Budgets: initial route **162.5 KB**, 3D chunk **195.5 KB** brotli (180 / 320).
+- Six static routes: `/`, `/work`, `/capabilities`, `/404`, `/robots.txt`,
+  `/sitemap.xml`.
+- Git: `main`, one commit, no remote.
+- The scene runs only above `lg`, with WebGL, without reduced motion, unpaused —
+  all four fallbacks are tested, and in every one the page is complete.
+
+**Not done, and why**
+- **Lighthouse CI** (`pnpm lhci`) has never run. `@lhci/cli` is installed but
+  unconfigured — there is no `lighthouserc`. The bundle budgets are enforced;
+  LCP/INP/CLS at p75 are not.
+- **Callouts** (`Callouts.tsx` in the three/ contract) are not built — the dot,
+  leader line and aligned label column for the four sections that invite
+  pointing. The scene works without them and every fact it shows is already in
+  the DOM as text, so this is an enhancement, not a gap in correctness.
+- **OG images** are referenced in metadata but the files do not exist in
+  `public/`.
+- The form still does not submit anywhere — the transport decision is open.
+
+**Next**
+1. Configure and run Lighthouse CI against the budgets in architecture.md §8.
+2. Create the OG image.
+3. Decide the form transport (architecture.md §6, option A or B) and wire it.
+4. `Callouts.tsx`, if the annotation layer is still wanted.
+5. Host, analytics vendor, security headers — Phase 5, all needing decisions.
+
+**Blocked**
+- The five business facts — CEO. Every dependent component exists and stays
+  unmounted while its slot is `null`.
+- Form transport, host, analytics vendor — architecture.md §9.
+- The AI-crawler stance: `robots.ts` currently allows everything by virtue of the
+  blanket `*` rule, which is a **default, not a decision**. The file says so in a
+  comment. Allowing GPTBot and peers means citation in AI answers and also
+  training use — the CEO's call, and it needs a journal entry either way.
+
+---
+
 ## 2026-09-28 — next.config.mjs: dropped the `eslint` key, pinned the Turbopack root
 **Type:** decision
 **Owner:** 3D Engineer
