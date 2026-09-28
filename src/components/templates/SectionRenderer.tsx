@@ -10,6 +10,7 @@ import {
   StepsSection,
 } from '@/components/organisms';
 import type { CaseStudy, SiteContent } from '@/types/content';
+import { toHue } from '@/lib/hue';
 
 type SectionData = SiteContent['sections'][number];
 
@@ -44,7 +45,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 key={s.id}
                 {...common}
                 headline={s.headline}
-                items={s.items}
+                items={s.items.map((i: { hue?: string }) => ({ ...i, hue: toHue(i.hue) }))}
                 link={s.link}
               />
             );
@@ -79,7 +80,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 {...common}
                 headline={s.headline}
                 lead={s.lead}
-                items={s.items}
+                items={s.items.map((i: { hue?: string }) => ({ ...i, hue: toHue(i.hue) }))}
               />
             );
 
@@ -91,7 +92,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 eyebrow={s.eyebrow}
                 headline={s.headline}
                 lead={s.lead}
-                points={s.points}
+                points={s.points?.map((p: { hue?: string }) => ({ ...p, hue: toHue(p.hue) }))}
                 pillars={s.pillars}
                 layers={s.layers}
                 trust={s.trust}

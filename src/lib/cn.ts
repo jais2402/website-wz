@@ -39,6 +39,8 @@ export const cn = extendTailwindMerge({
             'signal',
             'signal-t',
             'wordmark',
+            'on-brand',
+            'act-d',
           ],
         },
       ],

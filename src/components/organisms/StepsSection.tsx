@@ -28,7 +28,14 @@ export function StepsSection({ id, side, scene, headline, lead, items }: StepsSe
     <Section id={id} side={side} scene={scene} labelledBy={titleId}>
       <HeadlineSplit headline={headline} id={titleId} />
       {lead ? <p className="mt-6 max-w-[52ch] text-lead text-ink-2">{lead}</p> : null}
-      <div className="mt-9 grid gap-7 lg:grid-cols-2">
+      {/*
+        Stacked, not a grid. The 3D stage measures each [data-step] to work out
+        how far through the stages the reader is — that is what drives the
+        modules dropping into the frame. In a two-column grid the steps share a
+        row, so the progress jumps instead of sweeping and the assembly never
+        plays. The vh margin gives each step its own scroll travel.
+      */}
+      <div className="mt-9 lg:[&>*]:mb-[6vh] lg:[&>*:last-child]:mb-0">
         {items.map((item) => (
           <StepBlock key={item.title} {...item} />
         ))}

@@ -22,14 +22,16 @@ export function ThemeToggle({ className }: { className?: string }) {
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       aria-pressed={isDark}
       className={cn(
-        'inline-flex size-10 items-center justify-center rounded-[2px] border border-line-2 text-ink-2',
-        'transition-colors duration-300 ease-[var(--ease-brand)] hover:border-ink hover:text-ink',
+        'inline-flex size-10 items-center justify-center rounded-full border border-line-2 text-ink',
+        'transition-colors duration-300 ease-[var(--ease-brand)] hover:border-ink',
         className,
       )}
     >
-      <span aria-hidden="true" className="font-mono text-[11px] leading-none">
-        {isDark ? 'LT' : 'DK'}
-      </span>
+      {/* A circle half-filled with ink — the light/dark glyph, drawn in CSS. */}
+      <span
+        aria-hidden="true"
+        className="size-3.5 rounded-full border-[1.5px] border-ink bg-[linear-gradient(90deg,var(--color-ink)_50%,transparent_50%)]"
+      />
       <span className="sr-only">{isDark ? 'Switch to light theme' : 'Switch to dark theme'}</span>
     </button>
   );

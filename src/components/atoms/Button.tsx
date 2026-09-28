@@ -32,8 +32,11 @@ export function Button({
     'inline-flex items-center gap-3 rounded-[2px] border font-medium tracking-tight',
     'transition-colors duration-300 ease-[var(--ease-brand)]',
     size === 'small' ? 'min-h-[38px] px-4 text-[13px]' : 'min-h-12 px-[22px] text-sm',
+    // Primary is blueprint, per the approved design's final pass — and it must
+    // not hover to signal: the CTA is on every screen, and signal is the
+    // scarcity token (design.md §1.2).
     variant === 'primary'
-      ? 'border-transparent bg-ink text-ground hover:bg-signal hover:text-[#15171a]'
+      ? 'border-transparent bg-blueprint text-on-brand hover:bg-act-d'
       : 'border-line-2 text-ink hover:border-ink',
     className,
   );

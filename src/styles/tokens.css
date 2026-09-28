@@ -22,6 +22,13 @@
      and failed the axe gate. These are 3.31:1 and 3.06:1. */
   --color-wordmark: #7f8592;
 
+  /* Primary action. The approved prototype's final pass makes the primary
+     button blueprint, not ink. Its own rule pairs it with #fff, which measures
+     5.92:1 in light but only 2.87:1 in dark — under the 4.5:1 floor. The
+     background is the design; the foreground flips per theme so both pass. */
+  --color-on-brand: #ffffff;   /* 5.92:1 on --color-blueprint */
+  --color-act-d: #1f33b0;      /* pressed / hover */
+
   /* palette — surface values (3D, swatches) */
   --color-blueprint: #3350f0;
   --color-pine: #10a37c;
@@ -90,6 +97,8 @@
     --color-line: rgb(235 235 231 / 0.11);
     --color-line-2: rgb(235 235 231 / 0.24);
     --color-wordmark: #636876;
+    --color-on-brand: #12141b;  /* 6.40:1 on the dark blueprint */
+    --color-act-d: #9aa9ff;
     --color-blueprint: #7d90ff;
     --color-pine: #3fd1a4;
     --color-ochre: #ffc24d;
@@ -112,6 +121,8 @@
   --color-line: rgb(235 235 231 / 0.11);
   --color-line-2: rgb(235 235 231 / 0.24);
   --color-wordmark: #636876;
+  --color-on-brand: #12141b;
+  --color-act-d: #9aa9ff;
   --color-model: #a7acba;
   --color-model-2: #636a7c;
   color-scheme: dark;

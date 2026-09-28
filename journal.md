@@ -41,6 +41,63 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-28 — The assembly never played: steps in a grid broke scroll progress
+**Type:** delivery
+**Owner:** 3D Engineer
+**Context:** Reported as "very nice transition will happen — which is not
+happening now". The `how` scene showed the footprint and the lattice frame, then
+stalled: the twenty-seven modules never dropped in.
+**Cause, measured:** the stage derives sub-step progress from the `top` of each
+`[data-step]`. `StepsSection` laid the four stages out as `lg:grid-cols-2`, so
+steps 0/1 shared a row top and 2/3 shared another — `[9973, 9973, 10234, 10234]`.
+Progress therefore jumped **1.89 → 3.31**, skipping the 2.0–2.9 window where
+`f = (sub - 2) * 30` places the modules. The scene was never asked to draw them.
+**Fix:** stacked the steps with a 6vh gap, as the prototype does. Progress now
+sweeps 0 → 3.6 through four distinct tops and the assembly plays.
+**Lesson:** the layout change that broke it looked purely cosmetic. Anything the
+scene measures — `[data-step]`, `[data-body]`, `data-side`, `data-scene` — is an
+interface, and a component that carries one cannot be re-laid-out freely. That is
+now called out in the component itself.
+
+---
+
+## 2026-09-28 — Design review of a screen recording, and what it got right and wrong
+**Type:** decision
+**Owner:** Design Reviewer + Designer
+**Context:** The owner supplied a 66-second scroll recording. No ffmpeg on the
+machine, so frames were extracted with a small Swift `AVAssetImageGenerator`
+utility — worth remembering, it needs no install.
+**The review's CRITICAL finding was against a stale page.** `serve` caches hard;
+the reviewer loaded a build from before the step-stacking fix and reported the
+assembly as permanently broken, with a wrong diagnosis (progress keyed to total
+scroll height). The fault was real, the cause was not. Verified independently by
+replicating `subOf` in the live page and reading the step tops — which is what
+established the actual cause above. **A reviewer's diagnosis is a lead, not a
+finding.**
+**Two findings that were correct and are now fixed:**
+1. **The primary CTA was the wrong colour.** It used `ink`; the approved
+   prototype's final pass sets `.btn-p { background: var(--blueprint) }`. Ported
+   — but the prototype pairs it with `#fff`, which measures 5.92:1 in light and
+   **2.87:1 in dark**, under the 4.5:1 floor. Kept the background as designed and
+   flipped the foreground per theme via a new `--color-on-brand` token: 5.92:1
+   and 6.40:1. The old hover went to `signal`, which put the scarcity token on a
+   control present on every screen; it now goes to `--color-act-d`.
+2. **Header toggles** were square boxes with the literal text "DK" and "II".
+   The design has circular icon buttons; rebuilt with CSS-drawn glyphs (a
+   half-filled circle, pause bars, a play triangle) so there is no icon payload.
+**Also fixed, reported separately:** the range rows had no swatches.
+`content/site.json` writes that section's hues as single-letter codes (`o`, `p`,
+`u`, `s`), which were mapped for the 3D scene but not for the DOM, so `Swatch`
+received an unknown key and rendered nothing. Added `lib/hue.ts` to resolve both
+spellings at the content boundary.
+**Raised and deliberately NOT changed:** the `how` scene shows four signal-orange
+corner pegs at once, against design.md §5.2 ("one per screen, maximum"). The
+approved prototype does the same, so this is a conflict between the design system
+and the approved artifact, not a porting error. It is the Designer's and CEO's
+call, not something to silently correct. Flagged for a decision.
+
+---
+
 ## 2026-09-28 — Section rhythm and the case tab strip, both missed in the port
 **Type:** delivery
 **Owner:** Designer
