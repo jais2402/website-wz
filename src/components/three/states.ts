@@ -93,17 +93,19 @@ export function buildState(P: Palette) {
    * pastel and less white (2026-09-29). That followed "bright" (same day),
    * "pastel" (2026-09-28), and the prototype's near-white.
    *
-   * Every hue share a scene asks for maps through s → min(1, 0.62 + 1.2·s).
-   * A resting part shows 94–100% of its brand hue. A part dimmed because the
-   * reader points at another keeps about 70% (0.1 → 74%), so it stays a design
-   * colour, not a pastel. Parts are no longer filled with the white model
+   * Every hue share a scene asks for maps through s → min(0.8, 0.5 + 1.2·s).
+   * A resting part shows 80% of its brand hue (owner, 2026-09-29: "reduce the
+   * color little bit down so that it is 80%"). A part dimmed because the
+   * reader points at another keeps about 62% (0.1 → 62%). The part pointed at
+   * goes to 100%, so it stands above the 80% rest. Parts are no longer filled with the white model
    * material; each takes a brand hue. Attention now comes mostly from the lift
    * and the label of the part pointed at, not from draining the others to
    * white. See design.md §5.1.
    */
-  const REST_FLOOR = 0.62;
+  const REST_FLOOR = 0.5;
   const REST_GAIN = 1.2;
-  const restShare = (share: number) => Math.min(1, REST_FLOOR + share * REST_GAIN);
+  const REST_CAP = 0.8;
+  const restShare = (share: number) => Math.min(REST_CAP, REST_FLOOR + share * REST_GAIN);
 
   // Signal is NOT in the resting rotation. It is the scarcity token — one per
   // screen, placed on purpose — and lifting the rest colours would otherwise
@@ -239,7 +241,7 @@ export function buildState(P: Palette) {
         const grow = smooth((sub - 0.75) / 0.5), sec = smooth((sub - 1.75) / 0.5);
         for (let gy2 = 0; gy2 < 4; gy2 += 1) for (let gz2 = 0; gz2 < 2; gz2 += 1) for (let gx2 = 0; gx2 < 2; gx2 += 1) {
           const up = gy2 >= 2, g = up ? grow : 1;
-          const c3 = up ? dimmed(P.blueprint, 0.25 + sec * 0.25) : P.pine;
+          const c3 = up ? dimmed(P.blueprint, 0.25 + sec * 0.25) : P.pine.clone().lerp(P.model, 1 - REST_CAP);
           // The new layers GROW UP out of the top of the base (owner,
           // 2026-09-28: "start from the bottom"). The prototype dropped them in
           // from 1.6 above; here each starts inside the top base layer and
@@ -425,7 +427,7 @@ export function buildState(P: Palette) {
           const [x, z] = project(pt[0], pt[1]);
           const up = hl === n ? 0.35 : 0;
           const hue = COUNTRY_HUE[name] ?? MIX[n % MIX.length]!;
-          const c = hl >= 0 && hl !== n ? hueOf(hue).clone().lerp(P.model, 0.3) : hueOf(hue);
+          const c = hl === n ? hueOf(hue) : hueOf(hue).clone().lerp(P.model, hl >= 0 ? 0.38 : 1 - REST_CAP);
           put(o, k++, x, 0.02 + (0.62 + up) / 2, z, 0.12, 0.62 + up, 0.12, c);
         });
         o.look = 0.2; o.dist = 16; o.yaw = 0.74 + Math.sin(t * 0.1) * 0.04;

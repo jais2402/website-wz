@@ -41,6 +41,26 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Resting colour at 80%
+**Type:** decision
+**Owner:** Designer
+**Context:** Owner: "reduce the color little bit down so that it is 80%".
+**Decision:** `restShare` is now `min(0.8, 0.5 + 1.2·s)` (new `REST_CAP = 0.8` in
+`three/states.ts`). Regions markers and the principles pine base, which used the
+full hue directly, now also rest at 80%. The part pointed at still goes to 100%.
+design.md §5.1 is updated.
+**Because:** 100% read as too loud. At 80% the colours are still the brand hues
+rather than pastels, and they leave 20% of headroom for the attention state.
+**Consequences:** the attention contrast is 100% against 80%, plus lift and label.
+
+## 2026-09-29 — Session: resting colour to 80%
+**Type:** session
+**Done:** `three/states.ts`, `.claude/design.md`.
+**State:** verify:full is green; checked in screenshots at 1440.
+**Next / Blocked:** unchanged from the previous close-out.
+
+---
+
 ## 2026-09-29 — Design colours on all blocks; white and pastel removed
 **Type:** reversal (of the pastel curve and the white checker fills)
 **Owner:** Designer

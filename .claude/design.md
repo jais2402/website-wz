@@ -165,9 +165,9 @@ One model, fifteen states, blended by scroll. It is a diagram, not decoration.
    and white colors". Before that, the same day: bright. 2026-09-28: pastel. The
    prototype: near-white.)* Parts take a brand hue (blueprint, pine, ochre, plum,
    rose) and are never filled with the white model material. Hue shares map
-   through `min(1, 0.62 + 1.2·s)` (`REST_FLOOR` / `REST_GAIN` in
-   `three/states.ts`): 94–100% at rest, and about 74% when another part is
-   pointed at. The part pointed at shows its attention by lift and label, not by
+   through `min(0.8, 0.5 + 1.2·s)` (`REST_FLOOR` / `REST_GAIN` / `REST_CAP`
+   in `three/states.ts`): 80% at rest (owner, 2026-09-29), about 62% when another
+   part is pointed at, and 100% for the part pointed at. The part pointed at shows its attention by lift and label, not by
    draining the others to white. Structural pieces (connectors, map tiles) stay
    neutral grey, and the hub stays ink. Signal is never in the rotation (rule 2).
    *Tone mapping is PBR Neutral, not ACES (2026-09-29). ACES bleached the
