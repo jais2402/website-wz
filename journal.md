@@ -41,6 +41,27 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Principles block stands lower; lead-placement limited to centred hand-offs
+**Type:** delivery + partial reversal
+**Owner:** 3D Engineer
+**Context:** Owner: "they need to have based below" (principles).
+**Decision:** principles `look` is now `2.2 + grow·1.35` (was `1.2 + grow·1.45`), so
+the base sits at ~0.8H at every step. Also found while capturing: the early
+placement weight `wp`, added earlier today, applied to side↔side hand-offs too.
+Going principles→range, it put the model on the outgoing principles text. `wp`
+now applies only when a centred chapter is on either side; side↔side follows
+`w` again, as in the prototype (`three/stage.ts`).
+**Consequences:** side↔side crossings are back to the prototype's behaviour.
+Centred hand-offs keep today's rules.
+
+## 2026-09-29 — Session: principles base
+**Type:** session
+**Done:** `three/states.ts`, `three/stage.ts`.
+**State:** verify:full is green.
+**Next / Blocked:** unchanged.
+
+---
+
 ## 2026-09-29 — Tech labels point at their plates; hero lead 50ch
 **Type:** delivery
 **Owner:** 3D Engineer + Designer

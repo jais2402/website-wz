@@ -255,7 +255,10 @@ export function buildState(P: Palette) {
         label(o, pn, 1.36, 2.6 + grow * 2.6, 1.36, true);
         o.name = pn;
         o.parts = grow > 0.5 ? (sec > 0.5 ? '16 modules, secured' : '16 modules') : '8 modules';
-        o.look = 1.2 + grow * 1.45; o.dist = 15.5 + grow * 5.5; o.yaw = -0.1;
+        // Aimed higher so the block stands near the bottom of the frame rather
+        // than floating mid-screen (owner, 2026-09-29: "they need to have
+        // based below"). Was 1.2 + grow * 1.45.
+        o.look = 2.2 + grow * 1.35; o.dist = 15.5 + grow * 5.5; o.yaw = -0.1;
         break;
       }
 

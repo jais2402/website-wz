@@ -320,7 +320,11 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     // reading column early. Following w, a centred model was still in the
     // middle of the page when the next heading arrived beside it. It now
     // reaches the new half by w = 0.45 and finishes changing shape after.
-    const wp = w <= 0 ? 0 : w >= 1 ? 1 : smooth(Math.min(1, w / 0.45));
+    // Only around a centred chapter. Between two side scenes the model
+    // crosses from one half to the other, where early placement put it onto
+    // the outgoing text; there it keeps following w, as in the prototype.
+    const nearCentre = an.side === 'c' || bn.side === 'c';
+    const wp = !nearCentre ? w : w <= 0 ? 0 : w >= 1 ? 1 : smooth(Math.min(1, w / 0.45));
 
     const hlA = highlights.get(SCENES[an.sc] ?? '') ?? -1;
     const hlB = highlights.get(SCENES[bn.sc] ?? '') ?? -1;
