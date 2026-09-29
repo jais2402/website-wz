@@ -41,6 +41,43 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Pricing block made crisp; headline options pending owner
+**Type:** delivery
+**Owner:** Content Steward + SEO Specialist, fact-checked by the main session
+**Context:** Owner: "rewrite this block — remove the obvious things and make it
+crisp"; "content writer and SEO analyst give me few options for the headline".
+**Decision:** "scope, price and timeline in writing" was said three times; it is
+now said once. The new text:
+- Lead: "You know the price before anything is built."
+- Points: "Understand the system first" / "…what the first version must do.";
+  "Price what it must do" / "The price follows the outcome the system has to
+  deliver."; "Agree it in writing" / "Scope, price and timeline in one document."
+- Note: unchanged (tuned line, context.md §4).
+- Headline: unchanged, pending the owner's choice.
+**Rejected from the writer's draft:** "Changes get a new number / we price the
+change too" (a change-request policy) and "Price the outcome, not the hours" (a
+no-time-billing claim; the old copy said the price covers the work it takes).
+Both are public commitments the brief does not make, so they need the owner or
+the CEO agent.
+**Headline options offered:** SEO: "Price agreed in writing, / before any build
+starts." · "How custom software / actually gets priced." (best for answer
+engines) · "Scope first, / price second, in writing." · "No price until / we
+understand the system." · "We price the system, / not a rate card." (needs owner
+confirmation). Writer: "You see the number, / before we touch any code." ·
+"Priced once we understand / how your business actually runs." · "No number
+until we know / what we are pricing." · "Priced on what it does, / not what it
+took to build." and "We price the work, / not the hours in it." (both need
+confirmation: billing claim).
+
+## 2026-09-29 — Session: pricing copy
+**Type:** session
+**Done:** `content/site.json` (pricing).
+**State:** verify:full is green.
+**Next:** apply the owner's headline choice to `pricing.headline`.
+**Blocked:** headline choice and the billing-model claims (owner).
+
+---
+
 ## 2026-09-29 — Principles block stands lower; lead-placement limited to centred hand-offs
 **Type:** delivery + partial reversal
 **Owner:** 3D Engineer

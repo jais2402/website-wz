@@ -362,22 +362,22 @@
         "lead": "Priced on the system,",
         "accent": "once we understand it."
       },
-      "lead": "You see scope, price and timeline together, in writing, before anything is built.",
+      "lead": "You know the price before anything is built.",
       "points": [
         {
           "hue": "blueprint",
           "title": "Understand the system first",
-          "body": "We map how the work happens today and what the first version has to do. Technology comes after that."
+          "body": "We map how the work happens today and what the first version must do."
         },
         {
           "hue": "ochre",
-          "title": "Price the value and the build",
-          "body": "The price reflects the outcome the system delivers and the work it takes to build it properly."
+          "title": "Price what it must do",
+          "body": "The price follows the outcome the system has to deliver."
         },
         {
           "hue": "pine",
-          "title": "Agree it before we build",
-          "body": "Scope, price and timeline arrive together, in writing, before development starts."
+          "title": "Agree it in writing",
+          "body": "Scope, price and timeline in one document."
         }
       ],
       "note": "No build starts before that number is agreed."
