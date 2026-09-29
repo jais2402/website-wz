@@ -27,7 +27,21 @@ export function organizationSchema() {
     description: content.meta.description,
     foundingDate: String(content.meta.since),
     areaServed: content.meta.markets,
-    ...(facts.phone ? { telephone: facts.phone } : {}),
+    ...(facts.phoneE164 ?? facts.phone ? { telephone: facts.phoneE164 ?? facts.phone } : {}),
+    // One PostalAddress per confirmed office. Absent entirely while offices is
+    // empty — an absence costs less than a fake (rule 1).
+    ...(facts.offices.length
+      ? {
+          address: facts.offices.map((o) => ({
+            '@type': 'PostalAddress',
+            ...(o.lines?.length ? { streetAddress: o.lines.join(', ') } : {}),
+            addressLocality: o.city,
+            ...(o.region ? { addressRegion: o.region } : {}),
+            ...(o.postalCode ? { postalCode: o.postalCode } : {}),
+            addressCountry: o.countryCode ?? o.country,
+          })),
+        }
+      : {}),
     ...(ogImage() ? { logo: `${base}${ogImage()!.url}` } : {}),
   };
 }
@@ -76,4 +90,26 @@ export function caseStudySchema() {
     creator: { '@id': `${base}/#organization` },
     text: c.body.join(' '),
   }));
+}
+
+/**
+ * One Service per capability page.
+ *
+ * `provider` points at the Organization node rather than repeating it, so an
+ * engine reading any capability page resolves the same entity. Only fields the
+ * page itself shows: no price, no rating, no area claim beyond `areaServed`,
+ * which comes from the markets listed in the DOM.
+ */
+export function serviceSchema(slug: string, name: string, description: string) {
+  const base = content.meta.siteUrl.replace(/\/$/, '');
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${base}/capabilities/${slug}/#service`,
+    name: name.replace(/\s*·\s*Wezigns$/, ''),
+    description,
+    url: `${base}/capabilities/${slug}/`,
+    provider: { '@id': `${base}/#organization` },
+    areaServed: content.meta.markets,
+  };
 }

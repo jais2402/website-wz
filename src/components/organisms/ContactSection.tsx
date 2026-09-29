@@ -29,6 +29,8 @@ export interface ContactSectionProps {
   topicLabel?: string | undefined;
   /** Topic code on a CTA → the chip it preselects. From content. */
   topicCodes?: Record<string, string> | undefined;
+  /** `h1` on /contact, where the form is the page's subject. Default `h2`. */
+  as?: 'h1' | 'h2' | undefined;
 }
 
 const AUTOCOMPLETE: Record<string, string> = { name: 'name', email: 'email' };
@@ -53,7 +55,7 @@ const AUTOCOMPLETE: Record<string, string> = { name: 'name', email: 'email' };
  */
 export function ContactSection({
   id, side, scene, headline, topics, fields, submit, promise, note, requiredNote,
-  topicLabel = 'What is this about?', topicCodes,
+  topicLabel = 'What is this about?', topicCodes, as: headingAs,
 }: ContactSectionProps) {
   const [topic, setTopic] = useState<string | null>(null);
 
@@ -109,7 +111,7 @@ export function ContactSection({
 
   return (
     <Section id={id} side={side} scene={scene} labelledBy={titleId}>
-      <HeadlineSplit headline={headline} id={titleId} level="d1" />
+      <HeadlineSplit headline={headline} id={titleId} level="d1" as={headingAs ?? 'h2'} />
 
       <form noValidate onSubmit={onSubmit} className="mt-9 max-w-measure">
         <TopicChips label={topicLabel} topics={topics} selected={topic} onSelect={setTopic} />

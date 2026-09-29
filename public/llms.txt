@@ -12,6 +12,7 @@
 - Cloud hosting, support and maintenance: We host, monitor and maintain what we build.
 - AI and Gen-AI integrations: AI in the steps where it saves real work. A person checks the rest.
 - Websites: Designed and built one at a time.
+- Ecommerce systems: The catalogue, orders, stock and payments behind a shop, not just the storefront a shopper sees.
 
 ## Questions
 

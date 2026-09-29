@@ -73,10 +73,20 @@ export interface SiteContent {
     og?: { image: string; imageAlt: string };
     TODO_business_facts: {
       phone: string | null;
+      phoneE164?: string | null;
       whatsapp: string | null;
       priceBand: string | null;
       shapeStagePaid: boolean | null;
-      offices: unknown[];
+      offices: Array<{
+        label?: string;
+        lines?: string[];
+        city: string;
+        region?: string;
+        postalCode?: string;
+        country: string;
+        countryCode?: string;
+        mapUrl?: string;
+      }>;
       namedClients: unknown[];
       team: unknown[];
       certifications: unknown[];
@@ -117,6 +127,40 @@ export interface DocumentPage {
 }
 
 export interface WorkPage extends DocumentPage {}
+
+/** A block of prose on a sub-page: paragraphs, a list, or both. */
+export interface PageSection {
+  heading: string;
+  body?: string[];
+  items?: string[];
+}
+
+/** One page per offering: /capabilities/<slug>/. */
+export interface CapabilityPage {
+  title: string;
+  description: string;
+  headline: Headline;
+  lead: string;
+  sections: PageSection[];
+  /** A published case study's slug, when one is in the same territory. */
+  relatedCase?: string;
+}
+
+export interface AboutPage {
+  title: string;
+  description: string;
+  headline: Headline;
+  lead: string;
+  sections: PageSection[];
+}
+
+export interface ContactPage {
+  title: string;
+  description: string;
+  headline: Headline;
+  lead: string;
+  note?: string;
+}
 
 export interface CapabilitiesPage extends DocumentPage {
   rangeIntro?: string;

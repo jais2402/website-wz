@@ -31,7 +31,7 @@ export interface Disc {
 }
 
 /** Module heights for the eight disciplines. From the prototype. */
-export const DISC_HEIGHT = [1.3, 0.9, 1.1, 1.6, 0.8, 1.2, 1.0, 0.7];
+export const DISC_HEIGHT = [1.3, 0.9, 1.1, 1.6, 0.8, 1.2, 1.0, 0.7, 1.45];
 
 /** Callout labels, shortened. The full titles live in the DOM. */
 const DISC_SHORT = [
@@ -43,6 +43,7 @@ const DISC_SHORT = [
   'Hosting and support',
   'AI and Gen-AI',
   'Websites',
+  'Ecommerce',
 ];
 
 export const DISC: Disc[] = (S.build?.items ?? []).map(

@@ -198,15 +198,22 @@ export function buildState(P: Palette) {
       }
 
       case 'build': {
-        for (i = 0; i < 8; i += 1) {
-          const cx = ((i % 4) - 1.5) * 1.55, cz = (Math.floor(i / 4) - 0.5) * 1.62, h = DISC_HEIGHT[i]!;
+        // One module per offering, in a square-ish field: the tile the reader
+        // points at lifts. Rows and columns follow the count, so adding an
+        // offering to content/site.json extends the model with it.
+        const nd = Math.max(1, Math.min(12, DISC.length || 8));
+        const cols = Math.ceil(Math.sqrt(nd)), rows = Math.ceil(nd / cols);
+        for (i = 0; i < nd; i += 1) {
+          const cx = ((i % cols) - (cols - 1) / 2) * 1.55;
+          const cz = (Math.floor(i / cols) - (rows - 1) / 2) * 1.62;
+          const h = DISC_HEIGHT[i] ?? 1;
           const lift = hl === i ? 0.38 : 0;
           const full = hueOf(DISC[i]?.hue ?? 'blueprint');
           const cc = hl === i ? full : dimmed(full, hl >= 0 ? 0.9 : 0.55);
           put(o, k++, cx, h / 2 + lift, cz, 1.16, h, 1.16, cc);
           label(o, DISC[i]?.short ?? '', cx, h + lift + 0.12, cz, hl === i);
         }
-        o.look = 0.75; o.dist = 16.5; o.yaw = -0.18; o.parts = '8 modules';
+        o.look = 0.75; o.dist = 16.5; o.yaw = -0.18; o.parts = `${nd} modules`;
         break;
       }
 

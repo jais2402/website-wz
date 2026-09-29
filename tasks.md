@@ -85,6 +85,9 @@ critical path.
 - [x] `/` assembled from `content/site.json` — *PM*
 - [x] `/work` — anchors per case, correct order (India case first) — *PM*
 - [x] `/capabilities` — disciplines, the thirty systems, the stack — *PM*
+- [x] `/capabilities/<slug>` — one page per offering, nine of them — *PM*
+- [x] `/about` — company, no team section while that fact is blocked — *PM*
+- [x] `/contact` — form, email, phone, office — *PM*
 - [~] Metadata per route: title, description, canonical — done. **OG image is
       blocked**: `public/og/wezigns-og.png` does not exist, so the tag is omitted
       until it does (`src/lib/og.ts`). The home `<title>` still needs the CEO's
@@ -155,6 +158,19 @@ When any of these arrives:
 2. Build the component that renders it (it is already designed as an optional slot).
 3. Re-run the five-second test and the intent question with the Research Analyst.
 4. Record the before/after in `journal.md`.
+
+---
+
+## Open — partners
+
+- [!] **Solvable and Inscribe** cannot be published yet. Research found no
+      company called "Solvable" in the payments/fintech band at all, and
+      "Inscribe" most plausibly resolves to inscribe.ai (document-fraud
+      detection), unconfirmed. Naming a third party as a partner is a public
+      claim about them. Need from the owner: the exact URL for each, one line
+      on what Wezigns actually does with them (integrate their API / built
+      software for them / reseller or partner agreement), and confirmation
+      that they permit being named — *CEO*
 
 ---
 

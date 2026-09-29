@@ -4,6 +4,11 @@ import type { Link as ContentLink } from '@/types/content';
 
 export interface SiteFooterProps {
   cta: { title: string; email: string; body: string; markets?: string[] | undefined };
+  /** Rendered only when the fact exists. Absent slots render nothing (rule 1). */
+  phone?: { display: string; href: string } | undefined;
+  office?:
+    | { label?: string | undefined; lines?: string[] | undefined; city: string; region?: string | undefined; postalCode?: string | undefined; country: string; mapUrl?: string | undefined }
+    | undefined;
   columns: Array<{ title: string; links: ContentLink[] }>;
   wordmark: string;
   base: string[];
@@ -17,7 +22,7 @@ export interface SiteFooterProps {
  * everywhere else, and the email is offered for people who will not fill a
  * form (context.md §5).
  */
-export function SiteFooter({ cta, columns, wordmark, base, primaryCta }: SiteFooterProps) {
+export function SiteFooter({ cta, columns, wordmark, base, primaryCta, phone, office }: SiteFooterProps) {
   return (
     <footer className="relative z-2 border-t border-line bg-panel px-gutter pb-10 pt-[clamp(72px,9vh,110px)]">
       <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
@@ -33,7 +38,32 @@ export function SiteFooter({ cta, columns, wordmark, base, primaryCta }: SiteFoo
             >
               {cta.email}
             </a>
+            {phone ? (
+              <a
+                href={phone.href}
+                className="inline-flex min-h-10 items-center text-body text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-brand hover:text-ink"
+              >
+                {phone.display}
+              </a>
+            ) : null}
           </div>
+
+          {office ? (
+            <address className="mt-6 not-italic text-small leading-relaxed text-ink-3">
+              {office.label ? <Eyebrow>{office.label}</Eyebrow> : null}
+              <span className="mt-1 block">
+                {office.lines?.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+                <span className="block">
+                  {[office.city, office.postalCode].filter(Boolean).join(' ')}
+                  {office.country ? `, ${office.country}` : ''}
+                </span>
+              </span>
+            </address>
+          ) : null}
 
           {cta.markets?.length ? (
             <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2">

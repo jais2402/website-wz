@@ -44,3 +44,18 @@ export const pages = {
   work: content.pages.work as unknown as WorkPage,
   capabilities: content.pages.capabilities as unknown as CapabilitiesPage,
 };
+
+/**
+ * The contact facts the footer and the contact page render.
+ *
+ * Both are optional business facts. While a slot is null the component gets
+ * `undefined` and renders nothing — no placeholder, ever (CLAUDE.md rule 1).
+ */
+export function contactFacts() {
+  const facts = content.meta.TODO_business_facts;
+  const digits = facts.phoneE164 ?? facts.phone?.replace(/[^+\d]/g, '');
+  return {
+    phone: facts.phone && digits ? { display: facts.phone, href: `tel:${digits}` } : undefined,
+    office: facts.offices[0],
+  };
+}

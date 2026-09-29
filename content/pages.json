@@ -1,0 +1,405 @@
+{
+  "capabilityPages": {
+    "custom-business-software": {
+      "title": "Custom business software · Wezigns",
+      "description": "Custom software built around a business process that off-the-shelf tools cannot handle, in whichever stack fits it.",
+      "headline": {
+        "lead": "Software built",
+        "accent": "around your process."
+      },
+      "lead": "Custom business software is built around a process that off-the-shelf tools cannot handle, on whichever stack fits it.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "Most software is built for an average business, then bent to fit yours with workarounds and spreadsheets. Custom software starts the other way round: we build around the process you already run.",
+            "It can replace a single broken step or a whole system. Either way, we design it, build it in working pieces, and keep running it after launch."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "A system shaped around your process, not a generic template.",
+            "Working pieces to test and review as they are built, not one long build.",
+            "Scope, price and timeline agreed before anything is built.",
+            "Hosting, monitoring and maintenance once it is live."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer when a spreadsheet, a chat thread or a bought tool is being bent into a shape it was never designed for, and the workarounds are now costing more time than building the software would."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If an existing tool already does the job with only minor changes, buying it will be cheaper and faster than building it. Sometimes it is not, and we will say so."
+          ]
+        }
+      ]
+    },
+    "business-process-automation": {
+      "title": "Business process automation · Wezigns",
+      "description": "Business process automation moves repetitive steps into the system, so people handle the exceptions instead.",
+      "headline": {
+        "lead": "Routine work,",
+        "accent": "run by the system."
+      },
+      "lead": "Business process automation moves the repetitive steps in a process into the system, so people are left to handle the exceptions.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "Every operation has steps that do not need a person: copying a number from one place to another, sending the same reminder, applying the same rule every time. Automation takes those steps out of someone's day.",
+            "People stay in control of the exceptions and the judgement calls. The system handles what is routine."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "The routine steps in a process mapped out before anything is built.",
+            "Rules and triggers that run the routine steps without a person starting them.",
+            "Exceptions routed to a person instead of failing silently.",
+            "The same review and maintenance we give every system we run."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer when the same manual step is repeated many times a day and the rule behind it is clear enough to write down."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If the step still needs judgement every time, or the rule keeps changing, automating it too early creates more exceptions than it removes."
+          ]
+        }
+      ]
+    },
+    "system-integration": {
+      "title": "System integration · Wezigns",
+      "description": "System integration connects the software you already run, so a record does not get typed in twice.",
+      "headline": {
+        "lead": "One record,",
+        "accent": "not three."
+      },
+      "lead": "System integration connects the software you already run, whatever it runs on, so a record does not get typed in twice.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "Most businesses already run several systems: a CRM, an accounting package, a support desk, government portals. The work is rarely one gap. It is the same record living in different places and drifting apart.",
+            "We connect what you already run so a record moves between tools instead of being retyped, matching finance, sales, operations, external services and older legacy tools where they need to talk to each other."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "Finance and accounting tools connected to payment gateways such as Stripe and Razorpay.",
+            "CRMs and support desks kept in sync with a single customer record.",
+            "Inventory, warehouse and shipment systems connected to order fulfilment.",
+            "Older databases and desktop tools brought in without switching them off."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer when the same information is being entered more than once, or two systems disagree about what is true."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If two systems only overlap in one small place, a manual export once a week may cost less than building and maintaining an integration."
+          ]
+        }
+      ]
+    },
+    "data-and-reporting-systems": {
+      "title": "Data and reporting systems · Wezigns",
+      "description": "Data and reporting systems turn data you already have into reports and dashboards people actually use.",
+      "headline": {
+        "lead": "The data you have,",
+        "accent": "turned into reports people use."
+      },
+      "lead": "Data and reporting systems turn the data a business already has into reports and dashboards people can use without building them by hand.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "The data usually already exists, scattered across systems and spreadsheets. The gap is not the data. It is turning it into something a manager can open and trust.",
+            "We build the reporting and dashboards on top of what already exists, so the numbers update themselves instead of being assembled by hand each month."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "Dashboards built on the data you already collect, not a new data-entry step.",
+            "Reports that update themselves instead of being rebuilt in a spreadsheet.",
+            "Access set by role, so people see what is relevant to them.",
+            "Ongoing maintenance as the data and the questions being asked change."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer when someone is already assembling the same report by hand, from more than one system, on a regular schedule."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If the numbers only get looked at once and never again, a one-off spreadsheet answers the question more cheaply than a system built to update itself."
+          ]
+        }
+      ]
+    },
+    "customer-and-partner-platforms": {
+      "title": "Customer and partner platforms · Wezigns",
+      "description": "Customer and partner platforms give customers, partners and members one place to work with your business.",
+      "headline": {
+        "lead": "One place,",
+        "accent": "for everyone who works with you."
+      },
+      "lead": "Customer and partner platforms give customers, partners, operators and members one place to work with a business, instead of email and spreadsheets.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "Portals and apps replace the back and forth of email threads and shared spreadsheets with one shared record that everyone involved can see.",
+            "Access is set by role, so a customer, a partner and an internal team see only what applies to them, working from the same underlying system."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "A portal or app for customers, partners, operators or members.",
+            "Role-based access, so each group sees only what applies to them.",
+            "One shared record instead of email threads and spreadsheets.",
+            "Hosting, monitoring and maintenance once it is live."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer when customers, partners or members are being coordinated over email and spreadsheets and the coordination itself has become the bottleneck."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If only a handful of people are involved and email already works, a platform adds overhead a smaller process does not need."
+          ]
+        }
+      ]
+    },
+    "cloud-hosting-support-and-maintenance": {
+      "title": "Cloud hosting, support and maintenance · Wezigns",
+      "description": "We host, monitor and maintain the systems we build, and review systems built elsewhere before taking them over.",
+      "headline": {
+        "lead": "We built it.",
+        "accent": "We keep running it."
+      },
+      "lead": "We host, monitor and maintain the systems we build, and review systems built elsewhere before taking them over.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "Software does not stay secure or reliable on its own. It needs monitoring, patching and someone who answers when something breaks.",
+            "For systems we build, this continues after launch. For systems built elsewhere, it starts with a review of the code and how it is hosted, so you know what taking it over would involve."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "Hosting on AWS or Google Cloud, chosen for the problem.",
+            "Monitoring, patching and security reviews for as long as we run it.",
+            "Backups and a way back when something goes wrong.",
+            "A code and hosting review before we take over a system built elsewhere."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer for any system that has to keep running after launch, whether we built it or not."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If a system is being retired soon, a full takeover review costs more than it returns. Say so and we will scope something smaller."
+          ]
+        }
+      ]
+    },
+    "ai-and-gen-ai-integrations": {
+      "title": "AI and Gen-AI integrations · Wezigns",
+      "description": "AI added to the steps in a process where it saves real work, with a person checking the exceptions.",
+      "headline": {
+        "lead": "AI inside the system,",
+        "accent": "not beside it."
+      },
+      "lead": "AI is added to the steps in a process where it saves real work, inside the screens a team already uses, with a person checking the exceptions.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "AI added to a process only earns its place where it removes real work: reading a document, drafting a first answer, spotting a pattern in your own data.",
+            "It runs inside the product your team already uses, on your own data, not as a separate chat window. A person stays in control of the decisions that matter."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "AI applied to specific steps in your process, not the whole product.",
+            "The system runs on your own data, inside your existing screens.",
+            "A person checks the exceptions; the system does not decide alone.",
+            "The same review and maintenance as every system we run."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer when a specific step, like reading documents or drafting a first response, is repetitive enough that AI can reliably save time and a person can still check the result."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If the decision needs judgement every time, or getting it wrong is costly, that step stays with a person. We will say where that line is."
+          ]
+        }
+      ]
+    },
+    "websites": {
+      "title": "Websites · Wezigns",
+      "description": "Websites designed and built one at a time. We have delivered more than 90 since 2012.",
+      "headline": {
+        "lead": "Designed and built,",
+        "accent": "one at a time."
+      },
+      "lead": "We design and build websites one at a time; we have delivered more than 90 since 2012.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "A website is not a system that runs an operation, but it is often the first thing a client or a candidate sees. We design and build each one for what it needs to do, not from a template.",
+            "Where a website needs to connect to something behind it, a booking system, a CRM, a payment gateway, we build that connection too."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "A website designed and built for what it needs to do.",
+            "Connections to the systems behind it, where one exists.",
+            "Hosting, monitoring and maintenance once it is live.",
+            "More than 90 delivered since 2012."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer for a business's public presence, or where a website needs to connect to a system behind it."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If what is really needed is an operational system, not a public page, a website will not answer that need. Ask and we will say which one fits."
+          ]
+        }
+      ]
+    },
+    "ecommerce-systems": {
+      "title": "Ecommerce systems · Wezigns",
+      "description": "Ecommerce systems run the catalogue, orders, stock, fulfilment and payments behind a shop.",
+      "headline": {
+        "lead": "The system",
+        "accent": "behind the shop."
+      },
+      "lead": "An ecommerce system runs the back office behind a shop: catalogue, orders, stock, fulfilment and payments, not just the storefront a shopper sees.",
+      "sections": [
+        {
+          "heading": "What it is",
+          "body": [
+            "A storefront is the visible part of running a shop. Behind it sits the catalogue and pricing, order processing, stock across locations, fulfilment and payment reconciliation, and it is usually this back office that spreadsheets and manual steps get bent into.",
+            "We build that back office as one system, connected to the storefront and to payment gateways such as Stripe and Razorpay."
+          ]
+        },
+        {
+          "heading": "What you get",
+          "items": [
+            "Catalogue, pricing and inventory kept in one place, not several spreadsheets.",
+            "Order processing and fulfilment connected to stock levels in real time.",
+            "Payment gateways such as Stripe and Razorpay integrated into checkout and reconciliation.",
+            "Reporting and dashboards on sales, stock and fulfilment."
+          ]
+        },
+        {
+          "heading": "When this is the right answer",
+          "body": [
+            "This is the right answer when a shop's catalogue, stock or fulfilment has outgrown spreadsheets and manual updates, and the storefront itself is not the problem."
+          ]
+        },
+        {
+          "heading": "When it is not",
+          "body": [
+            "If the whole need is a storefront with a small catalogue, an off-the-shelf ecommerce platform will run it more cheaply than a custom back office. Ask and we will say which applies."
+          ]
+        }
+      ]
+    }
+  },
+  "about": {
+    "title": "About · Wezigns",
+    "description": "Custom software company operating since 2012, referral-led, with clients in eleven countries. How work arrives, and how we build.",
+    "headline": {
+      "lead": "Built since 2012,",
+      "accent": "referral-led ever since."
+    },
+    "lead": "Wezigns has been building custom software since 2012. Most of our work still arrives by referral.",
+    "sections": [
+      {
+        "heading": "How work arrives",
+        "body": [
+          "Work arrives referral-led, not from marketing. Clients pass us to other people who have hit the same wall: a process that has outgrown spreadsheets, message threads and manual steps.",
+          "We have delivered work for clients in eleven countries: India, USA, UK, Singapore, Thailand, Australia, Netherlands, UAE, Malaysia, Saudi Arabia and Czech Republic."
+        ]
+      },
+      {
+        "heading": "What is still running",
+        "body": [
+          "More than 20 products, portals and platforms we have built are in daily use, the oldest of them running since 2012.",
+          "We have also designed and built more than 90 websites, one at a time."
+        ]
+      },
+      {
+        "heading": "How we work",
+        "items": [
+          "Understand — we get inside the process before proposing anything.",
+          "Shape — we turn the problem into scope, price and timeline, agreed before anything is built.",
+          "Build — we design and develop in working pieces, so there is something to test early.",
+          "Run — after launch we host, monitor, maintain and keep improving what we built."
+        ]
+      },
+      {
+        "heading": "What we do not do",
+        "body": [
+          "We do not build for businesses where an off-the-shelf tool would do the job better, and we do not start a build before price and scope are agreed. Sometimes custom software is not the right answer, and we will say so."
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contact · Wezigns",
+    "description": "Tell us what is not working. A senior person from our team replies within one working day.",
+    "headline": {
+      "lead": "Tell us what is",
+      "accent": "not working."
+    },
+    "lead": "Tell us what is not working.",
+    "note": "No generic pitch deck. No pressure. Price and timeline are agreed before anything is built."
+  }
+}

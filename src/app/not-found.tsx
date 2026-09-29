@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { content, footer } from '@/lib/content';
+import { content, footer, contactFacts } from '@/lib/content';
 import { Button } from '@/components/atoms';
 import { SiteFooter, SiteHeader } from '@/components/organisms';
 import { DocumentTemplate } from '@/components/templates';
@@ -28,6 +28,7 @@ export default function NotFound() {
         />}
       footer={
         <SiteFooter
+          {...contactFacts()}
           cta={footer.cta}
           columns={footer.columns}
           wordmark={footer.wordmark}

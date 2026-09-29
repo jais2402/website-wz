@@ -41,6 +41,87 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Ecommerce offering, nine capability pages, /about and /contact
+**Type:** delivery
+**Owner:** Owner direction (add the ecommerce offering; add partners; build the
+sub-pages; "if you need content take it from here or ask the content writer")
+**Context:** The owner pointed at the old site, https://www.wezigns.com, as a
+possible content source.
+**Decision — the old site is a source of facts, not of copy.** It is an
+unmodified WordPress "Kallyas" theme with the demo content still in place:
+"HOW TO SHOP", "SHOWROOM HOURS", `support@website.com`, "what makes Kallyas so
+special", "9900+ coffee cups this year". Copying any of it would breach rule 1
+outright. Its story — "The Design Crew", a digital innovation company selling
+graphic design, logo design, SEO packages and illustration — is precisely the
+web-agency positioning this site exists to escape (context.md §1). Only two
+things were taken from it, both confirmed as current by the owner: the phone
+number and the Chennai office.
+**Delivered:**
+1. **Ecommerce systems**, a ninth offering, drafted by the content steward as an
+   operational system (catalogue, orders, stock, fulfilment, payment
+   reconciliation) rather than "we make online stores", so it does not read as
+   web-agency work. Hue rose. No proof point: there is no ecommerce case study
+   yet and none was invented.
+2. **The model follows the content.** `build` in three/states.ts built a fixed
+   4×2 field of 8; it now derives rows and columns from `DISC.length`, so the
+   nine tiles and nine blocks cannot disagree. The `disciplines` IsoGlyph
+   fallback is 3×3 to match, and a new `ecommerce` glyph was added.
+3. **The bento takes a ninth tile** in a full-width row under the eight ring
+   places, at `slim` size. The 2×2 centre stays clear for the model.
+4. **Nine capability pages** at `/capabilities/<slug>/`, generated from the
+   content. Each carries one offering, its own title and description, a Service
+   entity in JSON-LD pointing at the Organization node, and a "When it is not"
+   section — capability-level candour, in the spirit of the FAQ line. **The CEO
+   should read those four-to-nine lines before launch**: they are the first
+   candour written outside the FAQ. Tiles now link to the page, not the anchor,
+   because a page can be the answer an engine cites and an anchor cannot.
+5. **`/about`** — deliberately no team, founders or headcount; those stay
+   blocked. Every figure on it already appears on the home page.
+6. **`/contact`** — reuses the home page's `contact` section rather than
+   restating it, so the form and the reply promise cannot drift.
+7. **Phone and office published** (owner confirmed current): +91 44 2364 3252
+   and the Chennai address. Both now render in the footer and on /contact, and
+   appear as `telephone` and `PostalAddress` in the Organization JSON-LD. Two
+   of the five blocked business facts are now filled.
+**Reversal of a shape, not a decision:** sub-page copy moved OUT of
+content/site.json into **content/pages.json** (`src/lib/pages.ts`). site.json is
+reachable from the client bundle — the 3D scene reads the offerings' hues and
+order from it — so the nine capability pages, /about and /contact had pushed the
+initial route to 177.1 KB against a 180 KB ceiling, and every future page would
+have added more. Splitting them returned it to 174.1 KB and removed the growth.
+The placeholder gate in scripts/validate-content.mjs now walks both files.
+**Not done, deliberately: the partners.** Research could find no company called
+"Solvable" in the payments band at all, and "Inscribe" resolves most plausibly
+to inscribe.ai (document-fraud detection) — unconfirmed. Naming a third party as
+a partner is a public claim about them, so nothing was added. Tracked in
+tasks.md § Open — partners.
+**Tests:** new `tests/e2e/pages.spec.ts` — every route resolves with exactly one
+h1 and a real title, every route is in the sitemap, the contact page carries the
+ways to reach a person, and the ninth offering has both a tile and a page. The
+tile-link test now follows each tile to a 200. 105 e2e (was 75), 18 unit, gate
+exit 0.
+
+## 2026-09-29 — Session: sub-pages
+**Type:** session
+**Done:** `content/site.json` (ninth offering, phone, office, footer links),
+`content/pages.json` (new), `src/lib/pages.ts` (new), `src/lib/content.ts`
+(contactFacts), `src/lib/structured-data.ts` (telephone, PostalAddress,
+serviceSchema), `src/app/capabilities/[slug]/page.tsx`, `src/app/about/page.tsx`,
+`src/app/contact/page.tsx` (all new), `src/app/sitemap.ts`,
+`src/components/three/{scene-data,states}.ts`, `src/components/atoms/IsoGlyph.tsx`,
+`src/components/organisms/{SequenceSection,SiteFooter,ContactSection}.tsx`,
+`src/types/content.ts`, `scripts/validate-content.mjs`, `tasks.md`,
+`tests/e2e/{journey,pages}.spec.ts`.
+**State:** 14 routes build. Gate exit 0: 18 unit, 105 e2e, initial 174.1 KB,
+3D 121.0 KB. Two of the five business facts are now filled.
+**Next:** the owner sends the URLs for Solvable and Inscribe and says what the
+relationship is; then the partners section can be designed. Separately the CEO
+reads the nine "When it is not" lines. The design reviewer has not yet seen any
+of the new pages.
+**Blocked:** partners (owner); OG/favicon assets; form transport; analytics
+vendor; AI-crawler policy; hero re-test; promise owners; claim evidence; and the
+three remaining business facts (price band, named clients, team).
+
 ## 2026-09-29 — Applied the review fixes that need no new facts
 **Type:** delivery (two of them reverse earlier owner edits — see below)
 **Owner:** Owner approval ("yes" to the list of fixes that need nothing from them)

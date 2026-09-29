@@ -15,7 +15,7 @@ import type { Hue } from '@/types/content';
 
 export type GlyphName =
   | 'software' | 'automation' | 'integration' | 'data'
-  | 'platforms' | 'hosting' | 'ai' | 'websites' | 'disciplines';
+  | 'platforms' | 'hosting' | 'ai' | 'websites' | 'ecommerce' | 'disciplines';
 
 /** A box: grid x, y (depth), z (height), then width, depth, height. */
 type Box = [number, number, number, number, number, number];
@@ -40,11 +40,17 @@ const SCENES: Record<GlyphName, { boxes: Box[]; links?: Array<[number, number]> 
   // The bento's centre stands in for the live model with this when WebGL is
   // absent, JavaScript is off, or before the 3D has loaded.
   disciplines: { boxes: [
-    [0, 0, 0, 1, 1, 1.3], [1.25, 0, 0, 1, 1, 1.9], [2.5, 0, 0, 1, 1, 1.1], [3.75, 0, 0, 1, 1, 1.6],
-    [0, 1.25, 0, 1, 1, 0.9], [1.25, 1.25, 0, 1, 1, 1.4], [2.5, 1.25, 0, 1, 1, 1.7], [3.75, 1.25, 0, 1, 1, 1.0],
+    [0, 0, 0, 1, 1, 1.3], [1.25, 0, 0, 1, 1, 1.9], [2.5, 0, 0, 1, 1, 1.1],
+    [0, 1.25, 0, 1, 1, 1.6], [1.25, 1.25, 0, 1, 1, 0.9], [2.5, 1.25, 0, 1, 1, 1.4],
+    [0, 2.5, 0, 1, 1, 1.7], [1.25, 2.5, 0, 1, 1, 1.0], [2.5, 2.5, 0, 1, 1, 1.45],
   ] },
   // One flat page.
   websites: { boxes: [[0, 0, 0, 2.6, 0.2, 1.8]] },
+  // A shelf of stock with an order leaving it: the back office behind a shop.
+  ecommerce: { boxes: [
+    [0, 0, 0, 2.4, 1.4, 0.3], [0.2, 0.2, 0.3, 0.7, 0.7, 0.7], [1.1, 0.2, 0.3, 0.7, 0.7, 1.0],
+    [0.2, 1.0, 0.3, 0.7, 0.7, 0.5], [2.9, 0.4, 0, 0.9, 0.9, 0.9],
+  ], links: [[2, 4]] },
 };
 
 const C = Math.cos(Math.PI / 6), S = Math.sin(Math.PI / 6);

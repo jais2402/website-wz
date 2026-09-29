@@ -62,14 +62,18 @@ test.describe('the scroll journey', () => {
   });
 });
 
-test('every "What we build" tile links to an entry that exists on /capabilities', async ({ page }) => {
+test('every "What we build" tile links to a capability page that exists', async ({ page }) => {
   await page.goto('/');
-  const hrefs = await page.locator('#build a[href*="/capabilities"][href*="#"]').evaluateAll((as) => as.map((a) => a.getAttribute('href')!));
-  expect(hrefs).toHaveLength(8);
-  await page.goto('/capabilities');
-  for (const href of hrefs) {
-    const id = href.split('#')[1]!;
-    await expect(page.locator(`[id="${id}"]`)).toHaveCount(1);
+  // Since 2026-09-29 each tile goes to its own page rather than an anchor: a
+  // page can be the answer to "who builds ecommerce order systems", an anchor
+  // cannot. Every tile must resolve — a 404 from the home page is unforgivable.
+  const hrefs = await page
+    .locator('#build a[href*="/capabilities/"]')
+    .evaluateAll((as) => as.map((a) => a.getAttribute('href')!));
+  expect(hrefs.length).toBeGreaterThanOrEqual(9);
+  for (const href of new Set(hrefs)) {
+    const response = await page.request.get(href);
+    expect(response.status(), `${href} should resolve`).toBe(200);
   }
 });
 

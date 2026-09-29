@@ -1,0 +1,168 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { content, footer, pages, contactFacts } from '@/lib/content';
+import { capabilityPages } from '@/lib/pages';
+import { Button, Eyebrow, JsonLd } from '@/components/atoms';
+import { HeadlineSplit } from '@/components/molecules';
+import { SiteFooter, SiteHeader } from '@/components/organisms';
+import { DocumentTemplate } from '@/components/templates';
+import { serviceSchema } from '@/lib/structured-data';
+import { slug as toSlug } from '@/lib/slug';
+
+/**
+ * One page per kind of system: /capabilities/ecommerce-systems/ and so on.
+ *
+ * Why these exist as routes rather than anchors: an anchor cannot be the
+ * answer to "who builds ecommerce order systems" — a search engine or an AI
+ * answer engine needs a page with one subject to cite. Each page carries one
+ * offering, its own title and description, and a Service entity in JSON-LD.
+ *
+ * The slug is generated from the offering's title by the same `slug()` the
+ * home bento and the /capabilities accordion use, so the three can never
+ * drift apart. Changing an offering's title changes a public URL.
+ */
+
+
+/** The offering this page is about, from the single `build` section. */
+function offering(slug: string) {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const build = content.sections.find((s) => (s as any).id === 'build') as any;
+  return build?.items?.find((item: { title: string }) => toSlug(item.title) === slug);
+}
+
+export function generateStaticParams() {
+  return Object.keys(capabilityPages).map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const page = capabilityPages[slug];
+  if (!page) return {};
+  return {
+    // The content file carries the full title, so bypass the layout's
+    // "%s · Wezigns" template rather than doubling the suffix.
+    title: { absolute: page.title },
+    description: page.description,
+    alternates: { canonical: `/capabilities/${slug}` },
+  };
+}
+
+export default async function CapabilityPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const page = capabilityPages[slug];
+  const item = offering(slug);
+  if (!page) notFound();
+
+  const { nav, hero } = content;
+  const primaryCta = hero.actions[0]!;
+  // A case study in the same territory, when one exists. Never invented: this
+  // is a link to work already published on /work.
+  const related = content.cases.find((c) => page.relatedCase === c.slug);
+
+  return (
+    <>
+      <JsonLd schema={serviceSchema(slug, page.title, page.lead)} />
+      <DocumentTemplate
+        header={
+          <SiteHeader
+            nav={nav.primary}
+            cta={nav.cta}
+            wordmark={footer.wordmark}
+            name={content.meta.name}
+            since={content.meta.since}
+          />
+        }
+        footer={
+          <SiteFooter
+            {...contactFacts()}
+            cta={footer.cta}
+            columns={footer.columns}
+            wordmark={footer.wordmark}
+            base={footer.base}
+            primaryCta={primaryCta}
+          />
+        }
+      >
+        <div className="mx-auto max-w-centre px-gutter pb-[clamp(72px,9vh,110px)]">
+          {/* Where this page sits. One level, so it stays a sentence rather
+              than a chrome element. */}
+          <nav aria-label="Breadcrumb">
+            <Link
+              href="/capabilities"
+              className="inline-flex min-h-10 items-center text-caption text-ink-3 transition-colors duration-300 ease-brand hover:text-ink"
+            >
+              &#8592; All capabilities
+            </Link>
+          </nav>
+
+          <HeadlineSplit headline={page.headline} level="d1" as="h1" id="capability-title" />
+          <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p>
+
+          {page.sections.map((section) => (
+            <section
+              key={section.heading}
+              aria-labelledby={toSlug(section.heading)}
+              className="mt-section border-t border-line pt-section"
+            >
+              <h2 id={toSlug(section.heading)} className="text-d2 text-balance text-ink">
+                {section.heading}
+              </h2>
+              {section.body?.map((paragraph) => (
+                <p key={paragraph} className="mt-4 max-w-measure text-body leading-relaxed text-ink-2">
+                  {paragraph}
+                </p>
+              ))}
+              {section.items?.length ? (
+                <ul className="mt-5 grid max-w-measure gap-y-2.5">
+                  {section.items.map((line) => (
+                    <li key={line} className="border-t border-line pt-2.5 text-body text-ink-2">
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+          ))}
+
+          {related ? (
+            <section
+              aria-labelledby="capability-case"
+              className="mt-section border-t border-line pt-section"
+            >
+              <Eyebrow>A system like this</Eyebrow>
+              <h2 id="capability-case" className="mt-2 text-d2 text-balance text-ink">
+                {related.title}
+              </h2>
+              <p className="mt-4 max-w-measure text-body leading-relaxed text-ink-2">
+                {related.body[0]}
+              </p>
+              <div className="mt-6">
+                <Button href={`/work#${related.slug}`} variant="secondary">
+                  Read the case
+                </Button>
+              </div>
+            </section>
+          ) : null}
+
+          <section
+            aria-labelledby="capability-cta"
+            className="mt-section border-t border-line pt-section"
+          >
+            <h2 id="capability-cta" className="text-d2 text-balance text-ink">
+              {item ? `Is ${item.title.toLowerCase()} what you need?` : 'Not sure this is what you need?'}
+            </h2>
+            <p className="mt-4 max-w-measure-tight text-lead text-ink-2">{pages.capabilities.cta.body}</p>
+            <div className="mt-7">
+              <Button href={primaryCta.href}>{primaryCta.label}</Button>
+            </div>
+          </section>
+        </div>
+      </DocumentTemplate>
+    </>
+  );
+}

@@ -6,6 +6,9 @@
 import { readFileSync } from 'node:fs';
 
 const content = JSON.parse(readFileSync(new URL('../content/site.json', import.meta.url), 'utf8'));
+// Sub-page copy lives apart so it never reaches the client bundle (src/lib/pages.ts),
+// but it is held to exactly the same placeholder rule.
+const subPages = JSON.parse(readFileSync(new URL('../content/pages.json', import.meta.url), 'utf8'));
 
 const PLACEHOLDER = /(\[[^\]]{3,}\]|Lorem ipsum|TODO:|TBD\b)/;
 const problems = [];
@@ -26,6 +29,7 @@ function walk(node, path) {
 }
 
 walk(content, 'site');
+walk(subPages, 'pages');
 
 // Anchors are public URLs.
 const ids = new Set();

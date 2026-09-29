@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { content, footer, pages } from '@/lib/content';
+import { content, footer, pages, contactFacts } from '@/lib/content';
 import { Button, Eyebrow, JsonLd, Swatch } from '@/components/atoms';
 import { HeadlineSplit, MetricPair } from '@/components/molecules';
 import { SiteFooter, SiteHeader } from '@/components/organisms';
@@ -40,6 +40,7 @@ export default function WorkPage() {
         />}
       footer={
         <SiteFooter
+          {...contactFacts()}
           cta={footer.cta}
           columns={footer.columns}
           wordmark={footer.wordmark}

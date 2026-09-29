@@ -27,9 +27,25 @@
       "imageAlt": "Wezigns — custom software built around how your business already works"
     },
     "TODO_business_facts": {
-      "phone": null,
+      "phone": "+91 44 2364 3252",
+      "phoneE164": "+914423643252",
       "whatsapp": null,
-      "offices": [],
+      "offices": [
+        {
+          "label": "Chennai",
+          "lines": [
+            "#4 / 25B, 1st Floor, Block 1",
+            "Boopathy Street, Arcot Road",
+            "Virugambakkam"
+          ],
+          "city": "Chennai",
+          "region": "Tamil Nadu",
+          "postalCode": "600092",
+          "country": "India",
+          "countryCode": "IN",
+          "mapUrl": "https://maps.google.com/?q=Boopathy+Street+Arcot+Road+Virugambakkam+Chennai+600092"
+        }
+      ],
       "priceBand": null,
       "shapeStagePaid": null,
       "namedClients": [],
@@ -179,6 +195,13 @@
           "title": "Websites",
           "body": "Designed and built one at a time.",
           "detail": "Websites designed and built one at a time. We have delivered more than 90."
+        },
+        {
+          "n": "09",
+          "hue": "rose",
+          "title": "Ecommerce systems",
+          "body": "The catalogue, orders, stock and payments behind a shop, not just the storefront a shopper sees.",
+          "detail": "An ecommerce system runs the back office behind a shop: catalogue and pricing, order processing, stock levels across locations, fulfilment and payment reconciliation, not just the storefront a shopper sees."
         }
       ],
       "link": {
@@ -212,9 +235,18 @@
         "emphasis": "outgrows the workaround."
       },
       "proof": [
-        { "value": "\u221280%", "label": "Administrative work" },
-        { "value": "100,000+", "label": "Certifications a year" },
-        { "value": "300 \u2192 4,500", "label": "Active sellers" }
+        {
+          "value": "−80%",
+          "label": "Administrative work"
+        },
+        {
+          "value": "100,000+",
+          "label": "Certifications a year"
+        },
+        {
+          "value": "300 → 4,500",
+          "label": "Active sellers"
+        }
       ]
     },
     {
@@ -582,7 +614,7 @@
         {
           "q": "Does Wezigns work with small businesses?",
           "a": "Yes, where custom software is genuinely the right answer. Sometimes it is not, and we will say so.",
-        "open": true
+          "open": true
         },
         {
           "q": "How much does custom software development cost?",
@@ -808,19 +840,19 @@
         "links": [
           {
             "label": "Custom software",
-            "href": "/capabilities#custom-business-software"
+            "href": "/capabilities/custom-business-software"
           },
           {
-            "label": "AI in the product",
-            "href": "/#ai"
+            "label": "Ecommerce systems",
+            "href": "/capabilities/ecommerce-systems"
           },
           {
-            "label": "Integration",
-            "href": "/capabilities#system-integration"
+            "label": "System integration",
+            "href": "/capabilities/system-integration"
           },
           {
-            "label": "Websites",
-            "href": "/capabilities#websites"
+            "label": "All capabilities",
+            "href": "/capabilities"
           }
         ]
       },
@@ -828,16 +860,16 @@
         "title": "Company",
         "links": [
           {
+            "label": "About",
+            "href": "/about"
+          },
+          {
+            "label": "Contact",
+            "href": "/contact"
+          },
+          {
             "label": "Case studies",
             "href": "/work"
-          },
-          {
-            "label": "Since 2012",
-            "href": "/#evidence"
-          },
-          {
-            "label": "How we price",
-            "href": "/#pricing"
           },
           {
             "label": "Questions",

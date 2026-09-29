@@ -129,11 +129,14 @@ export function SequenceSection({
   // a tile lifts its block in the middle. Visual order: first row left/right,
   // second row left/right, then the bottom row across. Below lg, one column in
   // content order, and the centre tile (no 3D on phones) is omitted.
+  // Eight places around the 2×2 centre, then a full-width row under them for
+  // a ninth. The centre must stay clear for the model, so the ring is fixed.
   const PLACE = [
     'lg:col-start-1 lg:row-start-1', 'lg:col-start-4 lg:row-start-1',
     'lg:col-start-1 lg:row-start-2', 'lg:col-start-4 lg:row-start-2',
     'lg:col-start-1 lg:row-start-3', 'lg:col-start-2 lg:row-start-3',
     'lg:col-start-3 lg:row-start-3', 'lg:col-start-4 lg:row-start-3',
+    'lg:col-span-4 lg:col-start-1 lg:row-start-4',
   ];
   // Drawing per offering, keyed by its anchor so reordering content keeps it.
   const GLYPH: Record<string, GlyphName> = {
@@ -141,6 +144,7 @@ export function SequenceSection({
     'system-integration': 'integration', 'data-and-reporting-systems': 'data',
     'customer-and-partner-platforms': 'platforms', 'cloud-hosting-support-and-maintenance': 'hosting',
     'ai-and-gen-ai-integrations': 'ai', websites: 'websites',
+    'ecommerce-systems': 'ecommerce',
   };
   const bento = (
     <div
@@ -156,11 +160,11 @@ export function SequenceSection({
           hue={item.hue}
           title={item.title}
           body={item.body ?? ''}
-          href={`/capabilities#${slug(item.title)}`}
+          href={`/capabilities/${slug(item.title)}`}
           glyph={GLYPH[slug(item.title)] ?? 'software'}
-          size="regular"
-          // Eight places around the centre. A ninth offering would flow after
-          // them; the content check keeps build at eight (3D has 8 blocks).
+          // Past the eight ring places the tile spans the width, so it reads as
+          // a row rather than a gap-filler in a grid built around the centre.
+          size={index < 8 ? 'regular' : 'slim'}
           className={PLACE[index] ?? ''}
           highlighted={active === index}
           onOpen={(point) => pin(index, point)}

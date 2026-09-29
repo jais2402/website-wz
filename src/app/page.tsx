@@ -1,4 +1,4 @@
-import { content, footer } from '@/lib/content';
+import { content, footer, contactFacts } from '@/lib/content';
 import { JsonLd } from '@/components/atoms';
 import { HeroSection, SiteFooter, SiteHeader } from '@/components/organisms';
 import { SectionRenderer, SplitScrollTemplate } from '@/components/templates';
@@ -33,6 +33,7 @@ export default function HomePage() {
       scene={<SceneCanvas />}
       footer={
         <SiteFooter
+          {...contactFacts()}
           cta={footer.cta}
           columns={footer.columns}
           wordmark={footer.wordmark}
