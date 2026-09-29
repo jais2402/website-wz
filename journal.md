@@ -41,6 +41,34 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Review: CEO, PM, BA, SEO, GEO on the home page
+**Type:** decision (findings recorded; nothing applied yet, awaiting owner)
+**Owner:** CEO, Product Manager, Business Analyst, SEO Specialist, GEO Specialist (review-only; no files edited by them)
+**Context:** The owner asked for a CEO/PM/BA review, then an SEO/GEO review, of the page as rendered (desktop 1440 and phone 390 captures, plus built `out/`).
+**Findings, consensus first:**
+1. Hero H1 "Systems that grow with you." drops the category and the trigger (§3.1). The five-second re-test has not been run (CEO, PM, BA, SEO). The SEO lens adds that the `<title>` has lost "custom software" too, and that shows in search results. Fallback: the old H1, with the new sub kept.
+2. `#pricing` is a headline with no body. The measured line "No build starts before that number is agreed." is gone from the page (CEO, PM, BA).
+3. The proof arrives late. `#moment` (statement-proof) has no figures. Proposed: −80% admin, 100,000+ certifications/yr, 300 → 4,500 sellers, all already in `cases` (PM, BA).
+4. Web-agency drift: "90+ Websites" is stat-sized next to "20+"; the Websites bento tile; the "A website" chip (CEO). GEO proposes one "not a web design studio" comparison passage.
+5. Page length on phone: 14 sections before the form, and "11 countries" appears 4 times. Proposed: cut `#regions`, and move `#principles` and `#range` (and maybe `#integration`) to /capabilities (PM).
+6. No persistent CTA on phone: the header shows only the menu below lg (BA).
+7. OG image `/og/wezigns-og.png` does not exist, so every share card and the JSON-LD logo 404 (SEO). Until the asset exists, drop `images` from the metadata.
+8. Promises with no recorded owner or rota: the "one working day" reply (4 places), written security answers, and scope/price/timeline in writing (CEO).
+9. Claims that need an evidence file: "Zero unplanned downtime" (no period), "Data stays in-country", "Still running", the hand-over promise, and 40,000 req/min in the present tense. The range's 30 systems invite "show me one" (CEO).
+10. robots allows AI crawlers by default rather than by decision, and there is no llms.txt (GEO).
+11. No analytics. Seven cookieless events proposed: page_view, section_reached, cta_click, form_start, form_submit, email_copy, web_vitals. Security sign-off is needed first (BA).
+12. `tasks.md` is stale: phases unticked, blockers missing, audit P1s untracked (PM).
+13. Smaller items: the cube overlaps the FAQ on desktop; open the candour FAQ item by default; case metadata ("Retail" shown as a region, "Dubai" vs UAE); the tech rewrite may cost cohort C its named stack.
+**Holding correctly:** all five business facts are null and unstaged; no placeholders; the CTA wording is unchanged; FAQ schema is built from visible text; the entity is consistent; the description string is identical in meta, OG and JSON-LD; `/work` renders CreativeWork JSON-LD (verified).
+**Consequences:** the CEO withholds launch sign-off until 1 is tested, 2 and 8 are recorded, and 4, 5 (range) and 9 are fixed.
+
+## 2026-09-29 — Session: five-role page review
+**Type:** session
+**Done:** captures in the scratchpad (review/desk-*, phone-*); five review reports; this journal entry. No site files changed.
+**State:** the site is unchanged since 9bb2896; gate green. The review findings above are open.
+**Next:** the owner picks which findings to apply. Safe, fact-free fixes can start without new facts: 2, 3, 6, 7 (drop the OG image tag), 10, 12, and the FAQ overlap and open state. Items that need an owner decision: 1 (re-test or revert the H1 and title), 4, 5, 8, 9, and the analytics vendor.
+**Blocked:** the owner decides 1, 4, 5, 8 and 9 and supplies evidence for 9; OG/favicon assets, form transport and the five business facts remain with the owner.
+
 ## 2026-09-29 — Bento drawings shaded in their hue
 **Type:** delivery (partly reverses the "hue only on attention" line-drawing rule from the bento redesign)
 **Owner:** Owner direction ("can we colour these icons so it is not flat"); Designer
