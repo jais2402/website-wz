@@ -41,6 +41,42 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Scene changes dissolve; full-width bento with the 3D in the centre
+**Type:** reversal (of the glide from 18009ed) + decision
+**Owner:** 3D Engineer + Designer
+**Context:** Owner's screen recording (3.12.22 PM, 69s; frames extracted with an
+AVFoundation Swift script because there is no ffmpeg on this machine) showed
+the model squashing across the build headline (2.5s), crossing the bento text
+(12s), leaving an empty frame at AI→moment (23s), and a half-built cage over
+range text (32.5s). The owner: "the transition is being worst — if you want to
+rebuild, kindly do it", and "feels lifeless — can we make this a whole-page
+bento grid with the 3D animation in the centre with the company logo".
+**Decision:**
+- *Dissolve (`three/stage.ts` frame()):* `shownIx` (on screen) is separate from
+  `domIx` (where the scroll is). On a change: OUT 280ms (opacity² fade, scale
+  ×0.94), then the new scene is placed and shaped while invisible
+  (`snapNext`), then IN 560ms (ease-out cubic, scale back to 1). Canvas opacity
+  is driven inline. There is no flight across the page and no cross-scene morph;
+  within-section `sub` motion stays live through the two-stage filter. Labels
+  are hidden while OUT.
+- *Slot placement:* a section may contain `[data-stage-slot]`; measure()
+  centres the model in that box (above its bottom 72px) and sizes it to fit,
+  riding with the page as side 'c'.
+- *Bento:* build is now side 'c', full width (`max-w-centre`). It is a 4-column
+  grid: the 2×2 centre tile holds the slot and the company mark
+  (`footer.wordmark` + `meta.since`, via page → SectionRenderer `brand` →
+  SequenceSection), surrounded by the eight offerings. Hairlines are real
+  borders so the centre stays transparent over the canvas. Hovering a tile
+  lifts its block in the centre model. Below lg it is one column and the
+  centre tile is omitted (no 3D on phones).
+**Test:** `perf/scene.spec.ts` now asserts a dissolve happens (opacity < 0.1) and
+that visible frames never move more than 40px.
+**Consequences:** the prototype's cross-section "transformation" (morphing one
+scene into the next) is retired by owner direction; morphs remain inside a
+section. Initial route 173.6 / 180 KB.
+
+---
+
 ## 2026-09-29 — Bento redesign after "AI slop" feedback
 **Type:** reversal (of the tinted-card bento from earlier today)
 **Owner:** Designer

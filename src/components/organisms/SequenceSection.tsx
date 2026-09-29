@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/atoms';
-import { BentoTile, DisciplineRow, HeadlineSplit, type BentoSize } from '@/components/molecules';
+import { BentoTile, DisciplineRow, HeadlineSplit } from '@/components/molecules';
 import type { GlyphName } from '@/components/atoms';
 import { slug } from '@/lib/slug';
 import { Section } from './Section';
@@ -27,6 +27,8 @@ export interface SequenceSectionProps {
   headline: Headline;
   items: SequenceItem[];
   link?: ContentLink | undefined;
+  /** Bento only: the company mark shown in the centre tile with the 3D. */
+  brand?: { wordmark: string; since?: string | number | undefined } | undefined;
   /** The unit after a row's count — "systems". From content. */
   countUnit?: string | undefined;
   /**
@@ -62,7 +64,7 @@ const TRACK_VH: Record<string, number> = { build: 34, range: 42 };
  * row, not a scroll listener (architecture.md §5).
  */
 export function SequenceSection({
-  id, side, scene, headline, items, link, countUnit, mode = 'sequence', layout = 'list',
+  id, side, scene, headline, items, link, countUnit, mode = 'sequence', layout = 'list', brand,
 }: SequenceSectionProps) {
   const isStatic = mode === 'static';
   const [openIndex, setOpenIndex] = useState(0);
@@ -121,10 +123,18 @@ export function SequenceSection({
     return () => setHighlight(scene, -1);
   }, [scene, active]);
 
-  // Bento (build): size carries importance, in content order: one feature,
-  // a large pair, four regular, and a slim last strip. Content lists the
-  // offerings in priority order (BA and CEO, 2026-09-29).
-  const BENTO: BentoSize[] = ['feature', 'large', 'large', 'regular', 'regular', 'regular', 'regular', 'slim'];
+  // Bento (build), full width: eight offerings around a 2×2 centre tile that
+  // holds the live 3D (the model is centred in [data-stage-slot]) and the
+  // company mark. The disciplines model IS the eight offerings, so pointing at
+  // a tile lifts its block in the middle. Visual order: first row left/right,
+  // second row left/right, then the bottom row across. Below lg, one column in
+  // content order, and the centre tile (no 3D on phones) is omitted.
+  const PLACE = [
+    'lg:col-start-1 lg:row-start-1', 'lg:col-start-4 lg:row-start-1',
+    'lg:col-start-1 lg:row-start-2', 'lg:col-start-4 lg:row-start-2',
+    'lg:col-start-1 lg:row-start-3', 'lg:col-start-2 lg:row-start-3',
+    'lg:col-start-3 lg:row-start-3', 'lg:col-start-4 lg:row-start-3',
+  ];
   // Drawing per offering, keyed by its anchor so reordering content keeps it.
   const GLYPH: Record<string, GlyphName> = {
     'custom-business-software': 'software', 'business-process-automation': 'automation',
@@ -134,8 +144,9 @@ export function SequenceSection({
   };
   const bento = (
     <div
-      // Hairline rules between cells: the gap shows the line colour behind.
-      className="mt-9 grid gap-px border border-line bg-line lg:grid-cols-2"
+      // Hairlines as real borders: the centre cell must stay transparent so
+      // the 3D behind the page shows through it.
+      className="mt-10 grid border-l border-t border-line text-left lg:grid-cols-4"
       onMouseLeave={() => { setPinned(null); lastPointer.current = null; }}
       onBlur={() => setPinned(null)}
     >
@@ -147,11 +158,24 @@ export function SequenceSection({
           body={item.body ?? ''}
           href={`/capabilities#${slug(item.title)}`}
           glyph={GLYPH[slug(item.title)] ?? 'software'}
-          size={BENTO[index] ?? 'regular'}
+          size="regular"
+          className={PLACE[index]}
           highlighted={active === index}
           onOpen={(point) => pin(index, point)}
         />
       ))}
+      <div
+        data-stage-slot=""
+        aria-hidden="true"
+        className="relative hidden border-b border-r border-line lg:col-span-2 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:flex lg:min-h-[28rem] lg:items-end lg:justify-center lg:pb-7"
+      >
+        {brand ? (
+          <span className="flex items-baseline gap-2.5">
+            <b className="text-logo font-semibold tracking-[-0.045em] text-ink">{brand.wordmark}</b>
+            {brand.since ? <span className="font-mono text-micro tracking-[0.12em] text-ink-3">SINCE {brand.since}</span> : null}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 

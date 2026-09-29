@@ -83,14 +83,16 @@ test.describe('the 3D scene', () => {
     expect(after - before).toBe(0);
   });
 
-  test('scene hand-offs glide: no jump between frames', async ({ page }, info) => {
+  test('scene hand-offs never move the model visibly: it dissolves, it does not fly', async ({ page }, info) => {
     test.skip(info.project.name !== 'chromium', 'desktop stage; one engine is enough for a motion bound');
     await page.setViewportSize({ width: 1440, height: 820 });
     await page.goto('/?debug3d');
     await waitForStage(page);
-    // 2026-09-29: the model once jumped ~980px in one frame at centred
-    // chapters (a snap). Scroll through moment and regions at 11px a frame
-    // and bound the largest per-frame move of the smoothed placement.
+    // 2026-09-29: the model once jumped ~980px in one frame, then flew across
+    // text between chapters. Scene changes now dissolve: it fades out, is
+    // placed while invisible, and fades in. Bound the per-frame move of the
+    // placement over frames where the model is visible (opacity > 0.05), and
+    // require that a dissolve actually happened.
     for (const id of ['moment', 'regions']) {
       const top = await page.evaluate((i) => document.getElementById(i)!.offsetTop, id);
       await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), top - 820);
@@ -108,11 +110,15 @@ test.describe('the 3D scene', () => {
           };
           requestAnimationFrame(step);
         });
-        let m = 0;
-        for (let i = 1; i < s.length; i += 1) m = Math.max(m, Math.abs(s[i]![0]! - s[i - 1]![0]!), Math.abs(s[i]![1]! - s[i - 1]![1]!));
-        return m;
+        let m = 0, minOp = 1;
+        for (let i = 1; i < s.length; i += 1) {
+          minOp = Math.min(minOp, s[i]![4]!);
+          if (s[i]![4]! > 0.05 && s[i - 1]![4]! > 0.05) m = Math.max(m, Math.abs(s[i]![0]! - s[i - 1]![0]!), Math.abs(s[i]![1]! - s[i - 1]![1]!));
+        }
+        return { m, minOp };
       });
-      expect(maxStep).toBeLessThan(60);
+      expect(maxStep.minOp).toBeLessThan(0.1);
+      expect(maxStep.m).toBeLessThan(40);
     }
   });
 

@@ -117,7 +117,7 @@
     {
       "id": "build",
       "scene": "disciplines",
-      "side": "r",
+      "side": "c",
       "pattern": "sequence",
       "headline": {
         "lead": "What we build,",

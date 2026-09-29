@@ -33,6 +33,8 @@ const BENTO_LISTS = new Set(['build']);
 export interface SectionRendererProps {
   sections: SectionData[];
   cases: CaseStudy[];
+  /** The company mark, for the bento's centre tile. */
+  brand?: { wordmark: string; since?: string | number | undefined } | undefined;
 }
 
 /**
@@ -46,7 +48,7 @@ export interface SectionRendererProps {
  * Content enters at the page and flows down as props — this component receives
  * it, it does not read the content module. See standards.md §1.
  */
-export function SectionRenderer({ sections, cases }: SectionRendererProps) {
+export function SectionRenderer({ sections, cases, brand }: SectionRendererProps) {
   return (
     <>
       {sections.map((section) => {
@@ -66,6 +68,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 countUnit={s.countUnit}
                 mode={STATIC_LISTS.has(s.id) ? 'static' : 'sequence'}
                 layout={BENTO_LISTS.has(s.id) ? 'bento' : 'list'}
+                brand={BENTO_LISTS.has(s.id) ? brand : undefined}
               />
             );
 

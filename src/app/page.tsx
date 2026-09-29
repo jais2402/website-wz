@@ -49,7 +49,7 @@ export default function HomePage() {
         facts={hero.facts as Array<{ label: string; value: string }> | undefined}
         builtWith={hero.builtWith as { label: string; items: string[] } | undefined}
       />
-      <SectionRenderer sections={sections} cases={cases} />
+      <SectionRenderer sections={sections} cases={cases} brand={{ wordmark: footer.wordmark, since: content.meta.since }} />
     </SplitScrollTemplate>
     </>
   );

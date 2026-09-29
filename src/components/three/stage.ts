@@ -266,7 +266,20 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       if (!mobile && side !== 'c') oy += Hh * 0.05;
       const stageW = mobile ? W : (side === 'l' ? W - tr - gu : (side === 'r' ? tl - gu : W));
       const boost = BOOST[s.id] ?? 1;
-      const ss = mobile ? 1 : Math.max(0.42, Math.min(1.1, (stageW / W) / 0.45 * boost));
+      let ss = mobile ? 1 : Math.max(0.42, Math.min(1.1, (stageW / W) / 0.45 * boost));
+      // A section can name a slot for the model (the bento's centre tile). The
+      // model is centred in that box and sized to it, and it rides with the page
+      // like a centred chapter's model (side 'c').
+      const slot = mobile ? null : s.querySelector<HTMLElement>('[data-stage-slot]');
+      if (slot) {
+        const sb = slot.getBoundingClientRect();
+        ox = W / 2 - (sb.left + sb.width / 2);
+        // Centre in the slot above its bottom 72px (the company mark sits there).
+        const inner = Math.max(80, sb.height - 72);
+        oy = -((sb.top - r.top + inner / 2) - Hh / 2);
+        ss = Math.max(0.3, Math.min(1.1, Math.min(sb.width / W / 0.5, inner / Hh / 0.62) * boost));
+        return { top: r.top + y0, h: r.height, sc: SCI[sceneKey] ?? 0, steps, side: 'c', tl: -1, tr: -1, ox, oy, ss };
+      }
       return { top: r.top + y0, h: r.height, sc: SCI[sceneKey] ?? 0, steps, side, tl, tr, ox, oy, ss };
     });
   }
@@ -338,6 +351,13 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   const lineMid = { foot: 0, frame: 0, cage: 0, slot: 0 };
   const pulseMid = new Float32Array(NP), pulseCur = new Float32Array(NP);
   let mapMid = 0, midOx = 0, midOy = 0, domIx = -1, switchedAt = 0;
+  // Dissolve between scenes (owner, 2026-09-29 screen recording: flights and
+  // morphs across the page read as chaos). shownIx is the scene on screen;
+  // domIx is where the scroll is. On a change the model fades and eases back
+  // (OUT), is placed, re-shaped and re-coloured while invisible, then fades up
+  // and settles in (IN). Within-section progress still animates live.
+  let shownIx = -1, phase: 'idle' | 'out' | 'in' = 'idle', phaseT0 = 0, fadeFrom = 1, opacity = 1, snapNext = false;
+  const OUT_MS = 280, IN_MS = 560;
 
   /** Where the scene switches at boundary j (the top of section j). */
   function switchAt(j: number, Hv: number) {
@@ -364,11 +384,30 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       const j = cand > domIx ? domIx + 1 : domIx;
       if (Math.abs(cand - domIx) > 1 || Math.abs(probe - switchAt(j, Hv)) > Hv * 0.04) { domIx = cand; switchedAt = now; }
     }
-    const an = anchors[domIx]!;
+    if (shownIx < 0 || reduce) { shownIx = domIx; }
+    else if (domIx !== shownIx && phase !== 'out') { phase = 'out'; phaseT0 = now; fadeFrom = opacity; canvas.style.transition = 'none'; poke(); }
+    let dissolve = 1;
+    if (phase === 'out') {
+      const p = Math.min(1, (now - phaseT0) / OUT_MS);
+      opacity = fadeFrom * (1 - p * p);
+      dissolve = 1 - 0.06 * p;
+      if (p >= 1) { shownIx = domIx; snapNext = true; phase = 'in'; phaseT0 = now; switchedAt = now - 450; }
+    } else if (phase === 'in') {
+      const p = Math.min(1, (now - phaseT0) / IN_MS);
+      const e = 1 - Math.pow(1 - p, 3);
+      opacity = e; dissolve = 0.94 + 0.06 * e;
+      if (p >= 1) phase = 'idle';
+    } else opacity = 1;
+    if (phase !== 'idle') { canvas.style.opacity = opacity.toFixed(3); poke(); }
+    else if (canvas.style.opacity && canvas.style.opacity !== '1') canvas.style.opacity = '1';
+
+    const an = anchors[shownIx]!;
     state(an.sc, t, subOf(an, probe), highlights.get(SCENES[an.sc] ?? '') ?? -1, A);
 
-    // Two-stage follow. R per stage; the pair settles in ~0.8s.
-    const snap = first || reduce;
+    // Two-stage follow for within-section motion. A new scene arrives
+    // pre-settled (snapNext): it is placed while invisible, never flown in.
+    const snap = first || reduce || snapNext;
+    snapNext = false;
     const R = snap ? 1 : 1 - Math.exp(-dt * 5.5);
     const Ry = R; // placement glides with the shape, as one piece
     first = false;
@@ -443,11 +482,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     }
 
     /* camera */
-    // While the model travels between halves it eases down a little in size
-    // (up to 35%), so a crossing never passes text at full size. The amount
-    // follows the distance still to travel, so it is continuous by nature.
-    const travel = Math.min(1, Math.abs(tox - curOx) / (W * 0.35) + Math.abs(toy - curOy) / (Hh * 0.6));
-    const tScale = A.scale * (mobile ? 0.74 : an.ss) * (1 - 0.35 * travel);
+    const tScale = A.scale * (mobile ? 0.74 : an.ss);
     // Yaw follows the SHORTEST arc: the work carousel turns through −1.5π on
     // purpose, and a plain lerp out of it would swing almost a full turn.
     camM.yaw += shortestAngle(camM.yaw, A.yaw) * R; camS.yaw += shortestAngle(camS.yaw, camM.yaw) * R;
@@ -455,7 +490,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     camM.dist += (A.dist - camM.dist) * R; camS.dist += (camM.dist - camS.dist) * R;
     camM.scale += (tScale - camM.scale) * R; camS.scale += (camM.scale - camS.scale) * R;
     group.rotation.y = camS.yaw;
-    group.scale.setScalar(camS.scale);
+    group.scale.setScalar(camS.scale * dissolve);
 
     const Km = 1 - Math.exp(-dt * 2.4);
     mouse.sx += (mouse.x - mouse.sx) * Km;
@@ -471,12 +506,12 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     camera.lookAt(look);
 
     group.updateMatrixWorld();
-    if (debug) canvas.dataset.dbg = `${curOx.toFixed(2)},${curOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)}`;
+    if (debug) canvas.dataset.dbg = `${curOx.toFixed(2)},${curOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},${opacity.toFixed(3)}`;
 
     renderer.render(scene, camera);
     // Labels step aside during a switch: out at once, back in once the model
     // has mostly arrived, so they never point at a part still in flight.
-    const labelIn = reduce ? 1 : smooth((now - switchedAt - 450) / 350);
+    const labelIn = reduce ? 1 : phase === 'out' ? 0 : smooth((now - switchedAt - 450) / 350);
     drawCallouts(A, A, 0, an, an, labelIn);
   }
 

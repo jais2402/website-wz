@@ -15,6 +15,7 @@ export interface BentoTileProps {
   /** Lit from outside, e.g. the pointer is on this tile's part in the 3D. */
   highlighted?: boolean | undefined;
   onOpen?: ((point?: { x: number; y: number }) => void) | undefined;
+  className?: string | undefined;
 }
 
 // Literal class strings: Tailwind only generates what it can see. The drawing
@@ -51,7 +52,7 @@ const SIZE: Record<BentoSize, { tile: string; art: string; title: string; body: 
  * lifts the same part. Size carries importance. Nothing is gated at any
  * width (CLAUDE.md rule 5).
  */
-export function BentoTile({ title, body, href, hue, glyph, size, highlighted, onOpen }: BentoTileProps) {
+export function BentoTile({ title, body, href, hue, glyph, size, highlighted, onOpen, className }: BentoTileProps) {
   const s = SIZE[size];
   const ink = hue ? INK[hue] : undefined;
   return (
@@ -60,10 +61,11 @@ export function BentoTile({ title, body, href, hue, glyph, size, highlighted, on
       onMouseMove={(e) => onOpen?.({ x: e.clientX, y: e.clientY })}
       onFocus={() => onOpen?.()}
       className={cn(
-        'group relative bg-ground transition-colors duration-300 ease-brand hover:bg-raised',
+        'group relative border-b border-r border-line transition-colors duration-300 ease-brand hover:bg-raised',
         'focus-visible:z-10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blueprint',
         highlighted && 'bg-raised',
         s.tile,
+        className,
       )}
     >
       <IsoGlyph
