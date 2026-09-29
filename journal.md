@@ -41,6 +41,33 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Session: hero options for search (nothing applied)
+**Type:** session
+**Done:** the SEO Specialist and Content Steward each drafted hero variations
+(read-only). No files changed.
+**State:** both recommend keeping the measured hero H1 (context.md §3,
+26%→80% comprehension) and taking the search value from:
+- `<title>`: "Custom Software Development Company Since 2012 | Wezigns", 58 chars. The
+  current title is ~74 chars and gets truncated.
+- `meta.description`: "Wezigns builds custom business software and system
+  integrations that replace spreadsheets, since 2012, across eleven countries."
+- The hero sub: "Wezigns builds custom business software that replaces the spreadsheets,
+  message threads and manual steps a growing business has outgrown."
+H1 candidates offered, low→high risk: "Custom business software, / built around…";
+"A custom software development company / building around…, since 2012."; "Custom
+software that replaces spreadsheets, / built around…"; "Custom software / that
+replaces the spreadsheets your business has outgrown."; "Software built around
+your business, / not the other way round."; "The system that connects / the
+software your business already runs on."; "Custom software / for businesses in
+India, Singapore, the UAE and eight more countries."
+**Next:** apply the owner's choice. The title comes from `meta.name` +
+`meta.tagline` in `src/app/layout.tsx`, so changing the title means either a new
+`meta.title` field or a layout change. Any H1 beyond the low-risk pair needs a
+5-second re-test (context.md §7).
+**Blocked:** the owner's choice.
+
+---
+
 ## 2026-09-29 — Pricing block reduced to one statement
 **Type:** decision
 **Owner:** Owner
