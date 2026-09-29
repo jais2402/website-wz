@@ -4,7 +4,7 @@
     "name": "Wezigns",
     "legalName": "Wezigns",
     "since": 2012,
-    "tagline": "Custom software, built around how your business already works.",
+    "tagline": "Systems that grow with you.",
     "description": "Wezigns builds custom systems that replace spreadsheets and manual work for growing businesses, since 2012, in eleven countries.",
     "email": "hello@wezigns.com",
     "markets": [
@@ -72,10 +72,10 @@
     "scene": "workarounds",
     "side": "l",
     "headline": {
-      "lead": "Custom software,",
-      "accent": "built around how your business already works."
+      "lead": "Systems that",
+      "accent": "grow with you."
     },
-    "sub": "Wezigns builds the systems that replace the spreadsheets, message threads and manual steps a growing business has outgrown.",
+    "sub": "Wezigns builds custom software that replaces the spreadsheets, message threads and manual steps you have outgrown. Built around how you work, ready for what comes next.",
     "actions": [
       {
         "label": "Tell us what is not working",

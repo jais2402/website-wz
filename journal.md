@@ -41,6 +41,45 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Hero becomes a tag: "Systems that grow with you."
+**Type:** decision (reversal of the measured hero H1)
+**Owner:** Owner
+**Context:** The owner wanted the hero to say, in a line people read and remember,
+what we do and what the customer gets: "something like a tag". Options were
+weighed on reading behaviour: first 2–3 words read, self-reference, many
+second-language readers across 11 countries, short parallel phrases recalled.
+**Decision:** `hero.headline` is now "Systems that / grow with you."; `meta.tagline`
+matches, so `<title>` is "Wezigns — Systems that grow with you." (37 chars, down
+from ~74 and truncated). The sub names the category for comprehension and search:
+"Wezigns builds custom software that replaces the spreadsheets, message threads
+and manual steps you have outgrown. Built around how you work, ready for what
+comes next."
+**Because:** the owner's call; it is short, plain and customer-facing.
+**Consequences:** this REPLACES the study-measured H1 "Custom software, built
+around how your business already works." (context.md §3, 26%→80% five-second
+comprehension). The new H1 does not name the category; the sub does. context.md
+§7 requires a five-second re-test of any hero change, so the research analyst
+should run it. If comprehension drops, the fallback is to restore the old H1 and
+keep the new sub.
+
+## 2026-09-29 — /impeccable audit (launcher not run; manual checks)
+**Type:** session
+**Done:** the impeccable audit was run by hand (the skill's binary launcher was
+not executed); findings were reported to the owner. Only the hero copy changed.
+**State:** verify:full is green.
+**Next (from the audit):**
+- P1: the home page overflows 32px horizontally at 320px. The hero facts row is
+  3 columns with `pr-7` / `pl-7` (`organisms/HeroSection.tsx`); WCAG 1.4.10.
+- P1: the idle render loop.
+- P2: 16 ad-hoc px font sizes; the header CTA and the small secondary button are
+  38px tall (the project minimum is 40); the fake-person form placeholders
+  ("Sarah Jenkins", "sarah@agency.com"); signal orange on integration.
+- P3: the global 0.01ms reduced-motion kill; the themeColor hex duplicated in
+  layout.tsx.
+**Blocked:** hero re-test (research), loop decision (owner).
+
+---
+
 ## 2026-09-29 — Session: hero options for search (nothing applied)
 **Type:** session
 **Done:** the SEO Specialist and Content Steward each drafted hero variations
