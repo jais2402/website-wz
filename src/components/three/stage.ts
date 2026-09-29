@@ -34,6 +34,27 @@ function shortestAngle(a: number, b: number): number {
   return d;
 }
 
+/* Colour mixing in OKLab (Björn Ottosson). Inputs and output are linear-sRGB
+   THREE.Colors, as the renderer holds them. */
+function toOk(c: THREE.Color, o: number[]) {
+  const l = Math.cbrt(0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b);
+  const m = Math.cbrt(0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b);
+  const s2 = Math.cbrt(0.0883024619 * c.r + 0.2817188376 * c.g + 0.6299787005 * c.b);
+  o[0] = 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s2;
+  o[1] = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s2;
+  o[2] = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s2;
+}
+function fromOk(L: number, A: number, B: number, out: THREE.Color) {
+  const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3;
+  const m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3;
+  const s2 = (L - 0.0894841775 * A - 1.291485548 * B) ** 3;
+  return out.setRGB(
+    Math.max(0, 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s2),
+    Math.max(0, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s2),
+    Math.max(0, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s2),
+  );
+}
+
 export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, leads: SVGElement): StageHandle | null {
   const root = document.documentElement;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -279,17 +300,52 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   // Per-scene highlight. See three/highlight.ts for why it is not one slot.
   const highlights = new Map<string, number>();
 
-  const A = blank(), B = blank(), cur = blank();
+  const A = blank(), cur = blank();
   const curQ: THREE.Quaternion[] = [];
   for (let i = 0; i < N; i += 1) curQ.push(new THREE.Quaternion());
   const dummy = new THREE.Object3D(), eu = new THREE.Euler();
-  const qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
-  const tv = new THREE.Vector3(), ts = new THREE.Vector3(), tc = new THREE.Color(), look = new THREE.Vector3();
+  const qa = new THREE.Quaternion();
+  const tv = new THREE.Vector3(), tc = new THREE.Color(), look = new THREE.Vector3();
   const camS = { yaw: 0, look: 1, dist: 15, scale: 1 };
   const lineCur = { foot: 0, frame: 0, cage: 0, slot: 0 };
   let hubOn = 0;
   const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
   let first = true, curOx = 0, curOy = 0, setOx = 1e9, setOy = 1e9, lastNow = 0;
+  // ?debug3d exposes the smoothed placement for measurement (tests / tuning).
+  const debug = typeof location !== 'undefined' && location.search.includes('debug3d');
+
+  /*
+   * Scroll picks the scene; time animates it (owner, 2026-09-29: "at any cost
+   * the site is premium, it has to be as smooth as possible").
+   *
+   * The prototype scrubbed a blend between two scenes with scroll position.
+   * Every wheel step then became a step in the morph, and a reader who paused
+   * mid-way was left looking at a half-built shape. Now each section boundary
+   * has one switch point. When the probe crosses it, the target becomes the
+   * next scene, and everything glides there through a two-stage follow:
+   * shape, colour (in OKLab), hub, lines, map, camera and placement. Two
+   * first-order stages in series make an S-curve, easing in and out, so there
+   * is no abrupt start and no dependence on how the reader scrolls.
+   * Within-section progress (`sub`: steps, growth) is still read from scroll,
+   * and it runs through the same filter.
+   */
+  const midP: THREE.Vector3[] = [], midS: THREE.Vector3[] = [], midQ: THREE.Quaternion[] = [];
+  for (let i = 0; i < N; i += 1) { midP.push(new THREE.Vector3()); midS.push(new THREE.Vector3(1, 1, 1)); midQ.push(new THREE.Quaternion()); }
+  const tgtLab = new Float32Array(3 * N), midLab = new Float32Array(3 * N), curLab = new Float32Array(3 * N);
+  const okTmp = [0, 0, 0];
+  const midHub = { p: new THREE.Vector3(), s: new THREE.Vector3(1, 1, 1), on: 0 };
+  const camM = { yaw: 0, look: 1, dist: 15, scale: 1 };
+  const lineMid = { foot: 0, frame: 0, cage: 0, slot: 0 };
+  const pulseMid = new Float32Array(NP), pulseCur = new Float32Array(NP);
+  let mapMid = 0, midOx = 0, midOy = 0, domIx = -1, switchedAt = 0;
+
+  /** Where the scene switches at boundary j (the top of section j). */
+  function switchAt(j: number, Hv: number) {
+    const centred = anchors[j - 1]!.side === 'c' || anchors[j]!.side === 'c';
+    // Around a centred chapter, switch while its full-width headline is still
+    // low on the screen, so the model is away before that headline is read.
+    return anchors[j]!.top - (centred ? Hv * 0.3 : 0);
+  }
 
   function frame(now: number) {
     const dt = lastNow ? Math.min(0.25, Math.max(0.001, (now - lastNow) / 1000)) : 0.016;
@@ -297,109 +353,107 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     const t = reduce ? 0 : (paused ? frozen : clock) * 0.001;
     const probe = (window.scrollY || window.pageYOffset) + window.innerHeight * (mobile ? 0.3 : 0.5);
     const Hv = window.innerHeight;
+    if (!anchors.length) return;
 
-    // Which two scenes are blending, and how far. Each boundary has a window
-    // around the next section's top. Between two side scenes it is ±0.22 of
-    // the viewport, the prototype's value. When a centred chapter is on either
-    // side, the window opens early, as soon as the next section's top enters
-    // the bottom of the screen. A centred model sits low, exactly where the
-    // next heading arrives, so it has to move before that heading is readable.
-    let ia = 0, ib = 0, w = 0, winLo = probe;
-    for (let s = 0; s < anchors.length; s += 1) if (probe >= anchors[s]!.top) ia = s;
-    ib = ia;
-    for (let j = 1; j < anchors.length; j += 1) {
-      const bnd = anchors[j]!.top;
-      const centred = anchors[j - 1]!.side === 'c' || anchors[j]!.side === 'c';
-      const lo = bnd - Hv * (centred ? 0.45 : 0.22), hi = bnd + Hv * (centred ? 0.12 : 0.22);
-      if (probe > lo && probe < hi) { ia = j - 1; ib = j; w = smooth((probe - lo) / (hi - lo)); winLo = lo; break; }
+    // Dominant scene, with hysteresis: a switch needs the probe 4% of the
+    // screen past the switch point, so resting on a boundary never flickers.
+    let cand = 0;
+    for (let j = 1; j < anchors.length; j += 1) if (probe >= switchAt(j, Hv)) cand = j;
+    if (domIx < 0) { domIx = cand; switchedAt = now - 2000; }
+    else if (cand !== domIx) {
+      const j = cand > domIx ? domIx + 1 : domIx;
+      if (Math.abs(cand - domIx) > 1 || Math.abs(probe - switchAt(j, Hv)) > Hv * 0.04) { domIx = cand; switchedAt = now; }
     }
-    const an = anchors[ia], bn = anchors[ib];
-    if (!an || !bn) return;
-    // Placement and size lead the shape blend. The next section's text is
-    // already on screen when the blend starts, so the model must leave the
-    // reading column early. Following w, a centred model was still in the
-    // middle of the page when the next heading arrived beside it. It now
-    // reaches the new half by w = 0.45 and finishes changing shape after.
-    // Only around a centred chapter. Between two side scenes the model
-    // crosses from one half to the other, where early placement put it onto
-    // the outgoing text; there it keeps following w, as in the prototype.
-    const nearCentre = an.side === 'c' || bn.side === 'c';
-    const wp = !nearCentre ? w : w <= 0 ? 0 : w >= 1 ? 1 : smooth(Math.min(1, w / 0.45));
+    const an = anchors[domIx]!;
+    state(an.sc, t, subOf(an, probe), highlights.get(SCENES[an.sc] ?? '') ?? -1, A);
 
-    const hlA = highlights.get(SCENES[an.sc] ?? '') ?? -1;
-    const hlB = highlights.get(SCENES[bn.sc] ?? '') ?? -1;
-    state(an.sc, t, subOf(an, probe), hlA, A);
-    state(bn.sc, t, subOf(bn, probe), hlB, B);
-    const K = (first || reduce) ? 1 : 1 - Math.exp(-dt * 5.2);
-    const Kc = (first || reduce) ? 1 : 1 - Math.exp(-dt * 9);
+    // Two-stage follow. R per stage; the pair settles in ~0.8s.
+    const snap = first || reduce;
+    const R = snap ? 1 : 1 - Math.exp(-dt * 5.5);
+    const Ry = R; // placement glides with the shape, as one piece
     first = false;
 
     for (let i = 0; i < N; i += 1) {
-      tv.copy(A.p[i]!).lerp(B.p[i]!, w);
-      ts.copy(A.s[i]!).lerp(B.s[i]!, w);
+      midP[i]!.lerp(A.p[i]!, R); cur.p[i]!.lerp(midP[i]!, R);
+      midS[i]!.lerp(A.s[i]!, R); cur.s[i]!.lerp(midS[i]!, R);
       qa.setFromEuler(eu.set(A.r[i]!.x, A.r[i]!.y, A.r[i]!.z));
-      qb.setFromEuler(eu.set(B.r[i]!.x, B.r[i]!.y, B.r[i]!.z));
-      qa.slerp(qb, w);
-      // Colour follows whichever scene dominates and eases over in time. It
-      // is not mixed by scroll: an RGB mix of pink and green is olive, and a
-      // hue-wheel mix is lime and cyan, and a reader who stops mid-scroll
-      // would be left looking at either. Now every resting frame shows real
-      // palette colours.
-      tc.copy(w < 0.5 ? A.c[i]! : B.c[i]!);
-      cur.p[i]!.lerp(tv, K); cur.s[i]!.lerp(ts, K);
-      curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, Kc);
+      midQ[i]!.slerp(qa, R); curQ[i]!.slerp(midQ[i]!, R);
+      // Colour moves in OKLab: perceptually even, no olive or lime mid-tones.
+      toOk(A.c[i]!, okTmp);
+      for (let k = 0; k < 3; k += 1) {
+        const x = 3 * i + k;
+        tgtLab[x] = okTmp[k]!;
+        midLab[x] = snap ? tgtLab[x]! : midLab[x]! + (tgtLab[x]! - midLab[x]!) * R;
+        curLab[x] = snap ? midLab[x]! : curLab[x]! + (midLab[x]! - curLab[x]!) * R;
+      }
+      fromOk(curLab[3 * i]!, curLab[3 * i + 1]!, curLab[3 * i + 2]!, tc);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
       dummy.scale.copy(cur.s[i]!); dummy.updateMatrix();
       parts.setMatrixAt(i, dummy.matrix);
-      parts.setColorAt(i, cur.c[i]!);
+      parts.setColorAt(i, tc);
     }
     parts.instanceMatrix.needsUpdate = true;
     if (parts.instanceColor) parts.instanceColor.needsUpdate = true;
 
-    const wh = smooth((w - 0.4) / 0.3);
-    const ho = A.hub.on * (1 - wh) + B.hub.on * wh;
-    hubOn += (ho - hubOn) * K;
-    if (A.hub.on === 0 && B.hub.on > 0) tv.copy(B.hub.p);
-    else if (B.hub.on === 0 && A.hub.on > 0) tv.copy(A.hub.p);
-    else tv.copy(A.hub.p).lerp(B.hub.p, w);
-    cur.hub.p.lerp(tv, hubOn < 0.05 ? 1 : K);
-    ts.copy(A.hub.s).lerp(B.hub.s, w);
-    cur.hub.s.lerp(ts, K);
+    midHub.on += (A.hub.on - midHub.on) * R; hubOn += (midHub.on - hubOn) * R;
+    if (hubOn < 0.05) { midHub.p.copy(A.hub.p); cur.hub.p.copy(A.hub.p); }
+    midHub.p.lerp(A.hub.p, R); cur.hub.p.lerp(midHub.p, R);
+    midHub.s.lerp(A.hub.s, R); cur.hub.s.lerp(midHub.s, R);
     hub.position.copy(cur.hub.p);
     hub.scale.copy(cur.hub.s).multiplyScalar(Math.max(1e-4, hubOn));
     hubMat.color.copy(P.ink);
 
     for (let i = 0; i < NP; i += 1) {
-      const ps = A.ps[i]! * (1 - w) + B.ps[i]! * w;
-      dummy.position.copy(w < 0.5 ? A.pp[i]! : B.pp[i]!);
+      dummy.position.copy(A.pp[i]!);
       dummy.quaternion.identity();
-      dummy.scale.setScalar(Math.max(1e-4, ps));
+      pulseMid[i] = pulseMid[i]! + (A.ps[i]! - pulseMid[i]!) * R;
+      pulseCur[i] = pulseCur[i]! + (pulseMid[i]! - pulseCur[i]!) * R;
+      dummy.scale.setScalar(Math.max(1e-4, pulseCur[i]!));
       dummy.updateMatrix();
       pulses.setMatrixAt(i, dummy.matrix);
     }
     pulses.instanceMatrix.needsUpdate = true;
 
     (Object.keys(LINES) as Array<keyof typeof LINES>).forEach((ln) => {
-      const lo = A.lines[ln] * (1 - w) + B.lines[ln] * w;
-      lineCur[ln] += (lo - lineCur[ln]) * K;
+      lineMid[ln] += (A.lines[ln] - lineMid[ln]) * R;
+      lineCur[ln] += (lineMid[ln] - lineCur[ln]) * R;
       (LINES[ln].material as THREE.LineBasicMaterial).opacity = lineCur[ln];
       LINES[ln].visible = lineCur[ln] > 0.01;
     });
 
-    mapCur += ((A.map * (1 - w) + B.map * w) - mapCur) * K;
+    mapMid += (A.map - mapMid) * R; mapCur += (mapMid - mapCur) * R;
     mapGroup.visible = mapCur > 0.01;
     mapGroup.scale.set(1, Math.max(1e-4, mapCur), 1);
     mapMat.color.copy(P.model2).lerp(P.ink, 0.1);
 
+    /* placement */
+    // The model is placed in its half by offsetting the projection frustum,
+    // not by moving the model, which would skew the perspective. A centred
+    // chapter's model rides with its section like an image on the page, so it
+    // stays under its own text arriving and leaving.
+    const sy = window.scrollY || window.pageYOffset;
+    const tox = an.ox;
+    const toy = an.side === 'c' ? an.oy - Math.max(-Hh, Math.min(Hh, an.top - sy)) : an.oy;
+    midOx += (tox - midOx) * Ry; curOx += (midOx - curOx) * Ry;
+    midOy += (toy - midOy) * Ry; curOy += (midOy - curOy) * Ry;
+    if (Math.abs(curOx - setOx) > 0.4 || Math.abs(curOy - setOy) > 0.4) {
+      setOx = curOx; setOy = curOy;
+      camera.setViewOffset(W, Hh, curOx, curOy, W, Hh);
+      camera.updateProjectionMatrix();
+    }
+
     /* camera */
-    // Yaw is blended and damped along the SHORTEST arc. The work scene turns
-    // its carousel through -1.5π on purpose; a plain lerp out of it into a
-    // scene near 0 would swing the model almost a full turn the long way.
-    const yaw = A.yaw + shortestAngle(A.yaw, B.yaw) * w;
-    camS.yaw += shortestAngle(camS.yaw, yaw) * K;
-    camS.look += ((A.look * (1 - w) + B.look * w) - camS.look) * K;
-    camS.dist += ((A.dist * (1 - w) + B.dist * w) - camS.dist) * K;
-    camS.scale += (((A.scale * (1 - w) + B.scale * w) * (mobile ? 0.74 : (an.ss * (1 - wp) + bn.ss * wp))) - camS.scale) * K;
+    // While the model travels between halves it eases down a little in size
+    // (up to 35%), so a crossing never passes text at full size. The amount
+    // follows the distance still to travel, so it is continuous by nature.
+    const travel = Math.min(1, Math.abs(tox - curOx) / (W * 0.35) + Math.abs(toy - curOy) / (Hh * 0.6));
+    const tScale = A.scale * (mobile ? 0.74 : an.ss) * (1 - 0.35 * travel);
+    // Yaw follows the SHORTEST arc: the work carousel turns through −1.5π on
+    // purpose, and a plain lerp out of it would swing almost a full turn.
+    camM.yaw += shortestAngle(camM.yaw, A.yaw) * R; camS.yaw += shortestAngle(camS.yaw, camM.yaw) * R;
+    camM.look += (A.look - camM.look) * R; camS.look += (camM.look - camS.look) * R;
+    camM.dist += (A.dist - camM.dist) * R; camS.dist += (camM.dist - camS.dist) * R;
+    camM.scale += (tScale - camM.scale) * R; camS.scale += (camM.scale - camS.scale) * R;
     group.rotation.y = camS.yaw;
     group.scale.setScalar(camS.scale);
 
@@ -416,60 +470,19 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     );
     camera.lookAt(look);
 
-    // The model is placed in its half by offsetting the projection frustum —
-    // not by moving the model, which would skew the perspective.
-    // A centred chapter's model travels with its section, like an image on
-    // the page. Its oy is measured with the section at the top of the
-    // viewport; while the section is lower (arriving) or higher (leaving), the
-    // model is shifted by the same amount. So it always sits under its own
-    // text and never meets a full-width headline, arriving or leaving.
-    const sy = window.scrollY || window.pageYOffset;
-    const oyOf = (a: Anchor) => (a.side === 'c'
-      ? a.oy - Math.max(-Hh, Math.min(Hh, a.top - sy))
-      : a.oy);
-    let tox: number, toy: number;
-    if (bn.side === 'c' && an.side !== 'c') {
-      // Entering a centred chapter. Stay in the side half until the
-      // full-width headline is close, then hand over to the model that rides
-      // up under that headline. Leaving early emptied the side half while its
-      // text was still being read.
-      // The outgoing model scrolls up with the page from the moment the window
-      // opens, so it stays above the full-width headline rising beneath it,
-      // which moves at the same rate. At w = 0.55 it hands over to the model
-      // riding under that headline. Both positions are off the text, and the
-      // jump between them is snapped, not eased through the headline.
-      const handed = w >= 0.55;
-      tox = handed ? bn.ox : an.ox;
-      toy = handed ? oyOf(bn) : an.oy + (probe - winLo);
-    } else if (an.side === 'c' && bn.side !== 'c') {
-      // Leaving a centred chapter. Move to the new half early, but never above
-      // the bottom of the centred text that is still scrolling away. Its own
-      // attached position marks that line, and the lower of the two wins.
-      tox = an.ox * (1 - wp) + bn.ox * wp;
-      toy = Math.min(oyOf(an) * (1 - wp) + bn.oy * wp, oyOf(an));
-    } else {
-      tox = an.ox * (1 - wp) + bn.ox * wp;
-      toy = oyOf(an) * (1 - wp) + oyOf(bn) * wp;
-    }
-    const Kp = (first || reduce) ? 1 : 1 - Math.exp(-dt * 3.2);
-    // y follows faster than x: it tracks the page while scrolling.
-    const Ky = (first || reduce) ? 1 : 1 - Math.exp(-dt * 14);
-    if (Math.abs(toy - curOy) > Hh * 0.6) { curOx = tox; curOy = toy; }
-    curOx += (tox - curOx) * Kp; curOy += (toy - curOy) * Ky;
-    if (Math.abs(curOx - setOx) > 0.4 || Math.abs(curOy - setOy) > 0.4) {
-      setOx = curOx; setOy = curOy;
-      camera.setViewOffset(W, Hh, curOx, curOy, W, Hh);
-      camera.updateProjectionMatrix();
-    }
     group.updateMatrixWorld();
+    if (debug) canvas.dataset.dbg = `${curOx.toFixed(2)},${curOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)}`;
 
     renderer.render(scene, camera);
-    drawCallouts(A, B, w, an, bn);
+    // Labels step aside during a switch: out at once, back in once the model
+    // has mostly arrived, so they never point at a part still in flight.
+    const labelIn = reduce ? 1 : smooth((now - switchedAt - 450) / 350);
+    drawCallouts(A, A, 0, an, an, labelIn);
   }
 
-  function drawCallouts(A2: SceneState, B2: SceneState, w: number, an: Anchor, bn: Anchor) {
+  function drawCallouts(A2: SceneState, B2: SceneState, w: number, an: Anchor, bn: Anchor, fadeIn = 1) {
     const dom = w < 0.5 ? A2 : B2;
-    const fade = 1 - 2 * Math.min(w, 1 - w);
+    const fade = (1 - 2 * Math.min(w, 1 - w)) * fadeIn;
     const ta = w < 0.5 ? an : bn;
     const vis: Array<{ co: (typeof cos)[number]; lb: SceneState['labels'][number]; ax: number; ay: number; y: number }> = [];
     let mnx = 1e9, mxx = -1e9, mtw = 0;

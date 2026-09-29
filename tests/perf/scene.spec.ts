@@ -83,6 +83,39 @@ test.describe('the 3D scene', () => {
     expect(after - before).toBe(0);
   });
 
+  test('scene hand-offs glide: no jump between frames', async ({ page }, info) => {
+    test.skip(info.project.name !== 'chromium', 'desktop stage; one engine is enough for a motion bound');
+    await page.setViewportSize({ width: 1440, height: 820 });
+    await page.goto('/?debug3d');
+    await waitForStage(page);
+    // 2026-09-29: the model once jumped ~980px in one frame at centred
+    // chapters (a snap). Scroll through moment and regions at 11px a frame
+    // and bound the largest per-frame move of the smoothed placement.
+    for (const id of ['moment', 'regions']) {
+      const top = await page.evaluate((i) => document.getElementById(i)!.offsetTop, id);
+      await page.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), top - 820);
+      await page.waitForTimeout(1200);
+      const maxStep = await page.evaluate(async () => {
+        const cv = document.querySelector('canvas')!;
+        const s: number[][] = [];
+        await new Promise<void>((done) => {
+          let f = 0;
+          const step = () => {
+            if (f < 90) window.scrollTo({ top: window.scrollY + 11, behavior: 'instant' });
+            if (cv.dataset.dbg) s.push(cv.dataset.dbg.split(',').map(Number));
+            f += 1;
+            if (f < 150) requestAnimationFrame(step); else done();
+          };
+          requestAnimationFrame(step);
+        });
+        let m = 0;
+        for (let i = 1; i < s.length; i += 1) m = Math.max(m, Math.abs(s[i]![0]! - s[i - 1]![0]!), Math.abs(s[i]![1]! - s[i - 1]![1]!));
+        return m;
+      });
+      expect(maxStep).toBeLessThan(60);
+    }
+  });
+
   test('rests when the reader is idle, and wakes on scroll', async ({ page }) => {
     await page.addInitScript(PATCH);
     await page.setViewportSize({ width: 1440, height: 900 });

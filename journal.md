@@ -41,6 +41,41 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Scene transitions rebuilt: scroll triggers, time animates
+**Type:** reversal (of today's placement switches and snaps) + decision
+**Owner:** 3D Engineer
+**Context:** Owner: "Transitions between the blocks are worst, they are not smooth",
+then "at any cost the site is premium, it has to be as smooth as possible".
+Measured with a new `?debug3d` readout (`canvas.dataset.dbg` = ox,oy,scale,yaw):
+the model jumped up to **984px in one frame** at centred chapters. That was the
+>0.6H snap and the hard hand-over at w = 0.55 added earlier today to fix overlaps.
+**Options:** keep scroll-scrubbed blending and tune; or switch to scroll-triggered,
+time-animated transitions (the premium scroll-site pattern).
+**Decision (`three/stage.ts` frame()):**
+- Scroll now only picks the dominant scene. Each boundary has one switch point:
+  the section top, or 0.3H earlier when a centred chapter is involved, with 4%
+  hysteresis.
+- Everything glides to the target through a two-stage follow (two first-order
+  stages in series make an S-curve at rate 5.5/s; it settles in ~0.8s). This
+  covers per-instance position, scale, rotation and colour (in OKLab; `toOk` /
+  `fromOk`), hub, pulses, lines, map, camera and placement. There are no
+  switches and no snaps.
+- Within-section `sub` is still scroll-read, through the same filter.
+- Centred models still ride with their section.
+- A size ease of up to 35% while travelling, proportional to the remaining
+  distance.
+- Labels fade out on a switch and back in after ~0.45s.
+**Result:** max per-frame move 984px → 27px, jerk ~2000 → ~7. New test:
+`perf/scene.spec.ts` "scene hand-offs glide: no jump between frames" (<60px per
+frame through moment and regions).
+**Also:** the old jerk script used `scrollBy`, which the site's smooth scroll
+turns into ~1px/frame, so it measured nothing. Scripted scroll must use
+`scrollTo({behavior:'instant'})`.
+**Consequences:** a reader who stops mid-boundary sees a finished scene, never a
+half-morph. The scroll→blend `w` machinery (windows, wp/wl, dip) is gone.
+
+---
+
 ## 2026-09-29 — Session: re-audit fixes + taste-skill
 **Type:** session
 **Done:** layout tokens `b4f56be`; will-change scoped `6030542`; taste-skill
