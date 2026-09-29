@@ -350,7 +350,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   const camM = { yaw: 0, look: 1, dist: 15, scale: 1 };
   const lineMid = { foot: 0, frame: 0, cage: 0, slot: 0 };
   const pulseMid = new Float32Array(NP), pulseCur = new Float32Array(NP);
-  let mapMid = 0, midOx = 0, midOy = 0, domIx = -1, switchedAt = 0;
+  let mapMid = 0, domIx = -1, switchedAt = 0;
   // Dissolve between scenes (owner, 2026-09-29 screen recording: flights and
   // morphs across the page read as chaos). shownIx is the scene on screen;
   // domIx is where the scroll is. On a change the model fades and eases back
@@ -409,7 +409,6 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     const snap = first || reduce || snapNext;
     snapNext = false;
     const R = snap ? 1 : 1 - Math.exp(-dt * 5.5);
-    const Ry = R; // placement glides with the shape, as one piece
     first = false;
 
     for (let i = 0; i < N; i += 1) {
@@ -473,8 +472,12 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     const sy = window.scrollY || window.pageYOffset;
     const tox = an.ox;
     const toy = an.side === 'c' ? an.oy - Math.max(-Hh, Math.min(Hh, an.top - sy)) : an.oy;
-    midOx += (tox - midOx) * Ry; curOx += (midOx - curOx) * Ry;
-    midOy += (toy - midOy) * Ry; curOy += (midOy - curOy) * Ry;
+    // Placement is exact, never filtered. An attached model must move with the
+    // page like the text beside it; a filter made it trail the scroll and then
+    // slide ~300px after the page stopped (owner: "on scroll the 3D models
+    // should not jump"). Scene changes reposition while invisible (dissolve),
+    // so there is no travel to smooth.
+    curOx = tox; curOy = toy;
     if (Math.abs(curOx - setOx) > 0.4 || Math.abs(curOy - setOy) > 0.4) {
       setOx = curOx; setOy = curOy;
       camera.setViewOffset(W, Hh, curOx, curOy, W, Hh);

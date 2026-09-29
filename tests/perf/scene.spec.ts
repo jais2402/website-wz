@@ -122,6 +122,37 @@ test.describe('the 3D scene', () => {
     }
   });
 
+  test('an attached model moves with the page and does not slide after scroll stops', async ({ page }, info) => {
+    test.skip(info.project.name !== 'chromium', 'desktop stage; one engine is enough');
+    await page.setViewportSize({ width: 1440, height: 820 });
+    await page.goto('/?debug3d');
+    await waitForStage(page);
+    // 2026-09-29: a filter on placement made centred models trail the scroll
+    // and slide ~300px after the page stopped. Flick 360px inside the moment
+    // chapter, stop, and require zero visible movement afterwards.
+    const top = await page.evaluate(() => document.getElementById('moment')!.offsetTop);
+    await page.evaluate((y) => window.scrollTo({ top: y - 100, behavior: 'instant' }), top);
+    await page.waitForTimeout(1500);
+    const moved = await page.evaluate(async () => {
+      const cv = document.querySelector('canvas')!;
+      const s: number[][] = [];
+      await new Promise<void>((done) => {
+        let f = 0;
+        const step = () => {
+          if (f < 12) window.scrollTo({ top: window.scrollY + 30, behavior: 'instant' });
+          if (cv.dataset.dbg) s.push(cv.dataset.dbg.split(',').map(Number));
+          f += 1;
+          if (f < 80) requestAnimationFrame(step); else done();
+        };
+        requestAnimationFrame(step);
+      });
+      let m = 0;
+      for (let i = 14; i < s.length; i += 1) if (s[i]![4]! > 0.9 && s[i - 1]![4]! > 0.9) m = Math.max(m, Math.abs(s[i]![1]! - s[i - 1]![1]!));
+      return m;
+    });
+    expect(moved).toBeLessThan(1);
+  });
+
   test('rests when the reader is idle, and wakes on scroll', async ({ page }) => {
     await page.addInitScript(PATCH);
     await page.setViewportSize({ width: 1440, height: 900 });

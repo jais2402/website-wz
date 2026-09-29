@@ -41,6 +41,25 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Attached models no longer slide after scrolling stops
+**Type:** fix
+**Owner:** 3D Engineer
+**Context:** Owner: "on scroll the 3D models should not jump". Measured: after a
+360px flick inside an attached (centred/slot) chapter, the model kept sliding
+~250–310px after the page stopped. The two-stage filter on placement made it
+trail the scroll, then catch up.
+**Decision:** placement is exact (`curOx = tox; curOy = toy`), with no filter.
+Scene changes already reposition while invisible (dissolve), so there is no
+travel left to smooth. After a flick, the visible model moves 0.0px in build,
+moment, pricing and regions; the remaining motion only happens at opacity 0.
+New test: "an attached model moves with the page and does not slide after
+scroll stops" (<1px visible).
+**Also:** within-section filter rate 5.5/s is intentional (it was 5.2 in the
+prototype). Three InstancedMeshes (parts, pulses, map) are an accepted exception
+to the "one InstancedMesh" wording and predate today.
+
+---
+
 ## 2026-09-29 — Scene changes dissolve; full-width bento with the 3D in the centre
 **Type:** reversal (of the glide from 18009ed) + decision
 **Owner:** 3D Engineer + Designer
