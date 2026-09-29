@@ -5,7 +5,7 @@
     "legalName": "Wezigns",
     "since": 2012,
     "tagline": "Custom software, built around how your business already works.",
-    "description": "Wezigns builds the custom systems that replace the spreadsheets, message threads and manual steps a growing business has outgrown. Operating since 2012 across India, Singapore and the UAE.",
+    "description": "Wezigns builds custom systems that replace spreadsheets and manual work for growing businesses, since 2012, in eleven countries.",
     "email": "hello@wezigns.com",
     "markets": [
       "India",
@@ -128,7 +128,7 @@
           "n": "01",
           "hue": "blueprint",
           "title": "Custom business software",
-          "body": "Software built around a business process that off-the-shelf tools cannot handle well."
+          "body": "Software built around a business process that off-the-shelf tools cannot handle, in whichever stack fits it best."
         },
         {
           "n": "02",
@@ -140,7 +140,7 @@
           "n": "03",
           "hue": "plum",
           "title": "System integration",
-          "body": "We connect the software you already use, so records move between tools without being typed in twice."
+          "body": "We connect the software you already use, whatever it runs on, so records move between tools without being typed in twice."
         },
         {
           "n": "04",
@@ -238,7 +238,7 @@
       "pattern": "sequence",
       "headline": {
         "lead": "The systems a business runs on.",
-        "accent": "One way of building them."
+        "accent": "One way of building them, on the stack that fits."
       },
       "items": [
         {
@@ -332,7 +332,7 @@
           "n": "02",
           "hue": "ochre",
           "title": "Shape",
-          "body": "We turn the problem into a product. What matters now, what can wait, how it should work, and what the architecture has to support.",
+          "body": "We turn the problem into a product. What matters now, what can wait, how it should work, and which technology fits it.",
           "output": "Scope, priorities, direction, timeline and price."
         },
         {
@@ -367,7 +367,7 @@
         {
           "hue": "blueprint",
           "title": "Understand the system first",
-          "body": "We map how the work happens today and what the first version has to do."
+          "body": "We map how the work happens today and what the first version has to do. Technology comes after that."
         },
         {
           "hue": "ochre",
@@ -456,7 +456,7 @@
       "side": "l",
       "pattern": "cases",
       "headline": {
-        "lead": "Our recent products and systems."
+        "lead": "Recent systems, built for real operations."
       },
       "actions": [
         {
@@ -514,8 +514,8 @@
       "side": "l",
       "pattern": "prose",
       "headline": {
-        "lead": "Built on infrastructure",
-        "accent": "you already trust."
+        "lead": "The technology fits the problem,",
+        "accent": "not the other way round."
       },
       "lead": "AWS and Google Cloud, Stripe and Razorpay, and established frameworks chosen for the problem, not by habit.",
       "layers": [
@@ -531,8 +531,8 @@
       ],
       "pillars": [
         {
-          "title": "Handed over, not locked in",
-          "body": "Conventional, documented code the next team can pick up without us."
+          "title": "Chosen for the problem, not the vendor",
+          "body": "AWS or Google Cloud, this framework or that one — the stack fits your systems. Code stays conventional and documented, so the next team can pick it up without us."
         },
         {
           "title": "Room to grow",
@@ -574,15 +574,15 @@
       "items": [
         {
           "q": "What does Wezigns do?",
-          "a": "We design, build, host and maintain custom software systems for businesses that have outgrown sheets and manual processes. We specialise in operational portals, internal tools, automation pipelines, and complex data integrations."
+          "a": "We design, build, host and maintain custom software for businesses that have outgrown spreadsheets and manual processes: operational portals, internal tools, automation and data integrations, on whichever technology fits the problem."
         },
         {
           "q": "How does Wezigns approach software security?",
-          "a": "We build security into access design, data handling, system connections, testing and maintenance. No software stays secure without upkeep, so we keep maintaining, reviewing and improving it."
+          "a": "We build security into access design, data handling, system connections and testing from the first version. No software stays secure without upkeep, so we keep reviewing and maintaining it after launch."
         },
         {
           "q": "Can Wezigns take over software built by another company?",
-          "a": "Yes. Taking over systems built elsewhere is part of the hosting, support and maintenance practice."
+          "a": "Yes. We take over systems other teams built, whatever they chose to build on, and folding that into ongoing hosting, support and maintenance is a normal part of the work."
         },
         {
           "q": "Does Wezigns work with small businesses?",
@@ -590,7 +590,7 @@
         },
         {
           "q": "How much does custom software development cost?",
-          "a": "It depends on scope, integrations and how much of the process has to change. Price and timeline come out of the Shape stage, before anything is built."
+          "a": "It depends on scope, integrations and how much of the process has to change, not on the technology involved. Price and timeline come out of the Shape stage, before anything is built."
         },
         {
           "q": "How long does it take?",
@@ -659,10 +659,10 @@
       "hue": "blueprint",
       "region": "India",
       "sector": "Safety training",
-      "title": "From spreadsheets to one operating system",
+      "title": "One system instead of spreadsheets and chat threads",
       "body": [
-        "A nationwide safety training operation ran on messaging apps and spreadsheets. We built the system that now runs it, from session registration and trainer scheduling to compliance reporting.",
-        "Administrative work fell by 80%. The system handles more than 100,000 certifications a year, with proctored audits built in."
+        "A nationwide safety training operation ran on spreadsheets and messaging threads. We replaced them with one system: registration, trainer scheduling and compliance reporting, together.",
+        "Administrative work fell by 80%. The system now handles more than 100,000 certifications a year, with proctored audits built in."
       ],
       "tags": [
         "Registration",
@@ -686,10 +686,10 @@
       "hue": "pine",
       "region": "Singapore",
       "sector": "Tourism",
-      "title": "A platform for a national tourism operation",
+      "title": "One record of events, instead of email threads",
       "body": [
-        "One platform for operators, event planners and government agencies. It replaced email threads and spreadsheets with a single record of events and listings.",
-        "It is still running with zero unplanned downtime. At peak it handles up to 40,000 requests a minute, with data stored in-country."
+        "Operators, event planners and government agencies were coordinating a national tourism calendar over email and spreadsheets. We built the platform that gives them a single shared record of events and listings.",
+        "It has run with zero unplanned downtime, handling up to 40,000 requests a minute at peak. Data stays in-country."
       ],
       "tags": [
         "Multi-operator",
@@ -713,10 +713,10 @@
       "hue": "ochre",
       "region": "Dubai",
       "sector": "Engineering event",
-      "title": "Live operations for a large annual engineering event",
+      "title": "One dashboard for hundreds of people running one event",
       "body": [
-        "A real-time operations dashboard and participant platform. It brings together live data from the hundreds of people running the event.",
-        "Built on AWS for high availability, with low-latency monitoring and encrypted backups."
+        "A large annual engineering event needed one place to see what hundreds of people were doing in real time. We built the operations dashboard and participant platform that gives them that.",
+        "It runs on AWS for high availability, with low-latency monitoring and encrypted backups."
       ],
       "tags": [
         "Real-time",
@@ -740,10 +740,10 @@
       "hue": "plum",
       "region": "Retail",
       "sector": "Marketplace",
-      "title": "A marketplace that added sellers without adding support staff",
+      "title": "Sellers grew fifteen times over. Support headcount did not",
       "body": [
-        "A regional B2B marketplace was checking seller catalogues by hand. We built automated seller onboarding with real-time API integrations.",
-        "It grew from 300 to 4,500 active sellers with the same core support team."
+        "A regional B2B marketplace was checking every seller catalogue by hand. We built automated onboarding with real-time API integrations.",
+        "Active sellers grew from 300 to 4,500, with the same core support team."
       ],
       "tags": [
         "Seller onboarding",

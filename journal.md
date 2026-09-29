@@ -41,6 +41,42 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Copy rewrite: technology-agnostic spine; SEO-verified
+**Type:** delivery
+**Owner:** Content Steward (writer) → SEO Specialist (verify) → main session (fact check)
+**Context:** Owner: "Rewrite the whole blocks — content writer — verify by the SEO
+agent. I want to write a technology agnostic, and few others."
+**Decision:** `content/site.json` was rewritten around a technology-agnostic spine:
+build items 0/2; range, how (Shape) and pricing point 0; the work heading; the tech
+headline, now "The technology fits the problem, not the other way round.", with
+AWS, Google Cloud, Stripe and Razorpay kept in `tech.lead`; tech pillar 0 "Chosen
+for the problem, not the vendor"; FAQ 1/3/4/5; case titles and prose (all
+figures unchanged). Supporting themes were drawn only from the brief: understand
+before technology, no lock-in and handover. The hero, the hook, all "Tell us
+what is not working" instances, principles, AI, evidence, the regions list,
+tech.layers and integration titles were deliberately left unchanged.
+**Fact check (main session) removed:** "five spreadsheets" (invented count),
+"integrations to the systems sellers already used" (invented detail), "chosen for
+the load, not by default" (invented rationale), and "on any stack" on
+integration and in the takeover FAQ (an unmade promise).
+**SEO:** a blocker was fixed. `meta.description` still said "India, Singapore
+and the UAE" and fed the meta description, OG and Organization JSON-LD. It now
+reads "Wezigns builds custom systems that replace spreadsheets and manual work
+for growing businesses, since 2012, in eleven countries."
+**Open (SEO):** the homepage `<title>` is ~74 chars (tagline), which is
+over ~60; that needs a brand call. Optionally put "products" back in the work H2.
+**Consequences:** the CEO agent should sign off on the new case titles, which
+are claims in public.
+
+## 2026-09-29 — Session: copy rewrite
+**Type:** session
+**Done:** `content/site.json`.
+**State:** verify:full is green.
+**Next:** owner review of the copy; decisions on the title length and the idle loop.
+**Blocked:** unchanged.
+
+---
+
 ## 2026-09-29 — Scene transitions: no overlap, no muddy colours; how base lower
 **Type:** delivery
 **Owner:** 3D Engineer
