@@ -55,6 +55,15 @@ function fromOk(L: number, A: number, B: number, out: THREE.Color) {
   );
 }
 
+const _oa = [0, 0, 0], _ob = [0, 0, 0];
+/** Mix two colours in OKLab: continuous, with clean mid-tones (no RGB olive). */
+function mixOk(a: THREE.Color, b: THREE.Color, t: number, out: THREE.Color) {
+  if (t <= 0) return out.copy(a);
+  if (t >= 1) return out.copy(b);
+  toOk(a, _oa); toOk(b, _ob);
+  return fromOk(_oa[0]! + (_ob[0]! - _oa[0]!) * t, _oa[1]! + (_ob[1]! - _oa[1]!) * t, _oa[2]! + (_ob[2]! - _oa[2]!) * t, out);
+}
+
 export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, leads: SVGElement): StageHandle | null {
   const root = document.documentElement;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -155,6 +164,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   slot.position.set(0.84, 0.42 + 1.68, 0.84);
   group.add(slot);
   const LINES = { foot, frame: lattice, cage, slot } as const;
+  const LINE_KEYS = Object.keys(LINES) as Array<keyof typeof LINES>;
 
   // The world map for the regions scene: one low tile per 5° land cell. It
   // rises out of the ground as the scene arrives (y-scale follows o.map) and
@@ -174,7 +184,6 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   mapGroup.add(mapTiles);
   mapGroup.visible = false;
   group.add(mapGroup);
-  let mapCur = 0;
 
   /* ── palette ───────────────────────────────────────── */
   const P = readPalette(createPalette());
@@ -313,187 +322,128 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   // Per-scene highlight. See three/highlight.ts for why it is not one slot.
   const highlights = new Map<string, number>();
 
-  const A = blank(), cur = blank();
-  const curQ: THREE.Quaternion[] = [];
-  for (let i = 0; i < N; i += 1) curQ.push(new THREE.Quaternion());
+  const A = blank();
   const dummy = new THREE.Object3D(), eu = new THREE.Euler();
   const qa = new THREE.Quaternion();
   const tv = new THREE.Vector3(), tc = new THREE.Color(), look = new THREE.Vector3();
-  const camS = { yaw: 0, look: 1, dist: 15, scale: 1 };
-  const lineCur = { foot: 0, frame: 0, cage: 0, slot: 0 };
-  let hubOn = 0;
   const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
-  let first = true, curOx = 0, curOy = 0, setOx = 1e9, setOy = 1e9, lastNow = 0;
+  let first = true, lastNow = 0;
   // ?debug3d exposes the smoothed placement for measurement (tests / tuning).
   const debug = typeof location !== 'undefined' && location.search.includes('debug3d');
 
   /*
-   * Scroll picks the scene; time animates it (owner, 2026-09-29: "at any cost
-   * the site is premium, it has to be as smooth as possible").
+   * The blocks are one journey (owner, 2026-09-29: "we are building a journey
+   * with the blocks… it was very smooth on the artifact"). This is the approved
+   * prototype's loop, restored: two neighbouring scenes blend by scroll inside
+   * a band of ±0.22 of the viewport around each section top (w, smoothstep).
+   * Every part eases toward the blend at 5.2/s, so the same blocks travel
+   * continuously from one shape into the next. Nothing switches, snaps or
+   * fades. Today's detours (a glide, a dissolve, per-section sticky models)
+   * are reverted; see journal.md.
    *
-   * The prototype scrubbed a blend between two scenes with scroll position.
-   * Every wheel step then became a step in the morph, and a reader who paused
-   * mid-way was left looking at a half-built shape. Now each section boundary
-   * has one switch point. When the probe crosses it, the target becomes the
-   * next scene, and everything glides there through a two-stage follow:
-   * shape, colour (in OKLab), hub, lines, map, camera and placement. Two
-   * first-order stages in series make an S-curve, easing in and out, so there
-   * is no abrupt start and no dependence on how the reader scrolls.
-   * Within-section progress (`sub`: steps, growth) is still read from scroll,
-   * and it runs through the same filter.
+   * Kept from later work: OKLab colour mixing (continuous, cleaner mid-tones
+   * than RGB), the shortest-arc yaw, and exact (undamped) placement. Placement
+   * is exact because centred chapters and the bento slot ride with their
+   * section, and damping a scroll-attached position made it trail the page and
+   * slide after scrolling stopped.
    */
-  const midP: THREE.Vector3[] = [], midS: THREE.Vector3[] = [], midQ: THREE.Quaternion[] = [];
-  for (let i = 0; i < N; i += 1) { midP.push(new THREE.Vector3()); midS.push(new THREE.Vector3(1, 1, 1)); midQ.push(new THREE.Quaternion()); }
-  const tgtLab = new Float32Array(3 * N), midLab = new Float32Array(3 * N), curLab = new Float32Array(3 * N);
-  const okTmp = [0, 0, 0];
-  const midHub = { p: new THREE.Vector3(), s: new THREE.Vector3(1, 1, 1), on: 0 };
-  const camM = { yaw: 0, look: 1, dist: 15, scale: 1 };
-  const lineMid = { foot: 0, frame: 0, cage: 0, slot: 0 };
-  const pulseMid = new Float32Array(NP), pulseCur = new Float32Array(NP);
-  let mapMid = 0, domIx = -1, switchedAt = 0;
-  // Dissolve between scenes (owner, 2026-09-29 screen recording: flights and
-  // morphs across the page read as chaos). shownIx is the scene on screen;
-  // domIx is where the scroll is. On a change the model fades and eases back
-  // (OUT), is placed, re-shaped and re-coloured while invisible, then fades up
-  // and settles in (IN). Within-section progress still animates live.
-  let shownIx = -1, phase: 'idle' | 'out' | 'in' = 'idle', phaseT0 = 0, fadeFrom = 1, opacity = 1, snapNext = false;
-  const OUT_MS = 280, IN_MS = 560;
-
-  /** Where the scene switches at boundary j (the top of section j). */
-  function switchAt(j: number, Hv: number) {
-    const centred = anchors[j - 1]!.side === 'c' || anchors[j]!.side === 'c';
-    // Around a centred chapter, switch while its full-width headline is still
-    // low on the screen, so the model is away before that headline is read.
-    return anchors[j]!.top - (centred ? Hv * 0.3 : 0);
-  }
+  const B = blank(), cur = blank();
+  const curQ: THREE.Quaternion[] = [];
+  for (let i = 0; i < N; i += 1) curQ.push(new THREE.Quaternion());
+  const qb = new THREE.Quaternion(), ts = new THREE.Vector3();
+  const camS = { yaw: 0, look: 1, dist: 15, scale: 1 };
+  const lineCur = { foot: 0, frame: 0, cage: 0, slot: 0 };
+  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0;
 
   function frame(now: number) {
     const dt = lastNow ? Math.min(0.25, Math.max(0.001, (now - lastNow) / 1000)) : 0.016;
     lastNow = now;
     const t = reduce ? 0 : (paused ? frozen : clock) * 0.001;
-    const probe = (window.scrollY || window.pageYOffset) + window.innerHeight * (mobile ? 0.3 : 0.5);
-    const Hv = window.innerHeight;
+    const sy = window.scrollY || window.pageYOffset;
+    const probe = sy + window.innerHeight * (mobile ? 0.3 : 0.5);
+    const band = window.innerHeight * 0.22;
     if (!anchors.length) return;
 
-    // Dominant scene, with hysteresis: a switch needs the probe 4% of the
-    // screen past the switch point, so resting on a boundary never flickers.
-    let cand = 0;
-    for (let j = 1; j < anchors.length; j += 1) if (probe >= switchAt(j, Hv)) cand = j;
-    if (domIx < 0) { domIx = cand; switchedAt = now - 2000; }
-    else if (cand !== domIx) {
-      const j = cand > domIx ? domIx + 1 : domIx;
-      if (Math.abs(cand - domIx) > 1 || Math.abs(probe - switchAt(j, Hv)) > Hv * 0.04) { domIx = cand; switchedAt = now; }
+    let ia = 0, ib = 0, w = 0;
+    for (let s2 = 0; s2 < anchors.length; s2 += 1) if (probe >= anchors[s2]!.top) ia = s2;
+    ib = ia;
+    if (ia < anchors.length - 1) {
+      const bnd = anchors[ia + 1]!.top;
+      if (probe > bnd - band) { ib = ia + 1; w = smooth((probe - (bnd - band)) / (2 * band)); }
     }
-    if (shownIx < 0 || reduce) { shownIx = domIx; }
-    else if (domIx !== shownIx && phase !== 'out') { phase = 'out'; phaseT0 = now; fadeFrom = opacity; canvas.style.transition = 'none'; poke(); }
-    let dissolve = 1;
-    if (phase === 'out') {
-      const p = Math.min(1, (now - phaseT0) / OUT_MS);
-      opacity = fadeFrom * (1 - p * p);
-      dissolve = 1 - 0.06 * p;
-      if (p >= 1) { shownIx = domIx; snapNext = true; phase = 'in'; phaseT0 = now; switchedAt = now - 450; }
-    } else if (phase === 'in') {
-      const p = Math.min(1, (now - phaseT0) / IN_MS);
-      const e = 1 - Math.pow(1 - p, 3);
-      opacity = e; dissolve = 0.94 + 0.06 * e;
-      if (p >= 1) phase = 'idle';
-    } else opacity = 1;
-    if (phase !== 'idle') { canvas.style.opacity = opacity.toFixed(3); poke(); }
-    else if (canvas.style.opacity && canvas.style.opacity !== '1') canvas.style.opacity = '1';
+    if (ia > 0 && ib === ia) {
+      const bnd2 = anchors[ia]!.top;
+      if (probe < bnd2 + band) { ib = ia; ia -= 1; w = smooth((probe - (bnd2 - band)) / (2 * band)); }
+    }
+    const an = anchors[ia], bn = anchors[ib];
+    if (!an || !bn) return;
 
-    const an = anchors[shownIx]!;
     state(an.sc, t, subOf(an, probe), highlights.get(SCENES[an.sc] ?? '') ?? -1, A);
-
-    // Two-stage follow for within-section motion. A new scene arrives
-    // pre-settled (snapNext): it is placed while invisible, never flown in.
-    const snap = first || reduce || snapNext;
-    snapNext = false;
-    const R = snap ? 1 : 1 - Math.exp(-dt * 5.5);
+    state(bn.sc, t, subOf(bn, probe), highlights.get(SCENES[bn.sc] ?? '') ?? -1, B);
+    const K = (first || reduce) ? 1 : 1 - Math.exp(-dt * 5.2);
+    const snapPlacement = first || reduce;
     first = false;
 
     for (let i = 0; i < N; i += 1) {
-      midP[i]!.lerp(A.p[i]!, R); cur.p[i]!.lerp(midP[i]!, R);
-      midS[i]!.lerp(A.s[i]!, R); cur.s[i]!.lerp(midS[i]!, R);
+      tv.copy(A.p[i]!).lerp(B.p[i]!, w);
+      ts.copy(A.s[i]!).lerp(B.s[i]!, w);
       qa.setFromEuler(eu.set(A.r[i]!.x, A.r[i]!.y, A.r[i]!.z));
-      midQ[i]!.slerp(qa, R); curQ[i]!.slerp(midQ[i]!, R);
-      // Colour moves in OKLab: perceptually even, no olive or lime mid-tones.
-      toOk(A.c[i]!, okTmp);
-      for (let k = 0; k < 3; k += 1) {
-        const x = 3 * i + k;
-        tgtLab[x] = okTmp[k]!;
-        midLab[x] = snap ? tgtLab[x]! : midLab[x]! + (tgtLab[x]! - midLab[x]!) * R;
-        curLab[x] = snap ? midLab[x]! : curLab[x]! + (midLab[x]! - curLab[x]!) * R;
-      }
-      fromOk(curLab[3 * i]!, curLab[3 * i + 1]!, curLab[3 * i + 2]!, tc);
+      qb.setFromEuler(eu.set(B.r[i]!.x, B.r[i]!.y, B.r[i]!.z));
+      qa.slerp(qb, w);
+      mixOk(A.c[i]!, B.c[i]!, w, tc);
+      cur.p[i]!.lerp(tv, K); cur.s[i]!.lerp(ts, K);
+      curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
       dummy.scale.copy(cur.s[i]!); dummy.updateMatrix();
       parts.setMatrixAt(i, dummy.matrix);
-      parts.setColorAt(i, tc);
+      parts.setColorAt(i, cur.c[i]!);
     }
     parts.instanceMatrix.needsUpdate = true;
     if (parts.instanceColor) parts.instanceColor.needsUpdate = true;
 
-    midHub.on += (A.hub.on - midHub.on) * R; hubOn += (midHub.on - hubOn) * R;
-    if (hubOn < 0.05) { midHub.p.copy(A.hub.p); cur.hub.p.copy(A.hub.p); }
-    midHub.p.lerp(A.hub.p, R); cur.hub.p.lerp(midHub.p, R);
-    midHub.s.lerp(A.hub.s, R); cur.hub.s.lerp(midHub.s, R);
+    const wh = smooth((w - 0.4) / 0.3);
+    const ho = A.hub.on * (1 - wh) + B.hub.on * wh;
+    hubOn += (ho - hubOn) * K;
+    if (A.hub.on === 0 && B.hub.on > 0) tv.copy(B.hub.p);
+    else if (B.hub.on === 0 && A.hub.on > 0) tv.copy(A.hub.p);
+    else tv.copy(A.hub.p).lerp(B.hub.p, w);
+    cur.hub.p.lerp(tv, hubOn < 0.05 ? 1 : K);
+    ts.copy(A.hub.s).lerp(B.hub.s, w);
+    cur.hub.s.lerp(ts, K);
     hub.position.copy(cur.hub.p);
     hub.scale.copy(cur.hub.s).multiplyScalar(Math.max(1e-4, hubOn));
     hubMat.color.copy(P.ink);
 
     for (let i = 0; i < NP; i += 1) {
-      dummy.position.copy(A.pp[i]!);
+      const ps = A.ps[i]! * (1 - w) + B.ps[i]! * w;
+      dummy.position.copy(w < 0.5 ? A.pp[i]! : B.pp[i]!);
       dummy.quaternion.identity();
-      pulseMid[i] = pulseMid[i]! + (A.ps[i]! - pulseMid[i]!) * R;
-      pulseCur[i] = pulseCur[i]! + (pulseMid[i]! - pulseCur[i]!) * R;
-      dummy.scale.setScalar(Math.max(1e-4, pulseCur[i]!));
+      dummy.scale.setScalar(Math.max(1e-4, ps));
       dummy.updateMatrix();
       pulses.setMatrixAt(i, dummy.matrix);
     }
     pulses.instanceMatrix.needsUpdate = true;
 
-    (Object.keys(LINES) as Array<keyof typeof LINES>).forEach((ln) => {
-      lineMid[ln] += (A.lines[ln] - lineMid[ln]) * R;
-      lineCur[ln] += (lineMid[ln] - lineCur[ln]) * R;
+    for (const ln of LINE_KEYS) {
+      const lo = A.lines[ln] * (1 - w) + B.lines[ln] * w;
+      lineCur[ln] += (lo - lineCur[ln]) * K;
       (LINES[ln].material as THREE.LineBasicMaterial).opacity = lineCur[ln];
       LINES[ln].visible = lineCur[ln] > 0.01;
-    });
+    }
 
-    mapMid += (A.map - mapMid) * R; mapCur += (mapMid - mapCur) * R;
+    mapCur += ((A.map * (1 - w) + B.map * w) - mapCur) * K;
     mapGroup.visible = mapCur > 0.01;
     mapGroup.scale.set(1, Math.max(1e-4, mapCur), 1);
     mapMat.color.copy(P.model2).lerp(P.ink, 0.1);
 
-    /* placement */
-    // The model is placed in its half by offsetting the projection frustum,
-    // not by moving the model, which would skew the perspective. A centred
-    // chapter's model rides with its section like an image on the page, so it
-    // stays under its own text arriving and leaving.
-    const sy = window.scrollY || window.pageYOffset;
-    const tox = an.ox;
-    const toy = an.side === 'c' ? an.oy - Math.max(-Hh, Math.min(Hh, an.top - sy)) : an.oy;
-    // Placement is exact, never filtered. An attached model must move with the
-    // page like the text beside it; a filter made it trail the scroll and then
-    // slide ~300px after the page stopped (owner: "on scroll the 3D models
-    // should not jump"). Scene changes reposition while invisible (dissolve),
-    // so there is no travel to smooth.
-    curOx = tox; curOy = toy;
-    if (Math.abs(curOx - setOx) > 0.4 || Math.abs(curOy - setOy) > 0.4) {
-      setOx = curOx; setOy = curOy;
-      camera.setViewOffset(W, Hh, curOx, curOy, W, Hh);
-      camera.updateProjectionMatrix();
-    }
-
     /* camera */
-    const tScale = A.scale * (mobile ? 0.74 : an.ss);
-    // Yaw follows the SHORTEST arc: the work carousel turns through −1.5π on
-    // purpose, and a plain lerp out of it would swing almost a full turn.
-    camM.yaw += shortestAngle(camM.yaw, A.yaw) * R; camS.yaw += shortestAngle(camS.yaw, camM.yaw) * R;
-    camM.look += (A.look - camM.look) * R; camS.look += (camM.look - camS.look) * R;
-    camM.dist += (A.dist - camM.dist) * R; camS.dist += (camM.dist - camS.dist) * R;
-    camM.scale += (tScale - camM.scale) * R; camS.scale += (camM.scale - camS.scale) * R;
+    const yaw = A.yaw + shortestAngle(A.yaw, B.yaw) * w;
+    camS.yaw += shortestAngle(camS.yaw, yaw) * K;
+    camS.look += ((A.look * (1 - w) + B.look * w) - camS.look) * K;
+    camS.dist += ((A.dist * (1 - w) + B.dist * w) - camS.dist) * K;
+    camS.scale += (((A.scale * (1 - w) + B.scale * w) * (mobile ? 0.74 : (an.ss * (1 - w) + bn.ss * w))) - camS.scale) * K;
     group.rotation.y = camS.yaw;
-    group.scale.setScalar(camS.scale * dissolve);
+    group.scale.setScalar(camS.scale);
 
     const Km = 1 - Math.exp(-dt * 2.4);
     mouse.sx += (mouse.x - mouse.sx) * Km;
@@ -508,17 +458,32 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     );
     camera.lookAt(look);
 
+    /* placement */
+    // Offsetting the projection frustum places the model in its half without
+    // skewing the perspective. Side chapters hold a fixed offset (the model
+    // stays put while their text scrolls); centred chapters and the bento slot
+    // ride with their section. The blend between neighbours is continuous in
+    // scroll, so exact placement needs no damping.
+    const oyOf = (a: Anchor) => (a.side === 'c' ? a.oy - (a.top - sy) : a.oy);
+    const tox = an.ox * (1 - w) + bn.ox * w;
+    const toy = oyOf(an) * (1 - w) + oyOf(bn) * w;
+    dbgOx = tox; dbgOy = toy;
+    if (snapPlacement || Math.abs(tox - setOx) > 0.4 || Math.abs(toy - setOy) > 0.4) {
+      setOx = tox; setOy = toy;
+      camera.setViewOffset(W, Hh, tox, toy, W, Hh);
+      camera.updateProjectionMatrix();
+    }
     group.updateMatrixWorld();
-    if (debug) canvas.dataset.dbg = `${curOx.toFixed(2)},${curOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},${opacity.toFixed(3)}`;
+    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)}`;
 
     renderer.render(scene, camera);
-    // Labels step aside during a switch: out at once, back in once the model
-    // has mostly arrived, so they never point at a part still in flight.
-    const labelIn = reduce ? 1 : phase === 'out' ? 0 : smooth((now - switchedAt - 450) / 350);
-    drawCallouts(A, an, labelIn);
+    drawCallouts(A, B, w, an, bn);
   }
 
-  function drawCallouts(dom: SceneState, ta: Anchor, fade: number) {
+  function drawCallouts(A2: SceneState, B2: SceneState, w: number, an: Anchor, bn: Anchor) {
+    const dom = w < 0.5 ? A2 : B2;
+    const fade = 1 - 2 * Math.min(w, 1 - w);
+    const ta = w < 0.5 ? an : bn;
     const vis: Array<{ co: (typeof cos)[number]; lb: SceneState['labels'][number]; ax: number; ay: number; y: number }> = [];
     let mnx = 1e9, mxx = -1e9, mtw = 0;
 
@@ -621,11 +586,8 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
     camera.aspect = W / Hh;
     camera.fov = mobile ? (W / Hh < 0.8 ? 34 : 30) : 26;
-    setOx = setOy = 1e9;
-    // Snap only at rest. Mid-dissolve, a snap popped the outgoing scene into
-    // the new target at partial opacity (reviews, 2026-09-29); the IN phase
-    // places the new scene while invisible anyway.
-    if (phase === 'idle') first = true;
+    // No snap on resize: placement is recomputed exactly each frame, and a
+    // snap would pop any within-section animation in progress.
     camera.updateProjectionMatrix();
     measure(); poke();
   }
@@ -703,8 +665,6 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     poke,
     setPaused(p) {
       paused = p; frozen = clock;
-      // Never freeze half-faded: complete any dissolve to the current scene.
-      if (phase !== 'idle') { phase = 'idle'; opacity = 1; shownIx = domIx; snapNext = true; canvas.style.opacity = '1'; }
       poke();
     },
     setHighlight(sceneKey, index) { highlights.set(sceneKey, index); poke(); },

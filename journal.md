@@ -41,6 +41,44 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — The journey restored: the prototype's scroll-blended transformation
+**Type:** reversal (of the glide 18009ed, the dissolve fc3f736, and a same-day
+sticky per-section experiment that was never committed)
+**Owner:** Owner direction; 3D Engineer
+**Context:** The owner said: "this appearing and disappearing is not working";
+"we are building a journey with the blocks"; "make them smooth transitions";
+"it was very smooth on the artifact"; "the block 3D is like a journey"; and
+"break all the rules that are blocking this transition". Each of today's
+detours treated the transition as a problem to hide (glide, dissolve,
+separate models). The brief is the opposite: one set of blocks that
+transforms continuously through the page.
+**Decision (`three/stage.ts` frame()):** the approved prototype's loop is
+restored line for line from the artifact:
+- two neighbouring scenes blend by scroll inside a ±0.22H band around each
+  section top (`w` = smoothstep);
+- every part (position, scale, rotation, colour, hub, pulses, lines, map and
+  camera) eases toward the blend at 5.2/s;
+- labels fade across the band.
+Kept from later work: OKLab mixing (continuous, clean mid-tones) and
+shortest-arc yaw. One deliberate difference: placement is exact (undamped),
+because centred chapters and the bento slot ride with their section, and
+damping made them trail and slide. Removed: the dissolve phase machine, canvas
+opacity, snapNext and switch points.
+**Rules:** none of CLAUDE.md's five rules had to be broken. The owner's
+"break all the rules" is recorded as permission that was not needed. Rule 4 is
+intact: 3D is lazy, after first paint, aria-hidden, and has fallbacks.
+**Tests:** a new "the journey is continuous: the model never fades or jumps
+while scrolling" test scrolls the whole page at 11px/frame, requires no fade,
+and bounds the per-frame move to <40px. The dissolve, resize-mid-dissolve and
+per-section band tests are removed. Playwright workers are capped at 2, because
+WebGL renders in software here and the default worker count pushed the load
+past 100 and timed tests out. The full suite passes 63/63 in 1.2 min.
+**Consequences:** during a boundary the morphing blocks can pass beside or
+behind a heading for a moment. That is the prototype's behaviour and the
+owner's stated preference.
+
+---
+
 ## 2026-09-29 — Design review fix: no empty bento centre without WebGL
 **Type:** delivery
 **Owner:** Design Reviewer (finding, HIGH), main session (fix)

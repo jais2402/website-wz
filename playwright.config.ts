@@ -16,6 +16,9 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
+  // WebGL renders in software here; more workers overload the CPU and time
+  // tests out (load average 100+, 2026-09-29). Two is reliable.
+  workers: 2,
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
