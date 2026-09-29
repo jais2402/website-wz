@@ -41,6 +41,37 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — /impeccable polish (audit items 7, 8) and run close-out
+**Type:** delivery
+**Owner:** Designer
+**Decision:** reduced motion no longer kills every transition (`globals.css`).
+Keyframe animations end at once, and transitions keep only colour and opacity,
+so feedback survives and movement is removed. `layout.tsx` themeColor stays
+literal (the browser reads it before CSS), with a comment tying it to
+`--color-ground`.
+**Verified:** one batched round covering desktop and mobile, light and dark, and
+reduced motion; overflow and target re-measured on 3 routes × 3 widths (clean);
+verify:full green (58 e2e, 18 unit).
+
+## 2026-09-29 — Session: /impeccable audit fixes, one at a time
+**Type:** session
+**Done:**
+- adapt `9f6d558`: 320px overflow, 40px targets.
+- optimize + colorize `d4e972c`: company-blue accent, idle rest, clean entry to
+  centred chapters.
+- typeset `ac6f472`: text scale tokens.
+- clarify `0cfe4f9`: form placeholders.
+- polish (this commit): reduced motion, themeColor note.
+**State:** every audit finding is addressed. verify:full is green; budgets
+171.9 / 180 KB initial and 120.3 / 320 KB 3D.
+**Next:**
+- Re-run `/impeccable audit` to score (expected ≥ 18/20).
+- Research to re-test the new hero tag (context.md §7).
+- Brand assets for the favicon and OG image.
+**Blocked:** favicon and OG (assets), hero re-test (research).
+
+---
+
 ## 2026-09-29 — /impeccable clarify: no fake person in the form (audit item 5)
 **Type:** delivery
 **Owner:** Content Steward

@@ -55,11 +55,17 @@
     html {
       scroll-behavior: auto;
     }
+    /* Reduced motion means no movement, not no feedback. Keyframe animation
+       ends at once. Transitions keep only colour and opacity, so hover, focus
+       and state changes still read, while anything that slides, scales or
+       grows snaps into place (/impeccable polish, 2026-09-29; was a global
+       0.01ms kill on every transition). */
     *,
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity !important;
     }
   }
 }

@@ -20,6 +20,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // Browser chrome colour. Must be literal: the browser reads it before any CSS.
+  // Keep in step with --color-ground in src/styles/tokens.css (light / dark).
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#eceef4' },
     { media: '(prefers-color-scheme: dark)', color: '#12141b' },
