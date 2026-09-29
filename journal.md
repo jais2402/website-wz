@@ -41,6 +41,228 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-30 — Session: Ghost Cube shape rework (four attempts, one shipped)
+**Type:** session
+**Done:** `src/components/three/geometry.ts` — replaced `chamferBox`'s use for
+the blocks with new `countryPrism(k)` / `squarePerimeter(k)` (kept `chamferBox`
+itself, still used for the separate, non-instanced `hub` mesh, untouched).
+`src/components/three/stage.ts` — `boxGeo` now built from `countryPrism(16)`;
+the `onBeforeCompile` displacement (`SHARD_CHUNK`/`patchShard`, shared by `mat`
+and `shardDepthMat`) rewritten from a radial per-vertex nudge (`wzShard`) to an
+X/Z-only, angle-bucketed perimeter push (`wzGhost`) with a thin-instance boost
+term. `uOrder`'s own computation in `frame()` is untouched. See the decision
+entry above for the three rejected directions in between.
+**State:** `pnpm verify:full` passes, rc 0 (134 passed, 19 pre-existing skips —
+webkit not installed in this environment plus a couple of desktop/mobile-scoped
+specs, unrelated to this change). Budgets: initial route JS 174.1 KB / 180 KB,
+3D chunk 122.1 KB / 320 KB. Draw calls unchanged (one `InstancedMesh` for the
+blocks). The dev server the owner is using on :3000 was left alone; the gate
+built and served its own copy on :3100 per `playwright.config.ts`.
+**Next:** Nothing is blocked — this is a stopping point. If the owner wants to
+tune the read, the two knobs are in `stage.ts`'s `wzGhost`: `sides = floor(3.0
++ formH * 9.0)` (the [3,12] range of effective side counts — narrow it for a
+more uniform look, widen it for more contrast between pieces) and the `0.34`
+push-magnitude constant (how far a piece protrudes at `uOrder = 0`). A human
+eyeball pass on the actual page (not just the automated specs) is the obvious
+next action before calling the shape itself settled — nothing in this session
+was checked by a person looking at the running site.
+**Blocked:** Nothing. The five missing business facts and the black-frame/
+white-panel material read the previous coordinator message floated (then
+explicitly deferred, "I will raise the frame look with the owner separately")
+are both out of scope for this session and unclaimed by anyone yet.
+
+---
+
+## 2026-09-30 — Shard→cube reworked: Ghost Cube (irregular flat polygons), after three reversals
+**Type:** delivery (with reversals)
+**Owner:** 3D Engineer
+**Context:** Owner feedback on the shard→cube arc (previous entry, same day): "i want
+sharp edges and more side 3d shapes" — the shards read as soft pebbles because the
+per-vertex displacement moved each vertex along its own local direction from
+centre, which is *radial* and breaks the planarity of every face it touches
+(neighbouring vertices of one face move apart, rounding the crease). The fix
+needed to (a) keep every face perfectly flat and (b) read as "more sides."
+What actually shipped went through three more owner corrections before landing,
+each overturning the previous one — recorded here in full rather than tidied
+into one clean story, because the reasoning in the rejected options is exactly
+what stops the next session repeating them.
+**Options considered, in the order they were tried and overturned:**
+1. **A symmetric 26-face chamfered cube** (6 original faces + 12 edge facets +
+   8 corner facets, all flat, all creased) with a per-face *rigid* vertex
+   offset (each face's own vertices translated together along that face's
+   normal, so the face stays planar) — the initial reading of "more sides."
+   **Reversed** before implementation reached `stage.ts`: the owner's next
+   message was "make it like a cyber truck and the rubix" — a symmetric gem-like
+   facet cut doesn't read as either reference.
+2. **A wedge/shear family** — 4-6 designed forms (sloped top, sheared prism,
+   tapered slab), each a pure affine map of the whole block (`p' = A·p + t`),
+   chosen per instance from `aSeed`. Affine maps send planes to planes
+   universally, so this needed no per-face bookkeeping at all and survived
+   non-uniform per-axis instance scale by composition (two affine maps compose
+   to one affine map). **Reversed** on the very next message: owner, verbatim,
+   "dont tilt it" — a sheared/rotated top face is still a tilt, which the
+   Cybertruck read implied but the owner explicitly ruled out once it was
+   spelled out.
+3. **A uniform "Mirror Cube" read — per-instance, per-axis scale variation**
+   (mismatched cuboid sizes, no shape change) with a small positional nudge so
+   pieces read as protruding. Proposed, but **reversed before landing** when
+   the owner sent an actual photo: a Ghost Cube's scrambled pieces are
+   irregular flat *polygons* — triangles, quads, pentagons, hexagons — not a
+   uniform block at a different size.
+4. **What shipped: an extruded irregular polygon per instance ("Ghost
+   Cube"), confined to X/Z, chosen per instance from `aSeed`, resolving to an
+   exact cube at `uOrder = 1`.**
+**Decision:** `geometry.ts` gained `countryPrism(k=16)` (and its helper
+`squarePerimeter`): a non-indexed prism baked, at rest, as an *exact* square —
+16 samples walked around the unit square's perimeter (4 land exactly on the
+corners), fanned from the centre for both caps, with `k` vertical side walls.
+`stage.ts`'s shared material (and its `MeshDepthMaterial` shadow twin) is
+patched via the same `onBeforeCompile` mechanism as before, now injecting
+`wzGhost` instead of the old radial `wzShard`: each perimeter sample is pushed
+in/out **along X/Z only** (Y is never touched) by a hash of that sample's own
+rest X/Z position and the instance's `aSeed`, scaled by `(1 - uOrder)`. To vary
+"how many sides" a piece reads as, samples are first bucketed by their angle
+around the block's own centre into `sides` buckets (`sides` an integer in
+[3, 12], chosen per instance from `aSeed`) — every sample in one bucket gets
+the identical push, so several consecutive samples end up collinear (one long
+edge) and only bucket boundaries read as a corner. Few buckets → a piece reads
+near-triangular; many buckets → many-sided. A thin instance (the 0.12-wide
+`regions` markers: X and Z both 0.12, Y stretched) would shrink this same local
+push to near-nothing once `instanceMatrix`'s per-axis scale lands, reading as a
+plain rod — `instanceMatrix` is already a declared attribute at this point in
+the shader (three declares it globally once `USE_INSTANCING` is on, regardless
+of where the multiply actually happens later in the chunk pipeline), so the
+push is boosted by the inverse of this instance's own smaller horizontal scale,
+clamped to at most 4×. The 2.4×2.4×0.2 `tech` plates don't need it — their thin
+axis is Y, which this displacement never touches, so their footprint reads at
+full size.
+**Because:** Every side wall is the vertical sweep of one perimeter edge — a
+ruled surface swept along one fixed direction (Y) is planar however its two
+endpoints move in X/Z — *and* the top and bottom copies of one perimeter index
+always get the identical push (the hash is a pure function of rest X/Z, which
+is identical for the top and bottom copy of one sample by construction), which
+is what keeps that wall's own two edges parallel and the whole wall flat. Both
+caps stay flat trivially (every point on the top cap shares `y = +0.5`
+verbatim, displacement never changes it). This is a *stronger* and simpler
+guarantee than the per-face-rigid-offset plan in option 1: no per-face
+grouping, no extra attribute, and it is confined to X/Z so it can never
+produce a tilt (satisfying "dont tilt it" structurally, not just by choice of
+numbers). At `uOrder = 1` every push is multiplied by zero, so the shape is
+*exactly* — not asymptotically — the baked rest geometry, which is itself an
+exact square prism; nothing needs to converge.
+**Consequences / where the geometry does and doesn't survive non-uniform
+scale:** Because the displacement is X/Z-only and computed in *local* space
+before `instanceMatrix`, it composes correctly with any per-axis instance
+scale for flatness — this was verified, not assumed, by keeping `pnpm
+test:perf`'s existing draw-call and arc specs green after the change. It is
+**not** scale-invariant in *apparent jag size*: a very anisotropic instance
+(e.g. one axis much larger than the other) will show the jag more on the
+larger local axis and less on the smaller one, proportionally — same
+trade-off the original chamfered box always had with its diagonal facets, not
+a new one. The boost term specifically targets the case where *both* X and Z
+are small (the 0.12 markers) so the jag doesn't vanish entirely.
+**Verified, not assumed:** `pnpm verify:full`, rc 0. All four fallbacks'
+existing specs pass unchanged (no-WebGL, reduced motion, low-power/idle-rest,
+pause), draw-call spec (`stays far under the draw-call ceiling`) passes
+unchanged — still one `InstancedMesh`, one draw call for the blocks, the depth
+material replaces the shadow pass's material rather than adding one. The
+existing arc spec (`the shard→cube arc resolves fully by the foot of the
+page`) passes unchanged — untouched, since `uOrder`'s computation in `frame()`
+was never modified, only what consumes it in the shader.
+**Geometry cost:** `countryPrism(16)`: 64 triangles / 192 vertices
+(non-indexed). The chamfered box it replaces (`chamferBox(0.16)`, as it stood
+before today's session): 60 triangles / 180 vertices. A negligible increase
+(+4 triangles), well inside any per-instance budget, ×64 instances is still a
+few thousand triangles total for the whole model — trivial next to the
+`SphereGeometry(1,14,10)` already used for the connector pulses (280 triangles
+on its own).
+**Budgets (brotli, `pnpm size`):** initial route JS 174.1 KB / 180 KB
+(unchanged). 3D chunk 122.1 KB / 320 KB (was 121.8 KB before today's session,
+121.8 KB after the first shard→cube delivery earlier today — the net delta
+across all four attempts is +0.3 KB, the size of the final shader text; no new
+dependency).
+**Could not verify by hand:** same standing caveat as the previous entry — the
+four fallbacks and the arc are confirmed via their automated Playwright specs
+in a non-interactive agent run, not eyeballed on a real device. Nothing in
+today's changes adds per-frame allocation, `setState` in `useFrame`, or a
+second draw call, so there is no new reason to expect a different result on a
+mid-tier Android, but a human should still look before shipping. The visual
+read of "near-triangular vs many-sided" and of the boosted thin-marker jag is
+also unverified by eye — only the flatness/planarity guarantee and the budget/
+draw-call numbers were measured.
+
+---
+
+## 2026-09-30 — Shard→cube: blocks resolve from irregular to exact over the whole page
+**Type:** delivery
+**Owner:** 3D Engineer
+**Context:** Owner request: the blocks start as faceted shards at the top of the
+page and resolve into perfect cubes by the foot — one long arc tied to overall
+scroll position, narrating the workaround resolving into one system. Explicit
+constraint: the existing section-to-section scroll-blend journey (`stage.ts`'s
+`frame()`) must be completely unchanged; this rides on top of it.
+**Options:** (a) a second, more-faceted `InstancedMesh` cross-faded against the
+existing one — rejected outright, it breaks the one-`InstancedMesh` rule and the
+draw-call budget in one step; (b) CPU-side per-vertex geometry rebuild per frame
+— rejected, that is allocation and CPU work inside the frame loop for no reason
+a shader can't do for free; (c) `onBeforeCompile` vertex displacement on the
+shared `MeshStandardMaterial`, driven by a per-instance `InstancedBufferAttribute`
+seed (set once) and one global `uOrder` uniform (0 = irregular, 1 = cube) — chosen.
+**Decision:** Patched `mat` (and a matching `MeshDepthMaterial` set as
+`parts.customDepthMaterial`) via `onBeforeCompile`. Both inject the same GLSL
+chunk after `#include <begin_vertex>`: a per-vertex hash of `(transformed, aSeed)`
+nudges `transformed` along `normalize(transformed)` by up to ±0.045 units,
+scaled by `(1 - uOrder)`. `aSeed` is an `InstancedBufferAttribute` built once
+from `states.ts`'s existing seeded PRNG (`R`, now exported) — no second PRNG, no
+per-frame allocation. `uOrder` is set once a frame in the existing `frame()`
+function from overall scroll progress (`sy / (scrollHeight - innerHeight)`),
+damped with the loop's own `k = 1 - exp(-dt·5.2)` and snapped to exactly 0/1 at
+the two ends of the page so the resolve is provably complete at the foot, not an
+asymptote. `?debug3d`'s `canvas.dataset.dbg` gained a 7th, appended field
+(`uOrder`) — appended, not inserted, so every existing index-based read in
+`tests/perf/scene.spec.ts` still lines up.
+**Because:** Displacement happens on `transformed` (object space, before
+`instanceMatrix`), so every instance's position, quaternion and non-uniform
+per-axis scale — set entirely by the untouched animation loop above this patch —
+apply to the displaced vertex exactly as they do to every other vertex. A flat
+plate's shards stay proportionally thin; a thin marker's shards stay
+proportionally small. flatShading still reads correctly with no extra work:
+three derives flat normals in the fragment shader from screen-space derivatives
+of the interpolated position, not from a vertex-normal attribute, so a displaced
+`transformed` lights as distinct facets automatically. The shadow depth pass uses
+its own material, so without `customDepthMaterial` a resolved cube would have
+cast a shard-shaped shadow at the top of the page — fixed with a
+`MeshDepthMaterial` patched by the identical `onBeforeCompile` function, sharing
+the same `uOrder` object reference and the same `aSeed` attribute.
+**Verified, not assumed:** `pnpm verify:full` — full gate, rc 0, all four
+fallbacks' existing tests still pass unchanged (no-WebGL, reduced motion,
+low-power/idle-rest, pause). Added
+`perf/scene.spec.ts: "the shard→cube arc resolves fully by the foot of the
+page"` — reads `uOrder` near the top (< 0.05) and after `scrollTo` the document's
+full height (`=== 1`, exact snap). Draw calls: unchanged — still one
+`InstancedMesh` for the blocks, one draw call; the depth material adds no draw
+call of its own (it replaces the shadow pass's material, doesn't add a pass).
+Budgets (brotli, from `pnpm size`): initial route JS 174.1 KB / 180 KB
+(unchanged — nothing above `three/` moved); 3D chunk 121.8 KB / 320 KB (was
+121.5 KB — the patch itself is a few hundred bytes of template-literal GLSL and
+one `Float32Array(64)`). No new dependency.
+**Could not verify by hand:** the four fallbacks (no-WebGL, reduced motion,
+low-power, paused) were confirmed via their existing automated Playwright
+specs, not an interactive session — this was a non-interactive agent run. A
+mid-tier-Android jank pass and a live 5-minute memory-flat scroll session are
+also unverified by hand for the same reason; nothing in the change adds
+per-frame allocation or per-frame `setState`, and the idle-render and
+paused-render assertions in the existing suite (which exercise exactly the
+`uOrder` code path, since it only runs inside `frame()`) both still pass, so
+there is no new idle or per-frame cost, but a human should still eyeball a real
+device before shipping.
+**Consequences:** `states.ts` now exports `R` (previously module-private) so
+`stage.ts` can build the seed attribute from the same deterministic sequence
+instead of a second PRNG. Any future scene-state work that mutates `R` should
+know it now has one more reader.
+
+---
+
 ## 2026-09-29 — 3D hover also recolours the model (colour split from lift)
 **Type:** delivery
 **Owner:** 3D Engineer
@@ -154,6 +376,72 @@ chromium-only) — exit 0.
 **Consequences:** any future "reverse hover" feature (a second bento) should
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
+
+## 2026-09-30 — The scramble→resolve arc: five attempts, four reverted
+**Type:** delivery, and a reversal of four of my own attempts
+**Owner:** Owner direction across several messages: "irregular sharp at the start,
+at the end form a perfect cube, keep the transition the same", then "sharp edges
+and more side 3d shapes", "like the shape of cyber truck and the rubix", "dont
+tilt it, make the shape like countries", a Mirror Cube video, a Ghost Cube photo,
+and finally the two that settled it: **"The shape become more disorted - sad"**
+and **"The story was very nice"**.
+**What shipped:** the arc is driven ENTIRELY by rigid per-instance transforms.
+At the top of the page each block carries a deterministic per-axis scale
+multiplier (±25%) and a positional offset (a fraction of that instance's own
+size), both scaled by `(1 - order)²`. Both reach exactly zero at the last scene,
+so the final frame is pixel-identical to what `states.ts` specifies. The
+geometry is never touched.
+**The mistake, stated plainly, because it cost four attempts:** I built the
+irregularity by deforming the blocks — pushing vertices around in a shader. A
+bent block reads as a *broken* block, which is exactly what the owner saw. The
+references were never about deformed shapes: a Ghost Cube and a Mirror Cube are
+made of **rigid, crisp, undamaged pieces** that are merely the wrong size and in
+the wrong place, and solving them moves those rigid pieces into a perfect cube.
+I was chasing the silhouette instead of the mechanism. The four reverted
+attempts were: radial vertex displacement; a 26-face chamfer with per-face
+rigid offsets; a wedge/shear family; and an extruded irregular polygon
+("country outline") prism. All are gone — no dead code, no shader patch, no
+custom depth material.
+**A real bug found only by looking:** `order` was measured against the document
+height, so the resolve completed *inside the footer*, which carries no model.
+The perfect cube was never on screen. It now completes when the last scene is
+centred (`anchors[last].top + h/2 - Hh/2`), so the contact chapter is the one
+that shows the cube assembled — beside "Tell us what is not working", with the
+one signal-coloured piece. The automated tests all passed throughout this bug;
+only a screenshot caught it.
+**Magnitudes:** scale ±25%, offset 0.55/0.45/0.55 of the instance's own size on
+x/y/z. A first pass at roughly double this sprawled the hero out of its
+composition and was cut back. The offset is a fraction of each instance's OWN
+size, so the 0.12-wide `regions` markers and the 2.4×0.2 `tech` plates scramble
+in proportion rather than ballooning or vanishing.
+**Cost:** no shader, no new geometry, no new draw call, no per-frame allocation
+— it is a multiply and an add on 64 instances inside the existing loop.
+Initial route 174.1 KB, 3D chunk 121.6 KB.
+**Also in this commit:** Solvable and Inscribe added to the hero's "We build
+with" strip, the owner having said they are tools. Research could not verify
+either name, so this records the owner's own statement and claims only that they
+are used — not a partnership, which would be a claim about those companies.
+**Gate:** exit 0 — 18 unit, 136 e2e, 17 skipped. New test asserts the scramble
+is present at the top and resolved at the last scene.
+
+## 2026-09-30 — Session: the arc, and four reversals
+**Type:** session
+**Done:** `src/components/three/stage.ts` (rigid scramble, arc ends at the last
+scene, debug field 6), `src/components/three/states.ts` (export `R` so the
+scramble reuses the one seeded PRNG), `tests/perf/scene.spec.ts` (new arc test),
+`content/site.json` (builtWith), `journal.md`.
+**State:** gate green against a fresh build — 18 unit, 136 e2e, initial
+174.1 KB, 3D 121.6 KB. The blocks are the chamfered, flat-shaded solids from
+d152555; nothing is deformed.
+**Next:** the owner still has three open decisions — the page background (five
+options rendered, nothing chosen), the push to `sridhar-e/wezigns` `Jais-Dev`
+(unrelated histories; force-pushing would drop six commits of someone else's
+work), and whether to prototype the Ghost Cube's black-frame/white-panel look as
+edge outlines, which was deferred because face-level framing would break the
+settled colour scheme.
+**Blocked:** unchanged — OG and favicon assets, form transport, analytics
+vendor, AI-crawler policy, hero five-second re-test, promise owners, claim
+evidence, price band, named clients, team.
 
 ## 2026-09-29 — The blocks become machined: chamfered, flat-shaded
 **Type:** delivery (changes the 3D shape language set by the prototype)

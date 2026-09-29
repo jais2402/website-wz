@@ -356,3 +356,29 @@ test.describe('the model on a sub-page', () => {
     expect(band && h1 && band.y + band.height).toBeLessThanOrEqual((h1?.y ?? 0) + 1);
   });
 });
+
+test.describe('the scramble resolves down the page', () => {
+  test('blocks are scrambled at the top and exactly resolved by the last scene', async ({
+    page,
+  }) => {
+    // The payoff must be ON SCREEN. Measured against document height the
+    // resolve finished inside the footer, which carries no model, so a reader
+    // never saw the assembled cube. It now completes at the last scene.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/?debug3d');
+    await page.waitForTimeout(3500);
+    const read = async () => {
+      const dbg = await page.locator('canvas#stage').getAttribute('data-dbg');
+      return Number((dbg ?? '').split(',')[6] ?? NaN);
+    };
+    test.skip(Number.isNaN(await read()), 'no live stage in this environment');
+
+    expect(await read()).toBeLessThan(0.05);
+
+    await page.evaluate(() =>
+      document.getElementById('contact')?.scrollIntoView({ behavior: 'instant', block: 'center' }),
+    );
+    await page.waitForTimeout(2500);
+    expect(await read()).toBeGreaterThan(0.95);
+  });
+});

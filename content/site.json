@@ -123,8 +123,10 @@
       "label": "We build with",
       "items": [
         "Razorpay",
-        "Google Cloud",
         "Stripe",
+        "Solvable",
+        "Inscribe",
+        "Google Cloud",
         "AWS"
       ]
     }

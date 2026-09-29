@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createPalette, readPalette } from './palette';
 import { chamferBox, lineSegmentPositions } from './geometry';
-import { N, NP, blank, buildState, smooth, type SceneState } from './states';
+import { N, NP, R, blank, buildState, smooth, type SceneState } from './states';
 import { BOOST, SCENES, SCENE_ALIAS } from './scene-data';
 import { CELL, LAND_CELLS } from './world';
 
@@ -399,7 +399,7 @@ export function createStage(
   const qb = new THREE.Quaternion(), ts = new THREE.Vector3();
   const camS = { yaw: 0, look: 1, dist: 15, scale: 1 };
   const lineCur = { foot: 0, frame: 0, cage: 0, slot: 0 };
-  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0;
+  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0, orderCur = 0;
 
   function frame(now: number) {
     const dt = lastNow ? Math.min(0.25, Math.max(0.001, (now - lastNow) / 1000)) : 0.016;
@@ -439,6 +439,29 @@ export function createStage(
     const snapPlacement = first || reduce;
     first = false;
 
+    /* The scramble→resolved arc.
+     *
+     * One long resolve across the page, independent of the section-to-section
+     * blend above. The blocks are NEVER deformed: a bent block reads as a
+     * broken one, which is exactly how the first attempt failed. A scrambled
+     * puzzle is made of rigid, undamaged pieces that are merely the wrong SIZE
+     * and in the wrong PLACE — so the scramble is a per-instance scale and
+     * offset, and the geometry is untouched.
+     *
+     * It ends at the LAST SCENE, not the bottom of the document: measured
+     * against document height the resolve completed inside the footer, which
+     * carries no model, so the payoff was never on screen.
+     */
+    const lastAnchor = anchors[anchors.length - 1];
+    const orderEnd = Math.max(1, lastAnchor ? lastAnchor.top + lastAnchor.h / 2 - Hh / 2 : 1);
+    const orderTarget = Math.min(1, Math.max(0, sy / orderEnd));
+    orderCur += (orderTarget - orderCur) * K;
+    if (sy <= 0.5) orderCur = 0;
+    else if (sy >= orderEnd - 0.5) orderCur = 1;
+    // Squared, so the last stretch of the page is visibly settled rather than
+    // creeping the final few percent.
+    const scramble = (1 - orderCur) * (1 - orderCur);
+
     // Arriving at the map, the blocks settle into their markers in the first
     // half of the crossing, so what travels past the centred heading is the
     // low map, not a field of full-height bars.
@@ -453,7 +476,22 @@ export function createStage(
       cur.p[i]!.lerp(tv, K); cur.s[i]!.lerp(ts, K);
       curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
-      dummy.scale.copy(cur.s[i]!); dummy.updateMatrix();
+      dummy.scale.copy(cur.s[i]!);
+      if (scramble > 0.0005) {
+        // Rigid only. Scale is a multiplier and the offset is a fraction of the
+        // instance's OWN size, so a 0.12 map marker and a 2.4 plate scramble by
+        // the same proportion — neither balloons nor vanishes. Both terms reach
+        // exactly zero at the last scene, so the final frame is pixel-identical
+        // to what states.ts asks for.
+        const r = R[i]!;
+        dummy.scale.x *= 1 + (r[0]! - 0.5) * 0.5 * scramble;
+        dummy.scale.y *= 1 + (r[1]! - 0.5) * 0.5 * scramble;
+        dummy.scale.z *= 1 + (r[2]! - 0.5) * 0.5 * scramble;
+        dummy.position.x += (r[3]! - 0.5) * cur.s[i]!.x * 0.55 * scramble;
+        dummy.position.y += (r[4]! - 0.5) * cur.s[i]!.y * 0.45 * scramble;
+        dummy.position.z += (r[0]! - 0.5) * cur.s[i]!.z * 0.55 * scramble;
+      }
+      dummy.updateMatrix();
       parts.setMatrixAt(i, dummy.matrix);
       parts.setColorAt(i, cur.c[i]!);
     }
@@ -538,7 +576,9 @@ export function createStage(
       camera.updateProjectionMatrix();
     }
     group.updateMatrixWorld();
-    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)}`;
+    // Index 6 (the resolve) is appended after the fields existing tests index
+    // (0..5) — never inserted, so their positions stay stable.
+    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)},${orderCur.toFixed(4)}`;
 
     /* 3D → DOM hover: raycast the shared InstancedMesh against the last raw
      * pointer position. Only while "build" is fully settled — an.sc === bn.sc

@@ -67,7 +67,9 @@ export function blank(): SceneState {
 /* Seeded randomness — the scene is identical on every load. */
 let seed = 11;
 function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
-const R: number[][] = [];
+/** Seeded per-instance randomness. Exported so the stage's scramble uses the
+ *  same deterministic numbers rather than a second generator. */
+export const R: number[][] = [];
 for (let i = 0; i < N; i += 1) R.push([rnd(), rnd(), rnd(), rnd(), rnd(), rnd()]);
 const HOME: THREE.Vector3[] = [];
 for (let i = 0; i < N; i += 1) HOME.push(new THREE.Vector3((R[i]![0]! - 0.5) * 3, 0, (R[i]![1]! - 0.5) * 3));
