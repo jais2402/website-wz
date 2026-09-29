@@ -41,6 +41,17 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — /impeccable optimize: will-change only while drawing (re-audit P3)
+**Type:** delivery
+**Owner:** 3D Engineer
+**Decision:** `.co` / `.cd` no longer carry permanent `will-change`. The loop
+toggles `#callouts.live` on state change, and the hint applies only under
+`.live` (`globals.css`, `stage.ts`). The callout CSS also uses `--text-callout`,
+its letter-spacing token and `--radius-hair`, replacing raw 10px / 2px.
+**Verified:** live=true after a scroll, false after 7s idle; verify:full green.
+
+---
+
 ## 2026-09-29 — /impeccable layout: layout tokens (re-audit P2)
 **Type:** delivery
 **Owner:** Designer

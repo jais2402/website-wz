@@ -275,7 +275,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   }
 
   /* ── loop state ────────────────────────────────────── */
-  let paused = false, frozen = 0, clock = 0, lastLoop = 0;
+  let paused = false, frozen = 0, clock = 0, lastLoop = 0, live = false;
   // Per-scene highlight. See three/highlight.ts for why it is not one slot.
   const highlights = new Map<string, number>();
 
@@ -618,6 +618,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       const idle = now - lastPoke > (paused ? 2000 : 6000);
       if (!idle) clock += lastLoop ? Math.min(250, now - lastLoop) : 16;
       lastLoop = now;
+      if (idle === live) { live = !idle; callouts.classList.toggle('live', live); }
       const minGap = lowPower ? 33 : 0;
       if (!idle && now - lastDraw >= minGap) { frame(now); lastDraw = now; }
       raf = requestAnimationFrame(loop);

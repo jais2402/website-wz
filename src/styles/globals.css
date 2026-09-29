@@ -113,7 +113,6 @@
     background: var(--color-ink-3);
     opacity: 0;
     transition: opacity 0.4s var(--ease-brand), background-color 0.3s var(--ease-brand);
-    will-change: transform;
   }
   .cd.hot { background: var(--color-blueprint); }
 
@@ -121,18 +120,21 @@
     position: absolute;
     left: 0; top: 0;
     font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.055em;
+    font-size: var(--text-callout);
+    letter-spacing: var(--text-callout--letter-spacing);
     line-height: 14px;
     padding: 2px 6px;
-    border-radius: 2px;
+    border-radius: var(--radius-hair);
     background: var(--color-chip);
     color: var(--color-ink-3);
     white-space: nowrap;
     opacity: 0;
     transition: opacity 0.4s var(--ease-brand), color 0.3s var(--ease-brand);
-    will-change: transform;
   }
+  /* Layer hint only while the loop is drawing (stage.ts toggles .live); at rest
+     the labels are still, so no layers are held. */
+  #callouts.live .co,
+  #callouts.live .cd { will-change: transform; }
   .co.hot { color: var(--color-ink); background: var(--color-ground); }
 
   /* Without the model the reading column takes the full width. */
