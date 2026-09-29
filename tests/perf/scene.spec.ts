@@ -180,6 +180,6 @@ test.describe('the 3D scene', () => {
     await expect(page.locator('html')).toHaveClass(/no3d/);
     await expect(page.locator('canvas')).not.toHaveClass(/ready/);
     // And the sequence is inert: every item body is rendered.
-    await expect(page.getByText(/Repetitive steps move into the system/i)).toBeVisible();
+    await expect(page.getByText(/Routine steps run themselves/i)).toBeVisible();
   });
 });

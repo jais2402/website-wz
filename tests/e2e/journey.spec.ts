@@ -61,3 +61,14 @@ test.describe('the scroll journey', () => {
     expect(overflow, 'no horizontal scroll at 390px').toBeLessThanOrEqual(0);
   });
 });
+
+test('every "What we build" tile links to an entry that exists on /capabilities', async ({ page }) => {
+  await page.goto('/');
+  const hrefs = await page.locator('#build a[href*="/capabilities"][href*="#"]').evaluateAll((as) => as.map((a) => a.getAttribute('href')!));
+  expect(hrefs).toHaveLength(8);
+  await page.goto('/capabilities');
+  for (const href of hrefs) {
+    const id = href.split('#')[1]!;
+    await expect(page.locator(`[id="${id}"]`)).toHaveCount(1);
+  }
+});

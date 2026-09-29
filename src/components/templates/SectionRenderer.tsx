@@ -28,7 +28,7 @@ const STATIC_LISTS = new Set(['integration', 'build']);
  * model's legend. It replaced an eight-step sticky sequence — about 2.7 screens
  * of scroll just to walk the list — at the owner's request (2026-09-28).
  */
-const GRID_LISTS = new Set(['build']);
+const BENTO_LISTS = new Set(['build']);
 
 export interface SectionRendererProps {
   sections: SectionData[];
@@ -65,7 +65,7 @@ export function SectionRenderer({ sections, cases }: SectionRendererProps) {
                 link={s.link}
                 countUnit={s.countUnit}
                 mode={STATIC_LISTS.has(s.id) ? 'static' : 'sequence'}
-                layout={GRID_LISTS.has(s.id) ? 'grid' : 'list'}
+                layout={BENTO_LISTS.has(s.id) ? 'bento' : 'list'}
               />
             );
 

@@ -121,56 +121,56 @@
       "pattern": "sequence",
       "headline": {
         "lead": "What we build,",
-        "accent": "and when each one is the answer."
+        "accent": "at a glance."
       },
       "items": [
         {
           "n": "01",
           "hue": "blueprint",
           "title": "Custom business software",
-          "body": "Software built around a business process that off-the-shelf tools cannot handle, in whichever stack fits it best."
+          "body": "Built around a process that off-the-shelf tools cannot handle, in whichever stack fits it best."
         },
         {
           "n": "02",
           "hue": "ochre",
           "title": "Business process automation",
-          "body": "Repetitive steps move into the system. The system handles the routine and people handle the exceptions."
+          "body": "Routine steps run themselves. People handle the exceptions."
         },
         {
           "n": "03",
           "hue": "plum",
           "title": "System integration",
-          "body": "We connect the software you already use, whatever it runs on, so records move between tools without being typed in twice."
+          "body": "Connects what you already run, whatever it runs on, so nothing is typed in twice."
         },
         {
           "n": "04",
           "hue": "rose",
           "title": "Data and reporting systems",
-          "body": "Your data already exists. We turn it into reports and dashboards people can use without building them by hand."
+          "body": "Turns the data you already have into reports people actually use."
         },
         {
           "n": "05",
           "hue": "blueprint",
           "title": "Customer and partner platforms",
-          "body": "Portals and apps for customers, partners, operators and members."
+          "body": "One place for customers, partners and members to work with you."
         },
         {
           "n": "06",
           "hue": "pine",
           "title": "Cloud hosting, support and maintenance",
-          "body": "We host, monitor and maintain the systems we build, and take over systems built by others."
+          "body": "We host, monitor and maintain what we build."
         },
         {
           "n": "07",
           "hue": "plum",
           "title": "AI and Gen-AI integrations",
-          "body": "AI added to the steps in a process where it saves real work, with a person checking the exceptions."
+          "body": "AI in the steps where it saves real work. A person checks the rest."
         },
         {
           "n": "08",
           "hue": "pine",
           "title": "Websites",
-          "body": "Websites designed and built one at a time. We have delivered more than 90."
+          "body": "Designed and built one at a time."
         }
       ],
       "link": {

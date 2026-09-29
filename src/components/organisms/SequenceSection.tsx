@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/atoms';
-import { DisciplineRow, HeadlineSplit } from '@/components/molecules';
+import { BentoTile, DisciplineRow, HeadlineSplit, type BentoSize } from '@/components/molecules';
+import { slug } from '@/lib/slug';
 import { Section } from './Section';
 import { setHighlight } from '@/components/three/highlight';
 import type { Headline, Hue, Link as ContentLink, Side } from '@/types/content';
@@ -39,7 +40,7 @@ export interface SequenceSectionProps {
    * the disciplines, whose 3D model is itself a 4×2 grid of modules, so the
    * list reads as the model's legend.
    */
-  layout?: 'list' | 'grid' | undefined;
+  layout?: 'list' | 'grid' | 'bento' | undefined;
 }
 
 /** Scroll distance each row holds the screen for — the prototype's `--sh`. */
@@ -119,7 +120,32 @@ export function SequenceSection({
     return () => setHighlight(scene, -1);
   }, [scene, active]);
 
-  const rows = (
+  // Bento (build): size carries importance, in content order: one feature,
+  // a large pair, four regular, and a slim last strip. Content lists the
+  // offerings in priority order (BA and CEO, 2026-09-29).
+  const BENTO: BentoSize[] = ['feature', 'large', 'large', 'regular', 'regular', 'regular', 'regular', 'slim'];
+  const bento = (
+    <div
+      className="mt-9 grid gap-3 lg:grid-cols-2"
+      onMouseLeave={() => { setPinned(null); lastPointer.current = null; }}
+      onBlur={() => setPinned(null)}
+    >
+      {items.map((item, index) => (
+        <BentoTile
+          key={item.title}
+          hue={item.hue}
+          title={item.title}
+          body={item.body ?? ''}
+          href={`/capabilities#${slug(item.title)}`}
+          size={BENTO[index] ?? 'regular'}
+          highlighted={active === index}
+          onOpen={(point) => pin(index, point)}
+        />
+      ))}
+    </div>
+  );
+
+  const rows = layout === 'bento' ? bento : (
     <div
       className={isStatic && layout === 'grid' ? 'mt-9 grid gap-x-8 sm:grid-cols-2' : 'mt-9'}
       onMouseLeave={() => { setPinned(null); lastPointer.current = null; }}

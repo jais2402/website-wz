@@ -1,4 +1,5 @@
 export { AreaAccordion, type AreaAccordionProps } from './AreaAccordion';
+export { BentoTile, type BentoTileProps, type BentoSize } from './BentoTile';
 export { CaseTabs, type CaseTabsProps } from './CaseTabs';
 export { DisciplineRow, type DisciplineRowProps } from './DisciplineRow';
 export { FactRow, type FactRowProps } from './FactRow';

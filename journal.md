@@ -41,6 +41,38 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — "What we build" becomes a bento grid
+**Type:** decision + delivery
+**Owner:** Designer (layout), BA (priority, requirements), Content (copy), CEO (claims); owner approved
+**Context:** Owner: "can we make this in bento grid style — people would not notice
+this… reduce the header but cover all of the offerings".
+**Decision:**
+- New molecule `molecules/BentoTile.tsx` and `layout: 'bento'` in
+  `organisms/SequenceSection.tsx`; `SectionRenderer` `GRID_LISTS` →
+  `BENTO_LISTS`. Size carries importance, in content order: feature (Custom
+  business software, full width) → large pair (Process automation, System
+  integration) → four regular (Data and reporting, Platforms, Hosting, AI) →
+  slim last strip (Websites, no tint, no number).
+- Each tile is a link to `/capabilities/#slug(title)`; hover and focus drive the
+  3D highlight as before. The hue shows as a /5 tint and a 3px top bar; text is
+  always ink.
+- Below lg, one column, all open.
+- Headline "What we build, / at a glance." Tile lines are the writer's, with the
+  CEO's cuts: no "more than 90", no takeover clause on hosting, and the
+  platforms line as an outcome.
+**Owner call:** "Websites" stays in the grid as the smallest tile. The CEO
+preferred removing it; the owner answered "yes" to keeping it small. Recorded
+as the owner's decision.
+**Open (CEO):** the FAQ still says "We take over systems other teams built";
+it needs a real example or softening. The AI tile stays small until a shipped
+example can be shown. Measurement events `section_view` / `build_tile_click` are
+proposed by the BA and not implemented (analytics vendor open).
+**Consequences:** the /capabilities page reads the same `build.items`, so its
+bodies are now the shorter tile lines. New test: every tile anchor resolves on
+/capabilities. verify:full green; initial route 172.5 / 180 KB.
+
+---
+
 ## 2026-09-29 — Scene transitions rebuilt: scroll triggers, time animates
 **Type:** reversal (of today's placement switches and snaps) + decision
 **Owner:** 3D Engineer
