@@ -41,6 +41,65 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — A model on every sub-page, without a second renderer
+**Type:** delivery (reverses the DocumentTemplate note "no split canvas, no scene")
+**Owner:** Owner direction ("have some 3D element on all the sub pages")
+**Context:** The document pages were built deliberately without a scene — the
+comment on DocumentTemplate said so: "these exist to be read and shared". With
+eleven of them the site had two visual languages.
+**Decision — reuse the stage, add no three.js.** The stage already finds its
+scenes by walking the DOM for `[data-scene]`. A page gets a model by carrying
+one band and nothing else, so there is no second renderer and no second bundle.
+With a single scene on the page there is no neighbour to blend toward, so the
+model sits still in its slot: the journey belongs to the home page and repeating
+it here would be noise.
+- New `PageScene` organism: a `[data-scene][data-side="c"]` band with a
+  `[data-stage-slot]` and the IsoGlyph inside it as the standing fallback.
+  `data-side="c"` makes the model ride with the page, so it scrolls away with
+  the band instead of hanging behind the text — the FAQ/contact overlap on the
+  home page is exactly the failure this avoids, and a test asserts the band
+  ends above the H1.
+- `DocumentPage` takes an optional `scene`; with none, no canvas mounts and
+  nothing is downloaded.
+- Per page: a capability shows the whole field of nine with its own module
+  lifted in full hue (so the page says where it sits, not just what it is); an
+  area page lifts its row of the range; /how-we-build the four stages;
+  /about the since-2012 bars; /contact the missing piece; /capabilities the
+  field; /work the case carousel.
+- `/capabilities` and `/work` were migrated onto `DocumentPage` too, so all
+  eleven share one chrome.
+- The glyph map moved to `src/lib/glyphs.ts`, shared by the home bento and the
+  capability pages so a drawing cannot drift from its subject.
+**Budgets untouched:** initial route 174.0 KB (was 174.1), 3D chunk 121.0 KB.
+The 3D is still lazy, still after first paint, still absent below lg.
+**Second stale-server fix.** `reuseExistingServer: false` collided with the
+`next dev` kept running for the owner's preview, and the gate failed to start.
+The gate now builds and serves on **:3100** with its own command, so it always
+tests the built output and never touches :3000. Also note `pnpm start -- -l PORT`
+does not pass the flag through pnpm; the config calls `npx serve` directly.
+**Tests:** three added to `tests/perf/scene.spec.ts` — the drawing stands in
+until a stage is live and stays at full opacity when none can be, no ready
+canvas below lg while the page still reads, and the band never overlaps the
+reading column. 18 unit, **129 e2e**, gate exit 0.
+
+## 2026-09-29 — Session: the model on the sub-pages
+**Type:** session
+**Done:** `src/components/organisms/PageScene.tsx` and `src/lib/glyphs.ts` (new),
+`src/components/templates/DocumentPage.tsx`, `src/components/organisms/index.ts`,
+`src/components/organisms/SequenceSection.tsx` (uses the shared glyph map),
+`src/app/{about,contact,how-we-build,work,capabilities}/page.tsx` and
+`src/app/{capabilities,systems}/[slug]/page.tsx`, `playwright.config.ts`,
+`package.json`, `tests/perf/scene.spec.ts`, `journal.md`.
+**State:** 20 routes, eleven of them with a model. Gate exit 0 against a fresh
+build on :3100: 18 unit, 129 e2e, initial 174.0 KB, 3D 121.0 KB. A `next dev`
+serves the owner's preview on :3000.
+**Next:** the 3D engineer and the design reviewer have seen none of this. The
+band height (34vh) and the per-page scene choices are the two things a designer
+should rule on. Then the owner's open decisions.
+**Blocked:** unchanged — partners; /privacy and /careers; OG and favicon; form
+transport; analytics vendor; AI-crawler policy; hero re-test; promise owners;
+claim evidence; price band, named clients, team.
+
 ## 2026-09-29 — The supporting pages: the thirty systems, and the process
 **Type:** delivery
 **Owner:** Owner direction ("the rest of the pages support the details of the

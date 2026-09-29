@@ -12,7 +12,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list']],
   use: {
-    baseURL: 'http://localhost:3000',
+    // The gate runs on its own port so it never collides with, or silently
+    // reuses, a `next dev` the owner has open on 3000.
+    baseURL: 'http://localhost:3100',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -25,8 +27,8 @@ export default defineConfig({
     { name: 'mobile-chrome', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
-    command: 'pnpm build && pnpm start',
-    url: 'http://localhost:3000',
+    command: 'pnpm build && npx serve out --no-clipboard -l 3100',
+    url: 'http://localhost:3100',
     // Never reuse: a long-running `next dev` on :3000 had the suite testing a
     // day-old server instead of the build, and it passed while the built
     // output disagreed with it. The gate must test what ships.

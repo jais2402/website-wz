@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { content, footer, contactFacts } from '@/lib/content';
-import { SiteFooter, SiteHeader } from '@/components/organisms';
+import { PageScene, SiteFooter, SiteHeader } from '@/components/organisms';
+import { SceneCanvas } from '@/components/three';
+import type { GlyphName } from '@/components/atoms';
 import { DocumentTemplate } from './DocumentTemplate';
 
 /**
@@ -15,9 +17,14 @@ import { DocumentTemplate } from './DocumentTemplate';
  */
 export interface DocumentPageProps {
   children: ReactNode;
+  /**
+   * The model this page shows. Omit and the page has none — the canvas still
+   * never mounts, so nothing is downloaded for a page that does not use it.
+   */
+  scene?: { scene: string; highlight?: number | undefined; glyph: GlyphName } | undefined;
 }
 
-export function DocumentPage({ children }: DocumentPageProps) {
+export function DocumentPage({ children, scene }: DocumentPageProps) {
   const { nav, hero, meta } = content;
   const primaryCta = hero.actions[0]!;
 
@@ -43,7 +50,9 @@ export function DocumentPage({ children }: DocumentPageProps) {
         />
       }
     >
+      {scene ? <PageScene {...scene} /> : null}
       <div className="mx-auto max-w-centre px-gutter pb-[clamp(72px,9vh,110px)]">{children}</div>
+      {scene ? <SceneCanvas /> : null}
     </DocumentTemplate>
   );
 }

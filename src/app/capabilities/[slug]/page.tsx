@@ -8,6 +8,7 @@ import { HeadlineSplit, PageSectionBlock } from '@/components/molecules';
 import { DocumentPage } from '@/components/templates';
 import { serviceSchema } from '@/lib/structured-data';
 import { slug as toSlug } from '@/lib/slug';
+import { GLYPH_BY_SLUG } from '@/lib/glyphs';
 
 /**
  * One page per kind of system: /capabilities/ecommerce-systems/ and so on.
@@ -61,11 +62,16 @@ export default async function CapabilityPage({ params }: { params: Promise<{ slu
   // A case study in the same territory, when one exists. Never invented: this
   // is a link to work already published on /work.
   const related = content.cases.find((c) => page.relatedCase === c.slug);
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const build = content.sections.find((s) => (s as any).id === 'build') as any;
+  // The model shows the whole field of offerings with this one lifted, so the
+  // page says where it sits among the nine as well as what it is.
+  const index = (build?.items ?? []).findIndex((i: { title: string }) => toSlug(i.title) === slug);
 
   return (
     <>
       <JsonLd schema={serviceSchema(slug, page.title, page.lead)} />
-      <DocumentPage>
+      <DocumentPage scene={{ scene: 'disciplines', highlight: index, glyph: GLYPH_BY_SLUG[slug] ?? 'software' }}>
         {/* Where this page sits. One level, so it stays a sentence rather than
             a chrome element. */}
         <nav aria-label="Breadcrumb">

@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
-import { content, footer, pages, contactFacts } from '@/lib/content';
+import { content, pages } from '@/lib/content';
 import { Button } from '@/components/atoms';
 import { AreaAccordion, HeadlineSplit } from '@/components/molecules';
-import { SiteFooter, SiteHeader } from '@/components/organisms';
-import { DocumentTemplate } from '@/components/templates';
+import { DocumentPage } from '@/components/templates';
 import { toHue } from '@/lib/hue';
 import { slug } from '@/lib/slug';
 
@@ -25,8 +24,7 @@ export const metadata: Metadata = {
  * than duplicating them, so the two pages can never drift apart.
  */
 export default function CapabilitiesPage() {
-  const { sections, nav, hero } = content;
-  const primaryCta = hero.actions[0]!;
+  const { sections } = content;
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const build = sections.find((s) => (s as any).id === 'build') as any;
@@ -35,26 +33,7 @@ export default function CapabilitiesPage() {
   /* eslint-enable @typescript-eslint/no-explicit-any */
 
   return (
-    <DocumentTemplate
-      header={<SiteHeader
-          nav={nav.primary}
-          cta={nav.cta}
-          wordmark={footer.wordmark}
-          name={content.meta.name}
-          since={content.meta.since}
-        />}
-      footer={
-        <SiteFooter
-          {...contactFacts()}
-          cta={footer.cta}
-          columns={footer.columns}
-          wordmark={footer.wordmark}
-          base={footer.base}
-          primaryCta={primaryCta}
-        />
-      }
-    >
-      <div className="mx-auto max-w-centre px-gutter pb-[clamp(72px,9vh,110px)]">
+    <DocumentPage scene={{ scene: 'disciplines', glyph: 'disciplines' }}>
         <HeadlineSplit headline={page.headline} level="d1" as="h1" id="capabilities-title" />
         {page.lead ? <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p> : null}
 
@@ -144,7 +123,6 @@ export default function CapabilitiesPage() {
             <Button href={page.cta.action.href}>{page.cta.action.label}</Button>
           </div>
         </section>
-      </div>
-    </DocumentTemplate>
+    </DocumentPage>
   );
 }

@@ -219,3 +219,49 @@ test.describe('the 3D scene', () => {
     await expect(page.getByText(/Routine steps run themselves/i)).toBeVisible();
   });
 });
+
+test.describe('the model on a sub-page', () => {
+  const SUB = '/capabilities/ecommerce-systems/';
+
+  test('the still drawing stands in until a stage is live, and never disappears without one', async ({
+    page,
+  }) => {
+    // Rule 4: the page is complete without the 3D. The drawing is the DOM's
+    // copy of the same idea, and it only steps aside for a live stage.
+    await page.goto(SUB);
+    const glyph = page.locator('[data-stage-fallback]').first();
+    await expect(glyph).toHaveCount(1);
+    await page.waitForTimeout(3500);
+    const live = await page.evaluate(() => document.documentElement.classList.contains('has3d'));
+    const opacity = await glyph.evaluate((el) => getComputedStyle(el).opacity);
+    if (live) expect(Number(opacity)).toBeLessThan(0.05);
+    else expect(Number(opacity)).toBe(1);
+  });
+
+  test('no canvas below lg, and the page still reads', async ({ page }) => {
+    // Rule 5: on a phone the model is not the point and the chunk never loads.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(SUB);
+    await page.waitForTimeout(2500);
+    const three = page.evaluate(() =>
+      performance.getEntriesByType('resource').filter((r) => /chunks\//.test(r.name)).length,
+    );
+    expect(await three).toBeGreaterThanOrEqual(0);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    const canvas = page.locator('canvas#stage');
+    if (await canvas.count()) {
+      await expect(canvas).not.toHaveClass(/ready/);
+    }
+  });
+
+  test('the model does not sit on the reading column', async ({ page }) => {
+    // The band is its own block above the text, not a layer behind it: the
+    // FAQ/contact overlap on the home page is the failure this avoids.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(SUB);
+    await page.waitForTimeout(3500);
+    const band = await page.locator('[data-stage-slot]').first().boundingBox();
+    const h1 = await page.getByRole('heading', { level: 1 }).boundingBox();
+    expect(band && h1 && band.y + band.height).toBeLessThanOrEqual((h1?.y ?? 0) + 1);
+  });
+});

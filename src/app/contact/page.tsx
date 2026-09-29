@@ -30,7 +30,7 @@ export default function ContactPage() {
   const { phone, office } = contactFacts();
 
   return (
-    <DocumentPage>
+    <DocumentPage scene={{ scene: 'start', glyph: 'software' }}>
         {/* The form carries its own H1 here: on this page it is the subject,
             not one section among many. */}
         <ContactSection

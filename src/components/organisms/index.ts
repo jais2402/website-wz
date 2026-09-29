@@ -11,3 +11,4 @@ export { SiteHeader, type SiteHeaderProps } from './SiteHeader';
 export { StatementProofSection, type StatementProofSectionProps } from './StatementProofSection';
 export { StatementSection, type StatementSectionProps } from './StatementSection';
 export { StepsSection, type StepsSectionProps } from './StepsSection';
+export { PageScene, type PageSceneProps } from './PageScene';

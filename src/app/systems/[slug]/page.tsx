@@ -52,11 +52,12 @@ export default async function AreaPage({ params }: { params: Promise<{ slug: str
   const others = (range?.items ?? []).filter(
     (item: { title: string }) => toSlug(item.title) !== slug,
   );
+  const index = (range?.items ?? []).findIndex((i: { title: string }) => toSlug(i.title) === slug);
 
   return (
     <>
       <JsonLd schema={serviceSchema(slug, page.title, page.lead, 'systems')} />
-      <DocumentPage>
+      <DocumentPage scene={{ scene: 'range', highlight: index, glyph: 'platforms' }}>
         <nav aria-label="Breadcrumb">
           <Link
             href="/capabilities#range"

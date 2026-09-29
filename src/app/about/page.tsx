@@ -28,7 +28,7 @@ export default function AboutPage() {
   const { markets } = content.meta;
 
   return (
-    <DocumentPage>
+    <DocumentPage scene={{ scene: 'since2012', glyph: 'data' }}>
       <HeadlineSplit headline={page.headline} level="d1" as="h1" id="about-title" />
       <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p>
 

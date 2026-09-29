@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/atoms';
 import { BentoTile, DisciplineRow, HeadlineSplit } from '@/components/molecules';
-import { IsoGlyph, type GlyphName } from '@/components/atoms';
+import { IsoGlyph } from '@/components/atoms';
+import { GLYPH_BY_SLUG } from '@/lib/glyphs';
 import { slug } from '@/lib/slug';
 import { Section } from './Section';
 import { setHighlight } from '@/components/three/highlight';
@@ -138,14 +139,6 @@ export function SequenceSection({
     'lg:col-start-3 lg:row-start-3', 'lg:col-start-4 lg:row-start-3',
     'lg:col-span-4 lg:col-start-1 lg:row-start-4',
   ];
-  // Drawing per offering, keyed by its anchor so reordering content keeps it.
-  const GLYPH: Record<string, GlyphName> = {
-    'custom-business-software': 'software', 'business-process-automation': 'automation',
-    'system-integration': 'integration', 'data-and-reporting-systems': 'data',
-    'customer-and-partner-platforms': 'platforms', 'cloud-hosting-support-and-maintenance': 'hosting',
-    'ai-and-gen-ai-integrations': 'ai', websites: 'websites',
-    'ecommerce-systems': 'ecommerce',
-  };
   const bento = (
     <div
       // Hairlines as real borders: the centre cell must stay transparent so
@@ -161,7 +154,7 @@ export function SequenceSection({
           title={item.title}
           body={item.body ?? ''}
           href={`/capabilities/${slug(item.title)}`}
-          glyph={GLYPH[slug(item.title)] ?? 'software'}
+          glyph={GLYPH_BY_SLUG[slug(item.title)] ?? 'software'}
           // Past the eight ring places the tile spans the width, so it reads as
           // a row rather than a gap-filler in a grid built around the centre.
           size={index < 8 ? 'regular' : 'slim'}

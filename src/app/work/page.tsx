@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
-import { content, footer, pages, contactFacts } from '@/lib/content';
+import { content, pages } from '@/lib/content';
 import { Button, Eyebrow, JsonLd, Swatch } from '@/components/atoms';
 import { HeadlineSplit, MetricPair } from '@/components/molecules';
-import { SiteFooter, SiteHeader } from '@/components/organisms';
-import { DocumentTemplate } from '@/components/templates';
+import { DocumentPage } from '@/components/templates';
 import { caseStudySchema } from '@/lib/structured-data';
 
 const page = pages.work;
@@ -24,32 +23,12 @@ export const metadata: Metadata = {
  * Case order is array order in the JSON; the India case is first by decision.
  */
 export default function WorkPage() {
-  const { cases, nav, hero } = content;
-  const primaryCta = hero.actions[0]!;
+  const { cases } = content;
 
   return (
     <>
     <JsonLd schema={caseStudySchema()} />
-    <DocumentTemplate
-      header={<SiteHeader
-          nav={nav.primary}
-          cta={nav.cta}
-          wordmark={footer.wordmark}
-          name={content.meta.name}
-          since={content.meta.since}
-        />}
-      footer={
-        <SiteFooter
-          {...contactFacts()}
-          cta={footer.cta}
-          columns={footer.columns}
-          wordmark={footer.wordmark}
-          base={footer.base}
-          primaryCta={primaryCta}
-        />
-      }
-    >
-      <div className="mx-auto max-w-centre px-gutter pb-[clamp(72px,9vh,110px)]">
+    <DocumentPage scene={{ scene: 'cases', glyph: 'platforms' }}>
         <HeadlineSplit headline={page.headline} level="d1" as="h1" id="work-title" />
         {page.lead ? <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p> : null}
 
@@ -110,8 +89,7 @@ export default function WorkPage() {
             <Button href={page.cta.action.href}>{page.cta.action.label}</Button>
           </div>
         </section>
-      </div>
-    </DocumentTemplate>
+    </DocumentPage>
     </>
   );
 }

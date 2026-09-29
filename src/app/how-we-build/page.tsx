@@ -26,7 +26,7 @@ export default function HowWeBuildPage() {
   const principles = content.sections.find((s) => (s as any).id === 'principles') as any;
 
   return (
-    <DocumentPage>
+    <DocumentPage scene={{ scene: 'stages', glyph: 'automation' }}>
       <HeadlineSplit headline={page.headline} level="d1" as="h1" id="how-title" />
       <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p>
       <p className="mt-4 max-w-measure text-body leading-relaxed text-ink-2">{page.intro}</p>
