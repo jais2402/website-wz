@@ -1,13 +1,16 @@
+import type { CSSProperties } from 'react';
 import { cn } from '@/lib/cn';
+import type { Hue } from '@/types/content';
 
 /**
  * Atom. A small line-drawn isometric illustration, in the same block language
  * as the 3D model: rounded-cornered boxes seen from the same angle.
  *
- * Decorative (aria-hidden): the tile's text says what it is. Strokes use
- * currentColor, so the parent decides the colour (ink-3 at rest, the tile's hue
- * when pointed at). Faces are filled with the ground colour and drawn back to
- * front, so nearer boxes hide the lines behind them.
+ * Decorative (aria-hidden): the tile's text says what it is. Faces are shaded
+ * in the drawing's hue, lit like the 3D blocks: light top, mid left, dark right
+ * (`.iso` in globals.css). They are drawn back to front, so nearer boxes hide
+ * the lines behind them. With no hue the drawing takes the model's grey; the
+ * "disciplines" field cycles the brand hues, as the 3D model does.
  */
 
 export type GlyphName =
@@ -61,11 +64,16 @@ function faces([x, y, z, w, d, h]: Box) {
 
 export interface IsoGlyphProps {
   name: GlyphName;
+  hue?: Hue | undefined;
   className?: string | undefined;
   'data-stage-fallback'?: string | undefined;
 }
 
-export function IsoGlyph({ name, className, ...rest }: IsoGlyphProps) {
+const FIELD: Hue[] = ['blueprint', 'pine', 'ochre', 'plum', 'rose'];
+const FACE = ['iso-t', 'iso-l', 'iso-r'] as const;
+const tone = (h: Hue) => ({ '--iso': `var(--color-${h})` }) as CSSProperties;
+
+export function IsoGlyph({ name, hue, className, ...rest }: IsoGlyphProps) {
   const scene = SCENES[name];
   // Back to front: farther boxes (smaller x + y) first; lower first.
   const order = scene.boxes.map((b, i) => ({ b, i })).sort((p, q) => (p.b[0] + p.b[1]) - (q.b[0] + q.b[1]) || p.b[2] - q.b[2]);
@@ -80,9 +88,9 @@ export function IsoGlyph({ name, className, ...rest }: IsoGlyphProps) {
       {...rest}
       aria-hidden="true"
       viewBox={`${minX.toFixed(1)} ${minY.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`}
-      className={cn('overflow-visible', className)}
+      className={cn('iso overflow-visible', className)}
+      style={hue ? tone(hue) : undefined}
       fill="none"
-      stroke="currentColor"
       strokeWidth={1}
       strokeLinejoin="round"
       vectorEffect="non-scaling-stroke"
@@ -91,11 +99,13 @@ export function IsoGlyph({ name, className, ...rest }: IsoGlyphProps) {
         const p = centre(scene.boxes[a]!), q = centre(scene.boxes[b]!);
         return <line key={`${a}-${b}`} x1={p[0]} y1={p[1]} x2={q[0]} y2={q[1]} strokeDasharray="3 3" />;
       })}
-      {order.map(({ b, i }) =>
-        faces(b).map((f, k) => (
-          <polygon key={`${i}-${k}`} points={f} fill="var(--color-ground)" vectorEffect="non-scaling-stroke" />
-        )),
-      )}
+      {order.map(({ b, i }) => (
+        <g key={i} style={name === 'disciplines' ? tone(FIELD[i % FIELD.length]!) : undefined}>
+          {faces(b).map((f, k) => (
+            <polygon key={k} className={FACE[k]} points={f} vectorEffect="non-scaling-stroke" />
+          ))}
+        </g>
+      ))}
     </svg>
   );
 }

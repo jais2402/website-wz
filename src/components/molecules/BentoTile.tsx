@@ -18,17 +18,6 @@ export interface BentoTileProps {
   className?: string | undefined;
 }
 
-// Literal class strings: Tailwind only generates what it can see. The drawing
-// takes the hue's contrast-safe TEXT value, and only on attention.
-const INK: Record<Hue, { hover: string; on: string }> = {
-  blueprint: { hover: 'group-hover:text-blueprint-t group-focus-visible:text-blueprint-t', on: 'text-blueprint-t' },
-  pine: { hover: 'group-hover:text-pine-t group-focus-visible:text-pine-t', on: 'text-pine-t' },
-  ochre: { hover: 'group-hover:text-ochre-t group-focus-visible:text-ochre-t', on: 'text-ochre-t' },
-  plum: { hover: 'group-hover:text-plum-t group-focus-visible:text-plum-t', on: 'text-plum-t' },
-  rose: { hover: 'group-hover:text-rose-t group-focus-visible:text-rose-t', on: 'text-rose-t' },
-  signal: { hover: 'group-hover:text-signal-t group-focus-visible:text-signal-t', on: 'text-signal-t' },
-};
-
 const SIZE: Record<BentoSize, { tile: string; art: string; title: string; body: string }> = {
   feature: {
     tile: 'lg:col-span-2 grid gap-8 p-8 lg:grid-cols-[1fr_auto] lg:items-end',
@@ -45,16 +34,15 @@ const SIZE: Record<BentoSize, { tile: string; art: string; title: string; body: 
  * Molecule. One offering in the "What we build" bento.
  *
  * Direction from leading product sites (2026-09-29): Linear's feature tiles
- * lead with a line-drawn isometric illustration; Vercel separates cells with
- * hairline rules instead of card chrome. So: no fills, no coloured borders, no
- * rounded cards. The illustration speaks the 3D model's block language. The
- * hue appears only on attention, as the drawing's colour, while the model
- * lifts the same part. Size carries importance. Nothing is gated at any
+ * lead with an isometric illustration; Vercel separates cells with hairline
+ * rules instead of card chrome. So: no tile fills, no coloured borders, no
+ * rounded cards. The illustration speaks the 3D model's block language and is
+ * shaded in the tile's hue, as the model shades the same part. On attention it
+ * lifts, while the model lifts the same part. Size carries importance. Nothing is gated at any
  * width (CLAUDE.md rule 5).
  */
 export function BentoTile({ title, body, href, hue, glyph, size, highlighted, onOpen, className }: BentoTileProps) {
   const s = SIZE[size];
-  const ink = hue ? INK[hue] : undefined;
   return (
     <Link
       href={href}
@@ -70,10 +58,10 @@ export function BentoTile({ title, body, href, hue, glyph, size, highlighted, on
     >
       <IsoGlyph
         name={glyph}
+        hue={hue}
         className={cn(
-          'transition-colors duration-300 ease-brand',
-          highlighted && ink ? ink.on : 'text-ink-3',
-          ink?.hover,
+          'transition-transform duration-300 ease-brand group-hover:-translate-y-1 group-focus-visible:-translate-y-1',
+          highlighted && '-translate-y-1',
           s.art,
         )}
       />

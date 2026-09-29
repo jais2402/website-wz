@@ -36,6 +36,10 @@
   --color-plum: #8a55e8;
   --color-rose: #ec4d86;
   --color-signal: #ff5a1f;
+  /* Light and shade for the bento's isometric drawings: each face is its hue
+     mixed toward one of these, lit like the 3D blocks (top light, right dark). */
+  --color-iso-lit: #ffffff;
+  --color-iso-shade: #1a1c20;
 
   /* palette — text values (contrast-safe on ground) */
   --color-blueprint-t: #2a44d6;
@@ -129,6 +133,8 @@
     --color-plum: #b590ff;
     --color-rose: #ff7aa8;
     --color-signal: #ff7a45;
+    --color-iso-lit: #ffffff;
+    --color-iso-shade: #07080c;
     --color-blueprint-t: #8c9dff;
     --color-signal-t: #ff9466;
     --color-model: #a7acba;
@@ -149,6 +155,8 @@
   --color-act-d: #9aa9ff;
   --color-model: #a7acba;
   --color-model-2: #636a7c;
+  --color-iso-lit: #ffffff;
+  --color-iso-shade: #07080c;
   color-scheme: dark;
   /* keep in sync with the media query block above */
 }

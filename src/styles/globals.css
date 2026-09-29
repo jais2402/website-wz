@@ -142,6 +142,13 @@
   /* Static stand-ins for the live model step aside once a stage is running. */
   .has3d [data-stage-fallback] { opacity: 0; }
 
+  /* Isometric drawings, shaded in their hue like the 3D blocks. --iso is set
+     per drawing (IsoGlyph); faces mix it toward the light or the shade. */
+  .iso { --iso: var(--color-model); stroke: color-mix(in oklab, var(--iso) 58%, var(--color-iso-shade)); }
+  .iso .iso-t { fill: color-mix(in oklab, var(--iso) 38%, var(--color-iso-lit)); }
+  .iso .iso-l { fill: color-mix(in oklab, var(--iso) 78%, var(--color-iso-lit)); }
+  .iso .iso-r { fill: color-mix(in oklab, var(--iso) 84%, var(--color-iso-shade)); }
+
   @media (max-width: 999px) {
     #stage, #callouts { display: none; }
   }

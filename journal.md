@@ -41,6 +41,26 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Bento drawings shaded in their hue
+**Type:** delivery (partly reverses the "hue only on attention" line-drawing rule from the bento redesign)
+**Owner:** Owner direction ("can we colour these icons so it is not flat"); Designer
+**Context:** The line-only isometric drawings (ink-3 strokes on ground-filled faces) read as flat grey next to the full-colour 3D model in the bento centre.
+**Options:** (a) colour the strokes only (still flat); (b) a flat hue fill (reads as clip-art); (c) shade each face like the 3D blocks.
+**Decision:** (c). Each face mixes the tile's hue toward light or shade in OKLab: top 38% hue on light, left 78%, right 84% toward shade. The stroke is the hue toward shade.
+- New tokens `--color-iso-lit` and `--color-iso-shade`, defined in all three theme blocks.
+- `.iso` rules in globals.css.
+- `IsoGlyph` takes `hue`. The "disciplines" fallback cycles the five brand hues, as the model does.
+- On hover, focus or highlight the drawing lifts 4px instead of changing colour.
+**Because:** the drawings now speak the same shaded-block language as the model and carry each offering's hue at rest. Tile surfaces stay unfilled with hairline rules, so it is not the tinted-card look rejected earlier as "AI slop".
+**Consequences:** `BentoTile`'s INK class map was removed. Signal orange is unused here. Gate green (18 unit, 63 e2e).
+
+## 2026-09-29 — Session: bento icon colour
+**Type:** session
+**Done:** `src/styles/tokens.css` (iso-lit/shade tokens), `src/styles/globals.css` (`.iso` face shading), `src/components/atoms/IsoGlyph.tsx` (hue prop, face classes, disciplines hue cycle), `src/components/molecules/BentoTile.tsx` (passes hue; lift on attention).
+**State:** the bento shows shaded, hued drawings in light and dark. `pnpm verify:full` exit 0. Committed.
+**Next:** the owner reviews the icon colour. If the light-theme blue reads too heavy next to the pastel model, raise the lit share of the top and left faces.
+**Blocked:** unchanged (five business facts, favicon/OG, form transport; owner).
+
 ## 2026-09-29 — Bars → world map crossing: the blocks settle before they pass the heading
 **Type:** delivery
 **Owner:** Owner direction ("transform little bit here", screenshot of the evidence → regions crossing); 3D Engineer
