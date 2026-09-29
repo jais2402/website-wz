@@ -41,6 +41,25 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Bars → world map crossing: the blocks settle before they pass the heading
+**Type:** delivery
+**Owner:** Owner direction ("transform little bit here", screenshot of the evidence → regions crossing); 3D Engineer
+**Context:** Crossing from the 20+ bars (evidence, model on the left) to the world map (regions, centred), the map arrived flat at full width while the bars were still full height. Mid-crossing, the tall bars travelled through the centred "Work delivered for clients in eleven countries" heading, and map tiles spread under the CTA beside them.
+**Options:** (a) re-time every crossing (changes the journey everywhere); (b) re-time only the crossing into the map; (c) move the regions model, which would lose its place under the country list.
+**Decision (`three/stage.ts`):** (b).
+- Arriving at regions, the parts use a leading blend, `wp = smooth(w / 0.55)`. The bars settle into their country markers in the first half of the crossing, and the map follows `wp`.
+- The map now unfolds instead of scaling its height: each tile grows in turn, outward from the centre (`unfoldMap`, radial stagger). Mid-crossing it is a small patch under the model, not a field across the text.
+- Matrices are rewritten only while the map value is changing.
+**Because:** what passes the heading is now the low map, not full-height bars, and the crossing still reads as the same blocks turning into the map.
+**Consequences:** only the crossing into regions changed. All other crossings are untouched. Gate green: 18 unit, 63 e2e; initial route 173.7 KB, 3D chunk 120.9 KB.
+
+## 2026-09-29 — Session: evidence → regions crossing
+**Type:** session
+**Done:** `src/components/three/stage.ts`: leading blend `wp` for the crossing into regions, and the radial `unfoldMap` for the world-map tiles.
+**State:** the site runs at http://localhost:3000/ (long-running next-server). `pnpm verify:full` exit 0. Committed.
+**Next:** get the owner's eye on the crossing. If the map still brushes the heading at mid-crossing, lower the leading factor (0.55 → 0.45) or apply the same leading blend to the regions → work crossing.
+**Blocked:** unchanged: the five business facts, favicon and OG assets, form transport (owner).
+
 ## 2026-09-29 — The journey restored: the prototype's scroll-blended transformation
 **Type:** reversal (of the glide 18009ed, the dissolve fc3f736, and a same-day
 sticky per-section experiment that was never committed)

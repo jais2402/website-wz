@@ -172,14 +172,28 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   const mapMat = new THREE.MeshStandardMaterial({ roughness: 0.9, metalness: 0 });
   const mapTiles = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mapMat, LAND_CELLS.length);
   mapTiles.receiveShadow = true;
-  {
-    const tile = new THREE.Object3D();
+  // The map unfolds rather than sweeping in at full width: each tile grows in
+  // turn, outward from the centre where the markers gather, so mid-transition
+  // it is a small patch under the model, not a field across the text beside it.
+  const tileR = (() => {
+    const d = LAND_CELLS.map(([x, z]) => Math.hypot(x, z * 1.4));
+    const max = Math.max(...d) || 1;
+    return d.map((v) => v / max);
+  })();
+  const tile = new THREE.Object3D();
+  let mapDrawn = -1;
+  function unfoldMap(m: number) {
+    if (Math.abs(m - mapDrawn) < 0.002) return;
+    mapDrawn = m;
     LAND_CELLS.forEach(([x, z], i) => {
-      tile.position.set(x, 0.04, z);
-      tile.scale.set(CELL * 0.8, 0.08, CELL * 0.8); tile.updateMatrix();
+      const g = Math.max(1e-4, smooth((m * 1.6 - tileR[i]! * 0.6) / 0.4));
+      tile.position.set(x, 0.04 * g, z);
+      tile.scale.set(CELL * 0.8 * g, 0.08 * g, CELL * 0.8 * g); tile.updateMatrix();
       mapTiles.setMatrixAt(i, tile.matrix);
     });
+    mapTiles.instanceMatrix.needsUpdate = true;
   }
+  unfoldMap(1);
   const mapGroup = new THREE.Group();
   mapGroup.add(mapTiles);
   mapGroup.visible = false;
@@ -384,13 +398,17 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     const snapPlacement = first || reduce;
     first = false;
 
+    // Arriving at the map, the blocks settle into their markers in the first
+    // half of the crossing, so what travels past the centred heading is the
+    // low map, not a field of full-height bars.
+    const wp = SCENES[bn.sc] === 'regions' && an !== bn ? smooth(w / 0.55) : w;
     for (let i = 0; i < N; i += 1) {
-      tv.copy(A.p[i]!).lerp(B.p[i]!, w);
-      ts.copy(A.s[i]!).lerp(B.s[i]!, w);
+      tv.copy(A.p[i]!).lerp(B.p[i]!, wp);
+      ts.copy(A.s[i]!).lerp(B.s[i]!, wp);
       qa.setFromEuler(eu.set(A.r[i]!.x, A.r[i]!.y, A.r[i]!.z));
       qb.setFromEuler(eu.set(B.r[i]!.x, B.r[i]!.y, B.r[i]!.z));
-      qa.slerp(qb, w);
-      mixOk(A.c[i]!, B.c[i]!, w, tc);
+      qa.slerp(qb, wp);
+      mixOk(A.c[i]!, B.c[i]!, wp, tc);
       cur.p[i]!.lerp(tv, K); cur.s[i]!.lerp(ts, K);
       curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
@@ -431,9 +449,9 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       LINES[ln].visible = lineCur[ln] > 0.01;
     }
 
-    mapCur += ((A.map * (1 - w) + B.map * w) - mapCur) * K;
+    mapCur += ((A.map * (1 - wp) + B.map * wp) - mapCur) * K;
     mapGroup.visible = mapCur > 0.01;
-    mapGroup.scale.set(1, Math.max(1e-4, mapCur), 1);
+    unfoldMap(mapCur);
     mapMat.color.copy(P.model2).lerp(P.ink, 0.1);
 
     /* camera */
