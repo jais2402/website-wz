@@ -98,7 +98,7 @@ export function IsoGlyph({ name, hue, className, ...rest }: IsoGlyphProps) {
       style={hue ? tone(hue) : undefined}
       fill="none"
       strokeWidth={1}
-      strokeLinejoin="round"
+      strokeLinejoin="miter"
       vectorEffect="non-scaling-stroke"
     >
       {scene.links?.map(([a, b]) => {

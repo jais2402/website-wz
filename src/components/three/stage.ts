@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createPalette, readPalette } from './palette';
-import { lineSegmentPositions, roundedBox } from './geometry';
+import { chamferBox, lineSegmentPositions } from './geometry';
 import { N, NP, blank, buildState, smooth, type SceneState } from './states';
 import { BOOST, SCENES, SCENE_ALIAS } from './scene-data';
 import { CELL, LAND_CELLS } from './world';
@@ -117,17 +117,20 @@ export function createStage(
   // dark and over-saturated instead of pale.
   const LEGACY_LIGHT_SCALE = Math.PI;
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0xb8bab4, 0.72 * LEGACY_LIGHT_SCALE);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xb8bab4, 0.62 * LEGACY_LIGHT_SCALE);
   scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xffffff, 1.25 * LEGACY_LIGHT_SCALE);
-  key.position.set(7, 13, 6);
+  // Raised and pulled round for the faceted geometry: a flatter, softer key
+  // made the chamfers muddy. This angle puts a highlight on one cut face and
+  // shade on its neighbour, which is what separates the planes.
+  const key = new THREE.DirectionalLight(0xffffff, 1.42 * LEGACY_LIGHT_SCALE);
+  key.position.set(9, 12, 4);
   key.castShadow = true;
   key.shadow.camera.left = -8; key.shadow.camera.right = 8;
   key.shadow.camera.top = 8; key.shadow.camera.bottom = -8;
   key.shadow.camera.near = 1; key.shadow.camera.far = 40;
   key.shadow.bias = -0.0006; key.shadow.normalBias = 0.02;
   scene.add(key, key.target);
-  const fill = new THREE.DirectionalLight(0xffffff, 0.32 * LEGACY_LIGHT_SCALE);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.26 * LEGACY_LIGHT_SCALE);
   fill.position.set(-8, 4, 5);
   scene.add(fill);
 
@@ -141,15 +144,20 @@ export function createStage(
   scene.add(group);
 
   /* ── the model ─────────────────────────────────────── */
-  const boxGeo = roundedBox(0.15, 4);
-  const mat = new THREE.MeshStandardMaterial({ roughness: 0.82, metalness: 0 });
+  const boxGeo = chamferBox(0.16);
+  // Flat shading gives every facet its own normal, so the chamfers read as
+  // distinct planes rather than a smooth gradient. Lower roughness lets them
+  // catch the key light — that highlight along each crease is what makes the
+  // references read as machined rather than moulded. Metalness stays modest:
+  // there is no environment map, and a high value only darkens the blocks.
+  const mat = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.18, flatShading: true });
   const parts = new THREE.InstancedMesh(boxGeo, mat, N);
   parts.castShadow = true; parts.receiveShadow = true;
   parts.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   group.add(parts);
 
-  const hubMat = new THREE.MeshStandardMaterial({ roughness: 0.7, metalness: 0 });
-  const hub = new THREE.Mesh(roundedBox(0.16, 4), hubMat);
+  const hubMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0.18, flatShading: true });
+  const hub = new THREE.Mesh(chamferBox(0.17), hubMat);
   hub.castShadow = true; hub.receiveShadow = true;
   group.add(hub);
 

@@ -155,6 +155,43 @@ chromium-only) — exit 0.
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
 
+## 2026-09-29 — The blocks become machined: chamfered, flat-shaded
+**Type:** delivery (changes the 3D shape language set by the prototype)
+**Owner:** Owner, with three references — a faceted twisty puzzle (black frame,
+white inset panels, irregular cuts), a Tesla Cybertruck (flat planar facets,
+brushed monochrome) and a Metal Earth Mars rover (laser-cut plates, exposed
+structure) — then "brainstorm and finalise an approach". Designer consulted;
+owner chose from four rendered studies.
+**The thread in the references:** hard edges, flat facets, planar surfaces,
+monochrome with the material doing the work. Ours were rounded and matte.
+**Considered, and rejected with reasons:**
+- *Skeleton and panel* (the closest literal match to the puzzle): a dark frame
+  with a lighter inset. Needs two meshes or a custom shader, and — worse — puts
+  **two colours on every block at once**, which breaks the mechanism settled
+  hours earlier in §5.1, where the block pointed at is the only coloured thing.
+- *Tab and slot* (the rover): notched silhouettes. Every scene scales the one
+  shared box non-uniformly (tall bars, flat plates, thin markers); a notched
+  shape stretched that way visibly deforms. It would look broken in half the
+  scenes.
+- *Plain hard box* and *asymmetric slice* were rendered and shown; the slice
+  reads as a rendering error at the sizes used.
+**Shipped — the chamfered plate.** `roundedBox` is replaced by
+`chamferBox(0.16)`: the corner is cut straight, `bevelSegments: 1` and
+`curveSegments: 1` so the bevel is a single flat facet and never an arc. Still
+ONE geometry and one InstancedMesh, so no extra draw calls.
+**Material and the lighting pass.** `flatShading: true`, roughness .82 → .4,
+metalness .18. The designer's warning was that flat shading under a soft rig
+goes muddy rather than machined, and that was right: the key light moved to
+(9, 12, 4) at 1.42×, with the fill 0.32 → 0.26 and the hemisphere 0.72 → 0.62,
+so one cut face is lit while its neighbour is shaded. Verified by eye in both
+themes on hero, bento and the cube. Metalness stays modest — there is no
+environment map, and a higher value only darkens the blocks.
+**Also:** the hub follows (`chamferBox(0.17)`), and `IsoGlyph` miters its
+corners so the DOM's line drawings do not stay rounded next to a faceted model.
+**Colour is untouched:** still rests near white, still goes to full brand hue on
+attention.
+**Gate:** exit 0 — 18 unit, 133 e2e, 17 skipped, initial 174.1 KB, 3D 121.5 KB.
+
 ## 2026-09-29 — The artifact's colour scheme, adopted literally
 **Type:** reversal (of six rounds of colour tuning, including today's own)
 **Owner:** Owner, by linking the approved artifact: "apply the colour schema for

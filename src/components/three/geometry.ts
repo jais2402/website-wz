@@ -1,27 +1,37 @@
 import * as THREE from 'three';
 
 /**
- * A rounded box, built as an extruded rounded square with a bevel.
+ * A box with flat chamfered corners: machined, not moulded.
  *
- * This is what gives the model its weight — a plain BoxGeometry reads as a
- * wireframe primitive, and the design calls for 3px radius on the geometry
- * (design.md §1.5). Built once and shared by every instance.
+ * The owner's references (2026-09-29) were a faceted twisty puzzle, a
+ * Cybertruck and a cut-metal model kit — hard edges and flat planes, with the
+ * light doing the work. The corner is cut straight rather than rounded, so
+ * every corner is a facet that catches the key light instead of a smooth
+ * gradient that swallows it.
+ *
+ * Built once and shared by every instance: one geometry, one InstancedMesh,
+ * no extra draw calls (architecture.md §8). It also survives the non-uniform
+ * per-axis scaling every scene relies on in `states.ts` — a notched or
+ * asymmetric silhouette would visibly deform when stretched into a tall bar or
+ * a flat plate, which is why those directions were rejected.
+ *
+ * `c` is the corner cut as a fraction of the side.
  */
-export function roundedBox(r: number, seg: number): THREE.BufferGeometry {
-  const s = 0.5 - r;
+export function chamferBox(c: number): THREE.BufferGeometry {
+  const s = 0.5 - c;
   const shape = new THREE.Shape();
-  shape.absarc(s, -s, r, -Math.PI / 2, 0, false);
-  shape.absarc(s, s, r, 0, Math.PI / 2, false);
-  shape.absarc(-s, s, r, Math.PI / 2, Math.PI, false);
-  shape.absarc(-s, -s, r, Math.PI, Math.PI * 1.5, false);
+  shape.moveTo(-s, -0.5); shape.lineTo(s, -0.5); shape.lineTo(0.5, -s);
+  shape.lineTo(0.5, s); shape.lineTo(s, 0.5); shape.lineTo(-s, 0.5);
+  shape.lineTo(-0.5, s); shape.lineTo(-0.5, -s); shape.closePath();
   const geometry = new THREE.ExtrudeGeometry(shape, {
-    depth: 1 - r * 2,
+    depth: 1 - c * 2,
     bevelEnabled: true,
-    bevelSegments: seg,
+    // One segment: the bevel is a single flat facet, never an arc.
+    bevelSegments: 1,
     steps: 1,
-    bevelSize: r,
-    bevelThickness: r,
-    curveSegments: seg,
+    bevelSize: c,
+    bevelThickness: c,
+    curveSegments: 1,
   });
   geometry.center();
   geometry.computeVertexNormals();

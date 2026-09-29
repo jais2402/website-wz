@@ -44,6 +44,18 @@ neither is.
 
 ### 1.3 Model materials (3D only)
 
+The block is a **chamfered box, flat-shaded** — corners cut straight, never
+rounded (`chamferBox(0.16)` in `three/geometry.ts`). Machined, not moulded.
+Material: `roughness .4`, `metalness .18`, `flatShading: true`, so every facet
+takes its own normal and catches the key light as a distinct plane. The key
+light sits at (9, 12, 4) at 1.42×, with the fill and hemisphere pulled down —
+a flatter, softer rig made the chamfers muddy rather than machined.
+*(Owner, 2026-09-29, references: a faceted twisty puzzle, a Cybertruck, a
+cut-metal model kit. Rejected with reasons in journal.md: a frame-and-panel
+build, which would put two colours on every block and break §5.1's single tint;
+and notched "kit" edges, which deform under the per-axis scaling every scene
+relies on.)* The `IsoGlyph` line drawings miter their corners to match.
+
 | Token | Light | Dark |
 |---|---|---|
 | `--color-model` | `#f7f8fb` | `#a7acba` |
