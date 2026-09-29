@@ -41,6 +41,26 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Tech labels point at their plates; hero lead 50ch
+**Type:** delivery
+**Owner:** 3D Engineer + Designer
+**Context:** Owner: "See where they are pointing" (tech stack leaders), and set the
+hero lead to `max-width: 50ch` in devtools: "change this size of the width".
+**Decision:** tech labels are now anchored at the middle of each plate's right
+face `(sl + 1.2, y, 0)`, replacing the rounded front corner `(…, 1.2)`, whose
+anchor floated in the air and read as the plate below
+(`three/states.ts`). The hero sub is `max-w-[50ch]`, up from 34ch
+(`organisms/HeroSection.tsx`).
+**Consequences:** the hero lead now wraps to two lines at 1440.
+
+## 2026-09-29 — Session: tech labels, hero width
+**Type:** session
+**Done:** `three/states.ts`, `organisms/HeroSection.tsx`.
+**State:** verify:full is green.
+**Next / Blocked:** unchanged.
+
+---
+
 ## 2026-09-29 — Copy rewrite: technology-agnostic spine; SEO-verified
 **Type:** delivery
 **Owner:** Content Steward (writer) → SEO Specialist (verify) → main session (fact check)

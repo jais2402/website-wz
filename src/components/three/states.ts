@@ -412,7 +412,10 @@ export function buildState(P: Palette) {
           const ly2 = 0.12 + (n - 1 - i) * 0.46, sl = hl === i ? 0.7 : 0;
           const lc = hl === i ? hueOf(MIX[i % MIX.length]!) : tint(i, hl >= 0 ? 0.12 : 0.62);
           put(o, k++, sl, ly2, 0, 2.4, 0.2, 2.4, lc);
-          label(o, TECH[i] ?? '', sl + 1.2, ly2, 1.2, hl === i);
+          // On the middle of the plate's right face, the face the label column
+          // looks at. The front corner is rounded, so an anchor there sat in the
+          // air and read as pointing at the plate below.
+          label(o, TECH[i] ?? '', sl + 1.2, ly2, 0, hl === i);
         }
         o.look = 1.9; o.dist = 19; o.yaw = -0.32; o.parts = `${n} layers`;
         break;
