@@ -41,6 +41,21 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Pricing block reduced to one statement
+**Type:** decision
+**Owner:** Owner
+**Context:** Owner: "remove all the other contents, I feel it is unnecessary".
+**Decision:** pricing keeps only the eyebrow "How we price" and the headline "We
+price the outcome, not the hours." The lead, the three points and the note are
+removed from `content/site.json`. `BOOST.pricing` is 0.3 → 0.5, so the model
+fills the space under the shorter block.
+**Consequences:** "No build starts before that number is agreed." (a tuned line,
+context.md §4) no longer appears on the home page. The written-agreement
+promise now lives only in the FAQ cost answer and how/Shape. The research
+analyst should know a measured supporting line was removed.
+
+---
+
 ## 2026-09-29 — Pricing headline: "We price the outcome, not the hours."
 **Type:** decision
 **Owner:** Owner

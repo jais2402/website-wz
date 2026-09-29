@@ -361,26 +361,7 @@
       "headline": {
         "lead": "We price the outcome,",
         "accent": "not the hours."
-      },
-      "lead": "You know the price before anything is built.",
-      "points": [
-        {
-          "hue": "blueprint",
-          "title": "Understand the system first",
-          "body": "We map how the work happens today and what the first version must do."
-        },
-        {
-          "hue": "ochre",
-          "title": "Price what it must do",
-          "body": "The price follows the outcome the system has to deliver."
-        },
-        {
-          "hue": "pine",
-          "title": "Agree it in writing",
-          "body": "Scope, price and timeline in one document."
-        }
-      ],
-      "note": "No build starts before that number is agreed."
+      }
     },
     {
       "id": "evidence",

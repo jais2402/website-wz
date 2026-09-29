@@ -127,7 +127,7 @@ export type SceneKey = (typeof SCENES)[number];
  */
 export const BOOST: Record<string, number> = {
   hero: 0.8, build: 0.78, ai: 0.72, moment: 0.6, principles: 0.82,
-  range: 1.28, how: 0.88, pricing: 0.3, evidence: 0.85, work: 0.86,
+  range: 1.28, how: 0.88, pricing: 0.5, evidence: 0.85, work: 0.86,
   integration: 0.64, tech: 0.74, faq: 0.9, contact: 0.9,
   // Centred: see the note above — below ~0.5 is where the value takes effect.
   regions: 0.44,
