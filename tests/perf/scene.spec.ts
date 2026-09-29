@@ -98,7 +98,8 @@ test.describe('the 3D scene', () => {
 
     await expect(page.locator('html')).toHaveClass(/no3d/);
     await expect(page.locator('canvas')).not.toHaveClass(/ready/);
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Custom software');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.getByText(/custom software/i).first()).toBeVisible();
     // Every fact the scene illustrates also exists in the DOM as text.
     await expect(page.getByText(/outgrows the workaround/i)).toBeVisible();
   });

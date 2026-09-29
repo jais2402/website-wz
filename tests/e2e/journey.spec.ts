@@ -2,9 +2,17 @@ import { expect, test } from '@playwright/test';
 
 test.describe('the scroll journey', () => {
   test('the hero states the category within the first screen', async ({ page }) => {
+    // context.md §3: naming the category in the first screen took five-second
+    // comprehension from 26% to 80%. Since 2026-09-29 the H1 is a tag
+    // ("Systems that grow with you.") and the sub carries the category, so
+    // the check is the category above the fold, in the H1 or the sub, not the
+    // H1 wording.
     await page.goto('/');
-    const h1 = page.getByRole('heading', { level: 1 });
-    await expect(h1).toContainText('Custom software');
+    const category = page.getByText(/custom software/i).first();
+    await expect(category).toBeVisible();
+    const box = await category.boundingBox();
+    const vh = page.viewportSize()?.height ?? 0;
+    expect(box && box.y + box.height).toBeLessThanOrEqual(vh);
     await expect(page.getByText(/spreadsheets, message threads and manual steps/i)).toBeVisible();
   });
 

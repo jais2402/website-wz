@@ -41,6 +41,21 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Hero tests follow the tag; a red commit fixed
+**Type:** reversal (test assertions)
+**Owner:** Test Engineer role (main session)
+**Context:** Commit 64260a7 (hero tag) went in with verify:full red: my command
+piped the output through grep, which hid the exit code. Two tests pinned the old
+H1 wording: `tests/e2e/journey.spec.ts` (hero states the category) and
+`tests/perf/scene.spec.ts` (no-WebGL completeness).
+**Decision:** journey now asserts the study's actual rule: "custom software" is
+visible above the fold, in the H1 or the sub. The no-WebGL test asserts that the H1
+is visible and that the category text renders. Both are green.
+**Consequences:** from now on the gate is checked by its exit code, not by
+grepping the output.
+
+---
+
 ## 2026-09-29 — Hero becomes a tag: "Systems that grow with you."
 **Type:** decision (reversal of the measured hero H1)
 **Owner:** Owner
