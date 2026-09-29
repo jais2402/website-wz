@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/atoms';
 import { BentoTile, DisciplineRow, HeadlineSplit } from '@/components/molecules';
-import type { GlyphName } from '@/components/atoms';
+import { IsoGlyph, type GlyphName } from '@/components/atoms';
 import { slug } from '@/lib/slug';
 import { Section } from './Section';
 import { setHighlight } from '@/components/three/highlight';
@@ -171,6 +171,14 @@ export function SequenceSection({
         aria-hidden="true"
         className="relative hidden border-b border-r border-line lg:col-span-2 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:flex lg:min-h-[28rem] lg:items-end lg:justify-center lg:pb-7"
       >
+        {/* Stand-in for the live model: shown until a stage is live (has3d),
+            and whenever it cannot be (no WebGL, no JS). Design review,
+            2026-09-29: the centre was an empty hole without WebGL. */}
+        <IsoGlyph
+          name="disciplines"
+          data-stage-fallback=""
+          className="absolute left-1/2 top-[44%] h-44 w-auto -translate-x-1/2 -translate-y-1/2 text-ink-3 transition-opacity duration-700 ease-brand"
+        />
         {brand ? (
           <span className="flex items-baseline gap-2.5">
             <b className="text-logo font-semibold tracking-[-0.045em] text-ink">{brand.wordmark}</b>

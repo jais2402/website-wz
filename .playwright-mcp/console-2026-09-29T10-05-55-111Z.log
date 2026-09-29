@@ -5,3 +5,33 @@
 [   24932ms] [ERROR] THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context. @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:1052
 [   44640ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
 [   44644ms] [LOG] [Fast Refresh] done in 107ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  160197ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  160482ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  160501ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  160554ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  168254ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  169381ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  169548ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  169700ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  174699ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  174859ms] [LOG] [Fast Refresh] done in 341ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  221095ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  221608ms] [LOG] [Fast Refresh] done in 625ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  256405ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  256802ms] [LOG] [Fast Refresh] done in 503ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  326919ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  326970ms] [LOG] [Fast Refresh] done in 158ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  398066ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  400350ms] [LOG] [Fast Refresh] done in 2393ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  421476ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  423902ms] [LOG] [Fast Refresh] done in 2529ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  460776ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  470476ms] [LOG] [Fast Refresh] done in 9803ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  517606ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  518017ms] [LOG] [Fast Refresh] done in 517ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  542764ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  542779ms] [LOG] [Fast Refresh] done in 127ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  545738ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  546067ms] [LOG] [Fast Refresh] done in 430ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  562583ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  562642ms] [LOG] [Fast Refresh] done in 161ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776

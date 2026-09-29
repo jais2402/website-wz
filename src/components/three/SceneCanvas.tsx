@@ -49,6 +49,8 @@ export function SceneCanvas() {
         if (key) stage.setHighlight(key, index);
       })();
       document.documentElement.classList.remove('no3d');
+      // Marks a live stage: static stand-ins ([data-stage-fallback]) step aside.
+      document.documentElement.classList.add('has3d');
       setMounted(true);
     }
 

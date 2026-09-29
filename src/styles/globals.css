@@ -139,6 +139,8 @@
 
   /* Without the model the reading column takes the full width. */
   .no3d #stage, .no3d #callouts { display: none; }
+  /* Static stand-ins for the live model step aside once a stage is running. */
+  .has3d [data-stage-fallback] { opacity: 0; }
 
   @media (max-width: 999px) {
     #stage, #callouts { display: none; }

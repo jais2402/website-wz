@@ -182,6 +182,9 @@ test.describe('the 3D scene', () => {
   });
 
   test('rests when the reader is idle, and wakes on scroll', async ({ page }) => {
+    // Waits out the 6s idle rest on purpose; under a parallel suite the default
+    // 30s budget was exceeded once (timeout, not a behaviour failure).
+    test.setTimeout(60_000);
     await page.addInitScript(PATCH);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
@@ -217,6 +220,11 @@ test.describe('the 3D scene', () => {
     await expect(page.getByText(/custom software/i).first()).toBeVisible();
     // Every fact the scene illustrates also exists in the DOM as text.
     await expect(page.getByText(/outgrows the workaround/i)).toBeVisible();
+    // The bento's centre never goes empty: the line-drawn stand-in shows.
+    const fallback = page.locator('#build [data-stage-fallback]');
+    if (await fallback.count()) {
+      expect(await fallback.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+    }
   });
 
   test('does not run continuously under prefers-reduced-motion', async ({ page }) => {

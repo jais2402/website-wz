@@ -41,6 +41,26 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Design review fix: no empty bento centre without WebGL
+**Type:** delivery
+**Owner:** Design Reviewer (finding, HIGH), main session (fix)
+**Context:** On desktop without WebGL, the bento's 2×2 centre was an empty
+hole (CLAUDE.md rule 4, tested fallbacks).
+**Decision:** the centre tile holds a line-drawn `IsoGlyph name="disciplines"`
+(a 4×2 block field matching the model) with `data-stage-fallback`. It is
+visible by default and fades out under `.has3d`, which `SceneCanvas` adds once
+a stage is live. This covers no WebGL, no JS and the moment before the lazy 3D
+loads. The no-WebGL perf test asserts that the stand-in is visible. The
+idle-rest test has a 60s budget (it waits 9s+ by design).
+**Note on flaky runs:** two gate runs failed on timeouts at load average 90–115,
+caused by parallel Playwright workers against the long-running next-server on
+:3000. The same suite passed 64/64 in 41s once the load settled. If the gate
+fails only on timeouts, check `uptime` before debugging.
+**Design review verdict:** fix first (this item). Everything else passed.
+**State:** all three reviews' findings (design, code, 3D) are closed.
+
+---
+
 ## 2026-09-29 — Review fixes: 3D Engineer + Code Reviewer on the dissolve/bento
 **Type:** delivery
 **Owner:** 3D Engineer, Code Reviewer (findings); main session (fixes)

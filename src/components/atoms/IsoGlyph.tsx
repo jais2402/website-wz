@@ -12,7 +12,7 @@ import { cn } from '@/lib/cn';
 
 export type GlyphName =
   | 'software' | 'automation' | 'integration' | 'data'
-  | 'platforms' | 'hosting' | 'ai' | 'websites';
+  | 'platforms' | 'hosting' | 'ai' | 'websites' | 'disciplines';
 
 /** A box: grid x, y (depth), z (height), then width, depth, height. */
 type Box = [number, number, number, number, number, number];
@@ -33,6 +33,13 @@ const SCENES: Record<GlyphName, { boxes: Box[]; links?: Array<[number, number]> 
   hosting: { boxes: [[0, 0, 0, 2.4, 1.6, 0.5], [0, 0, 0.7, 2.4, 1.6, 0.5], [0, 0, 1.4, 2.4, 1.6, 0.5]] },
   // A part inside the system, doing a step.
   ai: { boxes: [[0, 0, 0, 2.4, 2.4, 1.2], [0.8, 0.8, 1.2, 0.8, 0.8, 0.8]] },
+  // The eight offerings as the 3D model shows them: a 4×2 field of blocks.
+  // The bento's centre stands in for the live model with this when WebGL is
+  // absent, JavaScript is off, or before the 3D has loaded.
+  disciplines: { boxes: [
+    [0, 0, 0, 1, 1, 1.3], [1.25, 0, 0, 1, 1, 1.9], [2.5, 0, 0, 1, 1, 1.1], [3.75, 0, 0, 1, 1, 1.6],
+    [0, 1.25, 0, 1, 1, 0.9], [1.25, 1.25, 0, 1, 1, 1.4], [2.5, 1.25, 0, 1, 1, 1.7], [3.75, 1.25, 0, 1, 1, 1.0],
+  ] },
   // One flat page.
   websites: { boxes: [[0, 0, 0, 2.6, 0.2, 1.8]] },
 };
@@ -55,9 +62,10 @@ function faces([x, y, z, w, d, h]: Box) {
 export interface IsoGlyphProps {
   name: GlyphName;
   className?: string | undefined;
+  'data-stage-fallback'?: string | undefined;
 }
 
-export function IsoGlyph({ name, className }: IsoGlyphProps) {
+export function IsoGlyph({ name, className, ...rest }: IsoGlyphProps) {
   const scene = SCENES[name];
   // Back to front: farther boxes (smaller x + y) first; lower first.
   const order = scene.boxes.map((b, i) => ({ b, i })).sort((p, q) => (p.b[0] + p.b[1]) - (q.b[0] + q.b[1]) || p.b[2] - q.b[2]);
@@ -69,6 +77,7 @@ export function IsoGlyph({ name, className }: IsoGlyphProps) {
   const centre = (b: Box) => pt(b[0] + b[3] / 2, b[1] + b[4] / 2, b[2] + b[5] / 2);
   return (
     <svg
+      {...rest}
       aria-hidden="true"
       viewBox={`${minX.toFixed(1)} ${minY.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`}
       className={cn('overflow-visible', className)}
