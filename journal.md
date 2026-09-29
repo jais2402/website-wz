@@ -41,6 +41,70 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — The supporting pages: the thirty systems, and the process
+**Type:** delivery
+**Owner:** Owner direction ("the rest of the pages support the details of the
+offerings and others which need them")
+**Delivered:**
+1. **Five area pages, `/systems/<area>/`** — People & workforce, Revenue &
+   customers, Operations & supply chain, Finance & governance, Industry systems.
+   The range is thirty named systems; as one list it answers "do they build my
+   kind of system?" only for someone already reading the page. As five pages it
+   can answer the question someone types into a search box before they have
+   heard of the company. Each carries the six system names **verbatim and in
+   order** (they are existing public anchors), a line each on what that system
+   does and what it replaces, and a Service entity in JSON-LD.
+2. **`/how-we-build/`** — Understand, Shape, Build, Run, each expanded with its
+   existing `output` verbatim, then the three rules. "No build starts before
+   that number is agreed." sits in Shape.
+3. **Linked, not orphaned:** the range areas and the offering rows on
+   /capabilities now link to their pages, "How we build" in the nav points at
+   the page, and a sitemap test fails if any listed URL 404s.
+4. **`DocumentPage` template** — header, measure and footer in one place. The
+   chrome had been copied into every route and was starting to drift. Templates
+   may read the content file; the boundary is that nothing *below* templates
+   does (CLAUDE.md rule 2), which eslint enforces.
+**Edited before shipping:** the drafted process closing said "A small fix and a
+full system both start with Understand and both end with Run." That is a claim
+about how the company works at every size, it was not sourced from site.json, and
+the CEO has not approved it. Cut; the first sentence stands.
+**Serious finding — the gate was not testing what ships.** Playwright had
+`reuseExistingServer: !process.env.CI`, and a `next dev` had been running on
+:3000 for over a day. Every local run this session tested that server rather
+than `pnpm build && pnpm start`. It surfaced when a new test found zero links
+that were demonstrably present in `out/capabilities/index.html`. The stale server
+was killed, the option is now `reuseExistingServer: false`, and the suite was
+re-run green against a fresh build: 18 unit, **120 e2e**, initial 174.1 KB, 3D
+121.0 KB. Earlier "passed" lines in today's entries were measured against that
+dev server and should be treated as weaker evidence than this one.
+**Not built, deliberately** (tasks.md § Open — pages not built, and why):
+`/work/<slug>` (offered earlier, the owner did not choose it); `/pricing` (its
+whole subject is the price band, still null — a page that dodges its own question
+is worse than none); `/privacy` (a legal requirement once a form collects
+personal data, and clients include the Netherlands, UK and Czech Republic, but it
+states legal commitments and cannot be drafted without the owner); `/careers`
+(no open roles recorded).
+
+## 2026-09-29 — Session: supporting pages
+**Type:** session
+**Done:** `content/pages.json` (areaPages, howPage), `content/site.json` (nav and
+footer links), `src/lib/pages.ts`, `src/types/content.ts`,
+`src/lib/structured-data.ts` (serviceSchema takes a path segment),
+`src/app/systems/[slug]/page.tsx` and `src/app/how-we-build/page.tsx` (new),
+`src/app/sitemap.ts`, `src/components/templates/DocumentPage.tsx` and
+`src/components/molecules/PageSectionBlock.tsx` (new),
+`src/components/molecules/AreaAccordion.tsx` (optional href),
+`src/app/{about,contact,capabilities/[slug]}/page.tsx` (moved onto DocumentPage),
+`playwright.config.ts`, `tests/e2e/pages.spec.ts`, `tasks.md`.
+**State:** 20 routes build. Gate exit 0 against a fresh build: 18 unit, 120 e2e.
+A `next dev` was restarted afterwards so the owner's preview on :3000 is current.
+**Next:** the design reviewer has still not seen any of the eleven new pages —
+that is the gap. Then the owner's decisions: the partner URLs, /privacy, and
+whether /work should split per case.
+**Blocked:** partners; /privacy and /careers content; OG and favicon assets; form
+transport; analytics vendor; AI-crawler policy; hero re-test; promise owners;
+claim evidence; price band, named clients and team.
+
 ## 2026-09-29 — Ecommerce offering, nine capability pages, /about and /contact
 **Type:** delivery
 **Owner:** Owner direction (add the ecommerce offering; add partners; build the
