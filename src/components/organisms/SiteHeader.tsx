@@ -93,7 +93,7 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
       )}
     >
       <div className="relative flex h-[76px] items-center gap-[18px] pl-[max(24px,5.4vw)] pr-6">
-        <Link href="/" aria-label={name} className="flex flex-none items-baseline gap-2.5">
+        <Link href="/" aria-label={name} className="flex flex-none items-baseline gap-2.5 py-2">
           <b className="text-[21px] font-semibold tracking-[-0.045em] text-ink">{wordmark}</b>
           <span className="hidden font-mono text-[10px] tracking-[0.12em] text-ink-3 sm:inline">
             SINCE {since}

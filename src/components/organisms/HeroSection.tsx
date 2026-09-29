@@ -57,7 +57,7 @@ export function HeroSection({
         {facts?.length ? (
           <dl className="mt-[clamp(56px,9vh,96px)] grid grid-cols-[auto_auto_1fr] border-t border-line">
             {facts.map((fact) => (
-              <div key={fact.label} className="border-line pr-7 pt-4 first:pl-0 [&+div]:border-l [&+div]:pl-7">
+              <div key={fact.label} className="border-line pr-4 pt-4 first:pl-0 sm:pr-7 [&+div]:border-l [&+div]:pl-4 sm:[&+div]:pl-7">
                 <dt>
                   <Eyebrow>{fact.label}</Eyebrow>
                 </dt>

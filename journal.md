@@ -41,6 +41,24 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — /impeccable adapt (audit items 1, 4)
+**Type:** delivery
+**Owner:** Designer
+**Decision:**
+- Hero facts use `pr-4` / `pl-4` below `sm` (`pr-7` / `pl-7` from `sm`), which
+  removes the 32px horizontal overflow at 320px (WCAG 1.4.10);
+  `organisms/HeroSection.tsx`.
+- The small Button is `min-h-10` (40px), up from 38px; this covers the header CTA
+  and "Send your security questions" (`atoms/Button.tsx`).
+- The header wordmark link has `py-2`, so it is 42px tall, up from 34
+  (`organisms/SiteHeader.tsx`).
+**Left:** inline "Work" text links are 34px wide. They are exempt as inline links
+under WCAG 2.5.8, and their height is 40.
+**Verified:** re-measured at 320, 375 and 1440 on /, /work and /capabilities. No
+overflow, and no interactive element under 40px except exempt or hidden ones.
+
+---
+
 ## 2026-09-29 — Hero sub on two lines
 **Type:** delivery
 **Owner:** Designer
