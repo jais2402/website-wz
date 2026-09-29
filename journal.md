@@ -41,6 +41,19 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Capabilities keeps long copy; takeover claim softened
+**Type:** delivery
+**Owner:** Content (owner: "go ahead")
+**Decision:** build items gain an optional `detail` (the full description) that
+/capabilities renders (`item.detail ?? item.body`); the home bento keeps the short
+line. The FAQ "Can Wezigns take over software built by another company?" now reads:
+"Often, yes. It starts with a review of the code and how it is hosted, so you know
+what taking it over would involve before you commit to anything." This replaces
+an unconditional "Yes. We take over…" that had no named example (CEO flag). The
+hosting detail says the same. The AI tile stays small.
+
+---
+
 ## 2026-09-29 — "What we build" becomes a bento grid
 **Type:** decision + delivery
 **Owner:** Designer (layout), BA (priority, requirements), Content (copy), CEO (claims); owner approved

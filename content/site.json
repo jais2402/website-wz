@@ -128,49 +128,57 @@
           "n": "01",
           "hue": "blueprint",
           "title": "Custom business software",
-          "body": "Built around a process that off-the-shelf tools cannot handle, in whichever stack fits it best."
+          "body": "Built around a process that off-the-shelf tools cannot handle, in whichever stack fits it best.",
+          "detail": "Software built around a business process that off-the-shelf tools cannot handle well, in whichever stack fits it best."
         },
         {
           "n": "02",
           "hue": "ochre",
           "title": "Business process automation",
-          "body": "Routine steps run themselves. People handle the exceptions."
+          "body": "Routine steps run themselves. People handle the exceptions.",
+          "detail": "Repetitive steps move into the system. The system handles the routine and people handle the exceptions."
         },
         {
           "n": "03",
           "hue": "plum",
           "title": "System integration",
-          "body": "Connects what you already run, whatever it runs on, so nothing is typed in twice."
+          "body": "Connects what you already run, whatever it runs on, so nothing is typed in twice.",
+          "detail": "We connect the software you already use, whatever it runs on, so records move between tools without being typed in twice."
         },
         {
           "n": "04",
           "hue": "rose",
           "title": "Data and reporting systems",
-          "body": "Turns the data you already have into reports people actually use."
+          "body": "Turns the data you already have into reports people actually use.",
+          "detail": "Your data already exists. We turn it into reports and dashboards people can use without building them by hand."
         },
         {
           "n": "05",
           "hue": "blueprint",
           "title": "Customer and partner platforms",
-          "body": "One place for customers, partners and members to work with you."
+          "body": "One place for customers, partners and members to work with you.",
+          "detail": "Portals and apps for customers, partners, operators and members, so they can work with you in one place."
         },
         {
           "n": "06",
           "hue": "pine",
           "title": "Cloud hosting, support and maintenance",
-          "body": "We host, monitor and maintain what we build."
+          "body": "We host, monitor and maintain what we build.",
+          "detail": "We host, monitor and maintain the systems we build. Systems built elsewhere start with a review, so you know what taking them over would involve."
         },
         {
           "n": "07",
           "hue": "plum",
           "title": "AI and Gen-AI integrations",
-          "body": "AI in the steps where it saves real work. A person checks the rest."
+          "body": "AI in the steps where it saves real work. A person checks the rest.",
+          "detail": "AI added to the steps in a process where it saves real work, with a person checking the exceptions."
         },
         {
           "n": "08",
           "hue": "pine",
           "title": "Websites",
-          "body": "Designed and built one at a time."
+          "body": "Designed and built one at a time.",
+          "detail": "Websites designed and built one at a time. We have delivered more than 90."
         }
       ],
       "link": {
@@ -563,7 +571,7 @@
         },
         {
           "q": "Can Wezigns take over software built by another company?",
-          "a": "Yes. We take over systems other teams built, whatever they chose to build on, and folding that into ongoing hosting, support and maintenance is a normal part of the work."
+          "a": "Often, yes. It starts with a review of the code and how it is hosted, so you know what taking it over would involve before you commit to anything."
         },
         {
           "q": "Does Wezigns work with small businesses?",

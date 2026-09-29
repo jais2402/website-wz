@@ -67,12 +67,13 @@ export default function CapabilitiesPage() {
               {build.headline.lead} {build.headline.accent ?? ''}
             </h2>
             <div className="mt-7 grid gap-x-10 lg:grid-cols-2">
-              {build.items.map((item: { title: string; body: string; hue?: string }) => (
+              {build.items.map((item: { title: string; body: string; detail?: string; hue?: string }) => (
                 <AreaAccordion
                   key={item.title}
                   id={slug(item.title)}
                   title={item.title}
-                  body={item.body}
+                  // The home bento carries the short line; this page the full one.
+                  body={item.detail ?? item.body}
                   hue={toHue(item.hue)}
                 />
               ))}
