@@ -10,3 +10,4 @@ export { Swatch, type SwatchProps } from './Swatch';
 export { TextLink, type TextLinkProps } from './TextLink';
 export { ThemeToggle } from './ThemeToggle';
 export { VisuallyHidden } from './VisuallyHidden';
+export { IsoGlyph, type IsoGlyphProps, type GlyphName } from './IsoGlyph';

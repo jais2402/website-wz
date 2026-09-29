@@ -41,6 +41,35 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Bento redesign after "AI slop" feedback
+**Type:** reversal (of the tinted-card bento from earlier today)
+**Owner:** Designer
+**Context:** Owner: "AI Slop — get inspiration from leading websites". The first
+bento used pastel-tinted cards with coloured top borders and an arrow on every
+card. That is the template look; impeccable's craft floor lists coloured card
+borders as a default to refuse.
+**Research:** linear.app and vercel.com were viewed in the browser. Linear's
+feature tiles lead with a large line-drawn isometric illustration and put a
+small title and one sentence below; there are no fills or coloured borders.
+Vercel separates content with hairline rules and type, not cards.
+**Decision:**
+- New atom `atoms/IsoGlyph.tsx`: eight line-drawn isometric scenes in the 3D
+  model's block language (software = a block with its fitted piece lifted
+  above; automation = descending steps; integration = two linked systems;
+  data = rising columns; platforms = shared floor; hosting = stacked; ai = a
+  part inside the system; websites = one flat page). Faces are filled with the
+  ground colour and drawn back to front; strokes use currentColor.
+- `BentoTile` rewritten: a ruled grid (`gap-px bg-line border border-line`);
+  tiles are `bg-ground` and turn `bg-raised` on hover. There are no tints,
+  bars or radius, and the arrow shows on hover only.
+- The illustration is ink-3 at rest and the hue's contrast-safe *text* value
+  on attention, while the 3D lifts the same part. Hierarchy is unchanged.
+- The glyph map is keyed by anchor slug in `SequenceSection`.
+**Verified:** light, dark, hover (integration → plum drawing and plum block) and
+mobile. verify:full green.
+
+---
+
 ## 2026-09-29 — Capabilities keeps long copy; takeover claim softened
 **Type:** delivery
 **Owner:** Content (owner: "go ahead")

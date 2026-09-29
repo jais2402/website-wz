@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { IsoGlyph, type GlyphName } from '@/components/atoms';
 import { cn } from '@/lib/cn';
 import type { Hue } from '@/types/content';
 
@@ -9,68 +10,78 @@ export interface BentoTileProps {
   body: string;
   href: string;
   hue?: Hue | undefined;
+  glyph: GlyphName;
   size: BentoSize;
   /** Lit from outside, e.g. the pointer is on this tile's part in the 3D. */
   highlighted?: boolean | undefined;
   onOpen?: ((point?: { x: number; y: number }) => void) | undefined;
 }
 
-// Static class strings per hue: Tailwind only generates classes it can see.
-// The tint is the palette SURFACE value at low alpha behind ink text. A hue
-// is never used as a text colour (design.md §1).
-const TINT: Record<Hue, { rest: string; hover: string; on: string; bar: string }> = {
-  blueprint: { rest: 'bg-blueprint/5', hover: 'hover:bg-blueprint/10 hover:border-blueprint/40', on: 'bg-blueprint/10 border-blueprint/40', bar: 'bg-blueprint' },
-  pine: { rest: 'bg-pine/5', hover: 'hover:bg-pine/10 hover:border-pine/40', on: 'bg-pine/10 border-pine/40', bar: 'bg-pine' },
-  ochre: { rest: 'bg-ochre/5', hover: 'hover:bg-ochre/10 hover:border-ochre/40', on: 'bg-ochre/10 border-ochre/40', bar: 'bg-ochre' },
-  plum: { rest: 'bg-plum/5', hover: 'hover:bg-plum/10 hover:border-plum/40', on: 'bg-plum/10 border-plum/40', bar: 'bg-plum' },
-  rose: { rest: 'bg-rose/5', hover: 'hover:bg-rose/10 hover:border-rose/40', on: 'bg-rose/10 border-rose/40', bar: 'bg-rose' },
-  signal: { rest: 'bg-signal/5', hover: 'hover:bg-signal/10 hover:border-signal/40', on: 'bg-signal/10 border-signal/40', bar: 'bg-signal' },
+// Literal class strings: Tailwind only generates what it can see. The drawing
+// takes the hue's contrast-safe TEXT value, and only on attention.
+const INK: Record<Hue, { hover: string; on: string }> = {
+  blueprint: { hover: 'group-hover:text-blueprint-t group-focus-visible:text-blueprint-t', on: 'text-blueprint-t' },
+  pine: { hover: 'group-hover:text-pine-t group-focus-visible:text-pine-t', on: 'text-pine-t' },
+  ochre: { hover: 'group-hover:text-ochre-t group-focus-visible:text-ochre-t', on: 'text-ochre-t' },
+  plum: { hover: 'group-hover:text-plum-t group-focus-visible:text-plum-t', on: 'text-plum-t' },
+  rose: { hover: 'group-hover:text-rose-t group-focus-visible:text-rose-t', on: 'text-rose-t' },
+  signal: { hover: 'group-hover:text-signal-t group-focus-visible:text-signal-t', on: 'text-signal-t' },
 };
 
-const SIZE: Record<BentoSize, { tile: string; title: string; body: string }> = {
-  feature: { tile: 'lg:col-span-2 p-7 lg:p-8', title: 'text-statement font-medium', body: 'mt-4 max-w-measure-tight text-body' },
-  large: { tile: 'p-6 lg:min-h-44', title: 'text-subhead font-medium', body: 'mt-3 text-body' },
-  regular: { tile: 'p-5', title: 'text-title font-medium', body: 'mt-2 text-small' },
-  slim: { tile: 'lg:col-span-2 px-5 py-4 lg:flex lg:items-baseline lg:gap-5', title: 'text-title font-medium', body: 'mt-1 text-small lg:mt-0' },
+const SIZE: Record<BentoSize, { tile: string; art: string; title: string; body: string }> = {
+  feature: {
+    tile: 'lg:col-span-2 grid gap-8 p-8 lg:grid-cols-[1fr_auto] lg:items-end',
+    art: 'h-32 w-auto lg:order-2 lg:h-40',
+    title: 'text-statement font-medium',
+    body: 'mt-4 max-w-measure-tight text-body',
+  },
+  large: { tile: 'flex flex-col p-7', art: 'mb-10 h-24 w-auto self-start', title: 'text-subhead font-medium', body: 'mt-3 text-body' },
+  regular: { tile: 'flex flex-col p-6', art: 'mb-7 h-14 w-auto self-start', title: 'text-title font-medium', body: 'mt-2 text-small' },
+  slim: { tile: 'lg:col-span-2 flex items-center gap-5 px-6 py-5', art: 'h-7 w-auto flex-none', title: 'text-title font-medium', body: 'text-small' },
 };
 
 /**
  * Molecule. One offering in the "What we build" bento.
  *
- * Size carries importance, so the grid is not a wall of equal cards: one
- * feature tile, a large pair, regular tiles, and a slim last strip. Each tile
- * is a link to its entry on /capabilities. Pointing at it or focusing it
- * lights its block in the 3D, via onOpen, the same channel the row list used.
- * Nothing is hidden or gated at any width (CLAUDE.md rule 5).
+ * Direction from leading product sites (2026-09-29): Linear's feature tiles
+ * lead with a line-drawn isometric illustration; Vercel separates cells with
+ * hairline rules instead of card chrome. So: no fills, no coloured borders, no
+ * rounded cards. The illustration speaks the 3D model's block language. The
+ * hue appears only on attention, as the drawing's colour, while the model
+ * lifts the same part. Size carries importance. Nothing is gated at any
+ * width (CLAUDE.md rule 5).
  */
-export function BentoTile({ title, body, href, hue, size, highlighted, onOpen }: BentoTileProps) {
-  const tint = hue && size !== 'slim' ? TINT[hue] : undefined;
+export function BentoTile({ title, body, href, hue, glyph, size, highlighted, onOpen }: BentoTileProps) {
   const s = SIZE[size];
+  const ink = hue ? INK[hue] : undefined;
   return (
     <Link
       href={href}
       onMouseMove={(e) => onOpen?.({ x: e.clientX, y: e.clientY })}
       onFocus={() => onOpen?.()}
       className={cn(
-        'group relative block overflow-hidden rounded-hair border border-line',
-        'transition-[background-color,border-color] duration-300 ease-brand',
-        'focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-blueprint',
+        'group relative bg-ground transition-colors duration-300 ease-brand hover:bg-raised',
+        'focus-visible:z-10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blueprint',
+        highlighted && 'bg-raised',
         s.tile,
-        tint ? (highlighted ? tint.on : tint.rest) : 'bg-transparent',
-        tint ? tint.hover : 'hover:border-ink-3',
       )}
     >
-      {tint ? (
-        <span
-          aria-hidden="true"
-          className={cn('absolute inset-x-0 top-0 h-0.75 transition-opacity duration-300 ease-brand', tint.bar, highlighted ? 'opacity-100' : 'opacity-60 group-hover:opacity-100')}
-        />
-      ) : null}
-      <h3 className={cn('tracking-tight text-ink text-balance', s.title)}>{title}</h3>
-      <p className={cn('pr-8 leading-relaxed text-ink-2 text-pretty', s.body)}>{body}</p>
+      <IsoGlyph
+        name={glyph}
+        className={cn(
+          'transition-colors duration-300 ease-brand',
+          highlighted && ink ? ink.on : 'text-ink-3',
+          ink?.hover,
+          s.art,
+        )}
+      />
+      <div className={size === 'slim' ? 'flex flex-wrap items-baseline gap-x-5 gap-y-1' : undefined}>
+        <h3 className={cn('tracking-tight text-ink text-balance', s.title)}>{title}</h3>
+        <p className={cn('leading-relaxed text-ink-2 text-pretty', s.body)}>{body}</p>
+      </div>
       <span
         aria-hidden="true"
-        className="absolute bottom-4 right-5 text-ink-3 transition-[translate,color] duration-200 ease-brand group-hover:translate-x-1 group-hover:text-ink"
+        className="absolute right-6 top-6 text-ink-3 opacity-0 transition-[opacity,translate] duration-200 ease-brand group-hover:translate-x-0.5 group-hover:opacity-100 group-focus-visible:opacity-100"
       >
         &#8594;
       </span>
