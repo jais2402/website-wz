@@ -41,6 +41,50 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Push to Jais-Dev: stopped, unrelated histories
+**Type:** decision (not carried out)
+**Owner:** Owner asked to push to the Jais-dev branch, then pointed at
+https://github.com/sridhar-e/wezigns/tree/Jais-Dev and said "push here"
+**What was found:**
+- This repository had **no remote at all** and every commit sits on local `main`
+  (55 of them). Contrary to CLAUDE.md § Commits, none of this work was ever on a
+  branch or pushed anywhere.
+- `sridhar-e/wezigns` exists and the owner has `push` but **not** `admin`. It is
+  not their repository.
+- Its `Jais-Dev` branch (note the capital D; the request said `Jais-dev`) holds a
+  **different, earlier Wezigns project** — Tailwind config file, shadcn-style
+  components, `WEZIGNS.zip`, last pushed 27 Sep, head `e113760 feat: add 3D +
+  scroll interaction dependency stack`.
+- `git merge-base HEAD origin/Jais-Dev` returns nothing: **no common ancestor**.
+  The two trees are unrelated, so nothing can fast-forward.
+**Decision: did not push.** Putting this rebuild on `Jais-Dev` requires a force
+push that makes six commits of somebody else's work unreachable, in a repository
+the owner does not administer. That is irreversible and outward-facing, so it
+needs an explicit instruction, not an inference from "push here". The owner was
+offered: back up the branch first then overwrite (recommended), overwrite
+without a backup, or push to a separate branch. They dismissed the question, so
+the work stops here pending their word.
+**State left behind:** `origin` added (fetch only — no push has been made),
+local branch `Jais-dev` created at `a29d78b`, working tree clean. Nothing on the
+remote has changed.
+
+## 2026-09-29 — Session: the push that did not happen
+**Type:** session
+**Done:** `git remote add origin https://github.com/sridhar-e/wezigns.git`,
+`git fetch origin`, `git branch Jais-dev` at a29d78b. No push. No file changed.
+**State:** 20 routes, gate green (18 unit, 129 e2e, initial 174.0 KB, 3D
+121.0 KB). All work is on local `main` and the identical local `Jais-dev`.
+The remote is fetched but untouched.
+**Next:** the owner decides how this should reach `sridhar-e/wezigns` — the safe
+route is `git push origin origin/Jais-Dev:refs/heads/Jais-Dev-backup-2026-09-29`
+then `git push --force-with-lease origin Jais-dev:Jais-Dev`. Worth checking with
+sridhar-e first, since the branch is theirs. If this rebuild is meant to replace
+the project entirely, that is a conversation about `main`, not a branch push.
+**Blocked:** the push, on the owner. Everything else unchanged — partners;
+/privacy and /careers; OG and favicon; form transport; analytics vendor;
+AI-crawler policy; hero re-test; promise owners; claim evidence; price band,
+named clients, team.
+
 ## 2026-09-29 — A model on every sub-page, without a second renderer
 **Type:** delivery (reverses the DocumentTemplate note "no split canvas, no scene")
 **Owner:** Owner direction ("have some 3D element on all the sub pages")
