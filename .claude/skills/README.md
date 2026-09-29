@@ -83,6 +83,22 @@ upstream copy above, and `interface-design`, which says it is not for marketing
 sites. Where `baseline-ui` or `fixing-metadata` disagree with design.md tokens or
 the seo-specialist's metadata, `.claude/` wins.
 
+## taste-skill (installed 2026-09-29, owner request)
+
+From `leonxlnx/taste-skill` @ ce26fc2, MIT (LICENSE copied). Markdown only;
+`skill.sh` is just a name→path lookup and was not copied. Installed:
+`design-taste-frontend` (from `skills/taste-skill`) and
+`redesign-existing-projects` (from `skills/redesign-skill`). **Not installed:**
+- brutalist, minimalist and soft (aesthetics that conflict with design.md);
+- gpt-taste (GSAP; the budget allows `motion/react-mini` only);
+- imagegen-frontend-web and imagegen-frontend-mobile, brandkit, stitch and
+  image-to-code (other tools);
+- output-skill;
+- taste-skill-v1 (legacy).
+`.claude/` still wins on any conflict. These skills push bold defaults: fonts,
+grids, perpetual motion. The brief's tokens, the one-accent rule, the
+motion budget and the tuned copy are not overridden by them.
+
 ## Deliberately never installed
 
 **`motion-foundations`, `motion-patterns`, `motion-advanced`** — built on the

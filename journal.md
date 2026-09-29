@@ -41,6 +41,21 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Session: re-audit fixes + taste-skill
+**Type:** session
+**Done:** layout tokens `b4f56be`; will-change scoped `6030542`; taste-skill
+installed (`design-taste-frontend`, `redesign-existing-projects`; see skills
+README); final polish round (desktop and mobile, both themes, reduced motion;
+no overflow on 9 route/width pairs), with no fixes needed.
+**State:** all re-audit findings are closed and verify:full is green. The expected
+re-audit is 20/20, minus what cannot be tested here: 400% zoom, real devices,
+and the skill's detector binary.
+**Next:** the owner's new request, the bento grid for "What we build", with
+designer, BA, content and CEO review.
+**Blocked:** hero re-test (research); favicon and OG (assets).
+
+---
+
 ## 2026-09-29 — /impeccable optimize: will-change only while drawing (re-audit P3)
 **Type:** delivery
 **Owner:** 3D Engineer
