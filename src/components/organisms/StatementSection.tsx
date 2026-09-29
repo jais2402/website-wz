@@ -35,7 +35,7 @@ export function StatementSection({
       className="lg:flex lg:min-h-screen lg:flex-col lg:justify-center lg:py-[clamp(100px,12vh,140px)]"
     >
       <HeadlineSplit headline={headline} id={titleId} />
-      <p className="mt-6 max-w-[52ch] text-lead text-ink-2">{lead}</p>
+      <p className="mt-6 max-w-measure-tight text-lead text-ink-2">{lead}</p>
       {link ? (
         <div className="mt-8">
           <Button href={link.href} variant="secondary" topic={link.topic}>

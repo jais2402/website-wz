@@ -86,13 +86,13 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-40 border-b transition-[background-color,border-color] duration-[400ms] ease-[var(--ease-brand)]',
+        'fixed inset-x-0 top-0 z-40 border-b transition-[background-color,border-color] duration-[400ms] ease-brand',
         stuck || open
           ? 'border-line bg-ground-a backdrop-blur-[14px]'
           : 'border-transparent bg-transparent',
       )}
     >
-      <div className="relative flex h-[76px] items-center gap-[18px] pl-[max(24px,5.4vw)] pr-6">
+      <div className="relative flex h-[76px] items-center gap-[18px] pl-gutter pr-6">
         <Link href="/" aria-label={name} className="flex flex-none items-baseline gap-2.5 py-2">
           <b className="text-logo font-semibold tracking-[-0.045em] text-ink">{wordmark}</b>
           <span className="hidden font-mono text-micro tracking-[0.12em] text-ink-3 sm:inline">
@@ -113,7 +113,7 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
                       'inline-flex min-h-10 items-center text-caption text-ink-2',
                       // The underline grows from the left, as in the prototype.
                       'bg-[linear-gradient(var(--color-ink),var(--color-ink))] bg-[length:0_1px] bg-left-bottom bg-no-repeat',
-                      'transition-[color,background-size] duration-200 ease-[var(--ease-brand)]',
+                      'transition-[color,background-size] duration-200 ease-brand',
                       'hover:bg-[length:100%_1px] hover:text-ink',
                       isCurrent && 'bg-[length:100%_1px] text-ink',
                     )}
@@ -160,7 +160,7 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
         id="mobile-nav"
         aria-label="Primary"
         className={cn(
-          'border-t border-line bg-ground px-[max(24px,5.4vw)] pb-6 lg:hidden',
+          'border-t border-line bg-ground px-gutter pb-6 lg:hidden',
           open ? 'grid' : 'hidden',
         )}
       >

@@ -65,7 +65,7 @@ export function DisciplineRow({
         {hue ? <Swatch hue={hue} active={emphasised} className="translate-y-[3px]" /> : null}
         <h3
           className={cn(
-            'text-large font-medium tracking-tight transition-colors duration-300 ease-[var(--ease-brand)]',
+            'text-large font-medium tracking-tight transition-colors duration-300 ease-brand',
             'text-ink lg:text-ink-3',
             (emphasised || highlighted === false) && 'lg:text-ink',
           )}
@@ -83,7 +83,7 @@ export function DisciplineRow({
         className={cn(
           'mt-2',
           // Desktop: collapse to zero height when closed. Mobile: always open.
-          'lg:grid lg:transition-[grid-template-rows,opacity] lg:duration-[550ms] lg:ease-[var(--ease-brand)]',
+          'lg:grid lg:transition-[grid-template-rows,opacity] lg:duration-[550ms] lg:ease-brand',
           open ? 'lg:opacity-100' : 'lg:opacity-0',
         )}
         style={{ gridTemplateRows: open ? '1fr' : '0fr' }}

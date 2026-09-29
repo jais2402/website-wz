@@ -16,12 +16,12 @@ export function DocumentTemplate({ header, children, footer }: DocumentTemplateP
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-[2px] focus:bg-ink focus:px-4 focus:py-2 focus:text-ground"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-hair focus:bg-ink focus:px-4 focus:py-2 focus:text-ground"
       >
         Skip to content
       </a>
       {header}
-      <main id="main" className="relative z-[2] pt-[clamp(120px,16vh,168px)]">
+      <main id="main" className="relative z-2 pt-[clamp(120px,16vh,168px)]">
         {children}
       </main>
       {footer}

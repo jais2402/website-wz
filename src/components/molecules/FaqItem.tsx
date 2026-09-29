@@ -18,12 +18,12 @@ export function FaqItem({ q, a }: FaqItemProps) {
         {q}
         <span
           aria-hidden="true"
-          className="flex-none font-mono text-body text-ink-3 transition-transform duration-300 ease-[var(--ease-brand)] group-open:rotate-45"
+          className="flex-none font-mono text-body text-ink-3 transition-transform duration-300 ease-brand group-open:rotate-45"
         >
           +
         </span>
       </summary>
-      <p className="max-w-[58ch] pb-5 text-body leading-relaxed text-ink-2">{a}</p>
+      <p className="max-w-measure pb-5 text-body leading-relaxed text-ink-2">{a}</p>
     </details>
   );
 }

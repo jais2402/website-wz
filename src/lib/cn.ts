@@ -15,6 +15,12 @@ import { extendTailwindMerge } from 'tailwind-merge';
  */
 export const cn = extendTailwindMerge({
   extend: {
+    theme: {
+      spacing: ['gutter', 'section'],
+      container: ['measure', 'measure-tight', 'centre'],
+      radius: ['hair'],
+      ease: ['brand'],
+    },
     classGroups: {
       'font-size': [
         { text: ['d1', 'd2', 'statement', 'fig', 'lead', 'meta', 'callout', 'micro', 'fine', 'caption', 'small', 'body', 'title', 'large', 'subhead', 'logo', 'stat'] },

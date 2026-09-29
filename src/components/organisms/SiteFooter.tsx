@@ -19,7 +19,7 @@ export interface SiteFooterProps {
  */
 export function SiteFooter({ cta, columns, wordmark, base, primaryCta }: SiteFooterProps) {
   return (
-    <footer className="relative z-[2] border-t border-line bg-panel px-[max(24px,5.4vw)] pb-10 pt-[clamp(72px,9vh,110px)]">
+    <footer className="relative z-2 border-t border-line bg-panel px-gutter pb-10 pt-[clamp(72px,9vh,110px)]">
       <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
         <div>
           <h2 className="text-d2 text-balance text-ink">{cta.title}</h2>
@@ -29,7 +29,7 @@ export function SiteFooter({ cta, columns, wordmark, base, primaryCta }: SiteFoo
             <Button href={primaryCta.href}>{primaryCta.label}</Button>
             <a
               href={`mailto:${cta.email}`}
-              className="inline-flex min-h-10 items-center text-body text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-[var(--ease-brand)] hover:text-ink"
+              className="inline-flex min-h-10 items-center text-body text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-brand hover:text-ink"
             >
               {cta.email}
             </a>
@@ -55,7 +55,7 @@ export function SiteFooter({ cta, columns, wordmark, base, primaryCta }: SiteFoo
                   <li key={`${column.title}-${link.href}`}>
                     <Link
                       href={link.href}
-                      className="inline-flex min-h-10 items-center text-small text-ink-2 transition-colors duration-300 ease-[var(--ease-brand)] hover:text-ink"
+                      className="inline-flex min-h-10 items-center text-small text-ink-2 transition-colors duration-300 ease-brand hover:text-ink"
                     >
                       {link.label}
                     </Link>

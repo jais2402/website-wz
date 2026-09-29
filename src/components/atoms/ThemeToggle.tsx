@@ -23,7 +23,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-pressed={isDark}
       className={cn(
         'inline-flex size-10 items-center justify-center rounded-full border border-line-2 text-ink',
-        'transition-colors duration-300 ease-[var(--ease-brand)] hover:border-ink',
+        'transition-colors duration-300 ease-brand hover:border-ink',
         className,
       )}
     >

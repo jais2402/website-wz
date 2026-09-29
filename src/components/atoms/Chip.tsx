@@ -14,7 +14,7 @@ export interface ChipProps {
 export function Chip({ children, selected = false, onClick, className }: ChipProps) {
   const classes = cn(
     'inline-flex min-h-10 items-center rounded-full border px-4 text-caption leading-none',
-    'transition-colors duration-300 ease-[var(--ease-brand)]',
+    'transition-colors duration-300 ease-brand',
     selected ? 'border-blueprint bg-blueprint text-on-brand' : 'border-line-2 text-ink-2',
     onClick && !selected && 'hover:border-ink hover:text-ink',
     className,

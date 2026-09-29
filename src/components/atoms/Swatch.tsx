@@ -26,7 +26,7 @@ export function Swatch({ hue = 'blueprint', active = false, className }: SwatchP
     <span
       aria-hidden="true"
       className={cn(
-        'block size-2.5 flex-none rounded-[1px] transition-opacity duration-[450ms] ease-[var(--ease-brand)]',
+        'block size-2.5 flex-none rounded-[1px] transition-opacity duration-[450ms] ease-brand',
         HUE_CLASS[hue],
         active ? 'opacity-100' : 'opacity-35',
         className,

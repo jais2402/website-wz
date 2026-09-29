@@ -41,6 +41,21 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — /impeccable layout: layout tokens (re-audit P2)
+**Type:** delivery
+**Owner:** Designer
+**Decision:** new `@theme` tokens in `tokens.css`: `--spacing-gutter`
+max(24px,5.4vw), `--spacing-section` clamp(48px,7vh,80px), `--container-measure`
+58ch, `--container-measure-tight` 52ch, `--container-centre` 1100px,
+`--radius-hair` 2px. They replace the arbitrary classes in 25 files, along with
+`ease-[var(--ease-brand)]` → `ease-brand` and `z-[2]` → `z-2`; the split-column
+width now uses `var(--spacing-gutter)` inside its calc. The tokens are registered
+in the `cn.ts` tailwind-merge theme.
+**Verified:** each utility was confirmed in the built CSS with the same value;
+verify:full green. No visual change is intended.
+
+---
+
 ## 2026-09-29 — /impeccable polish (audit items 7, 8) and run close-out
 **Type:** delivery
 **Owner:** Designer

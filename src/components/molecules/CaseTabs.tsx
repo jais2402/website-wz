@@ -106,7 +106,7 @@ export function CaseTabs({ items, activeSlug, onSelect }: CaseTabsProps) {
             onClick={() => onSelect(item.slug)}
             className={cn(
               'flex min-h-11 items-center gap-2.5 py-3 text-left text-body',
-              'transition-colors duration-300 ease-[var(--ease-brand)]',
+              'transition-colors duration-300 ease-brand',
               active ? 'text-ink' : 'text-ink-2 hover:text-ink',
             )}
           >

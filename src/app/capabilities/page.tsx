@@ -53,15 +53,15 @@ export default function CapabilitiesPage() {
         />
       }
     >
-      <div className="mx-auto max-w-[1100px] px-[max(24px,5.4vw)] pb-[clamp(72px,9vh,110px)]">
+      <div className="mx-auto max-w-centre px-gutter pb-[clamp(72px,9vh,110px)]">
         <HeadlineSplit headline={page.headline} level="d1" as="h1" id="capabilities-title" />
-        {page.lead ? <p className="mt-6 max-w-[58ch] text-lead text-ink-2">{page.lead}</p> : null}
+        {page.lead ? <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p> : null}
 
         {build ? (
           <section
             id="disciplines"
             aria-labelledby="disciplines-title"
-            className="border-t border-line pt-[clamp(48px,7vh,80px)] mt-[clamp(48px,7vh,80px)]"
+            className="border-t border-line pt-section mt-section"
           >
             <h2 id="disciplines-title" className="text-d2 text-balance text-ink">
               {build.headline.lead} {build.headline.accent ?? ''}
@@ -84,13 +84,13 @@ export default function CapabilitiesPage() {
           <section
             id="range"
             aria-labelledby="range-title"
-            className="border-t border-line pt-[clamp(48px,7vh,80px)] mt-[clamp(48px,7vh,80px)]"
+            className="border-t border-line pt-section mt-section"
           >
             <h2 id="range-title" className="text-d2 text-balance text-ink">
               {range.headline.lead} {range.headline.accent ?? ''}
             </h2>
             {page.rangeIntro ? (
-              <p className="mt-5 max-w-[58ch] text-lead text-ink-2">{page.rangeIntro}</p>
+              <p className="mt-5 max-w-measure text-lead text-ink-2">{page.rangeIntro}</p>
             ) : null}
             <div className="mt-7 grid gap-x-10 lg:grid-cols-2">
               {range.items.map((item: { title: string; systems?: string[]; hue?: string }) => (
@@ -110,13 +110,13 @@ export default function CapabilitiesPage() {
           <section
             id="stack"
             aria-labelledby="stack-title"
-            className="border-t border-line pt-[clamp(48px,7vh,80px)] mt-[clamp(48px,7vh,80px)]"
+            className="border-t border-line pt-section mt-section"
           >
             <h2 id="stack-title" className="text-d2 text-balance text-ink">
               What a system is made of
             </h2>
             {page.stackIntro ? (
-              <p className="mt-5 max-w-[58ch] text-lead text-ink-2">{page.stackIntro}</p>
+              <p className="mt-5 max-w-measure text-lead text-ink-2">{page.stackIntro}</p>
             ) : null}
             <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2.5">
               {tech.layers.map((layer: string) => (
@@ -130,12 +130,12 @@ export default function CapabilitiesPage() {
 
         <section
           aria-labelledby="capabilities-cta"
-          className="border-t border-line pt-[clamp(48px,7vh,80px)] mt-[clamp(48px,7vh,80px)]"
+          className="border-t border-line pt-section mt-section"
         >
           <h2 id="capabilities-cta" className="text-d2 text-balance text-ink">
             {page.cta.title}
           </h2>
-          <p className="mt-4 max-w-[52ch] text-lead text-ink-2">{page.cta.body}</p>
+          <p className="mt-4 max-w-measure-tight text-lead text-ink-2">{page.cta.body}</p>
           <div className="mt-7">
             <Button href={page.cta.action.href}>{page.cta.action.label}</Button>
           </div>

@@ -134,7 +134,7 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
               </h3>
 
               {active.body.map((paragraph) => (
-                <p key={paragraph} className="mt-3 max-w-[58ch] text-large leading-relaxed text-ink-2">
+                <p key={paragraph} className="mt-3 max-w-measure text-large leading-relaxed text-ink-2">
                   {paragraph}
                 </p>
               ))}

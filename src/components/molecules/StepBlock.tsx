@@ -44,7 +44,7 @@ export function StepBlock({
     <div
       data-step=""
       className={cn(
-        'pb-9 transition-[border-color] duration-[400ms] ease-[var(--ease-brand)]',
+        'pb-9 transition-[border-color] duration-[400ms] ease-brand',
         now && hue ? cn('border-t-2 pt-[27px]', HUE_RULE[hue]) : 'border-t border-line pt-7',
       )}
     >
@@ -56,8 +56,8 @@ export function StepBlock({
       <h3 className="mt-2 text-[clamp(20px,1.7vw,26px)] font-medium leading-[1.15] tracking-[-0.025em] text-ink">
         {title}
       </h3>
-      <p className="mt-3 max-w-[58ch] text-body leading-relaxed text-ink-2">{body}</p>
-      {note ? <p className="mt-4 max-w-[58ch] text-small text-ink">{note}</p> : null}
+      <p className="mt-3 max-w-measure text-body leading-relaxed text-ink-2">{body}</p>
+      {note ? <p className="mt-4 max-w-measure text-small text-ink">{note}</p> : null}
       {output ? (
         <p className="mt-4 flex items-baseline gap-3 text-small text-ink">
           {outputLabel ? (

@@ -36,12 +36,12 @@ export default function NotFound() {
         />
       }
     >
-      <div className="mx-auto max-w-[1100px] px-[max(24px,5.4vw)] pb-[clamp(96px,14vh,160px)]">
+      <div className="mx-auto max-w-centre px-gutter pb-[clamp(96px,14vh,160px)]">
         <p className="font-mono text-meta uppercase tracking-[0.14em] text-ink-3">404</p>
         <h1 className="mt-4 text-d1 text-balance">
           That page has moved <span className="text-blueprint-t">or never existed.</span>
         </h1>
-        <p className="mt-6 max-w-[52ch] text-lead text-ink-2">
+        <p className="mt-6 max-w-measure-tight text-lead text-ink-2">
           The link may be out of date. Everything we build and how we work is still here.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">

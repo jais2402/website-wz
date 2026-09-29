@@ -67,7 +67,7 @@ export function ProseSection({
           className="mx-auto lg:max-w-[19ch] lg:text-[clamp(40px,4.4vw,76px)] lg:leading-[1.03]"
         />
         {lead ? (
-          <p className="mx-auto mt-6 max-w-[52ch] text-lead text-ink-2">{lead}</p>
+          <p className="mx-auto mt-6 max-w-measure-tight text-lead text-ink-2">{lead}</p>
         ) : null}
 
         {layers?.length ? (
@@ -119,7 +119,7 @@ export function ProseSection({
     <Section id={id} side={side} scene={scene} labelledBy={titleId}>
       {eyebrow ? <Eyebrow className="mb-4">{eyebrow}</Eyebrow> : null}
       <HeadlineSplit headline={headline} id={titleId} />
-      {lead ? <p className="mt-6 max-w-[52ch] text-lead text-ink-2">{lead}</p> : null}
+      {lead ? <p className="mt-6 max-w-measure-tight text-lead text-ink-2">{lead}</p> : null}
 
       {points?.length ? (
         <div className="mt-9">
@@ -162,7 +162,7 @@ export function ProseSection({
         </div>
       ) : null}
 
-      {note ? <p className="mt-7 max-w-[52ch] text-small text-ink-3">{note}</p> : null}
+      {note ? <p className="mt-7 max-w-measure-tight text-small text-ink-3">{note}</p> : null}
 
       {link ? (
         <div className="mt-8">

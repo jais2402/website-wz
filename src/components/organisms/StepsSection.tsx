@@ -59,7 +59,7 @@ export function StepsSection({
   return (
     <Section id={id} side={side} scene={scene} labelledBy={titleId}>
       <HeadlineSplit headline={headline} id={titleId} />
-      {lead ? <p className="mt-6 max-w-[58ch] text-lead text-ink-2">{lead}</p> : null}
+      {lead ? <p className="mt-6 max-w-measure text-lead text-ink-2">{lead}</p> : null}
       <div ref={list} className="mt-9 lg:[&>*]:mb-[6vh] lg:[&>*:last-child]:mb-0">
         {items.map((item, index) => (
           <StepBlock

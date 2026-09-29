@@ -30,9 +30,9 @@ export function HeroSection({
       data-side="l"
       data-scene="workarounds"
       aria-labelledby="hero-title"
-      className="relative min-h-[74vh] px-6 pt-[clamp(140px,19vh,210px)] pb-[clamp(36px,5vh,72px)] pl-[max(24px,5.4vw)]"
+      className="relative min-h-[74vh] px-6 pt-[clamp(140px,19vh,210px)] pb-[clamp(36px,5vh,72px)] pl-gutter"
     >
-      <div data-body="" className="w-full lg:w-[calc(50vw-max(24px,5.4vw))]">
+      <div data-body="" className="w-full lg:w-[calc(50vw-var(--spacing-gutter))]">
         <HeadlineSplit headline={headline} level="d1" as="h1" id="hero-title" />
         {/* A line break in content/site.json starts a new line, so the copy
             decides where the sub breaks without a code change. */}

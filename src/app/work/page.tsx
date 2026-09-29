@@ -48,16 +48,16 @@ export default function WorkPage() {
         />
       }
     >
-      <div className="mx-auto max-w-[1100px] px-[max(24px,5.4vw)] pb-[clamp(72px,9vh,110px)]">
+      <div className="mx-auto max-w-centre px-gutter pb-[clamp(72px,9vh,110px)]">
         <HeadlineSplit headline={page.headline} level="d1" as="h1" id="work-title" />
-        {page.lead ? <p className="mt-6 max-w-[58ch] text-lead text-ink-2">{page.lead}</p> : null}
+        {page.lead ? <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p> : null}
 
         {cases.map((c) => (
           <article
             key={c.slug}
             id={c.slug}
             aria-labelledby={`${c.slug}-title`}
-            className="border-t border-line py-[clamp(48px,7vh,80px)]"
+            className="border-t border-line py-section"
           >
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               {c.hue ? <Swatch hue={c.hue} active /> : null}
@@ -72,7 +72,7 @@ export default function WorkPage() {
             </h2>
 
             {c.body.map((paragraph) => (
-              <p key={paragraph} className="mt-4 max-w-[58ch] text-lead text-ink-2">
+              <p key={paragraph} className="mt-4 max-w-measure text-lead text-ink-2">
                 {paragraph}
               </p>
             ))}
@@ -100,11 +100,11 @@ export default function WorkPage() {
           </article>
         ))}
 
-        <section aria-labelledby="work-cta" className="border-t border-line pt-[clamp(48px,7vh,80px)]">
+        <section aria-labelledby="work-cta" className="border-t border-line pt-section">
           <h2 id="work-cta" className="text-d2 text-balance text-ink">
             {page.cta.title}
           </h2>
-          <p className="mt-4 max-w-[52ch] text-lead text-ink-2">{page.cta.body}</p>
+          <p className="mt-4 max-w-measure-tight text-lead text-ink-2">{page.cta.body}</p>
           <div className="mt-7">
             <Button href={page.cta.action.href}>{page.cta.action.label}</Button>
           </div>

@@ -96,6 +96,15 @@
   /* motion + layout */
   --ease-brand: cubic-bezier(0.22, 0.61, 0.36, 1);
   --breakpoint-lg: 1000px; /* the split-layout and scroll-gating line */
+
+  /* Layout tokens (/impeccable layout, 2026-09-29): values that had been
+     repeated as arbitrary classes. */
+  --spacing-gutter: max(24px, 5.4vw);        /* page side gutter: px-gutter, pl-gutter */
+  --spacing-section: clamp(48px, 7vh, 80px);  /* rhythm between blocks inside a section */
+  --container-measure: 58ch;                  /* body reading width: max-w-measure */
+  --container-measure-tight: 52ch;            /* lead / note width: max-w-measure-tight */
+  --container-centre: 1100px;                 /* centred chapters: max-w-centre */
+  --radius-hair: 2px;                         /* fields and small surfaces: rounded-hair */
 }
 
 /* Dark mode redefines the same properties, so every utility follows. */

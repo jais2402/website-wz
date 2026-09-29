@@ -15,7 +15,7 @@ export function TextLink({ children, href, external = false, className }: TextLi
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       className={cn(
         'group inline-flex items-center gap-2.5 border-b border-blueprint pb-1 text-sm text-ink',
-        'transition-[gap] duration-300 ease-[var(--ease-brand)] hover:gap-4',
+        'transition-[gap] duration-300 ease-brand hover:gap-4',
         className,
       )}
     >

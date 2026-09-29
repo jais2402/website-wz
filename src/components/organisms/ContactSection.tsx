@@ -111,7 +111,7 @@ export function ContactSection({
     <Section id={id} side={side} scene={scene} labelledBy={titleId}>
       <HeadlineSplit headline={headline} id={titleId} level="d1" />
 
-      <form noValidate onSubmit={onSubmit} className="mt-9 max-w-[58ch]">
+      <form noValidate onSubmit={onSubmit} className="mt-9 max-w-measure">
         <TopicChips label={topicLabel} topics={topics} selected={topic} onSelect={setTopic} />
         <input type="hidden" name="topic" value={topic ?? ''} />
 

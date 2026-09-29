@@ -34,7 +34,7 @@ export function Section({ id, side = 'l', scene, labelledBy, children, className
         // Section rhythm from the prototype: a floor height so the scene has
         // scroll travel to move through, and asymmetric padding — more above
         // than below, so a heading clears the sticky header.
-        'relative min-h-[74vh] px-[max(24px,5.4vw)]',
+        'relative min-h-[74vh] px-gutter',
         'pt-[clamp(100px,12vh,140px)] pb-[clamp(36px,5vh,72px)]',
         // A centred chapter owns a full screen: the reading column sits in the
         // upper half and the model is offset below it.
@@ -47,8 +47,8 @@ export function Section({ id, side = 'l', scene, labelledBy, children, className
         className={cn(
           'w-full',
           side === 'c'
-            ? 'mx-auto max-w-[1100px] text-center'
-            : 'lg:w-[calc(50vw-max(24px,5.4vw))]',
+            ? 'mx-auto max-w-centre text-center'
+            : 'lg:w-[calc(50vw-var(--spacing-gutter))]',
           side === 'r' && 'lg:ml-auto',
         )}
       >
