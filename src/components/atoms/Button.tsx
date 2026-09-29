@@ -61,7 +61,7 @@ export function Button({
     // CSS scale property, so transitioning `transform` left the press snapping.
     'transition-[background-color,border-color,color,scale] duration-200 ease-[var(--ease-brand)]',
     'active:scale-[0.98] active:duration-100',
-    size === 'small' ? 'min-h-10 px-4 text-[13px]' : 'min-h-12 px-[22px] text-sm',
+    size === 'small' ? 'min-h-10 px-4 text-caption' : 'min-h-12 px-[22px] text-sm',
     variant === 'primary'
       ? 'border-transparent bg-blueprint text-on-brand hover:bg-act-d'
       : 'border-line-2 text-ink hover:border-ink',

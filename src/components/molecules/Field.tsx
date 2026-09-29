@@ -43,7 +43,7 @@ export function Field({
     'aria-invalid': error ? (true as const) : undefined,
     'aria-describedby': error ? errorId : undefined,
     className: cn(
-      'w-full rounded-[2px] border bg-raised px-3.5 py-[13px] text-base leading-normal lg:text-[15px] text-ink',
+      'w-full rounded-[2px] border bg-raised px-3.5 py-[13px] text-base leading-normal lg:text-body text-ink',
       'placeholder:text-ink-3 transition-[border-color,box-shadow] duration-300 ease-[var(--ease-brand)]',
       'focus:border-blueprint-t focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-blueprint)_22%,transparent)] focus:outline-none',
       error ? 'border-signal-t' : 'border-line-2 hover:border-ink-3',
@@ -53,7 +53,7 @@ export function Field({
 
   return (
     <div className="grid gap-2">
-      <label htmlFor={id} className="text-[13px] text-ink-2">
+      <label htmlFor={id} className="text-caption text-ink-2">
         {label}
         {showRequirement ? (
           <span className="ml-1.5 text-ink-3">{required ? '(required)' : '(optional)'}</span>
@@ -61,7 +61,7 @@ export function Field({
       </label>
       {isArea ? <textarea {...shared} /> : <input type={type} {...shared} />}
       {error ? (
-        <p id={errorId} role="alert" className="text-[13.5px] text-signal-t">
+        <p id={errorId} role="alert" className="text-caption text-signal-t">
           {error}
         </p>
       ) : null}

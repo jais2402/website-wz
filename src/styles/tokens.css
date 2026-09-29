@@ -53,6 +53,21 @@
   --font-display: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /* Text scale for everything below display. Consolidated 2026-09-29
+     (/impeccable typeset) from 16 ad-hoc px sizes that had drifted into near
+     pairs (13/13.5, 14/14.5, 15/15.5, 16/16.5, 17/17.5). Sizes only; leading and
+     tracking stay with each use. */
+  --text-micro: 10px;
+  --text-fine: 11px;
+  --text-caption: 13.5px;
+  --text-small: 14.5px;
+  --text-body: 15px;
+  --text-title: 16.5px;
+  --text-large: 17.5px;
+  --text-subhead: 19px;
+  --text-logo: 21px;
+  --text-stat: 24px;
+
   --text-d1: clamp(38px, 4.3vw, 72px);
   --text-d1--line-height: 0.98;
   --text-d1--letter-spacing: -0.04em;

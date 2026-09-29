@@ -14,16 +14,16 @@ export interface FaqItemProps {
 export function FaqItem({ q, a }: FaqItemProps) {
   return (
     <details className="group border-t border-line">
-      <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-6 py-4 text-[16px] text-ink [&::-webkit-details-marker]:hidden">
+      <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-6 py-4 text-title text-ink [&::-webkit-details-marker]:hidden">
         {q}
         <span
           aria-hidden="true"
-          className="flex-none font-mono text-[15px] text-ink-3 transition-transform duration-300 ease-[var(--ease-brand)] group-open:rotate-45"
+          className="flex-none font-mono text-body text-ink-3 transition-transform duration-300 ease-[var(--ease-brand)] group-open:rotate-45"
         >
           +
         </span>
       </summary>
-      <p className="max-w-[58ch] pb-5 text-[15px] leading-relaxed text-ink-2">{a}</p>
+      <p className="max-w-[58ch] pb-5 text-body leading-relaxed text-ink-2">{a}</p>
     </details>
   );
 }

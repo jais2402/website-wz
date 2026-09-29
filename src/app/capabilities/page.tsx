@@ -120,7 +120,7 @@ export default function CapabilitiesPage() {
             ) : null}
             <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2.5">
               {tech.layers.map((layer: string) => (
-                <li key={layer} className="text-[14.5px] text-ink-2">
+                <li key={layer} className="text-small text-ink-2">
                   {layer}
                 </li>
               ))}

@@ -129,7 +129,7 @@ export function ContactSection({
         </div>
 
         {allRequired && requiredNote ? (
-          <p className="mt-3 text-[13px] text-ink-3">{requiredNote}</p>
+          <p className="mt-3 text-caption text-ink-3">{requiredNote}</p>
         ) : null}
 
         <Button type="submit" className="mt-5 w-full justify-center">
@@ -139,12 +139,12 @@ export function ContactSection({
         {/* The reply promise, UNDER the submit — context.md §5. */}
         <div className="mt-4 grid grid-cols-[10px_minmax(0,1fr)] gap-3.5 border-y border-line py-3.5">
           <Swatch hue="pine" active className="mt-[7px]" />
-          <p className="text-[15px] leading-normal text-ink-2">
+          <p className="text-body leading-normal text-ink-2">
             <b className="font-medium text-ink">{promise.strong}</b> {promise.rest}
           </p>
         </div>
 
-        {note ? <p className="mt-3.5 text-[13.5px] text-ink-3">{note}</p> : null}
+        {note ? <p className="mt-3.5 text-caption text-ink-3">{note}</p> : null}
       </form>
     </Section>
   );

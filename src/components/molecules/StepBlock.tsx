@@ -49,19 +49,19 @@ export function StepBlock({
       )}
     >
       {n ? (
-        <p className="font-mono text-[11px] tabular-nums text-ink-3">
+        <p className="font-mono text-fine tabular-nums text-ink-3">
           {total ? `${n} / ${String(total).padStart(2, '0')}` : n}
         </p>
       ) : null}
       <h3 className="mt-2 text-[clamp(20px,1.7vw,26px)] font-medium leading-[1.15] tracking-[-0.025em] text-ink">
         {title}
       </h3>
-      <p className="mt-3 max-w-[58ch] text-[15.5px] leading-relaxed text-ink-2">{body}</p>
-      {note ? <p className="mt-4 max-w-[58ch] text-[14px] text-ink">{note}</p> : null}
+      <p className="mt-3 max-w-[58ch] text-body leading-relaxed text-ink-2">{body}</p>
+      {note ? <p className="mt-4 max-w-[58ch] text-small text-ink">{note}</p> : null}
       {output ? (
-        <p className="mt-4 flex items-baseline gap-3 text-[14px] text-ink">
+        <p className="mt-4 flex items-baseline gap-3 text-small text-ink">
           {outputLabel ? (
-            <span className="flex-none font-mono text-[10px] uppercase tracking-[0.1em] text-ink-3">
+            <span className="flex-none font-mono text-micro uppercase tracking-[0.1em] text-ink-3">
               {outputLabel}
             </span>
           ) : null}

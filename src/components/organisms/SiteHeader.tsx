@@ -94,8 +94,8 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
     >
       <div className="relative flex h-[76px] items-center gap-[18px] pl-[max(24px,5.4vw)] pr-6">
         <Link href="/" aria-label={name} className="flex flex-none items-baseline gap-2.5 py-2">
-          <b className="text-[21px] font-semibold tracking-[-0.045em] text-ink">{wordmark}</b>
-          <span className="hidden font-mono text-[10px] tracking-[0.12em] text-ink-3 sm:inline">
+          <b className="text-logo font-semibold tracking-[-0.045em] text-ink">{wordmark}</b>
+          <span className="hidden font-mono text-micro tracking-[0.12em] text-ink-3 sm:inline">
             SINCE {since}
           </span>
         </Link>
@@ -110,7 +110,7 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
                     href={item.href}
                     aria-current={isCurrent ? 'location' : undefined}
                     className={cn(
-                      'inline-flex min-h-10 items-center text-[13px] text-ink-2',
+                      'inline-flex min-h-10 items-center text-caption text-ink-2',
                       // The underline grows from the left, as in the prototype.
                       'bg-[linear-gradient(var(--color-ink),var(--color-ink))] bg-[length:0_1px] bg-left-bottom bg-no-repeat',
                       'transition-[color,background-size] duration-200 ease-[var(--ease-brand)]',
@@ -169,7 +169,7 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
             key={item.href}
             href={item.href}
             onClick={() => setOpen(false)}
-            className="border-b border-line py-[15px] text-[18px] text-ink"
+            className="border-b border-line py-[15px] text-subhead text-ink"
           >
             {item.label}
           </Link>

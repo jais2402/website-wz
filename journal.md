@@ -41,6 +41,23 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — /impeccable typeset: one text scale (audit item 3)
+**Type:** delivery
+**Owner:** Designer
+**Decision:** 16 ad-hoc px font sizes are replaced by tokens in
+`src/styles/tokens.css`: micro 10, fine 11, caption 13.5, small 14.5, body 15,
+title 16.5, large 17.5, subhead 19, logo 21, stat 24. The near pairs merged
+upward (13→13.5, 14→14.5, 16→16.5, 17→17.5, 18→19) or downward (15.5→15). The
+tokens are registered in `src/lib/cn.ts`'s font-size group. No `text-[Npx]`
+remains in src.
+**Caught:** the size name `wordmark` clashed with the existing `--color-wordmark`
+and turned the header logo grey (axe failed at 3.19:1), so it was renamed to
+`logo`. Rule: new text-size names must not match any `--color-*` name.
+**Verified:** verify:full is green (axe both themes); visual check of build, faq,
+contact and footer.
+
+---
+
 ## 2026-09-29 — Accent orange → company blue; 3D rests when idle (/impeccable optimize + colorize)
 **Type:** decision (the owner delegated both: "you decide")
 **Owner:** Designer + 3D Engineer

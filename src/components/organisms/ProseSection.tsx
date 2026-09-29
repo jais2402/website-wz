@@ -92,16 +92,16 @@ export function ProseSection({
               >
                 <div className="flex items-center gap-2.5">
                   {p.hue ? <Swatch hue={p.hue} active /> : null}
-                  <h3 className="text-[16px] font-medium tracking-tight text-ink">{p.title}</h3>
+                  <h3 className="text-title font-medium tracking-tight text-ink">{p.title}</h3>
                 </div>
-                <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{p.body}</p>
+                <p className="mt-2 text-small leading-relaxed text-ink-2">{p.body}</p>
               </li>
             ))}
           </ol>
         ) : null}
 
         {note ? (
-          <p className="mx-auto mt-7 text-[16px] font-medium text-ink">{note}</p>
+          <p className="mx-auto mt-7 text-title font-medium text-ink">{note}</p>
         ) : null}
 
         {link ? (
@@ -137,8 +137,8 @@ export function ProseSection({
         <div className="mt-9 grid gap-6 lg:grid-cols-2">
           {pillars.map((p) => (
             <div key={p.title} className="border-t border-line pt-4">
-              <h3 className="text-[16.5px] font-medium tracking-tight text-ink">{p.title}</h3>
-              <p className="mt-2 max-w-[46ch] text-[14.5px] leading-relaxed text-ink-2">{p.body}</p>
+              <h3 className="text-title font-medium tracking-tight text-ink">{p.title}</h3>
+              <p className="mt-2 max-w-[46ch] text-small leading-relaxed text-ink-2">{p.body}</p>
             </div>
           ))}
         </div>
@@ -146,7 +146,7 @@ export function ProseSection({
 
       {trust ? (
         <div className="mt-11">
-          <h3 className="text-[19px] font-medium tracking-tight text-ink">{trust.title}</h3>
+          <h3 className="text-subhead font-medium tracking-tight text-ink">{trust.title}</h3>
           <div className="mt-4">
             {trust.items.map((item) => (
               <AreaAccordion key={item.title} title={item.title} body={item.body} />
@@ -162,7 +162,7 @@ export function ProseSection({
         </div>
       ) : null}
 
-      {note ? <p className="mt-7 max-w-[52ch] text-[14px] text-ink-3">{note}</p> : null}
+      {note ? <p className="mt-7 max-w-[52ch] text-small text-ink-3">{note}</p> : null}
 
       {link ? (
         <div className="mt-8">

@@ -25,7 +25,7 @@ export interface LayerListProps {
 export function LayerList({
   layers,
   scene,
-  className = 'mt-9 flex flex-wrap gap-x-5 gap-y-2.5 border-t border-line pt-5 text-[14.5px]',
+  className = 'mt-9 flex flex-wrap gap-x-5 gap-y-2.5 border-t border-line pt-5 text-small',
   restClassName = 'text-ink-2',
 }: LayerListProps) {
   const [on, setOn] = useState(-1);

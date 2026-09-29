@@ -29,7 +29,7 @@ export function SiteFooter({ cta, columns, wordmark, base, primaryCta }: SiteFoo
             <Button href={primaryCta.href}>{primaryCta.label}</Button>
             <a
               href={`mailto:${cta.email}`}
-              className="inline-flex min-h-10 items-center text-[15px] text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-[var(--ease-brand)] hover:text-ink"
+              className="inline-flex min-h-10 items-center text-body text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-[var(--ease-brand)] hover:text-ink"
             >
               {cta.email}
             </a>
@@ -55,7 +55,7 @@ export function SiteFooter({ cta, columns, wordmark, base, primaryCta }: SiteFoo
                   <li key={`${column.title}-${link.href}`}>
                     <Link
                       href={link.href}
-                      className="inline-flex min-h-10 items-center text-[14.5px] text-ink-2 transition-colors duration-300 ease-[var(--ease-brand)] hover:text-ink"
+                      className="inline-flex min-h-10 items-center text-small text-ink-2 transition-colors duration-300 ease-[var(--ease-brand)] hover:text-ink"
                     >
                       {link.label}
                     </Link>
@@ -76,7 +76,7 @@ export function SiteFooter({ cta, columns, wordmark, base, primaryCta }: SiteFoo
 
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-5">
         {base.map((line) => (
-          <p key={line} className="text-[13px] text-ink-3">
+          <p key={line} className="text-caption text-ink-3">
             {line}
           </p>
         ))}

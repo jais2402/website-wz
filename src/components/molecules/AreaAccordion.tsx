@@ -29,15 +29,15 @@ export function AreaAccordion({ title, body, systems, hue, id }: AreaAccordionPr
     <div id={id} className="border-t border-line py-4">
       <div className="flex items-baseline gap-2.5">
         {hue ? <Swatch hue={hue} active className="translate-y-[3px]" /> : null}
-        <h3 className="text-[16.5px] font-medium tracking-tight text-ink">{title}</h3>
+        <h3 className="text-title font-medium tracking-tight text-ink">{title}</h3>
       </div>
       {body ? (
-        <p className="mt-2 max-w-[48ch] text-[14.5px] leading-relaxed text-ink-2">{body}</p>
+        <p className="mt-2 max-w-[48ch] text-small leading-relaxed text-ink-2">{body}</p>
       ) : null}
       {systems?.length ? (
         <ul className="mt-2.5 ml-5 grid gap-x-5 gap-y-1 sm:grid-cols-2">
           {systems.map((s) => (
-            <li key={s} className="text-[13.5px] leading-relaxed text-ink-2">{s}</li>
+            <li key={s} className="text-caption leading-relaxed text-ink-2">{s}</li>
           ))}
         </ul>
       ) : null}

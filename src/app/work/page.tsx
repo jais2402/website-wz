@@ -90,7 +90,7 @@ export default function WorkPage() {
                 {c.tags.map((tag) => (
                   <li
                     key={tag}
-                    className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3"
+                    className="font-mono text-fine uppercase tracking-[0.1em] text-ink-3"
                   >
                     {tag}
                   </li>

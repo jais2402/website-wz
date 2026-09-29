@@ -134,7 +134,7 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
               </h3>
 
               {active.body.map((paragraph) => (
-                <p key={paragraph} className="mt-3 max-w-[58ch] text-[17px] leading-relaxed text-ink-2">
+                <p key={paragraph} className="mt-3 max-w-[58ch] text-large leading-relaxed text-ink-2">
                   {paragraph}
                 </p>
               ))}
@@ -143,10 +143,10 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
                 <dl className="mt-6 grid grid-cols-2 border-t border-line">
                   {active.metrics.map((metric) => (
                     <div key={metric.label} className="border-line pr-4 pt-3.5 [&+div]:border-l [&+div]:pl-4">
-                      <dd className="text-[24px] font-medium tabular-nums tracking-tight text-ink">
+                      <dd className="text-stat font-medium tabular-nums tracking-tight text-ink">
                         {metric.value}
                       </dd>
-                      <dt className="mt-1 text-[13.5px] text-ink-3">{metric.label}</dt>
+                      <dt className="mt-1 text-caption text-ink-3">{metric.label}</dt>
                     </div>
                   ))}
                 </dl>
@@ -157,7 +157,7 @@ export function CasesSection({ id, side, scene, headline, cases, actions }: Case
                   {active.tags.map((tag) => (
                     <li
                       key={tag}
-                      className="rounded-full border border-line-2 px-2.5 py-1 font-mono text-[10px] tracking-[0.06em] text-ink-2"
+                      className="rounded-full border border-line-2 px-2.5 py-1 font-mono text-micro tracking-[0.06em] text-ink-2"
                     >
                       {tag}
                     </li>

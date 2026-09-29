@@ -22,7 +22,7 @@ export function ProofStrip({ items }: ProofStripProps) {
             <p className="text-[clamp(24px,2.4vw,38px)] font-medium leading-none tracking-[-0.035em] tabular-nums">
               {item.value}
             </p>
-            <p className="mt-2 text-[13px] leading-snug text-ink-3">{item.label}</p>
+            <p className="mt-2 text-caption leading-snug text-ink-3">{item.label}</p>
           </dd>
         </div>
       ))}

@@ -65,7 +65,7 @@ export function DisciplineRow({
         {hue ? <Swatch hue={hue} active={emphasised} className="translate-y-[3px]" /> : null}
         <h3
           className={cn(
-            'text-[17px] font-medium tracking-tight transition-colors duration-300 ease-[var(--ease-brand)]',
+            'text-large font-medium tracking-tight transition-colors duration-300 ease-[var(--ease-brand)]',
             'text-ink lg:text-ink-3',
             (emphasised || highlighted === false) && 'lg:text-ink',
           )}
@@ -73,7 +73,7 @@ export function DisciplineRow({
           {title}
         </h3>
         {count ? (
-          <span className="ml-auto font-mono text-[10px] tabular-nums text-ink-3">
+          <span className="ml-auto font-mono text-micro tabular-nums text-ink-3">
             {countUnit ? `${count} ${countUnit}` : count}
           </span>
         ) : null}
@@ -90,12 +90,12 @@ export function DisciplineRow({
       >
         <div className="lg:overflow-hidden">
           {body ? (
-            <p className="max-w-[44ch] text-[14.5px] leading-relaxed text-ink-2">{body}</p>
+            <p className="max-w-[44ch] text-small leading-relaxed text-ink-2">{body}</p>
           ) : null}
           {systems?.length ? (
             <ul className="ml-6 grid gap-x-5 gap-y-1 sm:grid-cols-2">
               {systems.map((system) => (
-                <li key={system} className="text-[13.5px] leading-relaxed text-ink-2">
+                <li key={system} className="text-caption leading-relaxed text-ink-2">
                   {system}
                 </li>
               ))}

@@ -12,7 +12,7 @@ export function FactRow({ k, v }: FactRowProps) {
       <dt>
         <Eyebrow>{k}</Eyebrow>
       </dt>
-      <dd className="text-right text-[15px] text-ink">{v}</dd>
+      <dd className="text-right text-body text-ink">{v}</dd>
     </div>
   );
 }

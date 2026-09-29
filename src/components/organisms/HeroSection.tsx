@@ -36,7 +36,7 @@ export function HeroSection({
         <HeadlineSplit headline={headline} level="d1" as="h1" id="hero-title" />
         {/* A line break in content/site.json starts a new line, so the copy
             decides where the sub breaks without a code change. */}
-        <p className="mt-[26px] max-w-[50ch] text-[17.5px] leading-relaxed text-ink">
+        <p className="mt-[26px] max-w-[50ch] text-large leading-relaxed text-ink">
           {sub.split('\n').map((line) => (
             <span key={line} className="block">
               {line}
@@ -52,7 +52,7 @@ export function HeroSection({
           ))}
         </div>
 
-        {caption ? <p className="mt-5 text-[13.5px] text-ink-3">{caption}</p> : null}
+        {caption ? <p className="mt-5 text-caption text-ink-3">{caption}</p> : null}
 
         {facts?.length ? (
           <dl className="mt-[clamp(56px,9vh,96px)] grid grid-cols-[auto_auto_1fr] border-t border-line">
@@ -61,7 +61,7 @@ export function HeroSection({
                 <dt>
                   <Eyebrow>{fact.label}</Eyebrow>
                 </dt>
-                <dd className="mt-1.5 text-[17px] tabular-nums">{fact.value}</dd>
+                <dd className="mt-1.5 text-large tabular-nums">{fact.value}</dd>
               </div>
             ))}
           </dl>
@@ -71,7 +71,7 @@ export function HeroSection({
           <div className="mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-2.5">
             <Eyebrow>{builtWith.label}</Eyebrow>
             {builtWith.items.map((item) => (
-              <b key={item} className="text-[15px] font-medium text-ink-2">
+              <b key={item} className="text-body font-medium text-ink-2">
                 {item}
               </b>
             ))}
