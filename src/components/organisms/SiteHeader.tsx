@@ -8,7 +8,7 @@ import type { Link as ContentLink } from '@/types/content';
 
 export interface SiteHeaderProps {
   nav: ContentLink[];
-  cta: ContentLink;
+  cta: ContentLink & { short?: string | undefined };
   /** The visual wordmark — lowercase "wezigns" per the approved design. */
   wordmark: string;
   /** The accessible name — the entity name, exactly "Wezigns". */
@@ -129,6 +129,12 @@ export function SiteHeader({ nav, cta, wordmark, name, since }: SiteHeaderProps)
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
           <MotionToggle />
           <ThemeToggle />
+          {/* Below 640px the full label does not fit beside the controls, so
+              the button carries the short label. The CTA is never absent: ~45%
+              of every cohort is on a phone (context.md §2, §5). */}
+          <Button href={cta.href} size="small" className="sm:hidden">
+            {cta.short ?? cta.label}
+          </Button>
           <Button href={cta.href} size="small" className="hidden sm:inline-flex">
             {cta.label}
           </Button>

@@ -210,7 +210,12 @@
       "statement": {
         "text": "Our systems and products are built for the moment when the business ",
         "emphasis": "outgrows the workaround."
-      }
+      },
+      "proof": [
+        { "value": "\u221280%", "label": "Administrative work" },
+        { "value": "100,000+", "label": "Certifications a year" },
+        { "value": "300 \u2192 4,500", "label": "Active sellers" }
+      ]
     },
     {
       "id": "principles",
@@ -369,7 +374,8 @@
       "headline": {
         "lead": "We price the outcome,",
         "accent": "not the hours."
-      }
+      },
+      "lead": "No build starts before that number is agreed."
     },
     {
       "id": "evidence",
@@ -575,7 +581,8 @@
         },
         {
           "q": "Does Wezigns work with small businesses?",
-          "a": "Yes, where custom software is genuinely the right answer. Sometimes it is not, and we will say so."
+          "a": "Yes, where custom software is genuinely the right answer. Sometimes it is not, and we will say so.",
+        "open": true
         },
         {
           "q": "How much does custom software development cost?",

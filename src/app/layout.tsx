@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { content } from '@/lib/content';
+import { ogImage } from '@/lib/og';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     siteName: content.meta.name,
     title: content.meta.tagline,
     description: content.meta.description,
-    images: content.meta.og ? [{ url: content.meta.og.image, alt: content.meta.og.imageAlt }] : [],
+    images: ogImage() ?? [],
   },
   alternates: { canonical: '/' },
 };

@@ -1,6 +1,9 @@
 export interface FaqItemProps {
   q: string;
   a: string;
+  /** Starts open. Used for the candour answer (context.md §4), the highest
+   *  trust-per-word line on the site, so it is read without a click. */
+  open?: boolean | undefined;
 }
 
 /**
@@ -11,9 +14,9 @@ export interface FaqItemProps {
  * search and AI crawlers, and readable with JS off. No ARIA needed; the
  * platform already does this correctly.
  */
-export function FaqItem({ q, a }: FaqItemProps) {
+export function FaqItem({ q, a, open }: FaqItemProps) {
   return (
-    <details className="group border-t border-line">
+    <details open={open} className="group border-t border-line">
       <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-6 py-4 text-title text-ink [&::-webkit-details-marker]:hidden">
         {q}
         <span

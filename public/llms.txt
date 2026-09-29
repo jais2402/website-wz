@@ -1,0 +1,50 @@
+# Wezigns
+
+> Wezigns builds custom systems that replace spreadsheets and manual work for growing businesses, since 2012, in eleven countries.
+
+## What we build
+
+- Custom business software: Built around a process that off-the-shelf tools cannot handle, in whichever stack fits it best.
+- Business process automation: Routine steps run themselves. People handle the exceptions.
+- System integration: Connects what you already run, whatever it runs on, so nothing is typed in twice.
+- Data and reporting systems: Turns the data you already have into reports people actually use.
+- Customer and partner platforms: One place for customers, partners and members to work with you.
+- Cloud hosting, support and maintenance: We host, monitor and maintain what we build.
+- AI and Gen-AI integrations: AI in the steps where it saves real work. A person checks the rest.
+- Websites: Designed and built one at a time.
+
+## Questions
+
+### What does Wezigns do?
+
+We design, build, host and maintain custom software for businesses that have outgrown spreadsheets and manual processes: operational portals, internal tools, automation and data integrations, on whichever technology fits the problem.
+
+### How does Wezigns approach software security?
+
+We build security into access design, data handling, system connections and testing from the first version. No software stays secure without upkeep, so we keep reviewing and maintaining it after launch.
+
+### Can Wezigns take over software built by another company?
+
+Often, yes. It starts with a review of the code and how it is hosted, so you know what taking it over would involve before you commit to anything.
+
+### Does Wezigns work with small businesses?
+
+Yes, where custom software is genuinely the right answer. Sometimes it is not, and we will say so.
+
+### How much does custom software development cost?
+
+It depends on scope, integrations and how much of the process has to change, not on the technology involved. Price and timeline come out of the Shape stage, before anything is built.
+
+### How long does it take?
+
+Also a Shape-stage answer. Work is delivered in working pieces rather than one long build, so there is something to test and review early.
+
+## Pages
+
+- /: what we build, how we work, pricing approach, questions, contact
+- /capabilities/: each kind of system in full
+- /work/: case studies with measured outcomes
+
+## Contact
+
+hello@wezigns.com — "Tell us what is not working"

@@ -72,3 +72,46 @@ test('every "What we build" tile links to an entry that exists on /capabilities'
     await expect(page.locator(`[id="${id}"]`)).toHaveCount(1);
   }
 });
+
+test.describe('review fixes (2026-09-29)', () => {
+  test('the contact CTA is reachable from the header at every width', async ({ page }) => {
+    // context.md §2/§5: ~45% of every cohort is on a phone, and the CTA is the
+    // highest-recall string the brand owns. Below 640px the button carries the
+    // short label; it is never absent.
+    await page.goto('/');
+    const header = page.locator('header');
+    await expect(header.getByRole('link', { name: /tell us what is not working|contact/i })).toBeVisible();
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(header.getByRole('link', { name: /tell us what is not working|contact/i })).toBeVisible();
+  });
+
+  test('the price commitment and the hook figures are on the page', async ({ page }) => {
+    // Both are tuned lines from context.md §4 that owner edits had removed.
+    await page.goto('/');
+    await expect(page.getByText('No build starts before that number is agreed.')).toBeVisible();
+    const hook = page.locator('#moment');
+    await expect(hook.getByText('−80%')).toBeVisible();
+    await expect(hook.getByText('100,000+')).toBeVisible();
+  });
+
+  test('the candour answer is readable without a click', async ({ page }) => {
+    // The highest trust-per-word line on the site (context.md §4).
+    await page.goto('/');
+    const answer = page.getByText('Sometimes it is not, and we will say so.');
+    await expect(answer).toBeVisible();
+  });
+
+  test('no share-image tag points at a file that is not there', async ({ page }) => {
+    // A missing og:image is silent; a broken one renders an empty card in every
+    // chat a referrer pastes the link into. src/lib/og.ts omits the tag until
+    // the asset exists, so this passes both before and after it is added.
+    const response = await page.goto('/');
+    const html = (await response?.text()) ?? '';
+    const match = html.match(/property="og:image"\s+content="([^"]+)"/);
+    if (match) {
+      const asset = await page.request.get(match[1]!);
+      expect(asset.status()).toBe(200);
+    }
+  });
+});

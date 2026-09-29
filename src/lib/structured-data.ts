@@ -1,4 +1,5 @@
 import { content } from '@/lib/content';
+import { ogImage } from '@/lib/og';
 
 /**
  * JSON-LD. Built from content/site.json so the structured data can never
@@ -27,7 +28,7 @@ export function organizationSchema() {
     foundingDate: String(content.meta.since),
     areaServed: content.meta.markets,
     ...(facts.phone ? { telephone: facts.phone } : {}),
-    ...(content.meta.og ? { logo: `${base}${content.meta.og.image}` } : {}),
+    ...(ogImage() ? { logo: `${base}${ogImage()!.url}` } : {}),
   };
 }
 

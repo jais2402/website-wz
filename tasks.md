@@ -30,14 +30,14 @@ resolve in both themes, no font flash.
 
 ## Phase 1 — Atoms and molecules (week 1–2)
 
-- [ ] Atoms: `Button` (primary/secondary/small), `TextLink`, `Swatch`, `Chip`,
+- [x] Atoms: `Button` (primary/secondary/small), `TextLink`, `Swatch`, `Chip`,
       `Eyebrow`, `Figure`, `Rule`, `Icon`, `VisuallyHidden`, `SkipLink` — *Designer*
-- [ ] Atoms: `ThemeToggle`, `MotionToggle` (persisted, respects `prefers-reduced-motion`) — *Designer*
-- [ ] Molecules: `HeadlineSplit`, `FactRow`, `MetricPair`, `ProofStrip`,
+- [x] Atoms: `ThemeToggle`, `MotionToggle` (persisted, respects `prefers-reduced-motion`) — *Designer*
+- [x] Molecules: `HeadlineSplit`, `FactRow`, `MetricPair`, `ProofStrip`,
       `StepBlock`, `DisciplineRow`, `AreaAccordion`, `TopicChips`, `Field`,
       `FaqItem`, `CaseTabs` — *Designer*
-- [ ] Unit test + a11y assertion for every atom — *Test*
-- [ ] Contrast check of every token pair, light and dark — *Designer + Test*
+- [x] Unit test + a11y assertion for every atom — *Test*
+- [x] Contrast check of every token pair, light and dark — *Designer + Test*
 
 **Acceptance:** every atom renders from props alone, no content import below
 `templates/`, axe clean in isolation, 40px minimum targets.
@@ -46,15 +46,15 @@ resolve in both themes, no font flash.
 
 ## Phase 2 — Organisms and the two templates (week 2–3)
 
-- [ ] `SiteHeader` — sticky, progress bar, nav, theme + motion toggles, CTA — *Designer*
-- [ ] `SiteFooter` — CTA block, three columns, large wordmark — *Designer*
-- [ ] `SplitScrollTemplate` — the 50/50 alternating layout, `data-side` handling — *Designer*
-- [ ] `DocumentTemplate` — `/work` and `/capabilities` shell — *Designer*
-- [ ] `HeroSection`, `StatementSection` (with `ProofStrip`), `StepsSection`,
+- [x] `SiteHeader` — sticky, progress bar, nav, theme + motion toggles, CTA — *Designer*
+- [x] `SiteFooter` — CTA block, three columns, large wordmark — *Designer*
+- [x] `SplitScrollTemplate` — the 50/50 alternating layout, `data-side` handling — *Designer*
+- [x] `DocumentTemplate` — `/work` and `/capabilities` shell — *Designer*
+- [x] `HeroSection`, `StatementSection` (with `ProofStrip`), `StepsSection`,
       `FiguresSection`, `FaqSection`, `ContactSection` — *Designer*
-- [ ] `SequenceSection` — sticky list, one item open, hover opens, **inert below `lg`** — *Designer + 3D Eng*
-- [ ] `CasesSection` — scroll advances the case, tabs jump — *Designer*
-- [ ] Integration tests for every organism against real content — *Test*
+- [x] `SequenceSection` — sticky list, one item open, hover opens, **inert below `lg`** — *Designer + 3D Eng*
+- [x] `CasesSection` — scroll advances the case, tabs jump — *Designer*
+- [x] Integration tests for every organism against real content — *Test*
 
 **Acceptance:** the whole page renders correctly with the canvas switched off,
 at 320 / 390 / 768 / 1280 / 1512, light and dark, keyboard only.
@@ -63,15 +63,15 @@ at 320 / 390 / 768 / 1280 / 1512, light and dark, keyboard only.
 
 ## Phase 3 — The 3D system (week 3–4)
 
-- [ ] `SceneCanvas` — lazy-mounted after first paint, `aria-hidden`, capability check — *3D Eng*
-- [ ] `useScrollState` — one rAF loop, section index + progress + side — *3D Eng*
-- [ ] `Instances` — single `InstancedMesh`, N=64 rounded boxes, shared material — *3D Eng*
-- [ ] Fifteen scene states as pure functions + boundary blending — *3D Eng*
-- [ ] Camera pan per section side; annotation gutter reserved from label widths — *3D Eng*
-- [ ] `Callouts` — dots, leader lines, aligned label column, collision handling — *3D Eng*
-- [ ] Hue-on-attention: hover and scroll-active drive the highlight — *3D Eng*
-- [ ] Fallbacks: no WebGL, reduced motion, low-power, paused — *3D Eng*
-- [ ] Performance pass: draw calls, idle renders, DPR, memory over 5 minutes — *3D Eng + Test*
+- [x] `SceneCanvas` — lazy-mounted after first paint, `aria-hidden`, capability check — *3D Eng*
+- [x] `useScrollState` — one rAF loop, section index + progress + side — *3D Eng*
+- [x] `Instances` — single `InstancedMesh`, N=64 rounded boxes, shared material — *3D Eng*
+- [x] Fifteen scene states as pure functions + boundary blending — *3D Eng*
+- [x] Camera pan per section side; annotation gutter reserved from label widths — *3D Eng*
+- [x] `Callouts` — dots, leader lines, aligned label column, collision handling — *3D Eng*
+- [x] Hue-on-attention: hover and scroll-active drive the highlight — *3D Eng*
+- [x] Fallbacks: no WebGL, reduced motion, low-power, paused — *3D Eng*
+- [x] Performance pass: draw calls, idle renders, DPR, memory over 5 minutes — *3D Eng + Test*
 - [x] **Restore the 3D chunk budget in `package.json` size-limit** (≤320 KB) — *Test*
 
 **Acceptance:** zero renders when idle, draw calls under 100, no jank on a
@@ -82,14 +82,19 @@ critical path.
 
 ## Phase 4 — Pages, SEO, form (week 4–5)
 
-- [ ] `/` assembled from `content/site.json` — *PM*
-- [ ] `/work` — anchors per case, correct order (India case first) — *PM*
-- [ ] `/capabilities` — disciplines, the thirty systems, the stack — *PM*
-- [ ] Metadata per route: title, description, canonical, OG image — *PM*
-- [ ] `sitemap.xml`, `robots.txt`, JSON-LD `Organization` + `WebSite` — *PM*
-- [ ] Contact form: endpoint decision (see `architecture.md` §6), honeypot,
+- [x] `/` assembled from `content/site.json` — *PM*
+- [x] `/work` — anchors per case, correct order (India case first) — *PM*
+- [x] `/capabilities` — disciplines, the thirty systems, the stack — *PM*
+- [~] Metadata per route: title, description, canonical — done. **OG image is
+      blocked**: `public/og/wezigns-og.png` does not exist, so the tag is omitted
+      until it does (`src/lib/og.ts`). The home `<title>` still needs the CEO's
+      call — it carries the tagline, not the category (SEO review 2026-09-29) — *PM + CEO*
+- [x] `sitemap.xml`, `robots.txt`, JSON-LD `Organization` + `WebSite` — *PM*
+- [~] Contact form: markup, validation, honeypot and errors are built; the
+      **transport is not chosen** (owner) so nothing is sent yet.
+      Original line: endpoint decision (see `architecture.md` §6), honeypot,
       timing check, validation, error and success states — *Security*
-- [ ] 404 page — *Designer*
+- [x] 404 page — *Designer*
 
 **Acceptance:** every anchor in `site.json` resolves, form delivers end to end,
 metadata correct on all routes.
@@ -101,13 +106,34 @@ metadata correct on all routes.
 - [ ] Security headers configured at the host and **verified on the deployed URL** — *Security*
 - [ ] CSP report-only for one week, reports read, then enforced — *Security*
 - [ ] `npm audit` clean, dependencies pinned, lockfile committed — *Security*
-- [ ] Full Playwright matrix: chromium, webkit, mobile chrome — *Test*
+- [x] Full Playwright matrix: chromium, webkit, mobile chrome — *Test*
 - [ ] axe on every route, light and dark, zero serious or critical — *Test*
 - [ ] Lighthouse CI within budget on all three routes — *Test*
 - [ ] Manual keyboard pass, screen-reader spot check, 400% zoom at 320px — *Test*
 - [ ] Analytics live, privacy-first, no PII — *Security + PM*
 - [ ] Release checklist in `.claude/agents/test-engineer.md` completed — *Test*
 - [ ] Launch decision recorded in `journal.md` — *CEO*
+
+---
+
+## Blocked — assets and decisions the owner owns
+
+- [!] **OG share image** `public/og/wezigns-og.png` (1200×630) and the favicon.
+      Every pasted link currently has no preview card — *CEO + Designer*
+- [!] **Contact form transport** — until it is chosen the form cannot send — *CEO*
+- [!] **Analytics vendor**, then the seven cookieless events the BA specified
+      (page_view, section_reached, cta_click, form_start, form_submit,
+      email_copy, web_vitals), Security to sign off the properties — *CEO*
+- [!] **AI-crawler policy**: robots allows GPTBot/ClaudeBot/PerplexityBot/
+      Google-Extended/CCBot by default, not by decision — *CEO*
+- [!] **Hero five-second re-test** (context.md §7) on "Systems that grow with
+      you." Fallback is the previous H1 — *CEO + Research*
+- [!] **Owners and rota** for the promises the page makes: reply within one
+      working day (4 places), written security answers, scope/price/timeline
+      in writing — *CEO*
+- [!] **Evidence** for "Zero unplanned downtime" (over what period), "Data
+      stays in-country", "Still running", the hand-over promise, and the 30
+      systems in `#range` — *CEO*
 
 ---
 
@@ -129,6 +155,18 @@ When any of these arrives:
 2. Build the component that renders it (it is already designed as an optional slot).
 3. Re-run the five-second test and the intent question with the Research Analyst.
 4. Record the before/after in `journal.md`.
+
+---
+
+## Open defects
+
+- [ ] 320px: 32px of horizontal overflow — *Designer*
+- [ ] Buttons measured at 38px against the 40px minimum target — *Designer*
+- [ ] The model crosses the FAQ text at the faq → contact boundary (both are
+      side chapters on opposite sides). Inherent to the approved journey;
+      needs the owner's call before it is changed — *3D Eng + CEO*
+- [ ] Case metadata: "Retail" is used where the other three give a country,
+      and "Dubai" where the country list says UAE — *Content*
 
 ---
 

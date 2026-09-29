@@ -7,7 +7,7 @@ export interface FaqSectionProps {
   side?: Side | undefined;
   scene?: string | undefined;
   headline: Headline;
-  items: Array<{ q: string; a: string }>;
+  items: Array<{ q: string; a: string; open?: boolean | undefined }>;
 }
 
 /**
@@ -24,7 +24,7 @@ export function FaqSection({ id, side, scene, headline, items }: FaqSectionProps
       <HeadlineSplit headline={headline} id={titleId} />
       <div className="mt-8">
         {items.map((item) => (
-          <FaqItem key={item.q} q={item.q} a={item.a} />
+          <FaqItem key={item.q} q={item.q} a={item.a} open={item.open} />
         ))}
       </div>
     </Section>

@@ -41,6 +41,75 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Applied the review fixes that need no new facts
+**Type:** delivery (two of them reverse earlier owner edits — see below)
+**Owner:** Owner approval ("yes" to the list of fixes that need nothing from them)
+**Context:** Of the five-role review above, these are the items that need no
+business fact and no owner judgement. The rest are still open and listed in
+tasks.md § Blocked.
+**Applied:**
+1. **`#pricing` regains its commitment line.** `lead: "No build starts before that
+   number is agreed."` This **reverses the 2026-09-29 "Pricing block reduced"
+   decision in part**: the owner asked to remove "all the other contents" and this
+   puts one line back. It is a tuned line (context.md §4) whose removal three
+   reviewers called out. The three points and the note stay removed; the price
+   band stays null.
+2. **`#moment` regains its proof.** −80% administrative work, 100,000+
+   certifications a year, 300 → 4,500 active sellers, copied verbatim from
+   `cases`. This **reverses the 2026-09-28 "Removed the proof statistics from the
+   hook screen" decision**, which that entry had already flagged as against
+   context.md §3 and made reversible by leaving `proof` optional on
+   `StatementProofSection`. No component change was needed.
+3. **The header CTA is present on phones.** Below 640px the button carries
+   `nav.cta.short` ("Contact"); at 640px and up the full phrase. Previously the
+   button was hidden below `sm` as prototype parity, which left ~45% of traffic
+   with no persistent CTA (context.md §2, §5). The visible text is the accessible
+   name, so SC 2.5.3 holds.
+4. **The candour FAQ answer opens by default.** New optional `open` on the FAQ
+   item; set on "Does Wezigns work with small businesses?" Every answer was
+   already in the DOM, so this changes what is read, not what is extractable.
+5. **No broken share image.** `src/lib/og.ts` checks `public/<og.image>` at build
+   time; the OpenGraph/Twitter `images` and the Organization `logo` are emitted
+   only when the file is there. `/og/wezigns-og.png` does not exist, so the tags
+   are now absent instead of 404ing in every pasted link. Drop the asset in and
+   the tags return on the next build, with no code change.
+6. **`public/llms.txt`, generated.** `scripts/build-llms-txt.mjs` runs in `build`
+   and writes it from `content/site.json` (description, the eight offerings, the
+   FAQ, the routes, the contact line). Generated rather than written so it cannot
+   drift from the page; it states no fact the DOM does not. Engine adoption is
+   unconfirmed — this is cheap, not proven.
+7. **`tasks.md` reconciled** against what is built: phases 1–3 and most of 4 are
+   ticked, metadata and the form are `[~]` with the reason, and a new
+   § Blocked — assets and decisions and § Open defects carry the owner items and
+   the audit P1s (320px overflow, 38px targets, the FAQ boundary, case metadata).
+**Tests:** four added to `tests/e2e/journey.spec.ts` — the header CTA at 390px and
+1440px, the price line and hook figures, the candour answer visible without a
+click, and an og:image tag that must resolve if it is emitted at all. 75 e2e
+(was 63), 18 unit, gate exit 0, initial 173.8 KB, 3D 120.9 KB.
+**Not applied, deliberately:** the hero H1 and `<title>`, the web-agency drift
+(90+ / Websites tile / chip), cutting `#regions`/`#principles`/`#range`, the
+promise owners, the claims needing evidence, the AI-crawler policy and analytics.
+All need an owner decision or a fact. The model crossing the FAQ text is inherent
+to the journey the owner approved today, so it is logged as an open defect rather
+than changed.
+
+## 2026-09-29 — Session: applying the review
+**Type:** session
+**Done:** `content/site.json` (pricing lead, moment proof, FAQ open flag),
+`src/components/molecules/FaqItem.tsx`, `src/components/organisms/FaqSection.tsx`,
+`src/components/organisms/SiteHeader.tsx`, `src/lib/og.ts` (new),
+`src/app/layout.tsx`, `src/lib/structured-data.ts`,
+`scripts/build-llms-txt.mjs` (new), `package.json` (build runs it),
+`public/llms.txt` (generated), `tasks.md`, `tests/e2e/journey.spec.ts`.
+**State:** gate green (18 unit, 75 e2e). The seven fixes above are live. The
+owner-decision items from the review are untouched and tracked in tasks.md.
+**Next:** the owner works through tasks.md § Blocked — assets and decisions,
+starting with the hero five-second re-test, since three reviewers hold launch on
+it. Then the web-agency items and the page-length question.
+**Blocked:** unchanged, now written down: OG/favicon assets, form transport,
+analytics vendor, AI-crawler policy, hero re-test, promise owners, claim
+evidence, and the five business facts.
+
 ## 2026-09-29 — Review: CEO, PM, BA, SEO, GEO on the home page
 **Type:** decision (findings recorded; nothing applied yet, awaiting owner)
 **Owner:** CEO, Product Manager, Business Analyst, SEO Specialist, GEO Specialist (review-only; no files edited by them)
