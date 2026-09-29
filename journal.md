@@ -41,6 +41,40 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Accent orange → company blue; 3D rests when idle (/impeccable optimize + colorize)
+**Type:** decision (the owner delegated both: "you decide")
+**Owner:** Designer + 3D Engineer
+**Context:** The audit found the loop drawing every frame, and two oranges on
+integration. The owner then asked: "can you change the orange to blue that denotes
+the company".
+**Decision:**
+- *Accent:* the 3D accent is now `--color-blueprint`. `palette.ts` maps
+  `P.signal` to it, so pulses, pegs, the missing piece, running modules and the
+  footprint lines are all blue. The active callout dot (`globals.css .cd.hot`) and
+  the TextLink underline are blue too. Signal orange remains ONLY for warnings:
+  Field errors (`text-signal-t`, `border-signal-t`).
+- *Content hues:* no item carries `signal` any more. Build "Data and reporting" →
+  rose, build "Websites" → pine, range "Industry systems" → rose, integration
+  "Legacy" → rose (chosen so neighbours differ).
+- *Idle:* the loop rests 6s after the last scroll, pointer, hover or resize (2s
+  when paused) and wakes on input. A new `clock` advances only while drawing, and
+  pause freezes it, so nothing jumps on wake. New test: `perf/scene.spec.ts` "rests
+  when the reader is idle, and wakes on scroll".
+- *Entering a centred chapter:* the outgoing model scrolls up with the page from
+  window open (`an.oy + probe − winLo`) and hands over at w = 0.55 to the model
+  riding under the incoming headline. Jumps over 0.6H are snapped rather than eased
+  through text. This fixes evidence→regions, where the map sat on the headline.
+**Because:**
+- Idle: CLAUDE.md rule 4 (draw on demand) and laptop battery. The only cost is
+  ambient drift freezing while nobody is interacting. Throttling instead would
+  still cost battery and would look choppy.
+- Legacy → rose: a strong warm hue without competing with the accent.
+**Consequences:** design.md §5.2 "one signal piece" now reads as one *accent* piece,
+in blueprint. Resting parts at 80% keep the 100% accent distinct. Update design.md
+and tokens if orange is ever wanted back.
+
+---
+
 ## 2026-09-29 — /impeccable adapt (audit items 1, 4)
 **Type:** delivery
 **Owner:** Designer

@@ -83,6 +83,23 @@ test.describe('the 3D scene', () => {
     expect(after - before).toBe(0);
   });
 
+  test('rests when the reader is idle, and wakes on scroll', async ({ page }) => {
+    await page.addInitScript(PATCH);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    await waitForStage(page);
+
+    // CLAUDE.md rule 4: draw on demand. The loop rests 6s after the last input.
+    await page.waitForTimeout(7500);
+    const before = await page.evaluate(() => window.__calls);
+    await page.waitForTimeout(1500);
+    expect(await page.evaluate(() => window.__calls)).toBe(before);
+
+    await page.mouse.wheel(0, 400);
+    await page.waitForTimeout(600);
+    expect(await page.evaluate(() => window.__calls)).toBeGreaterThan(before);
+  });
+
   test('is inert, and the page complete, without WebGL', async ({ page }) => {
     await page.addInitScript(() => {
       const orig = HTMLCanvasElement.prototype.getContext;

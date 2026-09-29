@@ -109,7 +109,7 @@
     transition: opacity 0.4s var(--ease-brand), background-color 0.3s var(--ease-brand);
     will-change: transform;
   }
-  .cd.hot { background: var(--color-signal); }
+  .cd.hot { background: var(--color-blueprint); }
 
   .co {
     position: absolute;

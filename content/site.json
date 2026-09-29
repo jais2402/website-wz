@@ -144,7 +144,7 @@
         },
         {
           "n": "04",
-          "hue": "signal",
+          "hue": "rose",
           "title": "Data and reporting systems",
           "body": "Your data already exists. We turn it into reports and dashboards people can use without building them by hand."
         },
@@ -168,7 +168,7 @@
         },
         {
           "n": "08",
-          "hue": "signal",
+          "hue": "pine",
           "title": "Websites",
           "body": "Websites designed and built one at a time. We have delivered more than 90."
         }
@@ -295,7 +295,7 @@
         },
         {
           "title": "Industry systems",
-          "hue": "s",
+          "hue": "rose",
           "count": 6,
           "systems": [
             "Hospitals and clinics",
@@ -485,7 +485,7 @@
         {
           "title": "Legacy",
           "body": "Older databases and desktop tools your team still depends on and cannot switch off.",
-          "hue": "signal"
+          "hue": "rose"
         }
       ]
     },

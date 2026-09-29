@@ -68,7 +68,13 @@ export function readPalette(P: Palette) {
   colour(P.model2, '--color-model-2');
   colour(P.ink, '--color-ink');
   colour(P.ground, '--color-ground');
-  colour(P.signal, '--color-signal');
+  // The 3D accent (pulses, the missing piece, pegs, the part that runs) is the
+  // company blue, not signal orange (owner, 2026-09-29: "change the orange to
+  // blue that denotes the company"). Resting parts sit at 80% of their hue, so
+  // the accent at 100% blueprint still reads as the one to notice. The key keeps
+  // its name so scene code is unchanged; signal orange now stays in the UI only
+  // for warnings.
+  colour(P.signal, '--color-blueprint');
   colour(P.blueprint, '--color-blueprint');
   colour(P.pine, '--color-pine');
   colour(P.ochre, '--color-ochre');

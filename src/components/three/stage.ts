@@ -275,7 +275,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   }
 
   /* ── loop state ────────────────────────────────────── */
-  let paused = false, frozen = 0;
+  let paused = false, frozen = 0, clock = 0, lastLoop = 0;
   // Per-scene highlight. See three/highlight.ts for why it is not one slot.
   const highlights = new Map<string, number>();
 
@@ -294,7 +294,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   function frame(now: number) {
     const dt = lastNow ? Math.min(0.25, Math.max(0.001, (now - lastNow) / 1000)) : 0.016;
     lastNow = now;
-    const t = reduce ? 0 : (paused ? frozen : now) * 0.001;
+    const t = reduce ? 0 : (paused ? frozen : clock) * 0.001;
     const probe = (window.scrollY || window.pageYOffset) + window.innerHeight * (mobile ? 0.3 : 0.5);
     const Hv = window.innerHeight;
 
@@ -304,14 +304,14 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     // side, the window opens early, as soon as the next section's top enters
     // the bottom of the screen. A centred model sits low, exactly where the
     // next heading arrives, so it has to move before that heading is readable.
-    let ia = 0, ib = 0, w = 0;
+    let ia = 0, ib = 0, w = 0, winLo = probe;
     for (let s = 0; s < anchors.length; s += 1) if (probe >= anchors[s]!.top) ia = s;
     ib = ia;
     for (let j = 1; j < anchors.length; j += 1) {
       const bnd = anchors[j]!.top;
       const centred = anchors[j - 1]!.side === 'c' || anchors[j]!.side === 'c';
       const lo = bnd - Hv * (centred ? 0.45 : 0.22), hi = bnd + Hv * (centred ? 0.12 : 0.22);
-      if (probe > lo && probe < hi) { ia = j - 1; ib = j; w = smooth((probe - lo) / (hi - lo)); break; }
+      if (probe > lo && probe < hi) { ia = j - 1; ib = j; w = smooth((probe - lo) / (hi - lo)); winLo = lo; break; }
     }
     const an = anchors[ia], bn = anchors[ib];
     if (!an || !bn) return;
@@ -433,9 +433,14 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       // full-width headline is close, then hand over to the model that rides
       // up under that headline. Leaving early emptied the side half while its
       // text was still being read.
-      const wl = smooth((w - 0.55) / 0.45);
-      tox = an.ox * (1 - wl) + bn.ox * wl;
-      toy = an.oy * (1 - wl) + oyOf(bn) * wl;
+      // The outgoing model scrolls up with the page from the moment the window
+      // opens, so it stays above the full-width headline rising beneath it,
+      // which moves at the same rate. At w = 0.55 it hands over to the model
+      // riding under that headline. Both positions are off the text, and the
+      // jump between them is snapped, not eased through the headline.
+      const handed = w >= 0.55;
+      tox = handed ? bn.ox : an.ox;
+      toy = handed ? oyOf(bn) : an.oy + (probe - winLo);
     } else if (an.side === 'c' && bn.side !== 'c') {
       // Leaving a centred chapter. Move to the new half early, but never above
       // the bottom of the centred text that is still scrolling away. Its own
@@ -449,6 +454,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     const Kp = (first || reduce) ? 1 : 1 - Math.exp(-dt * 3.2);
     // y follows faster than x: it tracks the page while scrolling.
     const Ky = (first || reduce) ? 1 : 1 - Math.exp(-dt * 14);
+    if (Math.abs(toy - curOy) > Hh * 0.6) { curOx = tox; curOy = toy; }
     curOx += (tox - curOx) * Kp; curOy += (toy - curOy) * Ky;
     if (Math.abs(curOx - setOx) > 0.4 || Math.abs(curOy - setOy) > 0.4) {
       setOx = curOx; setOy = curOy;
@@ -605,7 +611,13 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   } else {
     const loop = (now: number) => {
       if (!alive) return;
-      const idle = paused && now - lastPoke > 2000;
+      // Rest after 6s without scroll, pointer, hover or resize: CLAUDE.md rule 4
+      // (draw on demand). Paused rests after 2s. Any input wakes it. The scene
+      // clock only advances while drawing, so pulses resume where they were
+      // instead of jumping ahead by the idle time.
+      const idle = now - lastPoke > (paused ? 2000 : 6000);
+      if (!idle) clock += lastLoop ? Math.min(250, now - lastLoop) : 16;
+      lastLoop = now;
       const minGap = lowPower ? 33 : 0;
       if (!idle && now - lastDraw >= minGap) { frame(now); lastDraw = now; }
       raf = requestAnimationFrame(loop);
@@ -636,7 +648,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       renderer.dispose();
     },
     poke,
-    setPaused(p) { paused = p; frozen = performance.now(); poke(); },
+    setPaused(p) { paused = p; frozen = clock; poke(); },
     setHighlight(sceneKey, index) { highlights.set(sceneKey, index); poke(); },
   };
 }
