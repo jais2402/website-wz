@@ -42,6 +42,9 @@ export interface SceneState {
   parts: string;
 }
 
+type Label = SceneState['labels'][number];
+const LABEL_POOL = new WeakMap<SceneState, Label[]>();
+
 export function blank(): SceneState {
   const o: SceneState = {
     p: [], s: [], r: [], c: [],
@@ -132,7 +135,17 @@ export function buildState(P: Palette) {
   }
   function label(o: SceneState, t: string, x: number, y: number, z: number, hot?: boolean, left?: boolean) {
     if (!o.lab) return;
-    o.labels.push({ t, p: new THREE.Vector3(x, y, z), hot: !!hot, left: !!left });
+    // Pooled: state() runs every drawn frame, so a new Vector3 here allocated
+    // up to nine objects a frame in the labelled scenes (3D review, 2026-09-29).
+    const n = o.labels.length;
+    let e = LABEL_POOL.get(o)?.[n];
+    if (!e) {
+      e = { t, p: new THREE.Vector3(), hot: false, left: false };
+      const pool = LABEL_POOL.get(o) ?? [];
+      pool[n] = e; LABEL_POOL.set(o, pool);
+    }
+    e.t = t; e.p.set(x, y, z); e.hot = !!hot; e.left = !!left;
+    o.labels.push(e);
   }
   /** The 3x3x3 block: one system, twenty-seven modules. */
   function monolith(o: SceneState, skip: boolean) {

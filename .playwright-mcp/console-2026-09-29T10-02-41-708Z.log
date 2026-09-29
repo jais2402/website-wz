@@ -1,0 +1,7 @@
+[     278ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[     287ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[     415ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been removed. Using PCFShadowMap instead. @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  173073ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  173154ms] [LOG] [Fast Refresh] done in 119ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  173173ms] [LOG] [Fast Refresh] done in 119ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776
+[  176789ms] [LOG] [Fast Refresh] done in 119ms @ http://localhost:3000/_next/static/chunks/09wc_next_dist_1r3eoio._.js:776

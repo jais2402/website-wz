@@ -153,6 +153,34 @@ test.describe('the 3D scene', () => {
     expect(moved).toBeLessThan(1);
   });
 
+  test('a resize during a dissolve does not pop the model into view', async ({ page }, info) => {
+    test.skip(info.project.name !== 'chromium', 'desktop stage; one engine is enough');
+    await page.setViewportSize({ width: 1440, height: 820 });
+    await page.goto('/?debug3d');
+    await waitForStage(page);
+    // Code and 3D review, 2026-09-29: resize() forced a snap mid-dissolve, so a
+    // different offset, scale and yaw appeared at ~25% opacity.
+    const top = await page.evaluate(() => document.getElementById('moment')!.offsetTop);
+    await page.evaluate((y) => window.scrollTo({ top: y - 820, behavior: 'instant' }), top);
+    await page.waitForTimeout(1500);
+    const worst = await page.evaluate(async (y) => {
+      const cv = document.querySelector('canvas')!;
+      window.scrollTo({ top: y, behavior: 'instant' });
+      await new Promise((r) => setTimeout(r, 120));
+      window.dispatchEvent(new Event('resize'));
+      const s: number[][] = [];
+      await new Promise<void>((done) => {
+        let f = 0;
+        const step = () => { if (cv.dataset.dbg) s.push(cv.dataset.dbg.split(',').map(Number)); f += 1; if (f < 60) requestAnimationFrame(step); else done(); };
+        requestAnimationFrame(step);
+      });
+      let m = 0;
+      for (let i = 1; i < s.length; i += 1) if (s[i]![4]! > 0.1 && s[i - 1]![4]! > 0.1) m = Math.max(m, Math.abs(s[i]![0]! - s[i - 1]![0]!), Math.abs(s[i]![1]! - s[i - 1]![1]!));
+      return m;
+    }, top - 820 + 520);
+    expect(worst).toBeLessThan(40);
+  });
+
   test('rests when the reader is idle, and wakes on scroll', async ({ page }) => {
     await page.addInitScript(PATCH);
     await page.setViewportSize({ width: 1440, height: 900 });

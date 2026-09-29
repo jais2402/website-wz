@@ -515,13 +515,10 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     // Labels step aside during a switch: out at once, back in once the model
     // has mostly arrived, so they never point at a part still in flight.
     const labelIn = reduce ? 1 : phase === 'out' ? 0 : smooth((now - switchedAt - 450) / 350);
-    drawCallouts(A, A, 0, an, an, labelIn);
+    drawCallouts(A, an, labelIn);
   }
 
-  function drawCallouts(A2: SceneState, B2: SceneState, w: number, an: Anchor, bn: Anchor, fadeIn = 1) {
-    const dom = w < 0.5 ? A2 : B2;
-    const fade = (1 - 2 * Math.min(w, 1 - w)) * fadeIn;
-    const ta = w < 0.5 ? an : bn;
+  function drawCallouts(dom: SceneState, ta: Anchor, fade: number) {
     const vis: Array<{ co: (typeof cos)[number]; lb: SceneState['labels'][number]; ax: number; ay: number; y: number }> = [];
     let mnx = 1e9, mxx = -1e9, mtw = 0;
 
@@ -624,7 +621,11 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     if (key.shadow.map) { key.shadow.map.dispose(); key.shadow.map = null; }
     camera.aspect = W / Hh;
     camera.fov = mobile ? (W / Hh < 0.8 ? 34 : 30) : 26;
-    setOx = setOy = 1e9; first = true;
+    setOx = setOy = 1e9;
+    // Snap only at rest. Mid-dissolve, a snap popped the outgoing scene into
+    // the new target at partial opacity (reviews, 2026-09-29); the IN phase
+    // places the new scene while invisible anyway.
+    if (phase === 'idle') first = true;
     camera.updateProjectionMatrix();
     measure(); poke();
   }
@@ -700,7 +701,12 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       renderer.dispose();
     },
     poke,
-    setPaused(p) { paused = p; frozen = clock; poke(); },
+    setPaused(p) {
+      paused = p; frozen = clock;
+      // Never freeze half-faded: complete any dissolve to the current scene.
+      if (phase !== 'idle') { phase = 'idle'; opacity = 1; shownIx = domIx; snapNext = true; canvas.style.opacity = '1'; }
+      poke();
+    },
     setHighlight(sceneKey, index) { highlights.set(sceneKey, index); poke(); },
   };
 }

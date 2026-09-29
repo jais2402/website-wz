@@ -41,6 +41,29 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Review fixes: 3D Engineer + Code Reviewer on the dissolve/bento
+**Type:** delivery
+**Owner:** 3D Engineer, Code Reviewer (findings); main session (fixes)
+**Findings → fixes:**
+- P1 (both): resize mid-dissolve forced a snap, so a new offset/scale/yaw
+  appeared at ~25% opacity. `resize()` now sets `first` only when
+  `phase === 'idle'`. New test: "a resize during a dissolve does not pop the
+  model into view".
+- P1 (3D): `label()` allocated a Vector3 per label per frame. It is now pooled
+  per SceneState (WeakMap).
+- P2 (3D): the dead two-scene `drawCallouts` signature is collapsed to
+  `(dom, anchor, fade)`.
+- P3 (3D): pausing mid-dissolve could freeze the model half-faded.
+  `setPaused` completes the dissolve.
+- P3 (code): `PLACE[index] ?? ''` guards a ninth offering.
+**Verified:** reduced motion on the production build. The readout updates on
+scroll, opacity stays 1 and there is no dissolve. The reviewer's "unverified"
+came from a dev server on :3000.
+**Code review verdict:** approve with comments (now addressed). **3D verdict:**
+no P0. Design review is pending.
+
+---
+
 ## 2026-09-29 — Attached models no longer slide after scrolling stops
 **Type:** fix
 **Owner:** 3D Engineer

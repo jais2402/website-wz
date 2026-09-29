@@ -159,7 +159,9 @@ export function SequenceSection({
           href={`/capabilities#${slug(item.title)}`}
           glyph={GLYPH[slug(item.title)] ?? 'software'}
           size="regular"
-          className={PLACE[index]}
+          // Eight places around the centre. A ninth offering would flow after
+          // them; the content check keeps build at eight (3D has 8 blocks).
+          className={PLACE[index] ?? ''}
           highlighted={active === index}
           onOpen={(point) => pin(index, point)}
         />
