@@ -41,6 +41,20 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — /impeccable clarify: no fake person in the form (audit item 5)
+**Type:** delivery
+**Owner:** Content Steward
+**Decision:** contact placeholders in `content/site.json`:
+- name: no placeholder (the label says it);
+- email: "name@company.com" (a format hint; was "sarah@agency.com");
+- message: "What happens today, where it breaks, and who it slows down." (a
+  prompt; was an invented scheduling story).
+**Because:** CLAUDE.md rule 1: never stage a fake business fact. A named person
+and a made-up case read as staged data, which is the exact failure the study
+measured.
+
+---
+
 ## 2026-09-29 — /impeccable typeset: one text scale (audit item 3)
 **Type:** delivery
 **Owner:** Designer

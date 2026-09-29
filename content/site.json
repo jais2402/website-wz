@@ -601,14 +601,13 @@
           "name": "name",
           "label": "Your name",
           "type": "text",
-          "placeholder": "Sarah Jenkins",
           "required": true
         },
         {
           "name": "email",
           "label": "Work email",
           "type": "email",
-          "placeholder": "sarah@agency.com",
+          "placeholder": "name@company.com",
           "required": true
         },
         {
@@ -616,7 +615,7 @@
           "label": "What is happening today?",
           "type": "textarea",
           "required": true,
-          "placeholder": "Our current scheduling process relies on two manual sheets. As our volume has scaled, entries are getting missed and our team is spending hours correcting bookings…"
+          "placeholder": "What happens today, where it breaks, and who it slows down."
         }
       ],
       "submit": "Start a conversation",
