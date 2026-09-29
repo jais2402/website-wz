@@ -160,18 +160,34 @@ molecule may not import an organism; nothing below `templates` may import
 
 One model, fifteen states, blended by scroll. It is a diagram, not decoration.
 
-1. **Design colours on every block; no white fills, no pastels.** *(Owner,
-   2026-09-29: "use original design colors on the 3d blocks, reduce the pastel
-   and white colors". Before that, the same day: bright. 2026-09-28: pastel. The
-   prototype: near-white.)* Parts take a brand hue (blueprint, pine, ochre, plum,
-   rose) and are never filled with the white model material. Hue shares map
-   through `min(0.8, 0.5 + 1.2·s)` (`REST_FLOOR` / `REST_GAIN` / `REST_CAP`
-   in `three/states.ts`): 80% at rest (owner, 2026-09-29), about 62% when another
-   part is pointed at, and 100% for the part pointed at. The part pointed at shows its attention by lift and label, not by
-   draining the others to white. Structural pieces (connectors, map tiles) stay
-   neutral grey, and the hub stays ink. Signal is never in the rotation (rule 2).
-   *Tone mapping is PBR Neutral, not ACES (2026-09-29). ACES bleached the
-   brand hues toward white; Neutral keeps them saturated.*
+1. **The approved artifact's colour scheme, literally.** *(Owner,
+   2026-09-29, after six rounds — "bright" → "design colours, less pastel and
+   white" → "80%" → "plain, use bright" → "more white like the artifact" → "too
+   colourful, come down" — settled by the owner linking the artifact itself:
+   "apply the colour schema for the 3D blocks like this".)*
+   - **There is no brightness curve.** The share at each call site is used as
+     written. An earlier curve amplified every share (`min(cap, floor+gain·s)`),
+     so a call asking for 30% rendered near 80%. That, not the palette, is what
+     made the model read loud. `tint(i, k)`: k is the hue share, 0 white → 1
+     full. `dimmed(c, k)`: k is distance toward white.
+   - **The model rests near white.** Whole blocks are the white model material
+     (the monolith and the cube alternate white with 30% hue; the evidence bars
+     split white and 30%); everything else sits at a low share over white.
+   - **The part pointed at goes to its full hue.** The offering modules rest at
+     18% and jump to 100%. That jump is the highlight: the pointed-at block
+     becomes the only coloured thing on screen, which is also why "dim the
+     others on hover" needs no separate mechanism.
+   - Shares, from the artifact: monolith and cube 0.3 · hero sheets and plates
+     0.55, loose block 0.8, scatter 0.88 · AI lane 0.35 · evidence 0.3 ·
+     case plates 0.35 active / 0.62 inactive · integration 0.42 at rest,
+     0.72 when another is pointed at · tech stack 0.46 / 0.26 · offering
+     modules 0.82 toward white at rest, 0.9 when another is pointed at.
+   - Structural pieces (connectors, map tiles) stay neutral grey; the hub stays
+     ink. **`signal` is kept out of the rotation** — the artifact's MIX includes
+     it, but it is the scarcity token, one per screen (rule 2), and cycling it
+     would spread orange through every scene.
+   *Tone mapping is PBR Neutral, not ACES (2026-09-29). ACES bleached the brand
+   hues toward white; Neutral keeps them saturated.*
 2. **One accent piece — in the company blue.** *(2026-09-29, owner: the 3D accent changed from signal orange to blueprint; signal orange is reserved for warnings.)* Orange marks the exception, the missing piece, the thing
    being fixed. Never two.
 3. **Labels only where you point.** *(2026-09-28: build no longer carries a callout column — its two-column list is the legend.)* Callouts exist in the four sections that
@@ -179,7 +195,13 @@ One model, fifteen states, blended by scroll. It is a diagram, not decoration.
    geometry). Everywhere else the model carries no text. Labels are 10px mono in
    an aligned column outside the model, joined to a 4px dot by a 1px leader.
 4. **The model never overlaps the reading column.** Scale derives from the stage
-   width minus the annotation gutter.
+   width minus the annotation gutter. On the document sub-pages the model sits in
+   its own band above the heading (`PageScene`) and scrolls away with it, rather
+   than sitting behind the text.
+7. **Pointing at a block lights its panel, and pales the rest.** The link runs
+   both ways: a panel lights its block, and a block lights its panel. A 3D hover
+   changes colour only — it never moves geometry, because a block that lifts
+   under the pointer moves out from under it and the highlight oscillates.
 5. **Motion is ambient, never attention-seeking.** Slow yaw, sub-degree drift.
    Anything faster competes with reading.
 6. **`prefers-reduced-motion` renders states without transitions**, driven by
@@ -195,6 +217,15 @@ One model, fifteen states, blended by scroll. It is a diagram, not decoration.
 - Focus ring: `2px` solid `--color-blueprint`, `3px` offset. Never removed, never
   obscured by the sticky header (2.4.11).
 - Colour never carries meaning alone: every hue-coded item also has a label.
+- The reading column carries the same hue markers as the model. Stats strips,
+  the evidence table and figure suffixes rotate through the five hues in the
+  model's own order (`rotateHue` in `src/lib/hue.ts`). Decorative and
+  `aria-hidden`; the text colour never changes, so contrast is untouched.
+  *(Designer, 2026-09-29: the page read plain because the reading column had no
+  colour at all, not because the model was too quiet.)*
+- The page background is a 1px dot on a 24px pitch in `--color-line`. Keep the
+  pitch at or above 20px: tighter or stronger and it reads as graph paper
+  rather than texture.
 - The canvas is `aria-hidden` and purely decorative; every fact it shows exists
   in the DOM as text.
 - No horizontal scroll at any width from 320px up.

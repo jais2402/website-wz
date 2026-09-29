@@ -92,42 +92,41 @@ export const SCENE_TITLE: Record<SceneKey, string> = {
 
 export function buildState(P: Palette) {
   /**
-   * Colour. BRIGHT brand colours on the blocks (owner, 2026-09-29: "the site
-   * looks plain in most of the blocks — use bright colours"). This restores the
-   * curve from the earlier "Use the bright colours" round and lifts the 80% cap
-   * that followed it.
+   * Colour, taken from the approved artifact (owner, 2026-09-29: "apply the
+   * colour schema for the 3D blocks like this", with the artifact linked).
    *
-   * Two things at once, and they are not in conflict (owner, 2026-09-29:
-   * "use bright colours", then "use more white like we had on the artifact"):
+   * The artifact has NO brightness curve: the share passed at each call site is
+   * used literally. Ours amplified every share through
+   * `min(cap, floor + gain·s)`, so a call asking for 30% colour rendered at
+   * about 80% — which is why the model read loud where the artifact reads calm.
+   * The curve is gone.
    *
-   * 1. WHITE comes back as whole blocks, as the approved artifact had it. The
-   *    monolith, the moment cube and the evidence bars alternate the white
-   *    model material with a coloured one, and the case plates and unpointed
-   *    country markers sit mostly toward white.
-   * 2. BRIGHT is the curve on the blocks that ARE coloured: every hue share
-   *    maps through s → min(1, 0.2 + 2.2·s), so a coloured block shows
-   *    86–100% of its brand hue instead of a pastel.
+   * What the scheme does, and why it answers every ask of 2026-09-29 at once
+   * ("lots of white", "bright", "too colourful, come down", "hovering a block
+   * should highlight it and leave the rest a light shade"):
+   * - Most of the model rests near white. Whole blocks are the white model
+   *   material, and the coloured ones sit at a low share over it.
+   * - The part pointed at goes to its FULL brand hue. The offering modules rest
+   *   at 18% and jump to 100%, so the highlight IS the colour and the others
+   *   falling back to a light shade is the same single mechanism.
    *
-   * The result is the artifact's composition — white with colour through it —
-   * at full strength rather than washed out, which is what made it read plain.
-   * See design.md §5.1.
+   * `tint(i, k)`: k is the hue share — 0 is white, 1 is the full hue.
+   * `dimmed(c, k)`: k is how far toward white — 0 is the full hue, 1 is white.
+   *
+   * One deliberate difference from the artifact: `signal` stays out of the
+   * rotation. It is the scarcity token, one per screen (CLAUDE.md), and the
+   * artifact's six-hue MIX spreads orange across every scene that cycles hues.
+   * See design.md §5.
    */
-  const REST_FLOOR = 0.2;
-  const REST_GAIN = 2.2;
-  // No cap: a resting part reaches its full brand colour.
-  const REST_CAP = 1;
-  const restShare = (share: number) => Math.min(REST_CAP, REST_FLOOR + share * REST_GAIN);
-
   // Signal is NOT in the resting rotation. It is the scarcity token — one per
   // screen, placed on purpose — and lifting the rest colours would otherwise
   // spread orange across every scene that cycles hues.
   const MIX = ['blueprint', 'pine', 'ochre', 'plum', 'rose'] as const;
   const hueOf = (h: string): THREE.Color => P[h as PaletteColour] ?? P.blueprint;
-  /** `k` is how far toward the model material; the hue share is 1 − k. */
-  const dimmed = (c: THREE.Color, k: number) => c.clone().lerp(P.model, 1 - restShare(1 - k));
-  /** `k` is the hue share. */
-  const tint = (i: number, k: number) =>
-    P[MIX[i % MIX.length]!].clone().lerp(P.model, 1 - restShare(k));
+  /** `k` is how far toward the white model material. */
+  const dimmed = (c: THREE.Color, k: number) => c.clone().lerp(P.model, k);
+  /** `k` is the hue share: 0 is white, 1 is the full brand hue. */
+  const tint = (i: number, k: number) => P[MIX[i % MIX.length]!].clone().lerp(P.model, 1 - k);
 
   function put(o: SceneState, i: number, x: number, y: number, z: number,
                sx: number, sy: number, sz: number, c: THREE.Color,
@@ -171,7 +170,20 @@ export function buildState(P: Palette) {
     return k;
   }
 
-  return function state(ix: number, t: number, sub: number, hl: number, o: SceneState) {
+  return function state(
+    ix: number, t: number, sub: number, hl: number, o: SceneState,
+    /**
+     * Colour-only highlight, separate from `hl` (which also lifts). Defaults
+     * to `hl` so every scene but `build` behaves exactly as before. `build`
+     * is the one scene a 3D → DOM hover (pointing at a module in the model)
+     * can also drive, and that channel must NEVER move geometry — a hovered
+     * module lifting out from under the pointer would move the box, miss the
+     * next raycast, drop back, and repeat (see stage.ts, model-hover.ts).
+     * `hlc` lets `build` recolour on either source while `hl` (lift) only
+     * ever comes from the DOM-driven channel (`highlight.ts`).
+     */
+    hlc: number = hl,
+  ) {
     const keyName = SCENES[ix]!;
     o.labels.length = 0;
     o.lab = LABELLED[keyName] ? 1 : 0;
@@ -217,7 +229,15 @@ export function buildState(P: Palette) {
           const h = DISC_HEIGHT[i] ?? 1;
           const lift = hl === i ? 0.38 : 0;
           const full = hueOf(DISC[i]?.hue ?? 'blueprint');
-          const cc = hl === i ? full : dimmed(full, hl >= 0 ? 0.9 : 0.55);
+          // At rest a module sits 82% of the way to white (the artifact's
+          // value); the one pointed at is its full hue. That jump is the
+          // highlight — the pointed-at block becomes the only coloured thing,
+          // which is exactly what the owner asked for. Colour reacts to `hlc`
+          // (DOM tile hover OR pointing at the module in 3D); the LIFT above
+          // stays on `hl` (DOM tile hover only) so a 3D hover recolours without
+          // ever moving the box under the pointer.
+          const rest = dimmed(full, hlc >= 0 ? 0.9 : 0.82);
+          const cc = hlc === i ? full : rest;
           put(o, k++, cx, h / 2 + lift, cz, 1.16, h, 1.16, cc);
           label(o, DISC[i]?.short ?? '', cx, h + lift + 0.12, cz, hl === i);
         }
@@ -295,7 +315,7 @@ export function buildState(P: Palette) {
           const rc = hueOf(RANGE[row]?.hue ?? 'blueprint');
           for (let cl = 0; cl < 6; cl += 1) {
             const lf = hl === row ? 0.34 : 0;
-            const c4 = hl === row ? rc : dimmed(rc, hl >= 0 ? 0.9 : 0.8);
+            const c4 = hl === row ? rc : dimmed(rc, hl >= 0 ? 0.88 : 0.72);
             put(o, k++, (cl - 2.5) * 0.78,
               0.3 + lf + (hl === row ? Math.sin(t * 3 + cl * 0.7) * 0.04 : 0),
               (row - 2) * 0.9, 0.6, 0.6, 0.6, c4);
@@ -409,7 +429,7 @@ export function buildState(P: Palette) {
           a = (g5 / 5) * Math.PI * 2 + 0.4;
           const r3 = 2.7, sx5 = Math.sin(a) * r3, sz5 = Math.cos(a) * r3;
           const gcf = hueOf(INT[g5]?.hue ?? 'blueprint');
-          const gc = hl === g5 ? gcf : dimmed(gcf, hl >= 0 ? 0.85 : 0.42);
+          const gc = hl === g5 ? gcf : dimmed(gcf, hl >= 0 ? 0.72 : 0.42);
           const ul = hl === g5 ? 0.25 : 0;
           put(o, k++, sx5, 0.35 + ul, sz5, 0.7, 0.7, 0.7, gc, -a);
           put(o, k++, sx5 + Math.cos(a) * 0.55, 0.19 + ul, sz5 - Math.sin(a) * 0.55, 0.38, 0.38, 0.38, gc, -a);
@@ -441,7 +461,7 @@ export function buildState(P: Palette) {
         const n = Math.max(1, Math.min(9, TECH.length || 9));
         for (i = 0; i < n; i += 1) {
           const ly2 = 0.12 + (n - 1 - i) * 0.46, sl = hl === i ? 0.7 : 0;
-          const lc = hl === i ? hueOf(MIX[i % MIX.length]!) : tint(i, hl >= 0 ? 0.12 : 0.62);
+          const lc = hl === i ? hueOf(MIX[i % MIX.length]!) : tint(i, hl >= 0 ? 0.26 : 0.46);
           put(o, k++, sl, ly2, 0, 2.4, 0.2, 2.4, lc);
           // On the middle of the plate's right face, the face the label column
           // looks at. The front corner is rounded, so an anchor there sat in the
@@ -465,7 +485,7 @@ export function buildState(P: Palette) {
           const [x, z] = project(pt[0], pt[1]);
           const up = hl === n ? 0.35 : 0;
           const hue = COUNTRY_HUE[name] ?? MIX[n % MIX.length]!;
-          const c = hl >= 0 && hl !== n ? hueOf(hue).clone().lerp(P.model, 0.7) : hueOf(hue);
+          const c = hl === n ? hueOf(hue) : dimmed(hueOf(hue), hl >= 0 ? 0.8 : 0.55);
           put(o, k++, x, 0.02 + (0.62 + up) / 2, z, 0.12, 0.62 + up, 0.12, c);
         });
         o.look = 0.2; o.dist = 16; o.yaw = 0.74 + Math.sin(t * 0.1) * 0.04;

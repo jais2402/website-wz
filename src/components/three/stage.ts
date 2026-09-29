@@ -416,8 +416,17 @@ export function createStage(
     const an = anchors[ia], bn = anchors[ib];
     if (!an || !bn) return;
 
-    state(an.sc, t, subOf(an, probe), highlights.get(SCENES[an.sc] ?? '') ?? -1, A);
-    state(bn.sc, t, subOf(bn, probe), highlights.get(SCENES[bn.sc] ?? '') ?? -1, B);
+    // Colour-only highlight for "build": the DOM-driven index if a bento tile
+    // is hovered, otherwise the 3D → DOM hover's own index (last frame's
+    // raycast, below) — so pointing at a module in the model recolours it
+    // too, never lifts it. Every other scene passes `hl` straight through
+    // (states.ts defaults `hlc` to `hl`), so nothing else changes.
+    const hlA = highlights.get(SCENES[an.sc] ?? '') ?? -1;
+    const hlB = highlights.get(SCENES[bn.sc] ?? '') ?? -1;
+    const hlcA = SCENES[an.sc] === 'build' && hlA < 0 ? modelHoverIndex : hlA;
+    const hlcB = SCENES[bn.sc] === 'build' && hlB < 0 ? modelHoverIndex : hlB;
+    state(an.sc, t, subOf(an, probe), hlA, A, hlcA);
+    state(bn.sc, t, subOf(bn, probe), hlB, B, hlcB);
     const K = (first || reduce) ? 1 : 1 - Math.exp(-dt * 5.2);
     const snapPlacement = first || reduce;
     first = false;
@@ -442,6 +451,11 @@ export function createStage(
     }
     parts.instanceMatrix.needsUpdate = true;
     if (parts.instanceColor) parts.instanceColor.needsUpdate = true;
+    // Test-only readback of the rendered instance colours (there is no
+    // preserveDrawingBuffer, so a pixel readback isn't available): gated
+    // behind the same `?debug3d` flag as the placement string above, so it
+    // costs nothing outside tests.
+    if (debug) canvas.dataset.dbgc = cur.c.map((c) => c.getHexString()).join(',');
 
     const wh = smooth((w - 0.4) / 0.3);
     const ho = A.hub.on * (1 - wh) + B.hub.on * wh;

@@ -32,6 +32,17 @@
 
   body {
     background-color: var(--color-ground);
+    /* A hairline dot grid, so the page is not flat colour behind the hairline
+       rules (owner, 2026-09-29: "some background that is very subtle").
+       Built from --color-line, which the system already certifies as a
+       decorative, non-text value, so dark mode follows with no second rule.
+       At 1px on a 24px pitch it covers ~0.5% of the area — a drafting-paper
+       texture in the same language as the isometric drawings, not a motif.
+       Keep the pitch at or above 20px and the value at --color-line: tighter
+       or stronger and it stops reading as texture and starts reading as
+       graph paper. */
+    background-image: radial-gradient(var(--color-line) 1px, transparent 1px);
+    background-size: 24px 24px;
     color: var(--color-ink);
     font-family: var(--font-display);
     font-weight: 300;

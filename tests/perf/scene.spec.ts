@@ -264,6 +264,51 @@ test.describe('3D → DOM hover (the reverse channel)', () => {
     await page.waitForTimeout(400);
     expect(await anyHighlighted()).toBe(false);
   });
+
+  test('pointing at a module also recolours it and dims the rest', async ({ page }) => {
+    // Colour is read from `canvas.dataset.dbgc` (`?debug3d`), a comma list of
+    // the rendered instance colours (`cur.c`, stage.ts) in hex — there is no
+    // `preserveDrawingBuffer`, so a real pixel readback isn't available here.
+    // Position is not re-asserted: it is a static property of the code that
+    // the lift offset only ever reads the DOM-driven highlight (`hl`), never
+    // the 3D-hover index used for colour (`hlc`) — see states.ts and the
+    // `hlcA`/`hlcB` computation in stage.ts.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/?debug3d');
+    await waitForStage(page);
+
+    await page.locator('#build').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1500);
+
+    const slot = await page.locator('[data-stage-slot]').boundingBox();
+    if (!slot) throw new Error('no data-stage-slot in the build bento');
+    const target = { x: slot.x + slot.width / 2, y: slot.y + slot.height * 0.44 };
+    const tiles = page.locator('#build .grid > a');
+
+    const readColours = () => page.evaluate(() =>
+      (document.querySelector('canvas')!.dataset.dbgc ?? '').split(',').filter(Boolean));
+
+    const before = await readColours();
+    expect(before.length).toBeGreaterThan(0);
+
+    await page.mouse.move(target.x - 4, target.y - 4);
+    await page.mouse.move(target.x, target.y);
+    await page.waitForTimeout(400);
+
+    // The DOM tile order matches the model's instance order (both walk
+    // `DISC` — SequenceSection.tsx's bento map, states.ts's `build` case).
+    const hoveredIndex = await tiles.evaluateAll((els) =>
+      els.findIndex((el) => el.className.split(/\s+/).includes('bg-raised')));
+    expect(hoveredIndex).toBeGreaterThanOrEqual(0);
+
+    const after = await readColours();
+    // The hovered module returns to its full hue.
+    expect(after[hoveredIndex]).not.toBe(before[hoveredIndex]);
+    // At least one other module went paler, not just the hovered one lighting
+    // up — the figure/ground effect the owner asked for.
+    const otherChanged = after.some((c, i) => i !== hoveredIndex && i < before.length && c !== before[i]);
+    expect(otherChanged).toBe(true);
+  });
 });
 
 test.describe('the model on a sub-page', () => {

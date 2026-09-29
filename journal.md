@@ -41,6 +41,69 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — 3D hover also recolours the model (colour split from lift)
+**Type:** delivery
+**Owner:** 3D Engineer
+**Context:** Owner: "When I hover over the blocks, then highlight the panel
+that is connected to, and other blocks which is not connected or not hovered,
+let it be in a light shade… like we had it in the first thing." The 3D → DOM
+hover added moments earlier (previous entry) only lit the bento tile; the
+model itself did not react to being pointed at.
+**The trap:** the existing highlight channel (`highlight.ts` → `setHighlight`)
+drives BOTH colour and a lift/position offset (`states.ts`, `build` case). If
+3D hover wrote to that channel wholesale, the pointed-at module would lift out
+from under the pointer, the next raycast would miss the moved geometry, the
+highlight would clear, the module would drop back under the pointer, and it
+would oscillate forever.
+**Decision:** split "highlighted for colour" from "highlighted for lift" at
+the `state()` function itself. `states.ts`'s `buildState(...)` returned
+`state(ix, t, sub, hl, o)`; it now takes a 6th, optional `hlc` (colour
+highlight) that **defaults to `hl`**, so every scene but `build` is provably
+unchanged. Inside the `build` case only, the lift offset still reads `hl`;
+the colour decision (`rest`, `cc`) now reads `hlc`. `stage.ts` computes,
+per frame: `hlcA/B = SCENES[an.sc/bn.sc] === 'build' && domHl < 0 ?
+modelHoverIndex : domHl` — the DOM-driven index wins if a bento tile is
+hovered, otherwise the 3D-hover index (last frame's raycast, already computed
+for the DOM-lighting channel) recolours the model. Position never reads
+`modelHoverIndex` anywhere, so a 3D hover cannot move geometry, and the
+one-frame lag on `hlc` (raycast happens after `state()` in the same frame,
+feeding the next) is imperceptible and matches the existing lag already
+accepted for the DOM-tile channel.
+**Because it cannot oscillate:** the only input the lift offset ever reads is
+`highlights` (the DOM `setHighlight` map) — `modelHoverIndex` is invisible to
+it by construction, not by convention. Colour-only reactions cannot move a
+box, so there is no feedback path back into the raycast.
+**Cooperating with the recent colour change:** `REST_CAP` is now 0.8 and every
+third `build` module rests as `P.model` (white). `cc = hlc === i ? full :
+rest` already overrides the white rest state with the module's full hue when
+`hlc === i`, so a white resting module still visibly changes on 3D hover
+exactly as a coloured one does; the `dimmed(full, hlc >= 0 ? 0.9 : 0.55)` term
+that was already there for the DOM channel now also fires for 3D hover,
+paling every other module.
+**Changed:**
+- `src/components/three/states.ts` — `state()` gains the `hlc` parameter
+  (default `hl`); `build` case colour math reads `hlc`, lift math still reads
+  `hl`. Every other scene's `switch` case is untouched.
+- `src/components/three/stage.ts` — computes `hlA/hlB` (DOM-driven, as
+  before) and `hlcA/hlcB` (colour-only, build-only) before calling `state()`;
+  also exposes `canvas.dataset.dbgc` — a comma list of the rendered instance
+  colours in hex — gated behind the existing `?debug3d` flag, test-only, zero
+  cost otherwise (there is no `preserveDrawingBuffer`, so a real pixel
+  readback was not available).
+- `tests/perf/scene.spec.ts` — new test in the existing "3D → DOM hover"
+  describe: hovers the model's centre, finds which tile got `bg-raised`
+  (assumed same order as the model's instances, per the recent entry), reads
+  `dbgc` before/after, and asserts the hovered index's colour changed AND at
+  least one other index's colour also changed (the dim). Position is not
+  re-asserted by a test — it is a static property of the code (lift only ever
+  reads `hl`, never `hlc`), stated in the test's own comment.
+**Verified:** `pnpm build && node scripts/check-size.mjs` — initial route
+174.2 KB (≤ 180 KB), 3D chunk 121.5 KB (≤ 320 KB), both unchanged in practice.
+`pnpm verify:full` — 133 passed, 17 correctly skipped (chromium/mobile-chrome
+only for WebGL and layout-specific specs), exit 0.
+**Could not do:** a true GPU pixel readback (no `preserveDrawingBuffer`); used
+the stage's own JS-side colour state instead, as the task allowed.
+
 ## 2026-09-29 — 3D → DOM hover: pointing at a module lights its bento tile
 **Type:** delivery
 **Owner:** 3D Engineer
@@ -91,6 +154,38 @@ chromium-only) — exit 0.
 **Consequences:** any future "reverse hover" feature (a second bento) should
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
+
+## 2026-09-29 — The artifact's colour scheme, adopted literally
+**Type:** reversal (of six rounds of colour tuning, including today's own)
+**Owner:** Owner, by linking the approved artifact: "apply the colour schema for
+the 3D blocks like this"
+**Context:** Colour was re-tuned six times in one day — bright → design colours,
+less pastel/white → 80% → "plain, use bright" → "more white like the artifact" →
+"more colourful and I don't like it, come down to 80%". Each round moved a
+constant; none fixed the cause.
+**The cause, found by reading the artifact's source:** the artifact has **no
+brightness curve at all**. `tint(i, k)` is `hue.lerp(model, 1 - k)` — k is used
+literally. Ours amplified every share through `min(REST_CAP, REST_FLOOR +
+REST_GAIN·s)`, so a call site asking for 30% colour rendered at about 80%. Every
+scene was roughly 2–3× more saturated than the artifact it was ported from, and
+each round of tuning adjusted the amplifier rather than removing it.
+**Decision:** delete the curve; take the artifact's per-scene shares verbatim
+(recorded in design.md §5.1). Two deliberate differences, both kept:
+- `signal` stays out of the MIX rotation (scarcity token, rule 2); the
+  artifact's six-hue MIX would cycle orange through every scene.
+- `regions` is ours, not the artifact's, so it takes the same shape: pale at
+  rest, full hue when pointed at.
+**Why this settles the whole thread:** the artifact's offering modules rest 82%
+of the way to white and go to 100% when pointed at. That single 5× jump is
+simultaneously "lots of white", "bright", "not too colourful", and the owner's
+hover request — "highlight the panel that is connected, and other blocks let it
+be in a light shade" — with no extra mechanism. The pointed-at block is the only
+coloured thing on screen.
+**Reverted from today, as part of this:** the explicit `P.model` blocks added to
+the hero and to every third offering module. They were compensating for the
+amplifier; with literal shares the low values are already near-white.
+**Gate:** exit 0 — 18 unit, 133 e2e, 17 skipped (chromium-only WebGL specs),
+initial 174.2 KB, 3D 121.4 KB.
 
 ## 2026-09-29 — Push to Jais-Dev: stopped, unrelated histories
 **Type:** decision (not carried out)
