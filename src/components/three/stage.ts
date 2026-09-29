@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createPalette, readPalette } from './palette';
-import { chamferBox, lineSegmentPositions } from './geometry';
+import { chamferBox, countryPrism, lineSegmentPositions } from './geometry';
 import { N, NP, R, blank, buildState, smooth, type SceneState } from './states';
 import { BOOST, SCENES, SCENE_ALIAS } from './scene-data';
 import { CELL, LAND_CELLS } from './world';
@@ -128,7 +128,9 @@ export function createStage(
   key.shadow.camera.left = -8; key.shadow.camera.right = 8;
   key.shadow.camera.top = 8; key.shadow.camera.bottom = -8;
   key.shadow.camera.near = 1; key.shadow.camera.far = 40;
-  key.shadow.bias = -0.0006; key.shadow.normalBias = 0.02;
+  // Raised from 0.02 with the displaced footprint: a thin plate whose
+  // outline is pushed outward self-shadowed in stripes at the old value.
+  key.shadow.bias = -0.0009; key.shadow.normalBias = 0.055;
   scene.add(key, key.target);
   const fill = new THREE.DirectionalLight(0xffffff, 0.26 * LEGACY_LIGHT_SCALE);
   fill.position.set(-8, 4, 5);
@@ -144,14 +146,74 @@ export function createStage(
   scene.add(group);
 
   /* ── the model ─────────────────────────────────────── */
-  const boxGeo = chamferBox(0.16);
+  const boxGeo = countryPrism(16);
   // Flat shading gives every facet its own normal, so the chamfers read as
   // distinct planes rather than a smooth gradient. Lower roughness lets them
   // catch the key light — that highlight along each crease is what makes the
   // references read as machined rather than moulded. Metalness stays modest:
   // there is no environment map, and a high value only darkens the blocks.
   const mat = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.18, flatShading: true });
+
+  /* The Ghost Cube footprint.
+   *
+   * Each perimeter sample is pushed in or out along its own X/Z direction, so
+   * the square outline becomes an irregular many-sided one. Pushed to zero the
+   * block is exactly a cube again — that is the resolve.
+   *
+   * Two properties make this read as a machined piece rather than a damaged
+   * one, and both come from displacing in X/Z only:
+   *  - a sample's top and bottom vertices share their X/Z, so they always move
+   *    together and every side wall stays a planar vertical quad with hard
+   *    edges;
+   *  - the caps keep their Y exactly, so top and bottom stay flat and parallel
+   *    and nothing tilts (the owner asked for no tilt).
+   *
+   * Samples are bucketed by angle into `sides` buckets (3–12, per instance), and
+   * every sample in a bucket gets the identical push — so consecutive samples
+   * end up collinear and read as ONE long edge. That is what gives some pieces
+   * few sides and others many, rather than all of them looking alike.
+   */
+  const uOrder = { value: 0 };
+  const GHOST_GLSL = `
+attribute float aSeed;
+uniform float uOrder;
+float wzHash(vec2 p, float s) {
+  return fract(sin(dot(p, vec2(41.3, 289.1)) + s * 13.7) * 43758.5453);
+}
+vec3 wzGhost(vec3 p, float seed) {
+  vec2 xz = p.xz;
+  float r = length(xz);
+  if (r < 1e-4) return vec3(0.0);
+  float sides = floor(3.0 + fract(sin(seed * 91.7) * 43758.5453) * 10.0);
+  float bucket = floor((atan(xz.y, xz.x) + 3.14159265) / (6.28318531 / sides));
+  float h = wzHash(vec2(bucket, sides), seed);
+  vec2 dir = xz / r;
+  float amt = (h - 0.5) * 0.30 * (1.0 - uOrder);
+  return vec3(dir.x * amt, 0.0, dir.y * amt);
+}
+`;
+  const ghostPatch = (shader: { uniforms: Record<string, { value: number }>; vertexShader: string }) => {
+    shader.uniforms.uOrder = uOrder;
+    shader.vertexShader = GHOST_GLSL + shader.vertexShader;
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <begin_vertex>',
+      '#include <begin_vertex>\n\ttransformed += wzGhost(transformed, aSeed);',
+    );
+  };
+  mat.onBeforeCompile = ghostPatch;
   const parts = new THREE.InstancedMesh(boxGeo, mat, N);
+  // One seed per instance, set once — never per frame. Reuses the same seeded
+  // PRNG the scenes use, so the shapes are identical on every load.
+  {
+    const seeds = new Float32Array(N);
+    for (let i = 0; i < N; i += 1) seeds[i] = R[i]![2]! * 97.3;
+    boxGeo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 1));
+  }
+  // The shadow pass uses its own material, so it needs the identical
+  // displacement or the blocks would cast un-deformed shadows.
+  const depthMat = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  depthMat.onBeforeCompile = ghostPatch;
+  parts.customDepthMaterial = depthMat;
   parts.castShadow = true; parts.receiveShadow = true;
   parts.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   group.add(parts);
@@ -442,11 +504,11 @@ export function createStage(
     /* The scramble→resolved arc.
      *
      * One long resolve across the page, independent of the section-to-section
-     * blend above. The blocks are NEVER deformed: a bent block reads as a
-     * broken one, which is exactly how the first attempt failed. A scrambled
-     * puzzle is made of rigid, undamaged pieces that are merely the wrong SIZE
-     * and in the wrong PLACE — so the scramble is a per-instance scale and
-     * offset, and the geometry is untouched.
+     * blend above. The irregularity is the block's own FOOTPRINT (see the
+     * shader patch above): at the top of the page each block is a many-sided
+     * prism, and it resolves to an exact cube. Faces stay planar and edges stay
+     * hard throughout, which is what separates this from the first attempt —
+     * that one pushed vertices radially and the blocks read as damaged.
      *
      * It ends at the LAST SCENE, not the bottom of the document: measured
      * against document height the resolve completed inside the footer, which
@@ -458,9 +520,7 @@ export function createStage(
     orderCur += (orderTarget - orderCur) * K;
     if (sy <= 0.5) orderCur = 0;
     else if (sy >= orderEnd - 0.5) orderCur = 1;
-    // Squared, so the last stretch of the page is visibly settled rather than
-    // creeping the final few percent.
-    const scramble = (1 - orderCur) * (1 - orderCur);
+    uOrder.value = orderCur;
 
     // Arriving at the map, the blocks settle into their markers in the first
     // half of the crossing, so what travels past the centred heading is the
@@ -477,20 +537,6 @@ export function createStage(
       curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
       dummy.scale.copy(cur.s[i]!);
-      if (scramble > 0.0005) {
-        // Rigid only. Scale is a multiplier and the offset is a fraction of the
-        // instance's OWN size, so a 0.12 map marker and a 2.4 plate scramble by
-        // the same proportion — neither balloons nor vanishes. Both terms reach
-        // exactly zero at the last scene, so the final frame is pixel-identical
-        // to what states.ts asks for.
-        const r = R[i]!;
-        dummy.scale.x *= 1 + (r[0]! - 0.5) * 0.5 * scramble;
-        dummy.scale.y *= 1 + (r[1]! - 0.5) * 0.5 * scramble;
-        dummy.scale.z *= 1 + (r[2]! - 0.5) * 0.5 * scramble;
-        dummy.position.x += (r[3]! - 0.5) * cur.s[i]!.x * 0.55 * scramble;
-        dummy.position.y += (r[4]! - 0.5) * cur.s[i]!.y * 0.45 * scramble;
-        dummy.position.z += (r[0]! - 0.5) * cur.s[i]!.z * 0.55 * scramble;
-      }
       dummy.updateMatrix();
       parts.setMatrixAt(i, dummy.matrix);
       parts.setColorAt(i, cur.c[i]!);

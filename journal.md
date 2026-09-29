@@ -377,6 +377,45 @@ chromium-only) — exit 0.
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
 
+## 2026-09-30 — Reinstated the irregular footprint (owner reversed the rejection)
+**Type:** reversal (of my own revert an hour earlier)
+**Owner:** "the previous shape was better, it shows it as very irregular and not
+very very bad" — reversing "The shape become more disorted - sad".
+**Context:** I had read "distorted" as rejecting deformation outright, reverted
+all of it, and rebuilt the arc from rigid per-instance scale and offset. The
+owner has now said the deformed version was better: it reads as genuinely
+irregular, and the distortion was not the problem it first appeared to be.
+**Cost of my revert, recorded honestly:** the deformed version was never
+committed, so `git checkout` destroyed it. It was not recoverable — the Turbopack
+cache holds only error fragments. I rebuilt it from the prior run's written
+description. **Lesson: commit an experiment before reverting it, even when it
+looks rejected — a verdict can reverse.**
+**What is in now:** `countryPrism(16)` replaces `chamferBox` for the instanced
+blocks (the hub keeps the chamfer). Sixteen samples walk the unit square's
+perimeter; a shader patch pushes each sample in or out **along X/Z only**,
+scaled by `(1 - order)`. Because a sample's top and bottom vertices share their
+X/Z they always move together, so every side wall stays a planar vertical quad
+with hard edges, and the caps keep their Y so nothing tilts. Samples are
+bucketed by angle into 3–12 buckets per instance and a bucket moves as one, so
+consecutive samples go collinear and read as a single long edge — that is what
+gives some pieces few sides and others many. At `order === 1` the footprint is
+exactly the square again and the block is a true cube.
+**Two defects found by looking, not by tests:**
+- The push at 0.62 turned thin plates into spiky stars. Cut to 0.30.
+- Thin plates self-shadowed in stripes. `shadow.normalBias` 0.02 → 0.055 and
+  `bias` −0.0006 → −0.0009.
+**Kept from the rigid attempt:** the arc ending at the LAST SCENE rather than
+the document bottom, which was a genuine bug — the resolve used to complete
+inside the footer, where no model is visible, so the assembled cube was never on
+screen. The rigid scale/offset scramble itself is removed; the shape now carries
+the irregularity alone.
+**Shadows** use a `MeshDepthMaterial` patched with the identical displacement,
+so they agree with the blocks.
+**Open observation for the owner:** in the bento the nine irregular prisms
+overlap and self-shadow more than the chamfered cubes did, and the cluster reads
+greyer and muddier there than elsewhere. Not addressed — flagged.
+**Gate:** exit 0 — 18 unit, 136 e2e, initial 174.2 KB, 3D 122.0 KB.
+
 ## 2026-09-30 — The scramble→resolve arc: five attempts, four reverted
 **Type:** delivery, and a reversal of four of my own attempts
 **Owner:** Owner direction across several messages: "irregular sharp at the start,
