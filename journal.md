@@ -41,6 +41,52 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Scene transitions: no overlap, no muddy colours; how base lower
+**Type:** delivery
+**Owner:** 3D Engineer
+**Context:** Owner: "check this transformation on this blocks". The moment cube
+sat on the incoming "Every system we build…" heading and went muddy mid-blend.
+Then: "the base has to start a little bit below" (how).
+**Found:** by stepping frames through every centred boundary (moment,
+pricing, regions):
+(a) placement followed the shape blend `w`, so a centred model was still
+mid-page when the next heading arrived;
+(b) RGB lerping of hues (pink→green = olive);
+(c) entering a centred chapter pulled the model onto its full-width headline;
+(d) pricing's text is taller than the screen, so its model centred on its
+last line.
+**Decision (`three/stage.ts`):**
+- Blend windows: when a centred chapter is involved, the window opens early
+  (−0.45H → +0.12H around the boundary). Side↔side keeps ±0.22H.
+- `wp` (placement and size) leads the shape blend and reaches the new half by
+  w = 0.45.
+- Centred models are attached to their section's scroll (`oyOf`) and ride with
+  their text like an image.
+- Entering a centred chapter: the model stays in the side half until w = 0.55,
+  then hands over.
+- Leaving one: it never goes above the attached line (the lower of the two).
+- The centred model is always at least 0.25H below its text.
+- Colours are no longer mixed by scroll. They switch to the dominant scene at
+  w = 0.5 and ease in time (Kc, ~0.3s), so a paused scroll never shows an
+  off-palette colour.
+- `curOy` tracks faster (14/s) so attached models follow the page.
+- How: the camera aims at 1.85 while only the footprint is down, easing to 1.25
+  as the block builds (`three/states.ts`).
+**Consequences:** between a side scene and a centred one, the model briefly
+leaves the frame and rises with the new section. That is intentional: it is
+the only position that never meets a full-width headline.
+
+## 2026-09-29 — Session: transitions and how base
+**Type:** session
+**Done:** `three/stage.ts`, `three/states.ts`.
+**State:** verify:full is green. Frame captures of moment→principles,
+how→pricing→evidence→regions→work and the how stages were checked at 1440×820.
+**Next:** the same frame check at 1000px and 1920px; the owner's call on the idle
+render loop.
+**Blocked:** unchanged.
+
+---
+
 ## 2026-09-29 — Resting colour at 80%
 **Type:** decision
 **Owner:** Designer

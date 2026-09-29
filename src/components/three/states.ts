@@ -311,7 +311,11 @@ export function buildState(P: Palette) {
         }
         label(o, PROC[st]?.output ?? '', 1.3, 2.75, 1.3, true);
         o.name = PROC[st]?.title ?? ''; o.parts = `Stage ${st + 1} of 4`;
-        o.look = 1.0; o.dist = 16; o.yaw = -0.08;
+        // The camera aims higher while only the footprint is on the ground, so
+        // the base sits lower in the frame (owner, 2026-09-29: "the base has
+        // to start a little bit below"). It eases down as the block rises,
+        // and the finished block ends lower than before (1.25, was 1.0).
+        o.look = 1.85 - 0.6 * smooth((sub - 1.8) / 1.2); o.dist = 16; o.yaw = -0.08;
         break;
       }
 

@@ -235,7 +235,9 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
           // screen height. It replaced fixed guesses (-0.34, -0.24, -0.13)
           // that each suited one section and one screen and no other.
           const bodyBottom = bd.bottom - r.top;
-          const centre = bodyBottom + Math.max(0, Hh - bodyBottom) * 0.53;
+          // Never less than a quarter-screen below the text: a block taller than
+          // the screen (pricing) put the model's centre ON its last line.
+          const centre = Math.max(bodyBottom + Hh * 0.25, bodyBottom + Math.max(0, Hh - bodyBottom) * 0.53);
           oy = -(centre - Hh / 2);
           tl = tr = -1; gu = 0;
         }
@@ -294,27 +296,38 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     lastNow = now;
     const t = reduce ? 0 : (paused ? frozen : now) * 0.001;
     const probe = (window.scrollY || window.pageYOffset) + window.innerHeight * (mobile ? 0.3 : 0.5);
-    const band = window.innerHeight * 0.22;
+    const Hv = window.innerHeight;
 
+    // Which two scenes are blending, and how far. Each boundary has a window
+    // around the next section's top. Between two side scenes it is ±0.22 of
+    // the viewport, the prototype's value. When a centred chapter is on either
+    // side, the window opens early, as soon as the next section's top enters
+    // the bottom of the screen. A centred model sits low, exactly where the
+    // next heading arrives, so it has to move before that heading is readable.
     let ia = 0, ib = 0, w = 0;
     for (let s = 0; s < anchors.length; s += 1) if (probe >= anchors[s]!.top) ia = s;
     ib = ia;
-    if (ia < anchors.length - 1) {
-      const bnd = anchors[ia + 1]!.top;
-      if (probe > bnd - band) { ib = ia + 1; w = smooth((probe - (bnd - band)) / (2 * band)); }
-    }
-    if (ia > 0 && ib === ia) {
-      const bnd2 = anchors[ia]!.top;
-      if (probe < bnd2 + band) { ib = ia; ia -= 1; w = smooth((probe - (bnd2 - band)) / (2 * band)); }
+    for (let j = 1; j < anchors.length; j += 1) {
+      const bnd = anchors[j]!.top;
+      const centred = anchors[j - 1]!.side === 'c' || anchors[j]!.side === 'c';
+      const lo = bnd - Hv * (centred ? 0.45 : 0.22), hi = bnd + Hv * (centred ? 0.12 : 0.22);
+      if (probe > lo && probe < hi) { ia = j - 1; ib = j; w = smooth((probe - lo) / (hi - lo)); break; }
     }
     const an = anchors[ia], bn = anchors[ib];
     if (!an || !bn) return;
+    // Placement and size lead the shape blend. The next section's text is
+    // already on screen when the blend starts, so the model must leave the
+    // reading column early. Following w, a centred model was still in the
+    // middle of the page when the next heading arrived beside it. It now
+    // reaches the new half by w = 0.45 and finishes changing shape after.
+    const wp = w <= 0 ? 0 : w >= 1 ? 1 : smooth(Math.min(1, w / 0.45));
 
     const hlA = highlights.get(SCENES[an.sc] ?? '') ?? -1;
     const hlB = highlights.get(SCENES[bn.sc] ?? '') ?? -1;
     state(an.sc, t, subOf(an, probe), hlA, A);
     state(bn.sc, t, subOf(bn, probe), hlB, B);
     const K = (first || reduce) ? 1 : 1 - Math.exp(-dt * 5.2);
+    const Kc = (first || reduce) ? 1 : 1 - Math.exp(-dt * 9);
     first = false;
 
     for (let i = 0; i < N; i += 1) {
@@ -323,9 +336,14 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
       qa.setFromEuler(eu.set(A.r[i]!.x, A.r[i]!.y, A.r[i]!.z));
       qb.setFromEuler(eu.set(B.r[i]!.x, B.r[i]!.y, B.r[i]!.z));
       qa.slerp(qb, w);
-      tc.copy(A.c[i]!).lerp(B.c[i]!, w);
+      // Colour follows whichever scene dominates and eases over in time. It
+      // is not mixed by scroll: an RGB mix of pink and green is olive, and a
+      // hue-wheel mix is lime and cyan, and a reader who stops mid-scroll
+      // would be left looking at either. Now every resting frame shows real
+      // palette colours.
+      tc.copy(w < 0.5 ? A.c[i]! : B.c[i]!);
       cur.p[i]!.lerp(tv, K); cur.s[i]!.lerp(ts, K);
-      curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
+      curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, Kc);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
       dummy.scale.copy(cur.s[i]!); dummy.updateMatrix();
       parts.setMatrixAt(i, dummy.matrix);
@@ -377,7 +395,7 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     camS.yaw += shortestAngle(camS.yaw, yaw) * K;
     camS.look += ((A.look * (1 - w) + B.look * w) - camS.look) * K;
     camS.dist += ((A.dist * (1 - w) + B.dist * w) - camS.dist) * K;
-    camS.scale += (((A.scale * (1 - w) + B.scale * w) * (mobile ? 0.74 : (an.ss * (1 - w) + bn.ss * w))) - camS.scale) * K;
+    camS.scale += (((A.scale * (1 - w) + B.scale * w) * (mobile ? 0.74 : (an.ss * (1 - wp) + bn.ss * wp))) - camS.scale) * K;
     group.rotation.y = camS.yaw;
     group.scale.setScalar(camS.scale);
 
@@ -396,9 +414,38 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
 
     // The model is placed in its half by offsetting the projection frustum —
     // not by moving the model, which would skew the perspective.
-    const tox = an.ox * (1 - w) + bn.ox * w, toy = an.oy * (1 - w) + bn.oy * w;
+    // A centred chapter's model travels with its section, like an image on
+    // the page. Its oy is measured with the section at the top of the
+    // viewport; while the section is lower (arriving) or higher (leaving), the
+    // model is shifted by the same amount. So it always sits under its own
+    // text and never meets a full-width headline, arriving or leaving.
+    const sy = window.scrollY || window.pageYOffset;
+    const oyOf = (a: Anchor) => (a.side === 'c'
+      ? a.oy - Math.max(-Hh, Math.min(Hh, a.top - sy))
+      : a.oy);
+    let tox: number, toy: number;
+    if (bn.side === 'c' && an.side !== 'c') {
+      // Entering a centred chapter. Stay in the side half until the
+      // full-width headline is close, then hand over to the model that rides
+      // up under that headline. Leaving early emptied the side half while its
+      // text was still being read.
+      const wl = smooth((w - 0.55) / 0.45);
+      tox = an.ox * (1 - wl) + bn.ox * wl;
+      toy = an.oy * (1 - wl) + oyOf(bn) * wl;
+    } else if (an.side === 'c' && bn.side !== 'c') {
+      // Leaving a centred chapter. Move to the new half early, but never above
+      // the bottom of the centred text that is still scrolling away. Its own
+      // attached position marks that line, and the lower of the two wins.
+      tox = an.ox * (1 - wp) + bn.ox * wp;
+      toy = Math.min(oyOf(an) * (1 - wp) + bn.oy * wp, oyOf(an));
+    } else {
+      tox = an.ox * (1 - wp) + bn.ox * wp;
+      toy = oyOf(an) * (1 - wp) + oyOf(bn) * wp;
+    }
     const Kp = (first || reduce) ? 1 : 1 - Math.exp(-dt * 3.2);
-    curOx += (tox - curOx) * Kp; curOy += (toy - curOy) * Kp;
+    // y follows faster than x: it tracks the page while scrolling.
+    const Ky = (first || reduce) ? 1 : 1 - Math.exp(-dt * 14);
+    curOx += (tox - curOx) * Kp; curOy += (toy - curOy) * Ky;
     if (Math.abs(curOx - setOx) > 0.4 || Math.abs(curOy - setOy) > 0.4) {
       setOx = curOx; setOy = curOy;
       camera.setViewOffset(W, Hh, curOx, curOy, W, Hh);
