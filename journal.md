@@ -41,6 +41,20 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Pricing headline: "We price the outcome, not the hours."
+**Type:** decision
+**Owner:** Owner
+**Context:** Chosen from the writer and SEO options.
+**Decision:** `pricing.headline` is now lead "We price the outcome," and accent
+"not the hours.". The owner's choice also confirms the claim that Wezigns prices
+by outcome, not by time, so it may now be stated elsewhere. Change-request
+pricing ("we price the change too") is still unconfirmed.
+**Consequences:** any copy implying hourly or day-rate billing now contradicts the
+site. The FAQ cost answer is consistent (it says pricing depends on scope, not
+the technology).
+
+---
+
 ## 2026-09-29 — Pricing block made crisp; headline options pending owner
 **Type:** delivery
 **Owner:** Content Steward + SEO Specialist, fact-checked by the main session
