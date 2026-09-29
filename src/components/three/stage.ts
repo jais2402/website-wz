@@ -64,7 +64,20 @@ function mixOk(a: THREE.Color, b: THREE.Color, t: number, out: THREE.Color) {
   return fromOk(_oa[0]! + (_ob[0]! - _oa[0]!) * t, _oa[1]! + (_ob[1]! - _oa[1]!) * t, _oa[2]! + (_ob[2]! - _oa[2]!) * t, out);
 }
 
-export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, leads: SVGElement): StageHandle | null {
+export function createStage(
+  canvas: HTMLCanvasElement,
+  callouts: HTMLElement,
+  leads: SVGElement,
+  /**
+   * 3D → DOM hover (the reverse of `setHighlight`). Fired at most once per
+   * drawn frame, only while the "build" scene is fully settled (not
+   * mid-blend into a neighbour, where instance indices don't line up with a
+   * single scene's layout). `scene` is the stage's own key ("build"), not
+   * the content scene name — the caller (SceneCanvas) owns that translation,
+   * the same split used for the opposite channel in `highlight.ts`.
+   */
+  onModelHover?: (scene: string, index: number) => void,
+): StageHandle | null {
   const root = document.documentElement;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -342,6 +355,17 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
   const tv = new THREE.Vector3(), tc = new THREE.Color(), look = new THREE.Vector3();
   const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
   let first = true, lastNow = 0;
+
+  // 3D → DOM hover. One Raycaster and one Vector2, created once (no
+  // allocation per frame). `pointerDirty` throttles the raycast into the
+  // existing frame: a raw pointermove sets it, the next drawn frame consumes
+  // it once and clears it, so a burst of mousemove events costs one hit test,
+  // not one per event.
+  const raycaster = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  const rawPointer = { x: 0, y: 0 };
+  let pointerDirty = false;
+  let modelHoverIndex = -1;
   // ?debug3d exposes the smoothed placement for measurement (tests / tuning).
   const debug = typeof location !== 'undefined' && location.search.includes('debug3d');
 
@@ -494,6 +518,28 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
     group.updateMatrixWorld();
     if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)}`;
 
+    /* 3D → DOM hover: raycast the shared InstancedMesh against the last raw
+     * pointer position. Only while "build" is fully settled — an.sc === bn.sc
+     * — because instance N maps to a discipline index only for that one
+     * scene's layout; mid-blend the same instance is between two different
+     * meanings and a hit would name the wrong tile. Uses the same `camera`
+     * (with this frame's `setViewOffset` already applied above), so the hit
+     * test matches what was just drawn. Throttled by `pointerDirty`: at most
+     * one hit test per drawn frame, and only when the pointer actually moved.
+     */
+    const buildSettled = onModelHover && an.sc === bn.sc && SCENES[an.sc] === 'build';
+    if (buildSettled && pointerDirty) {
+      ndc.x = (rawPointer.x / W) * 2 - 1;
+      ndc.y = -(rawPointer.y / Hh) * 2 + 1;
+      raycaster.setFromCamera(ndc, camera);
+      const hits = raycaster.intersectObject(parts, false);
+      const idx = hits.length ? (hits[0]!.instanceId ?? -1) : -1;
+      if (idx !== modelHoverIndex) { modelHoverIndex = idx; onModelHover('build', idx); }
+      pointerDirty = false;
+    } else if (!buildSettled && modelHoverIndex !== -1) {
+      modelHoverIndex = -1; onModelHover?.('build', -1);
+    }
+
     renderer.render(scene, camera);
     drawCallouts(A, B, w, an, bn);
   }
@@ -614,7 +660,14 @@ export function createStage(canvas: HTMLCanvasElement, callouts: HTMLElement, le
 
   const onResize = () => resize();
   const onLoad = () => measure();
-  const onPointer = (e: PointerEvent) => { mouse.x = e.clientX / W - 0.5; mouse.y = e.clientY / Hh - 0.5; poke(); };
+  const onPointer = (e: PointerEvent) => {
+    mouse.x = e.clientX / W - 0.5; mouse.y = e.clientY / Hh - 0.5;
+    // The canvas is `pointer-events: none` (CLAUDE.md rule) — the model is hit
+    // tested from this window-level listener, never from the canvas itself.
+    rawPointer.x = e.clientX; rawPointer.y = e.clientY;
+    pointerDirty = true;
+    poke();
+  };
   const onScroll = () => poke();
   const onHover = () => poke();
 

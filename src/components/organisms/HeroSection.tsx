@@ -1,5 +1,6 @@
-import { Button, Eyebrow } from '@/components/atoms';
+import { Button, Eyebrow, Swatch } from '@/components/atoms';
 import { HeadlineSplit } from '@/components/molecules';
+import { rotateHue } from '@/lib/hue';
 import type { Link as ContentLink, Headline } from '@/types/content';
 
 export interface HeroSectionProps {
@@ -56,9 +57,10 @@ export function HeroSection({
 
         {facts?.length ? (
           <dl className="mt-[clamp(56px,9vh,96px)] grid grid-cols-[auto_auto_1fr] border-t border-line">
-            {facts.map((fact) => (
+            {facts.map((fact, i) => (
               <div key={fact.label} className="border-line pr-4 pt-4 first:pl-0 sm:pr-7 [&+div]:border-l [&+div]:pl-4 sm:[&+div]:pl-7">
-                <dt>
+                <dt className="flex items-baseline gap-2">
+                  <Swatch hue={rotateHue(i)} active className="translate-y-[1px]" />
                   <Eyebrow>{fact.label}</Eyebrow>
                 </dt>
                 <dd className="mt-1.5 text-large tabular-nums">{fact.value}</dd>

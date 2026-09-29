@@ -41,6 +41,57 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — 3D → DOM hover: pointing at a module lights its bento tile
+**Type:** delivery
+**Owner:** 3D Engineer
+**Context:** DOM → 3D hover already existed (a bento tile lit its module in the
+disciplines model). The owner asked for the reverse: pointing at a module in the
+model should light its tile.
+**Decision:** Raycast from the existing window-level `pointermove` listener in
+`stage.ts` (canvas stays `pointer-events: none`), throttled into the existing
+frame — one hit test per drawn frame, only when the pointer actually moved
+(`pointerDirty`), and only while the "build" scene is fully settled
+(`an.sc === bn.sc === 'build'`), because instance N maps to a discipline index
+only for that one scene's exact layout; mid-blend the same instance means
+something else. Hit index comes from `raycaster.intersectObject(parts).instanceId`
+— free, since `parts` is the one shared `InstancedMesh` already in the scene.
+**Because — no feedback loop:** this had to be a *separate* channel from
+`highlight.ts` (DOM → 3D), not a second writer onto it. If 3D hover had called
+`setHighlight`, a hovered module would lift/recolour under the pointer, the lift
+moves the box, the raycast on the next frame can miss the now-moved box, the
+tile un-highlights, the box drops back, the pointer is over it again — jitter.
+New module `three/model-hover.ts` carries hover-for-DOM-tiles only; the box a
+reader points at in the model still only reacts to `highlight.ts` (DOM → 3D),
+unchanged. `stage.ts` never imports `model-hover.ts` and `SceneCanvas.tsx` is the
+only bridge, mirroring the existing DOM → 3D split.
+**Changed:**
+- `src/components/three/model-hover.ts` — new, one-directional pub/sub (stage →
+  React), keyed by content scene name like `highlight.ts`.
+- `src/components/three/stage.ts` — `createStage()` takes an optional
+  `onModelHover(sceneKey, index)` callback; raycaster + NDC vector created once
+  (no per-frame allocation); reuses the existing `onPointer` listener, just
+  stashes raw client coordinates and a dirty flag.
+- `src/components/three/SceneCanvas.tsx` — builds `REVERSE_SCENE_ALIAS` and
+  wires the stage callback to `setModelHover`.
+- `src/components/organisms/SequenceSection.tsx` — bento branch only (`layout
+  === 'bento'`) subscribes to `onModelHover` and ORs it into `highlighted`
+  alongside the existing DOM-driven `active`. Every other list is unaffected.
+- `tests/perf/scene.spec.ts` — new `describe('3D → DOM hover …')`: moves the
+  real pointer to the model's visual centre inside `[data-stage-slot]` (never
+  over a tile) and asserts a tile gets `bg-raised`, then moves away and asserts
+  none do. Passed reliably in Chromium's software (SwiftShader) WebGL — the
+  raycast is pure JS matrix math against the stage's own camera, not a GPU
+  readback, so it does not depend on hardware rendering.
+**Budgets (brotli, `pnpm build && node scripts/check-size.mjs`):** initial route
+174.0 KB → 174.2 KB (≤ 180 KB); 3D chunk 121.0 KB → 121.4 KB (≤ 320 KB). Both
+inside budget.
+**Verified:** `pnpm verify:full` — typecheck, lint, content validate, unit
+(18), build, size, Playwright (131 passed, 16 correctly skipped as
+chromium-only) — exit 0.
+**Consequences:** any future "reverse hover" feature (a second bento) should
+extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
+pattern, and must keep the two channels separate for the same jitter reason.
+
 ## 2026-09-29 — Push to Jais-Dev: stopped, unrelated histories
 **Type:** decision (not carried out)
 **Owner:** Owner asked to push to the Jais-dev branch, then pointed at

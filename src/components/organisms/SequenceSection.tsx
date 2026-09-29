@@ -8,6 +8,7 @@ import { GLYPH_BY_SLUG } from '@/lib/glyphs';
 import { slug } from '@/lib/slug';
 import { Section } from './Section';
 import { setHighlight } from '@/components/three/highlight';
+import { onModelHover } from '@/components/three/model-hover';
 import type { Headline, Hue, Link as ContentLink, Side } from '@/types/content';
 
 export interface SequenceItem {
@@ -124,6 +125,17 @@ export function SequenceSection({
     return () => setHighlight(scene, -1);
   }, [scene, active]);
 
+  // 3D → DOM hover, the reverse channel. Only the bento (disciplines) layout
+  // has a live model beside it whose parts map 1:1 to its tiles, so this is
+  // scoped to `layout === 'bento'` — every other list stays one-way (DOM → 3D
+  // above). `modelHover` is read-only into `highlighted`; it never feeds back
+  // into `setHighlight`, so it cannot create a loop with the effect above.
+  const [modelHover, setModelHoverState] = useState(-1);
+  useEffect(() => {
+    if (layout !== 'bento' || !scene) return;
+    return onModelHover((s, index) => { if (s === scene) setModelHoverState(index); });
+  }, [layout, scene]);
+
   // Bento (build), full width: eight offerings around a 2×2 centre tile that
   // holds the live 3D (the model is centred in [data-stage-slot]) and the
   // company mark. The disciplines model IS the eight offerings, so pointing at
@@ -159,7 +171,7 @@ export function SequenceSection({
           // a row rather than a gap-filler in a grid built around the centre.
           size={index < 8 ? 'regular' : 'slim'}
           className={PLACE[index] ?? ''}
-          highlighted={active === index}
+          highlighted={active === index || modelHover === index}
           onOpen={(point) => pin(index, point)}
         />
       ))}

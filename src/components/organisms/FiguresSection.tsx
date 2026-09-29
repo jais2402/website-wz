@@ -1,6 +1,7 @@
 import { Button } from '@/components/atoms';
 import { FactRow, HeadlineSplit, MetricPair } from '@/components/molecules';
 import { Section } from './Section';
+import { rotateHue } from '@/lib/hue';
 import type { Headline, Link as ContentLink, Side } from '@/types/content';
 
 export interface FiguresSectionProps {
@@ -35,15 +36,15 @@ export function FiguresSection({
       <HeadlineSplit headline={headline} id={titleId} />
 
       <div className="mt-10 grid gap-9 sm:grid-cols-2">
-        {figures.map((f) => (
-          <MetricPair key={f.caption} value={f.value} suffix={f.suffix} caption={f.caption} />
+        {figures.map((f, i) => (
+          <MetricPair key={f.caption} value={f.value} suffix={f.suffix} caption={f.caption} hue={rotateHue(i)} />
         ))}
       </div>
 
       {rows?.length ? (
         <dl className="mt-11">
-          {rows.map((row) => (
-            <FactRow key={row.k} k={row.k} v={row.v} />
+          {rows.map((row, i) => (
+            <FactRow key={row.k} k={row.k} v={row.v} hue={rotateHue(i)} />
           ))}
         </dl>
       ) : null}

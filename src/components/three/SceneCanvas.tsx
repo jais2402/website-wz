@@ -3,8 +3,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { getMotion, subscribe } from '@/lib/prefs';
 import { onHighlight } from './highlight';
+import { setModelHover } from './model-hover';
 import { SCENE_ALIAS } from './scene-data';
 import type { StageHandle } from './stage';
+
+/**
+ * Reverse of `SCENE_ALIAS`: the stage's own scene key ("build") back to the
+ * content scene name ("disciplines") that `model-hover.ts` and
+ * `SequenceSection` speak. Only "build" is used today (only the disciplines
+ * bento has a reverse hover), but this stays generic rather than one
+ * hardcoded string so a second bento does not need this file touched again.
+ */
+const REVERSE_SCENE_ALIAS: Record<string, string> = Object.fromEntries(
+  Object.entries(SCENE_ALIAS).map(([content, key]) => [key, content]),
+);
 
 /**
  * Mounts the scene, but only when it has earned its place.
@@ -38,7 +50,10 @@ export function SceneCanvas() {
       const { createStage } = await import('./stage');
       if (cancelled) return;
 
-      const stage = createStage(canvas, callouts, leads);
+      const stage = createStage(canvas, callouts, leads, (sceneKey, index) => {
+        const contentScene = REVERSE_SCENE_ALIAS[sceneKey];
+        if (contentScene) setModelHover(contentScene, index);
+      });
       if (!stage) { document.documentElement.classList.add('no3d'); return; }
       stageRef.current = stage;
       stage.setPaused(getMotion() === 'paused');

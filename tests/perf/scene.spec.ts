@@ -220,6 +220,52 @@ test.describe('the 3D scene', () => {
   });
 });
 
+test.describe('3D → DOM hover (the reverse channel)', () => {
+  test.skip(({ browserName }) => browserName !== 'chromium', 'desktop stage; one engine is enough');
+
+  test('pointing at the model lights its bento tile, and moving away clears it', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    await waitForStage(page);
+
+    // "build" is a static bento (every tile always open) — settle the stage on
+    // it and let the damped placement (k = 1 − exp(−dt·5.2)) converge before
+    // pointing at it.
+    await page.locator('#build').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1500);
+
+    // The model's visual centre inside the slot matches the fallback glyph's
+    // placement (top-[44%] of the slot — SequenceSection.tsx): a real box in
+    // the grid sits at the model's local origin, which projects there. This
+    // point is INSIDE [data-stage-slot], never over a bento tile, so any tile
+    // that lights up can only have done so via the model-hover channel, not
+    // via the tile's own `:hover`/`onMouseMove`.
+    const slot = await page.locator('[data-stage-slot]').boundingBox();
+    if (!slot) throw new Error('no data-stage-slot in the build bento');
+    const target = { x: slot.x + slot.width / 2, y: slot.y + slot.height * 0.44 };
+
+    // Direct children of the bento grid that are links — the nine tiles, not
+    // the CTA link below the grid (which also carries the `.group` class).
+    const tiles = page.locator('#build .grid > a');
+    const anyHighlighted = async () =>
+      tiles.evaluateAll((els) => els.some((el) => el.className.split(/\s+/).includes('bg-raised')));
+
+    expect(await anyHighlighted()).toBe(false);
+
+    // A real move (not a single event): Chromium can otherwise treat the
+    // first move as a no-op if it lands where the pointer already was.
+    await page.mouse.move(target.x - 4, target.y - 4);
+    await page.mouse.move(target.x, target.y);
+    await page.waitForTimeout(400);
+    expect(await anyHighlighted()).toBe(true);
+
+    // Move well clear of the slot and every other tile (top-left corner).
+    await page.mouse.move(4, 4);
+    await page.waitForTimeout(400);
+    expect(await anyHighlighted()).toBe(false);
+  });
+});
+
 test.describe('the model on a sub-page', () => {
   const SUB = '/capabilities/ecommerce-systems/';
 
