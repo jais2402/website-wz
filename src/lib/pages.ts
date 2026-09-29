@@ -1,5 +1,5 @@
 import sub from '@content/pages.json';
-import type { AboutPage, CapabilityPage, ContactPage } from '@/types/content';
+import type { AboutPage, AreaPage, CapabilityPage, ContactPage, HowPage } from '@/types/content';
 
 /**
  * Copy for the deep sub-pages, in its own file — never imported by anything
@@ -17,10 +17,14 @@ import type { AboutPage, CapabilityPage, ContactPage } from '@/types/content';
  */
 const pagesContent = sub as unknown as {
   capabilityPages: Record<string, CapabilityPage>;
+  areaPages: Record<string, AreaPage>;
+  howPage: HowPage;
   about: AboutPage;
   contact: ContactPage;
 };
 
 export const capabilityPages = pagesContent.capabilityPages;
+export const areaPages = pagesContent.areaPages;
+export const howPage = pagesContent.howPage;
 export const aboutPage = pagesContent.about;
 export const contactPage = pagesContent.contact;

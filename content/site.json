@@ -62,11 +62,11 @@
       },
       {
         "label": "The range",
-        "href": "/#range"
+        "href": "/capabilities#range"
       },
       {
         "label": "How we build",
-        "href": "/#how"
+        "href": "/how-we-build"
       },
       {
         "label": "Work",
@@ -822,16 +822,16 @@
             "href": "/capabilities"
           },
           {
-            "label": "Work",
-            "href": "/work"
+            "label": "The systems we build",
+            "href": "/capabilities#range"
           },
           {
             "label": "How we build",
-            "href": "/#how"
+            "href": "/how-we-build"
           },
           {
-            "label": "How we price",
-            "href": "/#pricing"
+            "label": "Work",
+            "href": "/work"
           }
         ]
       },

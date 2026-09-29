@@ -401,5 +401,226 @@
     },
     "lead": "Tell us what is not working.",
     "note": "No generic pitch deck. No pressure. Price and timeline are agreed before anything is built."
+  },
+  "areaPages": {
+    "people-workforce": {
+      "title": "People & workforce systems · Wezigns",
+      "description": "Custom HR, payroll, attendance and hiring systems that replace spreadsheets and message threads for growing teams.",
+      "headline": {
+        "lead": "Systems for",
+        "accent": "people and payroll."
+      },
+      "lead": "People and workforce systems bring HR records, payroll, attendance, appraisals, training and hiring into one place instead of spreadsheets and message threads.",
+      "intro": "As headcount grows, HR records, payroll runs, leave requests and appraisals usually live in separate spreadsheets and chat threads. The moment one team stops trusting the numbers another team is using, the business has outgrown the workaround.",
+      "systems": [
+        {
+          "name": "HR and employee records",
+          "body": "Holds every employee's records, documents and history in one place, replacing scattered spreadsheets and folders."
+        },
+        {
+          "name": "Payroll and filings",
+          "body": "Calculates pay, deductions and statutory filings each cycle, replacing manual payroll spreadsheets and reminders."
+        },
+        {
+          "name": "Attendance and leave",
+          "body": "Tracks who is in, who is on leave and who approved it, replacing paper registers and message-thread requests."
+        },
+        {
+          "name": "Appraisals and goals",
+          "body": "Runs review cycles and tracks goals against outcomes, replacing forms emailed around once a year."
+        },
+        {
+          "name": "Training and certification",
+          "body": "Schedules training, records attendance and tracks who holds which certification, replacing spreadsheets that go stale."
+        },
+        {
+          "name": "Hiring and onboarding",
+          "body": "Moves a candidate from application to first day in one workflow, replacing email threads between recruiter and manager."
+        }
+      ],
+      "closing": "These six rarely stand alone. Payroll needs attendance data, onboarding needs HR records, and training needs to feed appraisals. Connecting them is usually the actual project."
+    },
+    "revenue-customers": {
+      "title": "Revenue & customer systems · Wezigns",
+      "description": "Custom CRM, billing, support and renewal systems that give sales, support and finance one shared customer record.",
+      "headline": {
+        "lead": "Systems for",
+        "accent": "revenue and customers."
+      },
+      "lead": "Revenue and customer systems bring pipeline, pricing, billing, support and renewals into one shared record instead of a CRM that disagrees with the spreadsheet finance uses.",
+      "intro": "Sales, support and finance each keep their own version of the customer: a pipeline in the CRM, a quote in a spreadsheet, an invoice in accounting software. As the customer base grows, those versions drift apart and nobody can say what is actually true.",
+      "systems": [
+        {
+          "name": "CRM and pipelines",
+          "body": "Tracks leads and deals through a pipeline, replacing spreadsheets and inboxes that only one person can read."
+        },
+        {
+          "name": "Quotations and pricing",
+          "body": "Generates quotes against agreed pricing rules, replacing quotes built from scratch in a document each time."
+        },
+        {
+          "name": "Billing and subscriptions",
+          "body": "Runs recurring invoicing and subscription changes automatically, replacing manual invoice runs and chased payments."
+        },
+        {
+          "name": "Support desk and SLAs",
+          "body": "Logs support tickets against response-time targets, replacing support handled over email with no record of what was promised."
+        },
+        {
+          "name": "Renewals and retention",
+          "body": "Flags contracts approaching renewal before they lapse, replacing a spreadsheet someone forgets to check."
+        },
+        {
+          "name": "Partner portals",
+          "body": "Gives partners one place to register deals and check status, replacing email updates back and forth."
+        }
+      ],
+      "closing": "A quote, an invoice and a support ticket usually need to point at the same customer record. That connection between CRM, billing and support is where most of these projects start."
+    },
+    "operations-supply-chain": {
+      "title": "Operations & supply chain systems · Wezigns",
+      "description": "Custom order, inventory, warehouse and procurement systems that replace spreadsheets in physical operations.",
+      "headline": {
+        "lead": "Systems for",
+        "accent": "operations and supply chain."
+      },
+      "lead": "Operations and supply chain systems connect orders, stock, warehouse activity, procurement, production and asset maintenance instead of spreadsheets updated at different times by different people.",
+      "intro": "Physical operations generate a lot of moving numbers: stock levels, order status, purchase orders, machine hours. A spreadsheet can hold one of those numbers well. The trouble starts when six teams need the same number at the same time and it is only ever accurate in one spreadsheet.",
+      "systems": [
+        {
+          "name": "Order management",
+          "body": "Tracks an order from placement to fulfilment, replacing a spreadsheet updated by whoever picked it up last."
+        },
+        {
+          "name": "Inventory and stock",
+          "body": "Shows stock levels across locations in real time, replacing manual counts and end-of-day updates."
+        },
+        {
+          "name": "Warehouse and picking",
+          "body": "Directs picking, packing and dispatch on the warehouse floor, replacing paper pick lists."
+        },
+        {
+          "name": "Procurement and vendors",
+          "body": "Tracks purchase orders and vendor performance, replacing email chains for every order placed."
+        },
+        {
+          "name": "Production and work orders",
+          "body": "Schedules and tracks work orders through production, replacing a whiteboard or a shared spreadsheet."
+        },
+        {
+          "name": "Assets and maintenance",
+          "body": "Logs equipment, maintenance schedules and breakdowns, replacing paper logs kept near the machine."
+        }
+      ],
+      "closing": "Stock levels, order status and procurement usually need to agree with each other in real time. Getting those systems to talk is the integration work behind most operations projects."
+    },
+    "finance-governance": {
+      "title": "Finance & governance systems · Wezigns",
+      "description": "Custom ledger, expense, reporting, audit and approval systems that replace spreadsheets finance teams no longer trust.",
+      "headline": {
+        "lead": "Systems for",
+        "accent": "finance and governance."
+      },
+      "lead": "Finance and governance systems bring ledgers, expenses, reporting, audit trails, project budgets and approvals into one place instead of spreadsheets passed around by email.",
+      "intro": "Finance teams tend to inherit the workarounds every other team leaves behind: expense claims in email, budgets in a spreadsheet nobody owns, approvals tracked in someone's inbox. The audit trail is usually the first thing that breaks.",
+      "systems": [
+        {
+          "name": "Accounts and ledgers",
+          "body": "Keeps the ledger current and reconcilable, replacing manual entry from multiple source spreadsheets."
+        },
+        {
+          "name": "Expenses and claims",
+          "body": "Routes expense claims through approval and reimbursement, replacing scanned receipts emailed to finance."
+        },
+        {
+          "name": "Dashboards and reporting",
+          "body": "Turns ledger and operational data into reports that update themselves, replacing month-end spreadsheet assembly."
+        },
+        {
+          "name": "Audit and compliance",
+          "body": "Keeps a record of who did what and when, replacing an audit trail reconstructed from memory and email."
+        },
+        {
+          "name": "Projects and budgets",
+          "body": "Tracks spend against a project budget as it happens, replacing a budget spreadsheet updated after the fact."
+        },
+        {
+          "name": "Documents and approvals",
+          "body": "Routes documents through approval with a record of every step, replacing signatures chased over email."
+        }
+      ],
+      "closing": "A budget system that does not talk to the ledger just produces two different numbers. Connecting finance systems to the rest of the business, not just to each other, is usually the real work."
+    },
+    "industry-systems": {
+      "title": "Industry systems · Wezigns",
+      "description": "Custom systems for hospitals, schools, property, lending, retail and logistics, built around how each sector runs.",
+      "headline": {
+        "lead": "Systems built for",
+        "accent": "how your industry runs."
+      },
+      "lead": "Industry systems are built around the specific processes of a sector, healthcare, education, property, lending, retail or logistics, rather than a generic template stretched to fit.",
+      "intro": "General-purpose software gets close for most sectors, but a hospital's patient record, a school's term structure or a lender's approval workflow have rules a generic tool does not model. That gap is usually where the spreadsheets and manual steps creep back in.",
+      "systems": [
+        {
+          "name": "Hospitals and clinics",
+          "body": "Manages patient records, appointments and clinical workflow, replacing paper files and disconnected booking systems."
+        },
+        {
+          "name": "Schools and colleges",
+          "body": "Runs admissions, timetables, attendance and fees against a term structure, replacing spreadsheets rebuilt each term."
+        },
+        {
+          "name": "Property and hotels",
+          "body": "Manages bookings, occupancy and billing across units or rooms, replacing a shared calendar and manual rate sheets."
+        },
+        {
+          "name": "Lending and finance",
+          "body": "Runs loan applications through approval, disbursal and repayment tracking, replacing spreadsheets and manual checks."
+        },
+        {
+          "name": "Restaurant and retail POS",
+          "body": "Handles orders, payments and stock at the point of sale, replacing a till that cannot see inventory."
+        },
+        {
+          "name": "Logistics and fleet",
+          "body": "Tracks vehicles, routes and deliveries in real time, replacing driver check-ins by phone or message."
+        }
+      ],
+      "closing": "Most of these still need to connect to the finance or reporting systems covered elsewhere; a hospital still needs a ledger, a hotel still needs accounting. The sector-specific system rarely stands alone."
+    }
+  },
+  "howPage": {
+    "title": "How we build · Wezigns",
+    "description": "How Wezigns builds custom software: understand the process, shape the product, build in working pieces, then run it.",
+    "headline": {
+      "lead": "Understand. Shape.",
+      "accent": "Build. Run."
+    },
+    "lead": "We don't start with technology. We start with the business.",
+    "intro": "Every system we build goes through the same four stages, in the same order. Skipping one is usually where the workarounds it was meant to replace end up coming back.",
+    "stages": [
+      {
+        "name": "Understand",
+        "body": "We get inside the process before proposing anything: the people doing the work, the workflows they follow, the systems and dependencies involved, the exceptions that break the happy path, and the constraints nobody wrote down but everybody works around.",
+        "output": "A clear picture of the problem."
+      },
+      {
+        "name": "Shape",
+        "body": "We turn the problem into a product: what matters now, what can wait, how it should work, and which technology fits it. No build starts before that number is agreed.",
+        "output": "Scope, priorities, direction, timeline and price."
+      },
+      {
+        "name": "Build",
+        "body": "We design and develop in working pieces, not one long build. The people who understood the project stay close to the work, so what gets built matches what was agreed, and there is something to test and review early rather than at the end.",
+        "output": "A working product you can test and review."
+      },
+      {
+        "name": "Run",
+        "body": "Launch is not the finish line. After launch we host, monitor, maintain, support and keep improving what we built, so the system keeps serving the business it was built for as that business keeps changing.",
+        "output": "A product that keeps serving the business."
+      }
+    ],
+    "principlesIntro": "Every system we build follows three rules at every stage: simplify what is complicated, build for the size the business will grow into, and treat security as part of the design, not an afterthought.",
+    "closing": "These four stages and three rules do not change with project size."
   }
 }

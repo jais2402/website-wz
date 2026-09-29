@@ -174,6 +174,24 @@ When any of these arrives:
 
 ---
 
+## Open — pages not built, and why
+
+- [ ] **A page per case study** (`/work/<slug>`) — offered and not chosen; the
+      four cases remain anchors on `/work`. Say the word and it is an hour — *PM*
+- [!] **`/pricing`** — deliberately NOT built. Its entire subject is the price
+      band, which is business fact #1 and still null. A page that dodges its own
+      question is worse than no page — *CEO*
+- [!] **`/privacy`** — the contact form collects a name, an email and a message,
+      and clients include the Netherlands, the UK and the Czech Republic, so a
+      privacy notice is a legal requirement, not a nicety. It states legal
+      commitments (what is collected, why, how long it is kept, who it is shared
+      with, the lawful basis) and cannot be drafted without the owner — *CEO +
+      Security*
+- [ ] **`/careers`** — the old site had one; no open roles are recorded, so
+      nothing to say yet — *CEO*
+
+---
+
 ## Open defects
 
 - [ ] 320px: 32px of horizontal overflow — *Designer*

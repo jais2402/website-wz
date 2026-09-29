@@ -27,7 +27,10 @@ export default defineConfig({
   webServer: {
     command: 'pnpm build && pnpm start',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    // Never reuse: a long-running `next dev` on :3000 had the suite testing a
+    // day-old server instead of the build, and it passed while the built
+    // output disagreed with it. The gate must test what ships.
+    reuseExistingServer: false,
     timeout: 180_000,
   },
 });

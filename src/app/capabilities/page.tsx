@@ -73,6 +73,7 @@ export default function CapabilitiesPage() {
                   key={item.title}
                   id={slug(item.title)}
                   title={item.title}
+                  href={`/capabilities/${slug(item.title)}`}
                   // The home bento carries the short line; this page the full one.
                   body={item.detail ?? item.body}
                   hue={toHue(item.hue)}
@@ -100,6 +101,7 @@ export default function CapabilitiesPage() {
                   key={item.title}
                   id={slug(item.title)}
                   title={item.title}
+                  href={`/systems/${slug(item.title)}`}
                   systems={item.systems}
                   hue={toHue(item.hue)}
                 />

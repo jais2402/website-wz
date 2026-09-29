@@ -146,6 +146,29 @@ export interface CapabilityPage {
   relatedCase?: string;
 }
 
+/** One of the five areas in the range: /systems/<slug>/. */
+export interface AreaPage {
+  title: string;
+  description: string;
+  headline: Headline;
+  lead: string;
+  intro: string;
+  systems: Array<{ name: string; body: string }>;
+  closing: string;
+}
+
+/** The process page: /how-we-build/. */
+export interface HowPage {
+  title: string;
+  description: string;
+  headline: Headline;
+  lead: string;
+  intro: string;
+  stages: Array<{ name: string; body: string; output: string }>;
+  principlesIntro: string;
+  closing: string;
+}
+
 export interface AboutPage {
   title: string;
   description: string;

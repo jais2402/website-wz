@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { content, footer, contactFacts } from '@/lib/content';
 import { contactPage } from '@/lib/pages';
 import { Eyebrow } from '@/components/atoms';
-import { ContactSection, SiteFooter, SiteHeader } from '@/components/organisms';
-import { DocumentTemplate } from '@/components/templates';
+import { ContactSection } from '@/components/organisms';
+import { DocumentPage } from '@/components/templates';
 
 const page = contactPage;
 
@@ -24,35 +24,13 @@ export const metadata: Metadata = {
  * facts exist (rule 1) — see `contactFacts`.
  */
 export default function ContactPage() {
-  const { nav, hero, sections } = content;
-  const primaryCta = hero.actions[0]!;
+  const { sections } = content;
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const form = sections.find((s) => (s as any).id === 'contact') as any;
   const { phone, office } = contactFacts();
 
   return (
-    <DocumentTemplate
-      header={
-        <SiteHeader
-          nav={nav.primary}
-          cta={nav.cta}
-          wordmark={footer.wordmark}
-          name={content.meta.name}
-          since={content.meta.since}
-        />
-      }
-      footer={
-        <SiteFooter
-          {...contactFacts()}
-          cta={footer.cta}
-          columns={footer.columns}
-          wordmark={footer.wordmark}
-          base={footer.base}
-          primaryCta={primaryCta}
-        />
-      }
-    >
-      <div className="mx-auto max-w-centre px-gutter pb-[clamp(72px,9vh,110px)]">
+    <DocumentPage>
         {/* The form carries its own H1 here: on this page it is the subject,
             not one section among many. */}
         <ContactSection
@@ -139,7 +117,6 @@ export default function ContactPage() {
             ) : null}
           </dl>
         </section>
-      </div>
-    </DocumentTemplate>
+    </DocumentPage>
   );
 }

@@ -9,6 +9,9 @@ const ROUTES = [
   '/contact/',
   '/capabilities/custom-business-software/',
   '/capabilities/ecommerce-systems/',
+  '/how-we-build/',
+  '/systems/operations-supply-chain/',
+  '/systems/people-workforce/',
 ];
 
 test.describe('the sub-pages', () => {
@@ -40,6 +43,26 @@ test.describe('the sub-pages', () => {
     if (await tel.count()) {
       await expect(tel).toBeVisible();
       await expect(page.locator('address').first()).toBeVisible();
+    }
+  });
+
+  test('no page in the sitemap is a 404, and none is orphaned', async ({ page }) => {
+    // A sitemap that lists a page nobody links to is a page nobody reads, and
+    // one that lists a 404 costs trust with every crawler that follows it.
+    const xml = await (await page.request.get('/sitemap.xml')).text();
+    const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]!).pathname);
+    expect(urls.length).toBeGreaterThanOrEqual(20);
+    for (const url of urls) {
+      expect((await page.request.get(url)).status(), `${url} should resolve`).toBe(200);
+    }
+  });
+
+  test('the range areas link to their own pages', async ({ page }) => {
+    await page.goto('/capabilities/');
+    const links = page.locator('#range a[href^="/systems/"]');
+    expect(await links.count()).toBe(5);
+    for (const href of await links.evaluateAll((as) => as.map((a) => a.getAttribute('href')!))) {
+      expect((await page.request.get(href)).status(), `${href} should resolve`).toBe(200);
     }
   });
 

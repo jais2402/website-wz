@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { content, footer, pages, contactFacts } from '@/lib/content';
+import { content, pages } from '@/lib/content';
 import { capabilityPages } from '@/lib/pages';
 import { Button, Eyebrow, JsonLd } from '@/components/atoms';
-import { HeadlineSplit } from '@/components/molecules';
-import { SiteFooter, SiteHeader } from '@/components/organisms';
-import { DocumentTemplate } from '@/components/templates';
+import { HeadlineSplit, PageSectionBlock } from '@/components/molecules';
+import { DocumentPage } from '@/components/templates';
 import { serviceSchema } from '@/lib/structured-data';
 import { slug as toSlug } from '@/lib/slug';
 
@@ -58,8 +57,7 @@ export default async function CapabilityPage({ params }: { params: Promise<{ slu
   const item = offering(slug);
   if (!page) notFound();
 
-  const { nav, hero } = content;
-  const primaryCta = hero.actions[0]!;
+  const primaryCta = content.hero.actions[0]!;
   // A case study in the same territory, when one exists. Never invented: this
   // is a link to work already published on /work.
   const related = content.cases.find((c) => page.relatedCase === c.slug);
@@ -67,102 +65,50 @@ export default async function CapabilityPage({ params }: { params: Promise<{ slu
   return (
     <>
       <JsonLd schema={serviceSchema(slug, page.title, page.lead)} />
-      <DocumentTemplate
-        header={
-          <SiteHeader
-            nav={nav.primary}
-            cta={nav.cta}
-            wordmark={footer.wordmark}
-            name={content.meta.name}
-            since={content.meta.since}
-          />
-        }
-        footer={
-          <SiteFooter
-            {...contactFacts()}
-            cta={footer.cta}
-            columns={footer.columns}
-            wordmark={footer.wordmark}
-            base={footer.base}
-            primaryCta={primaryCta}
-          />
-        }
-      >
-        <div className="mx-auto max-w-centre px-gutter pb-[clamp(72px,9vh,110px)]">
-          {/* Where this page sits. One level, so it stays a sentence rather
-              than a chrome element. */}
-          <nav aria-label="Breadcrumb">
-            <Link
-              href="/capabilities"
-              className="inline-flex min-h-10 items-center text-caption text-ink-3 transition-colors duration-300 ease-brand hover:text-ink"
-            >
-              &#8592; All capabilities
-            </Link>
-          </nav>
-
-          <HeadlineSplit headline={page.headline} level="d1" as="h1" id="capability-title" />
-          <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p>
-
-          {page.sections.map((section) => (
-            <section
-              key={section.heading}
-              aria-labelledby={toSlug(section.heading)}
-              className="mt-section border-t border-line pt-section"
-            >
-              <h2 id={toSlug(section.heading)} className="text-d2 text-balance text-ink">
-                {section.heading}
-              </h2>
-              {section.body?.map((paragraph) => (
-                <p key={paragraph} className="mt-4 max-w-measure text-body leading-relaxed text-ink-2">
-                  {paragraph}
-                </p>
-              ))}
-              {section.items?.length ? (
-                <ul className="mt-5 grid max-w-measure gap-y-2.5">
-                  {section.items.map((line) => (
-                    <li key={line} className="border-t border-line pt-2.5 text-body text-ink-2">
-                      {line}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </section>
-          ))}
-
-          {related ? (
-            <section
-              aria-labelledby="capability-case"
-              className="mt-section border-t border-line pt-section"
-            >
-              <Eyebrow>A system like this</Eyebrow>
-              <h2 id="capability-case" className="mt-2 text-d2 text-balance text-ink">
-                {related.title}
-              </h2>
-              <p className="mt-4 max-w-measure text-body leading-relaxed text-ink-2">
-                {related.body[0]}
-              </p>
-              <div className="mt-6">
-                <Button href={`/work#${related.slug}`} variant="secondary">
-                  Read the case
-                </Button>
-              </div>
-            </section>
-          ) : null}
-
-          <section
-            aria-labelledby="capability-cta"
-            className="mt-section border-t border-line pt-section"
+      <DocumentPage>
+        {/* Where this page sits. One level, so it stays a sentence rather than
+            a chrome element. */}
+        <nav aria-label="Breadcrumb">
+          <Link
+            href="/capabilities"
+            className="inline-flex min-h-10 items-center text-caption text-ink-3 transition-colors duration-300 ease-brand hover:text-ink"
           >
-            <h2 id="capability-cta" className="text-d2 text-balance text-ink">
-              {item ? `Is ${item.title.toLowerCase()} what you need?` : 'Not sure this is what you need?'}
+            &#8592; All capabilities
+          </Link>
+        </nav>
+
+        <HeadlineSplit headline={page.headline} level="d1" as="h1" id="capability-title" />
+        <p className="mt-6 max-w-measure text-lead text-ink-2">{page.lead}</p>
+
+        {page.sections.map((section) => (
+          <PageSectionBlock key={section.heading} {...section} />
+        ))}
+
+        {related ? (
+          <section aria-labelledby="capability-case" className="mt-section border-t border-line pt-section">
+            <Eyebrow>A system like this</Eyebrow>
+            <h2 id="capability-case" className="mt-2 text-d2 text-balance text-ink">
+              {related.title}
             </h2>
-            <p className="mt-4 max-w-measure-tight text-lead text-ink-2">{pages.capabilities.cta.body}</p>
-            <div className="mt-7">
-              <Button href={primaryCta.href}>{primaryCta.label}</Button>
+            <p className="mt-4 max-w-measure text-body leading-relaxed text-ink-2">{related.body[0]}</p>
+            <div className="mt-6">
+              <Button href={`/work#${related.slug}`} variant="secondary">
+                Read the case
+              </Button>
             </div>
           </section>
-        </div>
-      </DocumentTemplate>
+        ) : null}
+
+        <section aria-labelledby="capability-cta" className="mt-section border-t border-line pt-section">
+          <h2 id="capability-cta" className="text-d2 text-balance text-ink">
+            {item ? `Is ${item.title.toLowerCase()} what you need?` : 'Not sure this is what you need?'}
+          </h2>
+          <p className="mt-4 max-w-measure-tight text-lead text-ink-2">{pages.capabilities.cta.body}</p>
+          <div className="mt-7">
+            <Button href={primaryCta.href}>{primaryCta.label}</Button>
+          </div>
+        </section>
+      </DocumentPage>
     </>
   );
 }

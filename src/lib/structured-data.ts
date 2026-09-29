@@ -100,15 +100,15 @@ export function caseStudySchema() {
  * page itself shows: no price, no rating, no area claim beyond `areaServed`,
  * which comes from the markets listed in the DOM.
  */
-export function serviceSchema(slug: string, name: string, description: string) {
+export function serviceSchema(slug: string, name: string, description: string, base_path = 'capabilities') {
   const base = content.meta.siteUrl.replace(/\/$/, '');
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    '@id': `${base}/capabilities/${slug}/#service`,
+    '@id': `${base}/${base_path}/${slug}/#service`,
     name: name.replace(/\s*·\s*Wezigns$/, ''),
     description,
-    url: `${base}/capabilities/${slug}/`,
+    url: `${base}/${base_path}/${slug}/`,
     provider: { '@id': `${base}/#organization` },
     areaServed: content.meta.markets,
   };

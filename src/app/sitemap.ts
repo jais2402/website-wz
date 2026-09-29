@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { content } from '@/lib/content';
-import { capabilityPages } from '@/lib/pages';
+import { areaPages, capabilityPages } from '@/lib/pages';
 
 /**
  * Static export renders this to /sitemap.xml at build time.
@@ -25,6 +25,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     })),
+    ...Object.keys(areaPages).map((slug) => ({
+      url: `${base}/systems/${slug}/`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
+    { url: `${base}/how-we-build/`, lastModified, changeFrequency: 'yearly', priority: 0.7 },
     { url: `${base}/about/`, lastModified, changeFrequency: 'yearly', priority: 0.6 },
     { url: `${base}/contact/`, lastModified, changeFrequency: 'yearly', priority: 0.6 },
   ];

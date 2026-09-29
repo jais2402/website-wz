@@ -10,3 +10,4 @@ export { MetricPair, type MetricPairProps } from './MetricPair';
 export { ProofStrip, type ProofStripProps } from './ProofStrip';
 export { StepBlock, type StepBlockProps } from './StepBlock';
 export { TopicChips, type TopicChipsProps } from './TopicChips';
+export { PageSectionBlock, type PageSectionBlockProps } from './PageSectionBlock';
