@@ -34,7 +34,15 @@ export function HeroSection({
     >
       <div data-body="" className="w-full lg:w-[calc(50vw-max(24px,5.4vw))]">
         <HeadlineSplit headline={headline} level="d1" as="h1" id="hero-title" />
-        <p className="mt-[26px] max-w-[50ch] text-[17.5px] leading-relaxed text-ink">{sub}</p>
+        {/* A line break in content/site.json starts a new line, so the copy
+            decides where the sub breaks without a code change. */}
+        <p className="mt-[26px] max-w-[50ch] text-[17.5px] leading-relaxed text-ink">
+          {sub.split('\n').map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
+        </p>
 
         <div className="mt-9 flex flex-wrap gap-3">
           {actions.map((action) => (

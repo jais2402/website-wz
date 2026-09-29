@@ -41,6 +41,19 @@ next session what happened but not where it is standing.
 
 ---
 
+## 2026-09-29 — Hero sub on two lines
+**Type:** delivery
+**Owner:** Designer
+**Context:** Owner: "Built around how you work, ready for what comes next. — keep in
+another line".
+**Decision:** `hero.sub` may contain `\n`; `organisms/HeroSection.tsx` renders
+each line as a block span inside the one `<p>`, so the copy decides the break and
+the paragraph stays a single element for readers and search.
+**Consequences:** other text fields do not honour `\n`. Extend the same pattern
+only where it is asked for.
+
+---
+
 ## 2026-09-29 — Hero tests follow the tag; a red commit fixed
 **Type:** reversal (test assertions)
 **Owner:** Test Engineer role (main session)
