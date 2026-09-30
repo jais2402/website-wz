@@ -151,14 +151,21 @@ export function createStage(
    * than one part repeated. `shapeSlot[i]` is instance i's index within its own
    * mesh, so the write loop below stays O(1) per instance.
    */
-  const shapeOf = (i: number) => i % SHAPES.length;
-  const shapeSlot: number[] = [];
-  const counts: number[] = SHAPES.map(() => 0);
-  for (let i = 0; i < N; i += 1) {
-    const k = shapeOf(i);
-    shapeSlot[i] = counts[k]!;
-    counts[k] = counts[k]! + 1;
-  }
+  /* Which shape draws instance `i`.
+   *
+   * Each mesh carries a slot for EVERY instance and hides the ones it is not
+   * drawing (zero scale), so a scene can change its mind about shapes between
+   * frames. That is what lets the monolith scenes close into a true cube while
+   * the rest of the page keeps four shapes: `SceneState.solid` picks the
+   * square for everything.
+   */
+  const shapeOf = (i: number, solid: boolean) => (solid ? 0 : i % SHAPES.length);
+  // Each mesh packs its instances contiguously and sets `count`, so the total
+  // drawn is always N — never N × shapes. Parking unused slots at zero scale
+  // would still cost the vertex shader on every one of them.
+  const packed: number[] = SHAPES.map(() => 0);
+  // Reverse lookup for the hover raycast: which instance a mesh's slot holds.
+  const owner: number[][] = SHAPES.map(() => []);
   // Flat shading gives every facet its own normal, so the chamfers read as
   // distinct planes rather than a smooth gradient. Lower roughness lets them
   // catch the key light — that highlight along each crease is what makes the
@@ -168,8 +175,8 @@ export function createStage(
   // darkens) and a mid roughness, so each facet takes a clean step of tone
   // rather than a heavy specular. The geometry does the work, not the material.
   const mat = new THREE.MeshStandardMaterial({ roughness: 0.62, metalness: 0, flatShading: true });
-  const meshes = SHAPES.map((make, k) => {
-    const m = new THREE.InstancedMesh(make(), mat, counts[k]!);
+  const meshes = SHAPES.map((make) => {
+    const m = new THREE.InstancedMesh(make(), mat, N);
     m.castShadow = true; m.receiveShadow = true;
     m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     group.add(m);
@@ -463,6 +470,10 @@ export function createStage(
     // half of the crossing, so what travels past the centred heading is the
     // low map, not a field of full-height bars.
     const wp = SCENES[bn.sc] === 'regions' && an !== bn ? smooth(w / 0.55) : w;
+    // The dominant scene decides the shape set: a cube scene draws squares so
+    // the 3x3x3 actually closes.
+    const solidNow = (w < 0.5 ? A.solid : B.solid) > 0.5;
+    for (let k = 0; k < packed.length; k += 1) packed[k] = 0;
     for (let i = 0; i < N; i += 1) {
       tv.copy(A.p[i]!).lerp(B.p[i]!, wp);
       ts.copy(A.s[i]!).lerp(B.s[i]!, wp);
@@ -474,11 +485,17 @@ export function createStage(
       curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
       dummy.scale.copy(cur.s[i]!); dummy.updateMatrix();
-      const m = meshes[shapeOf(i)]!;
-      m.setMatrixAt(shapeSlot[i]!, dummy.matrix);
-      m.setColorAt(shapeSlot[i]!, cur.c[i]!);
+      const pick = shapeOf(i, solidNow);
+      const m = meshes[pick]!;
+      const slotIx = packed[pick]!;
+      m.setMatrixAt(slotIx, dummy.matrix);
+      m.setColorAt(slotIx, cur.c[i]!);
+      owner[pick]![slotIx] = i;
+      packed[pick] = slotIx + 1;
     }
-    for (const m of meshes) {
+    for (let k = 0; k < meshes.length; k += 1) {
+      const m = meshes[k]!;
+      m.count = packed[k]!;
       m.instanceMatrix.needsUpdate = true;
       if (m.instanceColor) m.instanceColor.needsUpdate = true;
     }
@@ -584,7 +601,7 @@ export function createStage(
       if (hits.length) {
         const k = meshes.findIndex((m) => m === hits[0]!.object);
         const local = hits[0]!.instanceId ?? -1;
-        if (k >= 0 && local >= 0) idx = local * SHAPES.length + k;
+        if (k >= 0 && local >= 0) idx = owner[k]![local] ?? -1;
       }
       if (idx !== modelHoverIndex) { modelHoverIndex = idx; onModelHover('build', idx); }
       pointerDirty = false;

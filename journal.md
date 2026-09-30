@@ -377,6 +377,28 @@ chromium-only) — exit 0.
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
 
+## 2026-09-30 — A scene can ask for one shape, so the cube closes
+**Type:** delivery
+**Owner:** Owner: "can we form a perfect cube here" (the pricing section).
+**The tension, named:** polygons cannot tile a cube. A hexagon or a pentagon
+leaves gaps however it is packed, so with four shapes the 3×3×3 read as a loose
+cluster rather than a solid block. "Different shapes" and "a perfect cube" are
+in genuine conflict — the resolution is to let the SCENE decide.
+**Decision:** new `SceneState.solid`, set by `monolith()` and therefore true for
+`moment`, `price` and `contact`. When it is set, every block is drawn from the
+square shape and the cube closes; every other scene keeps the four-shape
+variety. The shape is now chosen per frame from the dominant scene of the
+blend, not fixed per instance at construction.
+**Performance, and a mistake caught by the gate:** the first version gave every
+mesh a slot for every instance and parked the unused ones at zero scale. That
+still costs the vertex shader on all of them — 256 instances processed instead
+of 64 — and the gate went from ~1.6 minutes to over ten. Each mesh now packs
+its instances contiguously and sets `count`, so the total drawn is always N.
+The hover raycast keeps an `owner[mesh][slot] → instance` reverse map, since a
+mesh's slot index is no longer the instance index.
+**Gate:** exit 0 — 18 unit, 133 e2e, initial 174.1 KB, 3D 121.8 KB, back to
+~1.6 minutes.
+
 ## 2026-09-30 — Settled: four faceted geometric shapes, light shading
 **Type:** delivery
 **Owner:** Owner: "lets do the next thing we did — more faces and different

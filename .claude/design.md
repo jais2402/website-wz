@@ -181,6 +181,13 @@ One model, fifteen states, blended by scroll. It is a diagram, not decoration.
    per shape, dealt round-robin so neighbouring blocks differ. Every face flat,
    every join a hard crease, nothing tilted, nothing irregular — the variety is
    in the shapes themselves, never in deformation.
+   **A scene may ask for one shape.** Polygons cannot tile a cube — a hexagon
+   leaves gaps however it is packed — so the monolith scenes (`moment`,
+   `price`, `contact`) set `SceneState.solid` and draw every block from the
+   square, which closes the 3×3×3 into a true cube. Everywhere else keeps the
+   four. Each mesh packs its instances contiguously and sets `count`, so the
+   total drawn is always N: parking unused slots at zero scale would still cost
+   the vertex shader on every one of them.
    **Light shading:** `flatShading: true`, `roughness .62`, **`metalness 0`** —
    there is no environment map, so metalness only darkens. Each facet takes a
    clean step of tone; the geometry does the work, not the material.

@@ -38,6 +38,14 @@ export interface SceneState {
   beside: number;
   /** The world map's height, 0–1 (regions only). */
   map: number;
+  /**
+   * 1 when the scene must read as a SOLID CUBE (the monolith scenes).
+   *
+   * Polygons cannot tile a cube — a hexagon or a pentagon leaves gaps however
+   * it is packed — so these scenes draw every block from the square shape and
+   * the rest of the page keeps the four-shape variety.
+   */
+  solid: number;
   name: string;
   parts: string;
 }
@@ -52,7 +60,7 @@ export function blank(): SceneState {
     pp: [], ps: [],
     lines: { foot: 0, frame: 0, cage: 0, slot: 0 },
     yaw: 0, look: 1, dist: 15, scale: 1,
-    labels: [], lab: 0, beside: 0, map: 0, name: '', parts: '',
+    labels: [], lab: 0, beside: 0, map: 0, solid: 0, name: '', parts: '',
   };
   for (let i = 0; i < N; i += 1) {
     o.p.push(new THREE.Vector3());
@@ -156,6 +164,9 @@ export function buildState(P: Palette) {
   }
   /** The 3x3x3 block: one system, twenty-seven modules. */
   function monolith(o: SceneState, skip: boolean) {
+    // Every block here is drawn from the square shape, so the 3x3x3 closes into
+    // a true cube. Polygons leave gaps and read as a loose cluster.
+    o.solid = 1;
     let k = 0;
     for (let gy = 0; gy < 3; gy += 1) for (let gz = 0; gz < 3; gz += 1) for (let gx = 0; gx < 3; gx += 1) {
       const corner = gx === 2 && gy === 2 && gz === 2;
@@ -188,7 +199,7 @@ export function buildState(P: Palette) {
     o.labels.length = 0;
     o.lab = LABELLED[keyName] ? 1 : 0;
     o.beside = 0;
-    o.map = 0;
+    o.map = 0; o.solid = 0;
     o.hub.on = 0; o.hub.p.set(0, 0.5, 0); o.hub.s.set(1, 1, 1);
     o.lines.foot = o.lines.frame = o.lines.cage = o.lines.slot = 0;
     for (let j = 0; j < NP; j += 1) { o.ps[j] = 0; o.pp[j]!.set(0, 0, 0); }
