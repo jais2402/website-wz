@@ -377,6 +377,37 @@ chromium-only) — exit 0.
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
 
+## 2026-09-30 — Hover reset fixed; density tightened (and it barely moved)
+**Type:** delivery, with an honest negative result
+**Owner:** Owner: "pls do the two things that is waiting".
+
+**1. The stuck hover — fixed.** Pointing at a block in the "What we build"
+model lit its tile and never cleared. Cause: the clear only ran on a pointer
+move that MISSED the model, so if the pointer left the browser window there was
+no such move and the highlight stayed. `stage.ts` now clears on `pointerout`
+with no `relatedTarget` (the pointer leaving the document) and on window
+`blur`, and calls `poke()` so the cleared state is actually drawn — the loop may
+already have gone to sleep. Both listeners are removed on destroy.
+
+**2. Density — done, and it did not work.** Section floor 74vh → 62vh, centred
+sections 100vh → 88vh, padding roughly a quarter smaller, body weight 300 → 350.
+**The page went from 16,672px to 16,313px: a 2% reduction.** That is not a fix
+for "the site feels like a void".
+**Why it failed, which is the useful part:** the emptiness is not padding, it is
+STRUCTURAL. Every section is one 3D scene, and a scroll-driven scene needs a
+screenful of travel to read. So each section is sized for the animation, not for
+its content — the AI section is a headline, three lines and a button in a 900px
+screen, about 70% of it empty. Shrinking the floor cannot fix that while the
+one-scene-per-section model holds.
+**The real choices, for the owner:**
+- fewer scenes, so the surviving sections carry more content each;
+- or accept the sparseness as the cost of the scroll-driven model;
+- or add content density — the biggest single lever remains real screenshots of
+  the systems, which is blocked on assets (§ Blocked).
+The type weight change is kept on its own merit: 300 read thin and grey at body
+size and added to the impression.
+**Gate:** exit 0 — 18 unit, 133 e2e, initial 174.2 KB, 3D 121.7 KB.
+
 ## 2026-09-30 — A scene can ask for one shape, so the cube closes
 **Type:** delivery
 **Owner:** Owner: "can we form a perfect cube here" (the pricing section).

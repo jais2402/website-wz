@@ -737,12 +737,27 @@ export function createStage(
     pointerDirty = true;
     poke();
   };
+  /* The model's hover only clears on a pointer move that MISSES it. If the
+   * pointer leaves the window there is no such move, so the block stayed lit
+   * and its tile stayed highlighted (owner, 2026-09-30). These clear it
+   * directly. `poke()` so the cleared state is actually drawn — the loop may
+   * already have gone to sleep. */
+  const clearModelHover = () => {
+    if (modelHoverIndex === -1) return;
+    modelHoverIndex = -1;
+    onModelHover?.('build', -1);
+    poke();
+  };
+  const onPointerOut = (e: PointerEvent) => { if (!e.relatedTarget) clearModelHover(); };
   const onScroll = () => poke();
   const onHover = () => poke();
 
   window.addEventListener('resize', onResize);
   window.addEventListener('load', onLoad);
   window.addEventListener('pointermove', onPointer, { passive: true });
+  // `pointerout` with no relatedTarget means the pointer left the document.
+  document.addEventListener('pointerout', onPointerOut);
+  window.addEventListener('blur', clearModelHover);
   window.addEventListener('scroll', onScroll, { passive: true });
   document.addEventListener('mouseover', onHover);
   document.addEventListener('click', onHover);
@@ -789,6 +804,8 @@ export function createStage(
       window.removeEventListener('resize', onResize);
       window.removeEventListener('load', onLoad);
       window.removeEventListener('pointermove', onPointer);
+      document.removeEventListener('pointerout', onPointerOut);
+      window.removeEventListener('blur', clearModelHover);
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('mouseover', onHover);
       document.removeEventListener('click', onHover);

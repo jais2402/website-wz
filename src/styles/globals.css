@@ -45,7 +45,9 @@
     background-size: 24px 24px;
     color: var(--color-ink);
     font-family: var(--font-display);
-    font-weight: 300;
+    /* 300 read thin and grey at body size and added to the sparse feel;
+       350 keeps the light voice with more presence. */
+    font-weight: 350;
     font-size: 16px;
     line-height: 1.62;
     -webkit-font-smoothing: antialiased;

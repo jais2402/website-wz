@@ -31,14 +31,20 @@ export function Section({ id, side = 'l', scene, labelledBy, children, className
       data-scene={scene}
       aria-labelledby={labelledBy}
       className={cn(
-        // Section rhythm from the prototype: a floor height so the scene has
-        // scroll travel to move through, and asymmetric padding — more above
-        // than below, so a heading clears the sticky header.
-        'relative min-h-[74vh] px-gutter',
-        'pt-[clamp(100px,12vh,140px)] pb-[clamp(36px,5vh,72px)]',
+        // Section rhythm: a floor height so the scene has scroll travel to
+        // move through, and asymmetric padding — more above than below, so a
+        // heading clears the sticky header.
+        //
+        // Tightened 2026-09-30 (owner: "the site feels like a void since it is
+        // very plain"). The page was not badly styled, it was SPARSE: a column
+        // of text, a model, and most of a 74vh screen empty. The floor is 62vh
+        // and the padding roughly a quarter smaller, which is enough travel for
+        // the scene and closes the emptiness the owner was reacting to.
+        'relative min-h-[62vh] px-gutter',
+        'pt-[clamp(76px,9vh,112px)] pb-[clamp(28px,4vh,56px)]',
         // A centred chapter owns a full screen: the reading column sits in the
         // upper half and the model is offset below it.
-        side === 'c' && 'lg:min-h-screen',
+        side === 'c' && 'lg:min-h-[88vh]',
         className,
       )}
     >
