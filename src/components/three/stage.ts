@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createPalette, readPalette } from './palette';
-import { chamferBox, countryPrism, lineSegmentPositions } from './geometry';
-import { N, NP, R, blank, buildState, smooth, type SceneState } from './states';
+import { SHAPES, chamferBox, lineSegmentPositions } from './geometry';
+import { N, NP, blank, buildState, smooth, type SceneState } from './states';
 import { BOOST, SCENES, SCENE_ALIAS } from './scene-data';
 import { CELL, LAND_CELLS } from './world';
 
@@ -128,9 +128,7 @@ export function createStage(
   key.shadow.camera.left = -8; key.shadow.camera.right = 8;
   key.shadow.camera.top = 8; key.shadow.camera.bottom = -8;
   key.shadow.camera.near = 1; key.shadow.camera.far = 40;
-  // Raised from 0.02 with the displaced footprint: a thin plate whose
-  // outline is pushed outward self-shadowed in stripes at the old value.
-  key.shadow.bias = -0.0009; key.shadow.normalBias = 0.055;
+  key.shadow.bias = -0.0006; key.shadow.normalBias = 0.02;
   scene.add(key, key.target);
   const fill = new THREE.DirectionalLight(0xffffff, 0.26 * LEGACY_LIGHT_SCALE);
   fill.position.set(-8, 4, 5);
@@ -146,77 +144,34 @@ export function createStage(
   scene.add(group);
 
   /* ── the model ─────────────────────────────────────── */
-  const boxGeo = countryPrism(16);
+  /* One InstancedMesh per shape.
+   *
+   * Instances are dealt round-robin, so neighbouring blocks in any scene get
+   * different shapes and the field reads as assorted machined parts rather
+   * than one part repeated. `shapeSlot[i]` is instance i's index within its own
+   * mesh, so the write loop below stays O(1) per instance.
+   */
+  const shapeOf = (i: number) => i % SHAPES.length;
+  const shapeSlot: number[] = [];
+  const counts: number[] = SHAPES.map(() => 0);
+  for (let i = 0; i < N; i += 1) {
+    const k = shapeOf(i);
+    shapeSlot[i] = counts[k]!;
+    counts[k] = counts[k]! + 1;
+  }
   // Flat shading gives every facet its own normal, so the chamfers read as
   // distinct planes rather than a smooth gradient. Lower roughness lets them
   // catch the key light — that highlight along each crease is what makes the
   // references read as machined rather than moulded. Metalness stays modest:
   // there is no environment map, and a high value only darkens the blocks.
   const mat = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.18, flatShading: true });
-
-  /* The Ghost Cube footprint.
-   *
-   * Each perimeter sample is pushed in or out along its own X/Z direction, so
-   * the square outline becomes an irregular many-sided one. Pushed to zero the
-   * block is exactly a cube again — that is the resolve.
-   *
-   * Two properties make this read as a machined piece rather than a damaged
-   * one, and both come from displacing in X/Z only:
-   *  - a sample's top and bottom vertices share their X/Z, so they always move
-   *    together and every side wall stays a planar vertical quad with hard
-   *    edges;
-   *  - the caps keep their Y exactly, so top and bottom stay flat and parallel
-   *    and nothing tilts (the owner asked for no tilt).
-   *
-   * Samples are bucketed by angle into `sides` buckets (3–12, per instance), and
-   * every sample in a bucket gets the identical push — so consecutive samples
-   * end up collinear and read as ONE long edge. That is what gives some pieces
-   * few sides and others many, rather than all of them looking alike.
-   */
-  const uOrder = { value: 0 };
-  const GHOST_GLSL = `
-attribute float aSeed;
-uniform float uOrder;
-float wzHash(vec2 p, float s) {
-  return fract(sin(dot(p, vec2(41.3, 289.1)) + s * 13.7) * 43758.5453);
-}
-vec3 wzGhost(vec3 p, float seed) {
-  vec2 xz = p.xz;
-  float r = length(xz);
-  if (r < 1e-4) return vec3(0.0);
-  float sides = floor(3.0 + fract(sin(seed * 91.7) * 43758.5453) * 10.0);
-  float bucket = floor((atan(xz.y, xz.x) + 3.14159265) / (6.28318531 / sides));
-  float h = wzHash(vec2(bucket, sides), seed);
-  vec2 dir = xz / r;
-  float amt = (h - 0.5) * 0.30 * (1.0 - uOrder);
-  return vec3(dir.x * amt, 0.0, dir.y * amt);
-}
-`;
-  const ghostPatch = (shader: { uniforms: Record<string, { value: number }>; vertexShader: string }) => {
-    shader.uniforms.uOrder = uOrder;
-    shader.vertexShader = GHOST_GLSL + shader.vertexShader;
-    shader.vertexShader = shader.vertexShader.replace(
-      '#include <begin_vertex>',
-      '#include <begin_vertex>\n\ttransformed += wzGhost(transformed, aSeed);',
-    );
-  };
-  mat.onBeforeCompile = ghostPatch;
-  const parts = new THREE.InstancedMesh(boxGeo, mat, N);
-  // One seed per instance, set once — never per frame. Reuses the same seeded
-  // PRNG the scenes use, so the shapes are identical on every load.
-  {
-    const seeds = new Float32Array(N);
-    for (let i = 0; i < N; i += 1) seeds[i] = R[i]![2]! * 97.3;
-    boxGeo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seeds, 1));
-  }
-  // The shadow pass uses its own material, so it needs the identical
-  // displacement or the blocks would cast un-deformed shadows.
-  const depthMat = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
-  depthMat.onBeforeCompile = ghostPatch;
-  parts.customDepthMaterial = depthMat;
-  parts.castShadow = true; parts.receiveShadow = true;
-  parts.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  group.add(parts);
+  const meshes = SHAPES.map((make, k) => {
+    const m = new THREE.InstancedMesh(make(), mat, counts[k]!);
+    m.castShadow = true; m.receiveShadow = true;
+    m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    group.add(m);
+    return m;
+  });
 
   const hubMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0.18, flatShading: true });
   const hub = new THREE.Mesh(chamferBox(0.17), hubMat);
@@ -461,7 +416,7 @@ vec3 wzGhost(vec3 p, float seed) {
   const qb = new THREE.Quaternion(), ts = new THREE.Vector3();
   const camS = { yaw: 0, look: 1, dist: 15, scale: 1 };
   const lineCur = { foot: 0, frame: 0, cage: 0, slot: 0 };
-  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0, orderCur = 0;
+  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0;
 
   function frame(now: number) {
     const dt = lastNow ? Math.min(0.25, Math.max(0.001, (now - lastNow) / 1000)) : 0.016;
@@ -501,27 +456,6 @@ vec3 wzGhost(vec3 p, float seed) {
     const snapPlacement = first || reduce;
     first = false;
 
-    /* The scramble→resolved arc.
-     *
-     * One long resolve across the page, independent of the section-to-section
-     * blend above. The irregularity is the block's own FOOTPRINT (see the
-     * shader patch above): at the top of the page each block is a many-sided
-     * prism, and it resolves to an exact cube. Faces stay planar and edges stay
-     * hard throughout, which is what separates this from the first attempt —
-     * that one pushed vertices radially and the blocks read as damaged.
-     *
-     * It ends at the LAST SCENE, not the bottom of the document: measured
-     * against document height the resolve completed inside the footer, which
-     * carries no model, so the payoff was never on screen.
-     */
-    const lastAnchor = anchors[anchors.length - 1];
-    const orderEnd = Math.max(1, lastAnchor ? lastAnchor.top + lastAnchor.h / 2 - Hh / 2 : 1);
-    const orderTarget = Math.min(1, Math.max(0, sy / orderEnd));
-    orderCur += (orderTarget - orderCur) * K;
-    if (sy <= 0.5) orderCur = 0;
-    else if (sy >= orderEnd - 0.5) orderCur = 1;
-    uOrder.value = orderCur;
-
     // Arriving at the map, the blocks settle into their markers in the first
     // half of the crossing, so what travels past the centred heading is the
     // low map, not a field of full-height bars.
@@ -536,13 +470,15 @@ vec3 wzGhost(vec3 p, float seed) {
       cur.p[i]!.lerp(tv, K); cur.s[i]!.lerp(ts, K);
       curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
-      dummy.scale.copy(cur.s[i]!);
-      dummy.updateMatrix();
-      parts.setMatrixAt(i, dummy.matrix);
-      parts.setColorAt(i, cur.c[i]!);
+      dummy.scale.copy(cur.s[i]!); dummy.updateMatrix();
+      const m = meshes[shapeOf(i)]!;
+      m.setMatrixAt(shapeSlot[i]!, dummy.matrix);
+      m.setColorAt(shapeSlot[i]!, cur.c[i]!);
     }
-    parts.instanceMatrix.needsUpdate = true;
-    if (parts.instanceColor) parts.instanceColor.needsUpdate = true;
+    for (const m of meshes) {
+      m.instanceMatrix.needsUpdate = true;
+      if (m.instanceColor) m.instanceColor.needsUpdate = true;
+    }
     // Test-only readback of the rendered instance colours (there is no
     // preserveDrawingBuffer, so a pixel readback isn't available): gated
     // behind the same `?debug3d` flag as the placement string above, so it
@@ -622,9 +558,7 @@ vec3 wzGhost(vec3 p, float seed) {
       camera.updateProjectionMatrix();
     }
     group.updateMatrixWorld();
-    // Index 6 (the resolve) is appended after the fields existing tests index
-    // (0..5) — never inserted, so their positions stay stable.
-    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)},${orderCur.toFixed(4)}`;
+    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)}`;
 
     /* 3D → DOM hover: raycast the shared InstancedMesh against the last raw
      * pointer position. Only while "build" is fully settled — an.sc === bn.sc
@@ -640,8 +574,15 @@ vec3 wzGhost(vec3 p, float seed) {
       ndc.x = (rawPointer.x / W) * 2 - 1;
       ndc.y = -(rawPointer.y / Hh) * 2 + 1;
       raycaster.setFromCamera(ndc, camera);
-      const hits = raycaster.intersectObject(parts, false);
-      const idx = hits.length ? (hits[0]!.instanceId ?? -1) : -1;
+      const hits = raycaster.intersectObjects(meshes, false);
+      // Map the hit back to the global instance index: a mesh only holds the
+      // instances whose shape it draws.
+      let idx = -1;
+      if (hits.length) {
+        const k = meshes.findIndex((m) => m === hits[0]!.object);
+        const local = hits[0]!.instanceId ?? -1;
+        if (k >= 0 && local >= 0) idx = local * SHAPES.length + k;
+      }
       if (idx !== modelHoverIndex) { modelHoverIndex = idx; onModelHover('build', idx); }
       pointerDirty = false;
     } else if (!buildSettled && modelHoverIndex !== -1) {
@@ -835,9 +776,10 @@ vec3 wzGhost(vec3 p, float seed) {
       darkMq.removeEventListener('change', applyPalette);
       ro?.disconnect();
       for (const c of cos) { c.el.remove(); c.dot.remove(); c.path.remove(); }
-      boxGeo.dispose(); mat.dispose(); hubMat.dispose(); pulseMat.dispose();
+      mat.dispose(); hubMat.dispose(); pulseMat.dispose();
       groundMat.dispose(); ground.geometry.dispose();
-      parts.dispose(); pulses.dispose(); hub.geometry.dispose();
+      for (const m of meshes) { m.geometry.dispose(); m.dispose(); }
+      pulses.dispose(); hub.geometry.dispose();
       for (const l of Object.values(LINES)) { l.geometry.dispose(); (l.material as THREE.Material).dispose(); }
       renderer.dispose();
     },

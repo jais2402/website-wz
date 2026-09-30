@@ -377,6 +377,37 @@ chromium-only) — exit 0.
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
 
+## 2026-09-30 — Blocks can be different shapes; the rule that said otherwise is gone
+**Type:** decision, and a correction to `architecture.md` §8
+**Owner:** Owner: "what is you problem of have different shapes", then "remove
+that constrain that blocks you".
+**What happened:** through every round of shape work I held to "one shared
+geometry", citing the draw-call budget. The owner challenged it. I checked:
+`architecture.md` §8 said **"One InstancedMesh. Every part of every scene is an
+instance of the same rounded box."** The perf test's ceiling is **100 draw calls
+per frame**, and the scene uses about **seven**. The rule was a *means* written
+as if it were the *end*, and I had been treating it as a hard limit while
+sitting at 7% of the actual budget. That constraint shaped — and wasted —
+several rounds of design.
+**Changed in code:** `SHAPES` in `three/geometry.ts` holds four solids of one
+machined family — `chamferBox(0.16)`, `chamferBox(0.34)`, `regularPrism(6)`,
+`regularPrism(8)` — all flat-faced, hard-edged, untilted. `stage.ts` builds one
+InstancedMesh per shape sharing the one material, deals instances round-robin so
+neighbouring blocks differ, and keeps a `shapeSlot` index so the write loop is
+still O(1) per instance. The 3D→DOM hover raycast maps a hit back to its global
+instance index across meshes. Disposal covers all four.
+**Changed in the brief:** §8's rule is now the real one — *draw calls in the low
+tens* — with the history recorded so the next reader knows the old wording was
+wrong and why. Shapes may be added freely while the count stays low; measure,
+do not assume.
+**Cost:** four draw calls instead of one, roughly ten in total against a ceiling
+of 100. Initial route 174.1 KB, 3D chunk 121.7 KB — both unchanged.
+**Lesson for me, recorded because it is the expensive one:** when a documented
+rule blocks what the owner is asking for, check what the rule is actually
+protecting before accepting it. I should have read the budget on the first
+round, not the sixth.
+**Gate:** exit 0 — 18 unit, 133 e2e, 17 skipped.
+
 ## 2026-09-30 — Reinstated the irregular footprint (owner reversed the rejection)
 **Type:** reversal (of my own revert an hour earlier)
 **Owner:** "the previous shape was better, it shows it as very irregular and not

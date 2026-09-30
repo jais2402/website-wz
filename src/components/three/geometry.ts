@@ -66,50 +66,44 @@ export function lineSegmentPositions() {
 }
 
 /**
- * A prism whose footprint is sampled around the unit square: flat top, flat
- * bottom, and `k` vertical side walls.
+ * A prism with `sides` vertical walls, a flat top and a flat bottom.
  *
- * The shape exists so the stage's shader can push each sample in and out **in
- * X/Z only**, which turns the square footprint into an irregular many-sided
- * outline — the Ghost Cube read the owner asked for (2026-09-30). Because a
- * sample's top and bottom copies share their X/Z, they always move together,
- * so every side wall stays a planar vertical quad and every edge stays a hard
- * crease. Pushed to zero the footprint is exactly the square again, so the
- * block resolves into a true cube.
- *
- * Non-indexed, so `flatShading` gives each facet its own normal.
+ * Part of the shape set (see `SHAPES`): a hexagonal or octagonal piece reads
+ * as a different machined part from a chamfered box while staying in the same
+ * family — every face flat, every edge a hard crease, nothing tilted.
  */
-export function countryPrism(k = 16): THREE.BufferGeometry {
-  const half = 0.5;
-  // `k` points walking the square's perimeter, in order.
-  const ring: Array<[number, number]> = [];
-  for (let i = 0; i < k; i += 1) {
-    const t = (i / k) * 4; // 0..4, one unit per side
-    const side = Math.floor(t), f = t - side;
-    const a = -half + f * 2 * half;
-    if (side === 0) ring.push([a, -half]);
-    else if (side === 1) ring.push([half, a]);
-    else if (side === 2) ring.push([-a, half]);
-    else ring.push([-half, -a]);
+export function regularPrism(sides: number): THREE.BufferGeometry {
+  const shape = new THREE.Shape();
+  for (let i = 0; i < sides; i += 1) {
+    const a = (i / sides) * Math.PI * 2 + Math.PI / sides;
+    const x = Math.cos(a) * 0.5, y = Math.sin(a) * 0.5;
+    if (i === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
   }
-
-  const pos: number[] = [];
-  const tri = (ax: number, ay: number, az: number, bx: number, by: number, bz: number,
-               cx: number, cy: number, cz: number) => { pos.push(ax, ay, az, bx, by, bz, cx, cy, cz); };
-
-  for (let i = 0; i < k; i += 1) {
-    const [x0, z0] = ring[i]!;
-    const [x1, z1] = ring[(i + 1) % k]!;
-    // Side wall, two triangles.
-    tri(x0, -half, z0, x1, -half, z1, x1, half, z1);
-    tri(x0, -half, z0, x1, half, z1, x0, half, z0);
-    // Caps, fanned from the centre so the centre vertex never moves.
-    tri(0, half, 0, x0, half, z0, x1, half, z1);
-    tri(0, -half, 0, x1, -half, z1, x0, -half, z0);
-  }
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  shape.closePath();
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth: 1, bevelEnabled: false, steps: 1, curveSegments: 1,
+  });
+  geometry.center();
   geometry.computeVertexNormals();
   return geometry;
 }
+
+/**
+ * The shapes the blocks are drawn from.
+ *
+ * **Why more than one.** The model used to share a single geometry, on the rule
+ * "one InstancedMesh" in architecture.md §8. That rule exists to protect the
+ * draw-call budget — and the ceiling is 100 per frame while the scene uses
+ * about seven. One extra mesh per shape costs one draw call, so four shapes
+ * take it to roughly ten: still "low tens", exactly as the budget describes.
+ * The owner asked why the blocks could not differ; the honest answer was that
+ * the constraint had been read as harder than it is.
+ *
+ * All four are the same machined family: flat faces, hard edges, no tilt.
+ */
+export const SHAPES: Array<() => THREE.BufferGeometry> = [
+  () => chamferBox(0.16),
+  () => chamferBox(0.34),
+  () => regularPrism(6),
+  () => regularPrism(8),
+];

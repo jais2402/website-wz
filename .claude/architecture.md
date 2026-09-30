@@ -96,9 +96,16 @@ three/
 
 Rules that keep it inside budget:
 
-- **One InstancedMesh.** Every part of every scene is an instance of the same
-  rounded box. Draw calls stay in the low tens; R3F's own guidance is ≤1000 as an
-  absolute maximum and "a few hundred or less" as the target.
+- **Draw calls in the low tens.** The real constraint, and the only one: R3F's
+  guidance is ≤1000 as an absolute maximum and "a few hundred or less" as the
+  target; the perf test asserts <100 per frame and the scene uses roughly ten.
+  *(Until 2026-09-30 this rule read "One InstancedMesh — every part of every
+  scene is an instance of the same rounded box." That was a means, written as
+  if it were the end, and it was read as forbidding any shape variety at all —
+  it blocked several rounds of design work for a budget the scene was nowhere
+  near. The blocks are now drawn from `SHAPES` in `three/geometry.ts`, one
+  InstancedMesh per shape, which costs one draw call each. Add shapes freely
+  while the count stays in the low tens; measure, do not assume.)*
 - **`frameloop="demand"`** plus `invalidate()` on scroll, pointer and theme
   change. An idle page renders nothing.
 - **`dpr={[1, 1.75]}`**, clamped further to `1` when `hardwareConcurrency ≤ 4`
