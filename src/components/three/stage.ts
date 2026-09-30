@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createPalette, readPalette } from './palette';
-import { lineSegmentPositions, roundedBox } from './geometry';
+import { SHAPES, chamferBox, lineSegmentPositions } from './geometry';
 import { N, NP, blank, buildState, smooth, type SceneState } from './states';
 import { BOOST, SCENES, SCENE_ALIAS } from './scene-data';
 import { CELL, LAND_CELLS } from './world';
@@ -119,15 +119,18 @@ export function createStage(
 
   const hemi = new THREE.HemisphereLight(0xffffff, 0xb8bab4, 0.72 * LEGACY_LIGHT_SCALE);
   scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xffffff, 1.25 * LEGACY_LIGHT_SCALE);
-  key.position.set(7, 13, 6);
+  // Raised and pulled round for the faceted geometry: a flatter, softer key
+  // made the chamfers muddy. This angle puts a highlight on one cut face and
+  // shade on its neighbour, which is what separates the planes.
+  const key = new THREE.DirectionalLight(0xffffff, 1.42 * LEGACY_LIGHT_SCALE);
+  key.position.set(9, 12, 4);
   key.castShadow = true;
   key.shadow.camera.left = -8; key.shadow.camera.right = 8;
   key.shadow.camera.top = 8; key.shadow.camera.bottom = -8;
   key.shadow.camera.near = 1; key.shadow.camera.far = 40;
   key.shadow.bias = -0.0006; key.shadow.normalBias = 0.02;
   scene.add(key, key.target);
-  const fill = new THREE.DirectionalLight(0xffffff, 0.32 * LEGACY_LIGHT_SCALE);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.34 * LEGACY_LIGHT_SCALE);
   fill.position.set(-8, 4, 5);
   scene.add(fill);
 
@@ -141,15 +144,40 @@ export function createStage(
   scene.add(group);
 
   /* ── the model ─────────────────────────────────────── */
-  const boxGeo = roundedBox(0.15, 4);
-  const mat = new THREE.MeshStandardMaterial({ roughness: 0.82, metalness: 0 });
-  const parts = new THREE.InstancedMesh(boxGeo, mat, N);
-  parts.castShadow = true; parts.receiveShadow = true;
-  parts.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  group.add(parts);
+  /* One InstancedMesh per shape.
+   *
+   * Instances are dealt round-robin, so neighbouring blocks in any scene get
+   * different shapes and the field reads as assorted machined parts rather
+   * than one part repeated. `shapeSlot[i]` is instance i's index within its own
+   * mesh, so the write loop below stays O(1) per instance.
+   */
+  const shapeOf = (i: number) => i % SHAPES.length;
+  const shapeSlot: number[] = [];
+  const counts: number[] = SHAPES.map(() => 0);
+  for (let i = 0; i < N; i += 1) {
+    const k = shapeOf(i);
+    shapeSlot[i] = counts[k]!;
+    counts[k] = counts[k]! + 1;
+  }
+  // Flat shading gives every facet its own normal, so the chamfers read as
+  // distinct planes rather than a smooth gradient. Lower roughness lets them
+  // catch the key light — that highlight along each crease is what makes the
+  // references read as machined rather than moulded. Metalness stays modest:
+  // there is no environment map, and a high value only darkens the blocks.
+  // Light shading: no metalness (there is no environment map, so it only
+  // darkens) and a mid roughness, so each facet takes a clean step of tone
+  // rather than a heavy specular. The geometry does the work, not the material.
+  const mat = new THREE.MeshStandardMaterial({ roughness: 0.62, metalness: 0, flatShading: true });
+  const meshes = SHAPES.map((make, k) => {
+    const m = new THREE.InstancedMesh(make(), mat, counts[k]!);
+    m.castShadow = true; m.receiveShadow = true;
+    m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    group.add(m);
+    return m;
+  });
 
-  const hubMat = new THREE.MeshStandardMaterial({ roughness: 0.7, metalness: 0 });
-  const hub = new THREE.Mesh(roundedBox(0.16, 4), hubMat);
+  const hubMat = new THREE.MeshStandardMaterial({ roughness: 0.62, metalness: 0, flatShading: true });
+  const hub = new THREE.Mesh(chamferBox(0.17), hubMat);
   hub.castShadow = true; hub.receiveShadow = true;
   group.add(hub);
 
@@ -446,11 +474,14 @@ export function createStage(
       curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
       dummy.scale.copy(cur.s[i]!); dummy.updateMatrix();
-      parts.setMatrixAt(i, dummy.matrix);
-      parts.setColorAt(i, cur.c[i]!);
+      const m = meshes[shapeOf(i)]!;
+      m.setMatrixAt(shapeSlot[i]!, dummy.matrix);
+      m.setColorAt(shapeSlot[i]!, cur.c[i]!);
     }
-    parts.instanceMatrix.needsUpdate = true;
-    if (parts.instanceColor) parts.instanceColor.needsUpdate = true;
+    for (const m of meshes) {
+      m.instanceMatrix.needsUpdate = true;
+      if (m.instanceColor) m.instanceColor.needsUpdate = true;
+    }
     // Test-only readback of the rendered instance colours (there is no
     // preserveDrawingBuffer, so a pixel readback isn't available): gated
     // behind the same `?debug3d` flag as the placement string above, so it
@@ -546,8 +577,15 @@ export function createStage(
       ndc.x = (rawPointer.x / W) * 2 - 1;
       ndc.y = -(rawPointer.y / Hh) * 2 + 1;
       raycaster.setFromCamera(ndc, camera);
-      const hits = raycaster.intersectObject(parts, false);
-      const idx = hits.length ? (hits[0]!.instanceId ?? -1) : -1;
+      const hits = raycaster.intersectObjects(meshes, false);
+      // Map the hit back to the global instance index: a mesh only holds the
+      // instances whose shape it draws.
+      let idx = -1;
+      if (hits.length) {
+        const k = meshes.findIndex((m) => m === hits[0]!.object);
+        const local = hits[0]!.instanceId ?? -1;
+        if (k >= 0 && local >= 0) idx = local * SHAPES.length + k;
+      }
       if (idx !== modelHoverIndex) { modelHoverIndex = idx; onModelHover('build', idx); }
       pointerDirty = false;
     } else if (!buildSettled && modelHoverIndex !== -1) {
@@ -741,9 +779,10 @@ export function createStage(
       darkMq.removeEventListener('change', applyPalette);
       ro?.disconnect();
       for (const c of cos) { c.el.remove(); c.dot.remove(); c.path.remove(); }
-      boxGeo.dispose(); mat.dispose(); hubMat.dispose(); pulseMat.dispose();
+      mat.dispose(); hubMat.dispose(); pulseMat.dispose();
       groundMat.dispose(); ground.geometry.dispose();
-      parts.dispose(); pulses.dispose(); hub.geometry.dispose();
+      for (const m of meshes) { m.geometry.dispose(); m.dispose(); }
+      pulses.dispose(); hub.geometry.dispose();
       for (const l of Object.values(LINES)) { l.geometry.dispose(); (l.material as THREE.Material).dispose(); }
       renderer.dispose();
     },

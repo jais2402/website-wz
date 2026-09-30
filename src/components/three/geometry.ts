@@ -1,27 +1,37 @@
 import * as THREE from 'three';
 
 /**
- * A rounded box, built as an extruded rounded square with a bevel.
+ * A box with flat chamfered corners: machined, not moulded.
  *
- * This is what gives the model its weight — a plain BoxGeometry reads as a
- * wireframe primitive, and the design calls for 3px radius on the geometry
- * (design.md §1.5). Built once and shared by every instance.
+ * The owner's references (2026-09-29) were a faceted twisty puzzle, a
+ * Cybertruck and a cut-metal model kit — hard edges and flat planes, with the
+ * light doing the work. The corner is cut straight rather than rounded, so
+ * every corner is a facet that catches the key light instead of a smooth
+ * gradient that swallows it.
+ *
+ * Built once and shared by every instance: one geometry, one InstancedMesh,
+ * no extra draw calls (architecture.md §8). It also survives the non-uniform
+ * per-axis scaling every scene relies on in `states.ts` — a notched or
+ * asymmetric silhouette would visibly deform when stretched into a tall bar or
+ * a flat plate, which is why those directions were rejected.
+ *
+ * `c` is the corner cut as a fraction of the side.
  */
-export function roundedBox(r: number, seg: number): THREE.BufferGeometry {
-  const s = 0.5 - r;
+export function chamferBox(c: number): THREE.BufferGeometry {
+  const s = 0.5 - c;
   const shape = new THREE.Shape();
-  shape.absarc(s, -s, r, -Math.PI / 2, 0, false);
-  shape.absarc(s, s, r, 0, Math.PI / 2, false);
-  shape.absarc(-s, s, r, Math.PI / 2, Math.PI, false);
-  shape.absarc(-s, -s, r, Math.PI, Math.PI * 1.5, false);
+  shape.moveTo(-s, -0.5); shape.lineTo(s, -0.5); shape.lineTo(0.5, -s);
+  shape.lineTo(0.5, s); shape.lineTo(s, 0.5); shape.lineTo(-s, 0.5);
+  shape.lineTo(-0.5, s); shape.lineTo(-0.5, -s); shape.closePath();
   const geometry = new THREE.ExtrudeGeometry(shape, {
-    depth: 1 - r * 2,
+    depth: 1 - c * 2,
     bevelEnabled: true,
-    bevelSegments: seg,
+    // One segment: the bevel is a single flat facet, never an arc.
+    bevelSegments: 1,
     steps: 1,
-    bevelSize: r,
-    bevelThickness: r,
-    curveSegments: seg,
+    bevelSize: c,
+    bevelThickness: c,
+    curveSegments: 1,
   });
   geometry.center();
   geometry.computeVertexNormals();
@@ -54,3 +64,78 @@ export function lineSegmentPositions() {
 
   return { foot, frame, cage };
 }
+
+/**
+ * A prism with `sides` vertical walls, a flat top and a flat bottom.
+ *
+ * Part of the shape set (see `SHAPES`): a hexagonal or octagonal piece reads
+ * as a different machined part from a chamfered box while staying in the same
+ * family — every face flat, every edge a hard crease, nothing tilted.
+ */
+export function regularPrism(sides: number): THREE.BufferGeometry {
+  const shape = new THREE.Shape();
+  for (let i = 0; i < sides; i += 1) {
+    const a = (i / sides) * Math.PI * 2 + Math.PI / sides;
+    const x = Math.cos(a) * 0.5, y = Math.sin(a) * 0.5;
+    if (i === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+  }
+  shape.closePath();
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth: 1, bevelEnabled: false, steps: 1, curveSegments: 1,
+  });
+  geometry.center();
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+/**
+ * A prism of `sides` walls whose top and bottom edges are bevelled.
+ *
+ * Every bevel is a single flat facet (`bevelSegments: 1`, `curveSegments: 1`),
+ * so a hexagon becomes 6 walls + 6 top bevels + 6 bottom bevels + 2 caps = 20
+ * flat faces, and an octagon 26. That is the "more faces" the owner asked for:
+ * the facet count comes from real cut edges, not from subdivision, so every
+ * join stays a hard crease and the piece reads as machined.
+ */
+export function chamferPrism(sides: number, c: number): THREE.BufferGeometry {
+  const r = 0.5 / Math.cos(Math.PI / sides);
+  const shape = new THREE.Shape();
+  for (let i = 0; i < sides; i += 1) {
+    const a = (i / sides) * Math.PI * 2 + Math.PI / sides;
+    const x = Math.cos(a) * (r - c), y = Math.sin(a) * (r - c);
+    if (i === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+  }
+  shape.closePath();
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth: 1 - c * 2,
+    bevelEnabled: true,
+    bevelSegments: 1,
+    steps: 1,
+    bevelSize: c,
+    bevelThickness: c,
+    curveSegments: 1,
+  });
+  geometry.center();
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+/**
+ * The shapes the blocks are drawn from.
+ *
+ * **Why more than one.** The model used to share a single geometry, on the rule
+ * "one InstancedMesh" in architecture.md §8. That rule exists to protect the
+ * draw-call budget — and the ceiling is 100 per frame while the scene uses
+ * about seven. One extra mesh per shape costs one draw call, so four shapes
+ * take it to roughly ten: still "low tens", exactly as the budget describes.
+ * The owner asked why the blocks could not differ; the honest answer was that
+ * the constraint had been read as harder than it is.
+ *
+ * All four are the same machined family: flat faces, hard edges, no tilt.
+ */
+export const SHAPES: Array<() => THREE.BufferGeometry> = [
+  () => chamferBox(0.16),      // square, corners cut — 26 faces
+  () => chamferPrism(5, 0.13), // pentagonal, edges cut — 17 faces
+  () => chamferPrism(6, 0.12), // hexagonal — 20 faces
+  () => chamferPrism(8, 0.10), // octagonal — 26 faces
+];

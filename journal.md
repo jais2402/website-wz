@@ -377,6 +377,29 @@ chromium-only) — exit 0.
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
 
+## 2026-09-30 — Settled: four faceted geometric shapes, light shading
+**Type:** delivery
+**Owner:** Owner: "lets do the next thing we did — more faces and different
+shapes — no irregularity — more geometric and light shaders".
+**What shipped:** `SHAPES` is four solids, each a different polygon and each
+heavily faceted by bevelling its edges — a chamfered square (26 faces) plus
+pentagonal (17), hexagonal (20) and octagonal (26) prisms. New
+`chamferPrism(sides, c)` does the bevelling with `bevelSegments: 1` and
+`curveSegments: 1`, so every bevel is a single flat facet and every join is a
+hard crease. The facet count comes from real cut edges, not subdivision.
+One InstancedMesh per shape, dealt round-robin so neighbours differ.
+**Light shading:** `metalness` 0.18 → **0**, `roughness` 0.4 → 0.62, fill light
+0.26 → 0.34 and hemisphere 0.62 → 0.72. There is no environment map, so
+metalness could only darken the blocks; removing it and lifting the ambient
+lets each facet take a clean step of tone instead of a heavy specular. The
+geometry carries the read, not the material.
+**Explicitly NOT included**, per the brief: no irregularity, no deformation, no
+morph, no scroll arc. Every one of those was tried and rejected across the
+preceding sequence.
+**design.md §5** rewritten: the shape and shading rule is now item 1, ahead of
+the colour rule.
+**Gate:** exit 0 — 18 unit, 133 e2e, initial 174.1 KB, 3D 121.7 KB.
+
 ## 2026-09-30 — Reverted the whole shape sequence to the first version
 **Type:** reversal
 **Owner:** Owner, after seeing the results: "dont like this", "when i hover on

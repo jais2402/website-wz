@@ -172,7 +172,20 @@ molecule may not import an organism; nothing below `templates` may import
 
 One model, fifteen states, blended by scroll. It is a diagram, not decoration.
 
-1. **The approved artifact's colour scheme, literally.** *(Owner,
+1. **Faceted geometric solids, four of them.** *(Owner, 2026-09-30: "more faces
+   and different shapes — no irregularity — more geometric and light shaders",
+   after a long sequence of irregular/morphing experiments was rejected and
+   reverted; see journal.md.)* `SHAPES` in `three/geometry.ts`: a chamfered
+   square (26 faces), and pentagonal, hexagonal and octagonal prisms whose top
+   and bottom edges are also bevelled (17, 20 and 26 faces). One InstancedMesh
+   per shape, dealt round-robin so neighbouring blocks differ. Every face flat,
+   every join a hard crease, nothing tilted, nothing irregular — the variety is
+   in the shapes themselves, never in deformation.
+   **Light shading:** `flatShading: true`, `roughness .62`, **`metalness 0`** —
+   there is no environment map, so metalness only darkens. Each facet takes a
+   clean step of tone; the geometry does the work, not the material.
+
+2. **The approved artifact's colour scheme, literally.** *(Owner,
    2026-09-29, after six rounds — "bright" → "design colours, less pastel and
    white" → "80%" → "plain, use bright" → "more white like the artifact" → "too
    colourful, come down" — settled by the owner linking the artifact itself:
@@ -200,13 +213,13 @@ One model, fifteen states, blended by scroll. It is a diagram, not decoration.
      would spread orange through every scene.
    *Tone mapping is PBR Neutral, not ACES (2026-09-29). ACES bleached the brand
    hues toward white; Neutral keeps them saturated.*
-2. **One accent piece — in the company blue.** *(2026-09-29, owner: the 3D accent changed from signal orange to blueprint; signal orange is reserved for warnings.)* Orange marks the exception, the missing piece, the thing
+3. **One accent piece — in the company blue.** *(2026-09-29, owner: the 3D accent changed from signal orange to blueprint; signal orange is reserved for warnings.)* Orange marks the exception, the missing piece, the thing
    being fixed. Never two.
-3. **Labels only where you point.** *(2026-09-28: build no longer carries a callout column — its two-column list is the legend.)* Callouts exist in the four sections that
+4. **Labels only where you point.** *(2026-09-28: build no longer carries a callout column — its two-column list is the legend.)* Callouts exist in the four sections that
    invite pointing (`build`, `range`, `integration`, and where a list maps to
    geometry). Everywhere else the model carries no text. Labels are 10px mono in
    an aligned column outside the model, joined to a 4px dot by a 1px leader.
-4. **The model never overlaps the reading column.** Scale derives from the stage
+5. **The model never overlaps the reading column.** Scale derives from the stage
    width minus the annotation gutter. On the document sub-pages the model sits in
    its own band above the heading (`PageScene`) and scrolls away with it, rather
    than sitting behind the text.
@@ -214,9 +227,9 @@ One model, fifteen states, blended by scroll. It is a diagram, not decoration.
    both ways: a panel lights its block, and a block lights its panel. A 3D hover
    changes colour only — it never moves geometry, because a block that lifts
    under the pointer moves out from under it and the highlight oscillates.
-5. **Motion is ambient, never attention-seeking.** Slow yaw, sub-degree drift.
+6. **Motion is ambient, never attention-seeking.** Slow yaw, sub-degree drift.
    Anything faster competes with reading.
-6. **`prefers-reduced-motion` renders states without transitions**, driven by
+7. **`prefers-reduced-motion` renders states without transitions**, driven by
    scroll only. The pause control in the header is a first-class affordance and
    its state persists in `localStorage`.
 
