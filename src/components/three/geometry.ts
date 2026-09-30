@@ -65,6 +65,77 @@ export function lineSegmentPositions() {
   return { foot, frame, cage };
 }
 
+/** `k` points walking the perimeter of the unit square, in order. */
+function squareRing(k: number): Array<[number, number]> {
+  const ring: Array<[number, number]> = [];
+  for (let i = 0; i < k; i += 1) {
+    const t = (i / k) * 4, side = Math.floor(t), f = t - side, a = -0.5 + f;
+    if (side === 0) ring.push([a, -0.5]);
+    else if (side === 1) ring.push([0.5, a]);
+    else if (side === 2) ring.push([-a, 0.5]);
+    else ring.push([-0.5, -a]);
+  }
+  return ring;
+}
+
+/** `k` points on a regular polygon of `sides`, walked in the same order. */
+function polygonRing(k: number, sides: number, turn = 0): Array<[number, number]> {
+  const ring: Array<[number, number]> = [];
+  for (let i = 0; i < k; i += 1) {
+    // Snap to the polygon's own corners so consecutive samples go collinear —
+    // that is what makes a run of samples read as ONE straight edge.
+    const a = Math.floor((i / k) * sides) / sides * Math.PI * 2 + turn;
+    const b = (Math.floor((i / k) * sides) + 1) / sides * Math.PI * 2 + turn;
+    const f = ((i / k) * sides) % 1;
+    // Circumradius chosen so the polygon's width across flats is 1 — the same
+    // as the cube it morphs into. Without this the pieces are narrower than
+    // the cube and read as thin towers rather than blocks.
+    const r = 0.5 / Math.cos(Math.PI / sides);
+    ring.push([
+      (Math.cos(a) * (1 - f) + Math.cos(b) * f) * r,
+      (Math.sin(a) * (1 - f) + Math.sin(b) * f) * r,
+    ]);
+  }
+  return ring;
+}
+
+/**
+ * A prism built from `from`, carrying `to` as a morph target.
+ *
+ * Both rings have the same length, so the topology is identical and the shader
+ * can simply mix between them: at 0 the block is its own irregular shape, at 1
+ * it is an exact cube. Only X/Z differ between the two rings — a sample's top
+ * and bottom vertices share their X/Z, so they always move together, every side
+ * wall stays a planar vertical quad, and the caps keep their Y. Nothing bends,
+ * nothing tilts; the shape changes but every face stays flat.
+ */
+function morphPrism(from: Array<[number, number]>, to: Array<[number, number]>): THREE.BufferGeometry {
+  const k = from.length, h = 0.5;
+  const pos: number[] = [], tgt: number[] = [];
+  const push = (a: number[], x: number, y: number, z: number) => { a.push(x, y, z); };
+  for (let i = 0; i < k; i += 1) {
+    const j = (i + 1) % k;
+    const [x0, z0] = from[i]!, [x1, z1] = from[j]!;
+    const [u0, v0] = to[i]!, [u1, v1] = to[j]!;
+    // Side wall. Wound so the outward face is the front one — with the ring
+    // walked counter-clockwise in XZ, that is the reverse of the obvious order.
+    push(pos, x0, -h, z0); push(pos, x1, h, z1); push(pos, x1, -h, z1);
+    push(tgt, u0, -h, v0); push(tgt, u1, h, v1); push(tgt, u1, -h, v1);
+    push(pos, x0, -h, z0); push(pos, x0, h, z0); push(pos, x1, h, z1);
+    push(tgt, u0, -h, v0); push(tgt, u0, h, v0); push(tgt, u1, h, v1);
+    // Caps, fanned from a centre that never moves.
+    push(pos, 0, h, 0); push(pos, x1, h, z1); push(pos, x0, h, z0);
+    push(tgt, 0, h, 0); push(tgt, u1, h, v1); push(tgt, u0, h, v0);
+    push(pos, 0, -h, 0); push(pos, x0, -h, z0); push(pos, x1, -h, z1);
+    push(tgt, 0, -h, 0); push(tgt, u0, -h, v0); push(tgt, u1, -h, v1);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('aTarget', new THREE.Float32BufferAttribute(tgt, 3));
+  g.computeVertexNormals();
+  return g;
+}
+
 /**
  * A prism with `sides` vertical walls, a flat top and a flat bottom.
  *
@@ -89,21 +160,28 @@ export function regularPrism(sides: number): THREE.BufferGeometry {
 }
 
 /**
- * The shapes the blocks are drawn from.
+ * The shapes the blocks are drawn from, and the cube each one resolves into.
  *
  * **Why more than one.** The model used to share a single geometry, on the rule
- * "one InstancedMesh" in architecture.md §8. That rule exists to protect the
- * draw-call budget — and the ceiling is 100 per frame while the scene uses
- * about seven. One extra mesh per shape costs one draw call, so four shapes
- * take it to roughly ten: still "low tens", exactly as the budget describes.
- * The owner asked why the blocks could not differ; the honest answer was that
- * the constraint had been read as harder than it is.
+ * "one InstancedMesh" in architecture.md §8. That rule protected the draw-call
+ * budget — and the ceiling is 100 per frame while the scene uses about seven.
+ * One extra mesh per shape costs one draw call, so four shapes take it to
+ * roughly ten: still "low tens", exactly as the budget describes.
  *
- * All four are the same machined family: flat faces, hard edges, no tilt.
+ * **The journey.** Each shape carries the cube as a morph target, so the same
+ * piece that starts as a hexagon, an octagon or a jagged outline ends as an
+ * exact cube — a Ghost Cube resolving. The shapes are DESIGNED, not random
+ * noise: earlier attempts perturbed one shape per vertex and read as damaged
+ * rather than machined. Every face stays flat and every edge hard throughout,
+ * because only X/Z differ between a shape and its target.
  */
+const RING = 16;
+
 export const SHAPES: Array<() => THREE.BufferGeometry> = [
-  () => chamferBox(0.16),
-  () => chamferBox(0.34),
-  () => regularPrism(6),
-  () => regularPrism(8),
+  () => morphPrism(polygonRing(RING, 5, 0.3), squareRing(RING)),
+  () => morphPrism(polygonRing(RING, 6, 0.2), squareRing(RING)),
+  () => morphPrism(polygonRing(RING, 8, 0), squareRing(RING)),
+  // A square turned 45°: it resolves by rotating true, not by changing its
+  // number of sides — a different kind of "settling" among the polygons.
+  () => morphPrism(polygonRing(RING, 4, Math.PI / 4), squareRing(RING)),
 ];

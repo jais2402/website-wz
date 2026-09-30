@@ -128,7 +128,9 @@ export function createStage(
   key.shadow.camera.left = -8; key.shadow.camera.right = 8;
   key.shadow.camera.top = 8; key.shadow.camera.bottom = -8;
   key.shadow.camera.near = 1; key.shadow.camera.far = 40;
-  key.shadow.bias = -0.0006; key.shadow.normalBias = 0.02;
+  // Raised for the morphing footprint: at the old 0.02 the thin plates
+  // self-shadowed in stripes while their outline was off-square.
+  key.shadow.bias = -0.0009; key.shadow.normalBias = 0.055;
   scene.add(key, key.target);
   const fill = new THREE.DirectionalLight(0xffffff, 0.26 * LEGACY_LIGHT_SCALE);
   fill.position.set(-8, 4, 5);
@@ -165,10 +167,43 @@ export function createStage(
   // references read as machined rather than moulded. Metalness stays modest:
   // there is no environment map, and a high value only darkens the blocks.
   const mat = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.18, flatShading: true });
+
+  /* The journey: each piece resolves into a cube.
+   *
+   * Every shape carries the cube as a morph target (`aTarget`, baked in
+   * `geometry.ts`), so this is a straight mix between two fixed forms — no
+   * noise, nothing bent. `uOrder` runs 0 at the top of the page to 1 at the
+   * last scene, so a reader watches assorted cut pieces settle into one exact
+   * cube by the time they reach the form.
+   *
+   * Only X/Z differ between a shape and its target: a sample's top and bottom
+   * vertices move together, so side walls stay planar and the caps keep their
+   * Y. Faces stay flat and edges stay hard the whole way through — which is
+   * what separates this from the earlier per-vertex noise that read as damage.
+   */
+  const uOrder = { value: 0 };
+  const MORPH_GLSL = `
+attribute vec3 aTarget;
+uniform float uOrder;
+`;
+  const morphPatch = (shader: { uniforms: Record<string, { value: number }>; vertexShader: string }) => {
+    shader.uniforms.uOrder = uOrder;
+    shader.vertexShader = MORPH_GLSL + shader.vertexShader;
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <begin_vertex>',
+      '#include <begin_vertex>\n\ttransformed = mix(transformed, aTarget, uOrder);',
+    );
+  };
+  mat.onBeforeCompile = morphPatch;
+  // The shadow pass has its own material and would otherwise cast the
+  // unresolved shape all the way down the page.
+  const depthMat = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  depthMat.onBeforeCompile = morphPatch;
   const meshes = SHAPES.map((make, k) => {
     const m = new THREE.InstancedMesh(make(), mat, counts[k]!);
     m.castShadow = true; m.receiveShadow = true;
     m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    m.customDepthMaterial = depthMat;
     group.add(m);
     return m;
   });
@@ -416,7 +451,7 @@ export function createStage(
   const qb = new THREE.Quaternion(), ts = new THREE.Vector3();
   const camS = { yaw: 0, look: 1, dist: 15, scale: 1 };
   const lineCur = { foot: 0, frame: 0, cage: 0, slot: 0 };
-  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0;
+  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0, orderCur = 0;
 
   function frame(now: number) {
     const dt = lastNow ? Math.min(0.25, Math.max(0.001, (now - lastNow) / 1000)) : 0.016;
@@ -455,6 +490,17 @@ export function createStage(
     const K = (first || reduce) ? 1 : 1 - Math.exp(-dt * 5.2);
     const snapPlacement = first || reduce;
     first = false;
+
+    /* The resolve runs to the LAST SCENE, not the bottom of the document:
+     * measured against document height it completed inside the footer, which
+     * carries no model, so the assembled cube was never on screen. */
+    const lastAnchor = anchors[anchors.length - 1];
+    const orderEnd = Math.max(1, lastAnchor ? lastAnchor.top + lastAnchor.h / 2 - Hh / 2 : 1);
+    const orderTarget = Math.min(1, Math.max(0, sy / orderEnd));
+    orderCur += (orderTarget - orderCur) * K;
+    if (sy <= 0.5) orderCur = 0;
+    else if (sy >= orderEnd - 0.5) orderCur = 1;
+    uOrder.value = orderCur;
 
     // Arriving at the map, the blocks settle into their markers in the first
     // half of the crossing, so what travels past the centred heading is the
@@ -558,7 +604,8 @@ export function createStage(
       camera.updateProjectionMatrix();
     }
     group.updateMatrixWorld();
-    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)}`;
+    // Index 6 (the resolve) is appended after the fields existing tests index.
+    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)},${orderCur.toFixed(4)}`;
 
     /* 3D → DOM hover: raycast the shared InstancedMesh against the last raw
      * pointer position. Only while "build" is fully settled — an.sc === bn.sc
@@ -776,7 +823,7 @@ export function createStage(
       darkMq.removeEventListener('change', applyPalette);
       ro?.disconnect();
       for (const c of cos) { c.el.remove(); c.dot.remove(); c.path.remove(); }
-      mat.dispose(); hubMat.dispose(); pulseMat.dispose();
+      mat.dispose(); depthMat.dispose(); hubMat.dispose(); pulseMat.dispose();
       groundMat.dispose(); ground.geometry.dispose();
       for (const m of meshes) { m.geometry.dispose(); m.dispose(); }
       pulses.dispose(); hub.geometry.dispose();

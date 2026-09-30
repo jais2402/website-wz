@@ -377,6 +377,44 @@ chromium-only) — exit 0.
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
 
+## 2026-09-30 — The journey, done honestly: four shapes, each resolving into a cube
+**Type:** delivery
+**Owner:** Owner: "CAN A JOURNEY BE ESTABLISHED WITH THE IRREGULAR SHAPE BECOMES
+A REGULAR CUBE AT THE END" — yes, and only possible once the one-geometry rule
+was removed (entry above).
+**Why the earlier attempts failed, and why this one is different:** every
+previous try added *random noise* to a single shared shape. Random per-vertex
+displacement reads as damage, not design — the owner called it "distorted" and
+then "worst". With four geometries available, each shape can instead be a
+**designed** form that carries the cube as a **morph target**. There is no
+randomness anywhere: it is a straight mix between two fixed shapes.
+**What ships:** `morphPrism(from, to)` in `geometry.ts` builds a prism from one
+ring of points while baking a second ring as an `aTarget` attribute. Four
+shapes — pentagon, hexagon, octagon, and a square turned 45° — all morph to the
+same square, i.e. an exact cube. The shader mixes `position → aTarget` by
+`uOrder`, which runs 0 at the top of the page to 1 at the last scene. The
+shadow pass gets the identical patch, so shadows resolve with the blocks.
+**Why faces stay flat and edges stay hard:** only X/Z differ between a shape and
+its target. A sample's top and bottom vertices share their X/Z so they always
+move together, every side wall stays a planar vertical quad, and the caps keep
+their Y — nothing bends and nothing tilts, at any point in the morph.
+**Three defects found by screenshot, none by tests:**
+1. Polygons were inscribed at a fixed radius, so they were narrower than the
+   cube and read as thin towers. Circumradius is now `0.5 / cos(π/sides)`, which
+   makes every polygon's width across flats exactly 1 — the cube's width.
+2. Blocks rendered **hollow**, the interiors visible: the triangle winding was
+   inverted, so the outward faces were being culled. Winding reversed.
+3. Thin plates self-shadowed in stripes while their outline was off-square.
+   `shadow.normalBias` 0.02 → 0.055, `bias` −0.0006 → −0.0009.
+**The arc ends at the last scene**, not the document bottom — measured against
+document height it completed inside the footer, where no model is visible, so
+the assembled cube was never seen.
+**Gate:** exit 0 — 18 unit, 136 e2e, 17 skipped, initial 174.1 KB, 3D 122.0 KB.
+**Standing note:** an experiment must be committed before it is reverted. I
+destroyed an uncommitted version earlier in this sequence with `git checkout`
+and had to rebuild it from a written description when the owner's verdict
+reversed.
+
 ## 2026-09-30 — Blocks can be different shapes; the rule that said otherwise is gone
 **Type:** decision, and a correction to `architecture.md` §8
 **Owner:** Owner: "what is you problem of have different shapes", then "remove
