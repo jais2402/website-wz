@@ -356,26 +356,3 @@ test.describe('the model on a sub-page', () => {
     expect(band && h1 && band.y + band.height).toBeLessThanOrEqual((h1?.y ?? 0) + 1);
   });
 });
-
-test.describe('the shapes resolve into cubes', () => {
-  test('irregular at the top of the page, exact by the last scene', async ({ page }) => {
-    // The payoff has to be ON SCREEN. Measured against document height the
-    // resolve completed inside the footer, which carries no model, so the
-    // assembled cube was never visible. It now ends at the last scene.
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/?debug3d');
-    await page.waitForTimeout(3500);
-    const resolve = async () => {
-      const dbg = await page.locator('canvas#stage').getAttribute('data-dbg');
-      return Number((dbg ?? '').split(',')[6] ?? NaN);
-    };
-    test.skip(Number.isNaN(await resolve()), 'no live stage in this environment');
-
-    expect(await resolve()).toBeLessThan(0.05);
-    await page.evaluate(() =>
-      document.getElementById('contact')?.scrollIntoView({ behavior: 'instant', block: 'center' }),
-    );
-    await page.waitForTimeout(2500);
-    expect(await resolve()).toBeGreaterThan(0.95);
-  });
-});

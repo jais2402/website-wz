@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createPalette, readPalette } from './palette';
-import { SHAPES, chamferBox, lineSegmentPositions } from './geometry';
+import { lineSegmentPositions, roundedBox } from './geometry';
 import { N, NP, blank, buildState, smooth, type SceneState } from './states';
 import { BOOST, SCENES, SCENE_ALIAS } from './scene-data';
 import { CELL, LAND_CELLS } from './world';
@@ -117,22 +117,17 @@ export function createStage(
   // dark and over-saturated instead of pale.
   const LEGACY_LIGHT_SCALE = Math.PI;
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0xb8bab4, 0.62 * LEGACY_LIGHT_SCALE);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xb8bab4, 0.72 * LEGACY_LIGHT_SCALE);
   scene.add(hemi);
-  // Raised and pulled round for the faceted geometry: a flatter, softer key
-  // made the chamfers muddy. This angle puts a highlight on one cut face and
-  // shade on its neighbour, which is what separates the planes.
-  const key = new THREE.DirectionalLight(0xffffff, 1.42 * LEGACY_LIGHT_SCALE);
-  key.position.set(9, 12, 4);
+  const key = new THREE.DirectionalLight(0xffffff, 1.25 * LEGACY_LIGHT_SCALE);
+  key.position.set(7, 13, 6);
   key.castShadow = true;
   key.shadow.camera.left = -8; key.shadow.camera.right = 8;
   key.shadow.camera.top = 8; key.shadow.camera.bottom = -8;
   key.shadow.camera.near = 1; key.shadow.camera.far = 40;
-  // Raised for the morphing footprint: at the old 0.02 the thin plates
-  // self-shadowed in stripes while their outline was off-square.
-  key.shadow.bias = -0.0009; key.shadow.normalBias = 0.055;
+  key.shadow.bias = -0.0006; key.shadow.normalBias = 0.02;
   scene.add(key, key.target);
-  const fill = new THREE.DirectionalLight(0xffffff, 0.26 * LEGACY_LIGHT_SCALE);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.32 * LEGACY_LIGHT_SCALE);
   fill.position.set(-8, 4, 5);
   scene.add(fill);
 
@@ -146,70 +141,15 @@ export function createStage(
   scene.add(group);
 
   /* ── the model ─────────────────────────────────────── */
-  /* One InstancedMesh per shape.
-   *
-   * Instances are dealt round-robin, so neighbouring blocks in any scene get
-   * different shapes and the field reads as assorted machined parts rather
-   * than one part repeated. `shapeSlot[i]` is instance i's index within its own
-   * mesh, so the write loop below stays O(1) per instance.
-   */
-  const shapeOf = (i: number) => i % SHAPES.length;
-  const shapeSlot: number[] = [];
-  const counts: number[] = SHAPES.map(() => 0);
-  for (let i = 0; i < N; i += 1) {
-    const k = shapeOf(i);
-    shapeSlot[i] = counts[k]!;
-    counts[k] = counts[k]! + 1;
-  }
-  // Flat shading gives every facet its own normal, so the chamfers read as
-  // distinct planes rather than a smooth gradient. Lower roughness lets them
-  // catch the key light — that highlight along each crease is what makes the
-  // references read as machined rather than moulded. Metalness stays modest:
-  // there is no environment map, and a high value only darkens the blocks.
-  const mat = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.18, flatShading: true });
+  const boxGeo = roundedBox(0.15, 4);
+  const mat = new THREE.MeshStandardMaterial({ roughness: 0.82, metalness: 0 });
+  const parts = new THREE.InstancedMesh(boxGeo, mat, N);
+  parts.castShadow = true; parts.receiveShadow = true;
+  parts.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  group.add(parts);
 
-  /* The journey: each piece resolves into a cube.
-   *
-   * Every shape carries the cube as a morph target (`aTarget`, baked in
-   * `geometry.ts`), so this is a straight mix between two fixed forms — no
-   * noise, nothing bent. `uOrder` runs 0 at the top of the page to 1 at the
-   * last scene, so a reader watches assorted cut pieces settle into one exact
-   * cube by the time they reach the form.
-   *
-   * Only X/Z differ between a shape and its target: a sample's top and bottom
-   * vertices move together, so side walls stay planar and the caps keep their
-   * Y. Faces stay flat and edges stay hard the whole way through — which is
-   * what separates this from the earlier per-vertex noise that read as damage.
-   */
-  const uOrder = { value: 0 };
-  const MORPH_GLSL = `
-attribute vec3 aTarget;
-uniform float uOrder;
-`;
-  const morphPatch = (shader: { uniforms: Record<string, { value: number }>; vertexShader: string }) => {
-    shader.uniforms.uOrder = uOrder;
-    shader.vertexShader = MORPH_GLSL + shader.vertexShader;
-    shader.vertexShader = shader.vertexShader.replace(
-      '#include <begin_vertex>',
-      '#include <begin_vertex>\n\ttransformed = mix(transformed, aTarget, uOrder);',
-    );
-  };
-  mat.onBeforeCompile = morphPatch;
-  // The shadow pass has its own material and would otherwise cast the
-  // unresolved shape all the way down the page.
-  const depthMat = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
-  depthMat.onBeforeCompile = morphPatch;
-  const meshes = SHAPES.map((make, k) => {
-    const m = new THREE.InstancedMesh(make(), mat, counts[k]!);
-    m.castShadow = true; m.receiveShadow = true;
-    m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    m.customDepthMaterial = depthMat;
-    group.add(m);
-    return m;
-  });
-
-  const hubMat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0.18, flatShading: true });
-  const hub = new THREE.Mesh(chamferBox(0.17), hubMat);
+  const hubMat = new THREE.MeshStandardMaterial({ roughness: 0.7, metalness: 0 });
+  const hub = new THREE.Mesh(roundedBox(0.16, 4), hubMat);
   hub.castShadow = true; hub.receiveShadow = true;
   group.add(hub);
 
@@ -451,7 +391,7 @@ uniform float uOrder;
   const qb = new THREE.Quaternion(), ts = new THREE.Vector3();
   const camS = { yaw: 0, look: 1, dist: 15, scale: 1 };
   const lineCur = { foot: 0, frame: 0, cage: 0, slot: 0 };
-  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0, orderCur = 0;
+  let hubOn = 0, mapCur = 0, setOx = 1e9, setOy = 1e9, dbgOy = 0, dbgOx = 0;
 
   function frame(now: number) {
     const dt = lastNow ? Math.min(0.25, Math.max(0.001, (now - lastNow) / 1000)) : 0.016;
@@ -491,17 +431,6 @@ uniform float uOrder;
     const snapPlacement = first || reduce;
     first = false;
 
-    /* The resolve runs to the LAST SCENE, not the bottom of the document:
-     * measured against document height it completed inside the footer, which
-     * carries no model, so the assembled cube was never on screen. */
-    const lastAnchor = anchors[anchors.length - 1];
-    const orderEnd = Math.max(1, lastAnchor ? lastAnchor.top + lastAnchor.h / 2 - Hh / 2 : 1);
-    const orderTarget = Math.min(1, Math.max(0, sy / orderEnd));
-    orderCur += (orderTarget - orderCur) * K;
-    if (sy <= 0.5) orderCur = 0;
-    else if (sy >= orderEnd - 0.5) orderCur = 1;
-    uOrder.value = orderCur;
-
     // Arriving at the map, the blocks settle into their markers in the first
     // half of the crossing, so what travels past the centred heading is the
     // low map, not a field of full-height bars.
@@ -517,14 +446,11 @@ uniform float uOrder;
       curQ[i]!.slerp(qa, K); cur.c[i]!.lerp(tc, K);
       dummy.position.copy(cur.p[i]!); dummy.quaternion.copy(curQ[i]!);
       dummy.scale.copy(cur.s[i]!); dummy.updateMatrix();
-      const m = meshes[shapeOf(i)]!;
-      m.setMatrixAt(shapeSlot[i]!, dummy.matrix);
-      m.setColorAt(shapeSlot[i]!, cur.c[i]!);
+      parts.setMatrixAt(i, dummy.matrix);
+      parts.setColorAt(i, cur.c[i]!);
     }
-    for (const m of meshes) {
-      m.instanceMatrix.needsUpdate = true;
-      if (m.instanceColor) m.instanceColor.needsUpdate = true;
-    }
+    parts.instanceMatrix.needsUpdate = true;
+    if (parts.instanceColor) parts.instanceColor.needsUpdate = true;
     // Test-only readback of the rendered instance colours (there is no
     // preserveDrawingBuffer, so a pixel readback isn't available): gated
     // behind the same `?debug3d` flag as the placement string above, so it
@@ -604,8 +530,7 @@ uniform float uOrder;
       camera.updateProjectionMatrix();
     }
     group.updateMatrixWorld();
-    // Index 6 (the resolve) is appended after the fields existing tests index.
-    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)},${orderCur.toFixed(4)}`;
+    if (debug) canvas.dataset.dbg = `${dbgOx.toFixed(2)},${dbgOy.toFixed(2)},${camS.scale.toFixed(4)},${camS.yaw.toFixed(4)},1,${w.toFixed(3)}`;
 
     /* 3D → DOM hover: raycast the shared InstancedMesh against the last raw
      * pointer position. Only while "build" is fully settled — an.sc === bn.sc
@@ -621,15 +546,8 @@ uniform float uOrder;
       ndc.x = (rawPointer.x / W) * 2 - 1;
       ndc.y = -(rawPointer.y / Hh) * 2 + 1;
       raycaster.setFromCamera(ndc, camera);
-      const hits = raycaster.intersectObjects(meshes, false);
-      // Map the hit back to the global instance index: a mesh only holds the
-      // instances whose shape it draws.
-      let idx = -1;
-      if (hits.length) {
-        const k = meshes.findIndex((m) => m === hits[0]!.object);
-        const local = hits[0]!.instanceId ?? -1;
-        if (k >= 0 && local >= 0) idx = local * SHAPES.length + k;
-      }
+      const hits = raycaster.intersectObject(parts, false);
+      const idx = hits.length ? (hits[0]!.instanceId ?? -1) : -1;
       if (idx !== modelHoverIndex) { modelHoverIndex = idx; onModelHover('build', idx); }
       pointerDirty = false;
     } else if (!buildSettled && modelHoverIndex !== -1) {
@@ -823,10 +741,9 @@ uniform float uOrder;
       darkMq.removeEventListener('change', applyPalette);
       ro?.disconnect();
       for (const c of cos) { c.el.remove(); c.dot.remove(); c.path.remove(); }
-      mat.dispose(); depthMat.dispose(); hubMat.dispose(); pulseMat.dispose();
+      boxGeo.dispose(); mat.dispose(); hubMat.dispose(); pulseMat.dispose();
       groundMat.dispose(); ground.geometry.dispose();
-      for (const m of meshes) { m.geometry.dispose(); m.dispose(); }
-      pulses.dispose(); hub.geometry.dispose();
+      parts.dispose(); pulses.dispose(); hub.geometry.dispose();
       for (const l of Object.values(LINES)) { l.geometry.dispose(); (l.material as THREE.Material).dispose(); }
       renderer.dispose();
     },

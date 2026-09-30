@@ -377,6 +377,38 @@ chromium-only) — exit 0.
 extend `REVERSE_SCENE_ALIAS`/`model-hover.ts` rather than re-deriving this
 pattern, and must keep the two channels separate for the same jitter reason.
 
+## 2026-09-30 — Reverted the whole shape sequence to the first version
+**Type:** reversal
+**Owner:** Owner, after seeing the results: "dont like this", "when i hover on
+one of the block it is not resetting", "Start the cube here", then decisively
+**"Go back with the first version"**.
+**Done:** `src/components/three/` restored to **fb713d2** — the rounded blocks
+(`roundedBox(0.15, 4)`) with the artifact colour scheme, and none of the day's
+shape work. Removed with it: the chamfered geometry, the four-shape set, the
+morph-to-cube, the scramble arc and every shader patch. The arc tests went too.
+**What the sequence cost and what it produced:** roughly a dozen attempts across
+several hours — radial vertex noise, a 26-face chamfer, a wedge family, an
+extruded "country outline" prism, a rigid scale/offset scramble, four designed
+shapes, and four shapes morphing to a cube. Every one was rejected. The
+defects found along the way were real (blocks rendering hollow from inverted
+winding, polygons narrower than the cube reading as towers, shadow striping on
+thin plates, the resolve completing inside the footer where no model is
+visible), but none of that made the result something the owner wanted.
+**What is worth keeping from it, all recorded above and still true:**
+- architecture.md §8's "One InstancedMesh" was a means written as an end. The
+  real budget is 100 draw calls a frame and the scene uses about seven. That
+  correction stays in the brief; it was blocking design work for no reason.
+- Commit an experiment BEFORE reverting it. I destroyed an uncommitted version
+  with `git checkout` and had to rebuild it from notes when the verdict
+  reversed.
+- A screenshot catches what the gate cannot. Every one of the defects above
+  passed the full test suite.
+**Still open and NOT fixed:** the owner reported that hovering a block in the
+"What we build" model does not reset when the pointer leaves. The clear path
+only runs on a pointer move that misses; if the pointer leaves the window there
+is no move to trigger it. Not touched in this revert.
+**Gate:** exit 0 — 18 unit, 133 e2e, initial 174.1 KB, 3D 121.4 KB.
+
 ## 2026-09-30 — The journey, done honestly: four shapes, each resolving into a cube
 **Type:** delivery
 **Owner:** Owner: "CAN A JOURNEY BE ESTABLISHED WITH THE IRREGULAR SHAPE BECOMES
