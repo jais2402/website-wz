@@ -286,10 +286,11 @@ export function createNarrativeModel(
   }
   if (variant === 'tourism') {
     // One shared event, with a single marker and two binding loops.
-    const calendar = mesh(rounded(2.15, 1.9, 0.26), pearl);
-    calendar.position.y = -0.1;
-    const header = mesh(rounded(2.15, 0.48, 0.3), teal);
-    header.position.set(0, 0.61, 0.03);
+    // The cap covers the body edge without sharing coplanar top or side faces.
+    const calendar = mesh(rounded(2.15, 1.5, 0.26), pearl);
+    calendar.position.y = -0.3;
+    const header = mesh(rounded(2.23, 0.48, 0.36), teal);
+    header.position.set(0, 0.61, 0);
     for (const x of [-0.62, 0.62]) {
       const binding = torus(0.2, 0.055, pearl);
       binding.position.set(x, 0.84, 0.06);
