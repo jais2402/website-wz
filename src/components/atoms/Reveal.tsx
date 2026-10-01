@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { useAnimate } from 'motion/react-mini';
 import { cn } from '@/lib/cn';
+import { getMotion, subscribe } from '@/lib/prefs';
 
 export interface RevealProps {
   children: ReactNode;
@@ -49,16 +50,30 @@ export function Reveal({ children, className, stagger = 0.07, delay = 0 }: Revea
       t.style.transform = `translateY(${RISE}px)`;
     }
 
+    const animations: { stop: () => void }[] = [];
+    const show = () => {
+      for (const animation of animations) animation.stop();
+      for (const t of targets) {
+        t.style.opacity = '';
+        t.style.transform = '';
+      }
+    };
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries.some((e) => e.isIntersecting)) return;
         observer.disconnect();
+        if (getMotion() === 'paused') {
+          show();
+          return;
+        }
         targets.forEach((t, i) => {
-          void animate(
+          const animation = animate(
             t,
             { opacity: [0, 1], transform: [`translateY(${RISE}px)`, 'translateY(0px)'] },
             { duration: 0.6, delay: delay + i * stagger, ease: EASE },
-          ).then(() => {
+          );
+          animations.push(animation);
+          void animation.then(() => {
             // Hand the element back to CSS: no lingering inline transform to
             // create a containing block or fight a hover state.
             t.style.opacity = '';
@@ -69,9 +84,17 @@ export function Reveal({ children, className, stagger = 0.07, delay = 0 }: Revea
       { rootMargin: '0px 0px -12% 0px', threshold: 0 },
     );
     observer.observe(el);
+    const unsubscribe = subscribe(() => {
+      if (getMotion() === 'paused') {
+        observer.disconnect();
+        show();
+      }
+    });
 
     return () => {
       observer.disconnect();
+      unsubscribe();
+      show();
       for (const t of targets) {
         t.style.opacity = '';
         t.style.transform = '';

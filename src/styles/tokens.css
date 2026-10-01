@@ -6,12 +6,12 @@
 
 @theme {
   /* surfaces and ink */
-  --color-ground: #eceef4;
+  --color-ground: #f6f7fb;
   --color-ground-a: rgb(236 238 244 / 0.82);
   --color-chip: rgb(236 238 244 / 0.95);
-  --color-panel: #f1f2f7;
+  --color-panel: #eef1f8;
   --color-raised: #f8f9fc;
-  --color-ink: #1a1c20;
+  --color-ink: #172038;
   --color-ink-2: #454952;
   --color-ink-3: #5d6169;
   --color-line: rgb(26 28 32 / 0.12);
@@ -30,7 +30,7 @@
   --color-act-d: #1f33b0;      /* pressed / hover */
 
   /* palette — surface values (3D, swatches) */
-  --color-blueprint: #3350f0;
+  --color-blueprint: #234be8;
   --color-pine: #10a37c;
   --color-ochre: #f4a40b;
   --color-plum: #8a55e8;

@@ -24,7 +24,7 @@ export const viewport: Viewport = {
   // Browser chrome colour. Must be literal: the browser reads it before any CSS.
   // Keep in step with --color-ground in src/styles/tokens.css (light / dark).
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#eceef4' },
+    { media: '(prefers-color-scheme: light)', color: '#f6f7fb' },
     { media: '(prefers-color-scheme: dark)', color: '#12141b' },
   ],
 };
@@ -49,13 +49,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link
           rel="preload"
           href="/fonts/outfit-latin-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/jetbrains-mono-latin-var.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"

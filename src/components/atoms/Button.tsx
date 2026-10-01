@@ -56,7 +56,7 @@ export function Button({
   const showArrow = arrow ?? (Boolean(href) && size === 'default');
 
   const classes = cn(
-    'group inline-flex items-center gap-3 rounded-hair border font-medium tracking-tight',
+    'group inline-flex items-center gap-3 rounded-full border font-medium tracking-tight',
     // `scale`, not `transform`: Tailwind v4's scale utilities set the standalone
     // CSS scale property, so transitioning `transform` left the press snapping.
     'transition-[background-color,border-color,color,scale] duration-200 ease-brand',
@@ -74,7 +74,7 @@ export function Button({
       {showArrow ? (
         <span
           aria-hidden="true"
-          className="transition-transform duration-200 ease-brand group-hover:translate-x-1 group-focus-visible:translate-x-1"
+          className="ease-brand transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1"
         >
           &#8594;
         </span>

@@ -1,13 +1,8 @@
 #!/usr/bin/env node
 /**
- * Bundle budget check. Budgets: .claude/architecture.md §8.
- *
- * Why this exists rather than a size-limit glob: Turbopack names chunks with
- * opaque content hashes. A glob like `3d_*.js` matched the 3D chunk exactly
- * once, by coincidence, and silently stopped matching on the next build — which
- * made the "initial route" budget swallow the 3D chunk and fail at 366 kB.
- *
- * The 3D chunk is therefore identified by what is IN it, not by its name.
+ * Bundle budget check. Count scripts emitted in the homepage HTML for the
+ * initial-route budget; other routes and deferred chunks are not initial JS.
+ * Identify lazy three.js chunks by their contents, independent of bundler names.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { brotliCompressSync, constants } from 'node:zlib';
@@ -42,6 +37,17 @@ if (!files.length) {
   process.exit(1);
 }
 
+const homeHtml = readFileSync('out/index.html', 'utf8');
+const initialFiles = new Set(
+  [...homeHtml.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)]
+    .map((match) => decodeURIComponent(match[1].split('?')[0]))
+    .filter((src) => src.startsWith('/_next/'))
+    .map((src) => join('out', src.slice(1))),
+);
+if (!initialFiles.size) {
+  console.error('No initial scripts found in out/index.html.');
+  process.exit(1);
+}
 let initial = 0;
 let threeD = 0;
 const threeDFiles = [];
@@ -54,9 +60,8 @@ for (const file of files) {
   if (isThree) {
     threeD += size;
     threeDFiles.push(file);
-  } else {
-    initial += size;
   }
+  if (initialFiles.has(file)) initial += size;
 }
 
 const kb = (n) => (n / 1024).toFixed(1);
@@ -67,7 +72,9 @@ console.log('Bundle budget (brotli)\n');
 console.log(`  initial route JS   ${kb(initial).padStart(7)} KB / ${BUDGET_INITIAL_KB} KB`);
 console.log(`  3D chunk (lazy)    ${kb(threeD).padStart(7)} KB / ${BUDGET_3D_KB} KB`);
 if (threeDFiles.length) {
-  console.log(`\n  3D chunk identified by content: ${threeDFiles.map((f) => f.split('/').pop()).join(', ')}`);
+  console.log(
+    `\n  3D chunk identified by content: ${threeDFiles.map((f) => f.split('/').pop()).join(', ')}`,
+  );
 } else {
   console.log('\n  No 3D chunk found — the scene is not in this build.');
 }

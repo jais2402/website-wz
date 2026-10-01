@@ -1,8 +1,8 @@
 # Wezigns — website
 
 Custom software, built around how your business already works.
-A static Next.js site with a scroll-driven WebGL scene, built to an atomic
-design system, from a design direction validated with a 200-user study.
+A static Next.js site with an interactive 3D system sculpture, premium editorial
+layouts, and content informed by the company’s existing positioning study.
 
 ---
 
@@ -15,7 +15,8 @@ pnpm verify       # types, lint, content, unit tests, build, size budget
 ```
 
 Node ≥ 20.9 required (Next 16). Turbopack is the default bundler — do not add a
-webpack config.
+webpack config. In environments that block Turbopack worker ports, use
+`pnpm content:llms && pnpm exec next build --webpack` to verify the static export.
 
 ---
 
@@ -61,8 +62,8 @@ journal.md              decisions and completed work, dated, append-only
    app`. ESLint enforces that too.
 4. **The 3D is never in the critical path.** Lazy chunk, `frameloop="demand"`,
    `aria-hidden`, four tested fallbacks. Every fact it shows also exists as text.
-5. **Phones get no scroll-gating.** Below 1000px every list is open, nothing
-   depends on hover.
+5. **Phones get no scroll-gating.** Content uses direct, keyboard-accessible
+   controls. Nothing depends on hover or a timed scroll sequence.
 
 ---
 
@@ -87,8 +88,11 @@ journal.md              decisions and completed work, dated, append-only
 
 ## Editing content
 
-All copy lives in `content/site.json`. Edit it, run `pnpm content:validate`, and
-the site follows. Two phrases are measured brand assets — **"Tell us what is not
+Business content lives in `content/site.json`. The redesigned homepage composes
+it in `src/components/templates/PremiumHome.tsx`, with editorial labels there.
+Its styles live in `src/styles/premium.css`; the lazy 3D scene is
+`src/components/three/SystemSculpture.tsx`. Edit business content and run
+`pnpm content:validate`. Two phrases are measured brand assets — **"Tell us what is not
 working"** and **"…the moment when the business outgrows the workaround"** — and
 should not be reworded without a study-grade reason. Tone rules are in
 `.claude/context.md` §8.
@@ -126,3 +130,41 @@ In `.claude/standards.md` §7. Short version: types and lint clean, tests writte
 and green, axe clean on every affected route in both themes, keyboard pass done
 by hand, reduced-motion and no-WebGL paths verified, inside the performance
 budget, no placeholder copy, works from 320px up, `journal.md` updated.
+
+## Local preview and enquiry delivery
+
+Run `pnpm dev --hostname 127.0.0.1 --port 3000` and open
+`http://127.0.0.1:3000`. The preview remains local.
+
+The homepage and contact page validate enquiries and prepare a `mailto:` draft
+for the visitor to review and send using their email app. There is no server
+delivery endpoint configured. Ambient 3D motion respects reduced-motion
+preferences and the persistent pause button; without WebGL, a CSS sculpture
+keeps the hero complete.
+
+## Homepage refinement audit
+
+See `docs/design-audit.md` for the typography scale, resolved browser comments,
+light/dark accessibility checks, asset provenance, and remaining mobile loading
+findings. Delivery stages follow scrolling while retaining direct navigation.
+The original interactive 3D hero is restored, with separate case-study,
+capabilities, integration, delivery, and contact sections. The larger
+“Across your business” scroll journey remains. Mobile initially shows the
+abstract artwork and loads live WebGL when the visitor explores the system.
+See `docs/scroll-journey.md` for the current restoration notes.
+
+## Local 3D refinements
+
+Case cards are horizontal on desktop with live WebGL sculptures. Simplify,
+Scale, and Secure sit below the hero with individual models. Capabilities and
+integration have live models; FAQ answers animate open and closed; pricing
+has a larger panel. Section models load near the viewport and respect pause
+and reduced motion. See `docs/3d-refinements.md` for implementation and checks.
+
+
+The capability journey has four areas (Build, Connect, AI, Run), with a sticky
+heading and a native scroll runway on larger screens. Mobile keeps every
+chapter in document flow. Delivery assembles a cube from foundation to finish;
+integration visualises selected connections with flowing signals. Each case
+has distinct local geometry and fallback artwork. Section WebGL contexts are
+released offscreen; motion and reduced-motion preferences remain respected.

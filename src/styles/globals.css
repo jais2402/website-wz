@@ -1,4 +1,5 @@
 @import './tokens.css';
+@import './premium.css';
 
 /* Self-hosted, latin subset, variable — one file per family.
    architecture.md §7: no Google Fonts request. font-display: swap so text is
@@ -21,9 +22,13 @@
 
 @layer base {
   /* Mobile: no grey flash on tap. Focus-visible rings still carry keyboard focus. */
-  html { -webkit-tap-highlight-color: transparent; }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
   /* Body copy avoids one-word last lines (headings already balance). */
-  p { text-wrap: pretty; }
+  p {
+    text-wrap: pretty;
+  }
   html {
     /* Next 16 no longer forces this; the scroll journey needs it.
        Pair with <html data-scroll-behavior="smooth"> in layout.tsx. */
@@ -78,7 +83,8 @@
     *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
-      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity !important;
+      transition-property: color, background-color, border-color, text-decoration-color, fill,
+        stroke, opacity !important;
     }
   }
 }
@@ -99,7 +105,9 @@
     pointer-events: none;
     transition: opacity 1.1s var(--ease-brand);
   }
-  #stage.ready { opacity: 1; }
+  #stage.ready {
+    opacity: 1;
+  }
 
   #callouts {
     position: fixed;
@@ -108,7 +116,12 @@
     pointer-events: none;
     overflow: hidden;
   }
-  #leads { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #leads {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
   #leads path {
     fill: none;
     stroke: var(--color-line-2);
@@ -119,19 +132,26 @@
 
   .cd {
     position: absolute;
-    left: 0; top: 0;
-    width: 4px; height: 4px;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 4px;
     margin: -2px 0 0 -2px;
     border-radius: 50%;
     background: var(--color-ink-3);
     opacity: 0;
-    transition: opacity 0.4s var(--ease-brand), background-color 0.3s var(--ease-brand);
+    transition:
+      opacity 0.4s var(--ease-brand),
+      background-color 0.3s var(--ease-brand);
   }
-  .cd.hot { background: var(--color-blueprint); }
+  .cd.hot {
+    background: var(--color-blueprint);
+  }
 
   .co {
     position: absolute;
-    left: 0; top: 0;
+    left: 0;
+    top: 0;
     font-family: var(--font-mono);
     font-size: var(--text-callout);
     letter-spacing: var(--text-callout--letter-spacing);
@@ -142,34 +162,64 @@
     color: var(--color-ink-3);
     white-space: nowrap;
     opacity: 0;
-    transition: opacity 0.4s var(--ease-brand), color 0.3s var(--ease-brand);
+    transition:
+      opacity 0.4s var(--ease-brand),
+      color 0.3s var(--ease-brand);
   }
   /* Layer hint only while the loop is drawing (stage.ts toggles .live); at rest
      the labels are still, so no layers are held. */
   #callouts.live .co,
-  #callouts.live .cd { will-change: transform; }
-  .co.hot { color: var(--color-ink); background: var(--color-ground); }
+  #callouts.live .cd {
+    will-change: transform;
+  }
+  .co.hot {
+    color: var(--color-ink);
+    background: var(--color-ground);
+  }
 
   /* Without the model the reading column takes the full width. */
-  .no3d #stage, .no3d #callouts { display: none; }
+  .no3d #stage,
+  .no3d #callouts {
+    display: none;
+  }
   /* Static stand-ins for the live model step aside once a stage is running. */
-  .has3d [data-stage-fallback] { opacity: 0; }
+  .has3d [data-stage-fallback] {
+    opacity: 0;
+  }
 
   /* Isometric drawings, shaded in their hue like the 3D blocks. --iso is set
      per drawing (IsoGlyph); faces mix it toward the light or the shade. */
-  .iso { --iso: var(--color-model); stroke: color-mix(in oklab, var(--iso) 58%, var(--color-iso-shade)); }
-  .iso .iso-t { fill: color-mix(in oklab, var(--iso) 38%, var(--color-iso-lit)); }
-  .iso .iso-l { fill: color-mix(in oklab, var(--iso) 78%, var(--color-iso-lit)); }
-  .iso .iso-r { fill: color-mix(in oklab, var(--iso) 84%, var(--color-iso-shade)); }
+  .iso {
+    --iso: var(--color-model);
+    stroke: color-mix(in oklab, var(--iso) 58%, var(--color-iso-shade));
+  }
+  .iso .iso-t {
+    fill: color-mix(in oklab, var(--iso) 38%, var(--color-iso-lit));
+  }
+  .iso .iso-l {
+    fill: color-mix(in oklab, var(--iso) 78%, var(--color-iso-lit));
+  }
+  .iso .iso-r {
+    fill: color-mix(in oklab, var(--iso) 84%, var(--color-iso-shade));
+  }
 
   @media (max-width: 999px) {
-    #stage, #callouts { display: none; }
+    #stage,
+    #callouts {
+      display: none;
+    }
   }
 }
 
 /* A case panel fades up when the case changes. motion-safe only: under
    reduced motion the panel simply swaps. */
 @keyframes case-in {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

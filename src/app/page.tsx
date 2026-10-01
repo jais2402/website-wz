@@ -1,57 +1,30 @@
 import { content, footer, contactFacts } from '@/lib/content';
 import { JsonLd } from '@/components/atoms';
-import { HeroSection, SiteFooter, SiteHeader } from '@/components/organisms';
-import { SectionRenderer, SplitScrollTemplate } from '@/components/templates';
-import { SceneCanvas } from '@/components/three';
+import { SiteFooter, SiteHeader } from '@/components/organisms';
+import { PremiumHome } from '@/components/templates/PremiumHome';
 import { faqSchema, organizationSchema, websiteSchema } from '@/lib/structured-data';
 
-/**
- * The scroll journey. Content enters here and flows down as props —
- * no organism below this point reads content/site.json.
- *
- * To change what is on this page, edit content/site.json. Section order is
- * array order; each section's `pattern` selects its organism in
- * SectionRenderer. No code change is needed to add, reorder or drop a section.
- */
 export default function HomePage() {
-  const { hero, sections, cases, nav } = content;
-  const primaryCta = hero.actions[0]!;
   const faq = faqSchema();
-  const schema = [organizationSchema(), websiteSchema(), ...(faq ? [faq] : [])];
-
   return (
     <>
-    <JsonLd schema={schema} />
-    <SplitScrollTemplate
-      header={<SiteHeader
-          nav={nav.primary}
-          cta={nav.cta}
-          wordmark={footer.wordmark}
-          name={content.meta.name}
-          since={content.meta.since}
-        />}
-      scene={<SceneCanvas />}
-      footer={
-        <SiteFooter
-          {...contactFacts()}
-          cta={footer.cta}
-          columns={footer.columns}
-          wordmark={footer.wordmark}
-          base={footer.base}
-          primaryCta={primaryCta}
-        />
-      }
-    >
-      <HeroSection
-        headline={hero.headline!}
-        sub={hero.sub}
-        caption={hero.caption as string | undefined}
-        actions={hero.actions}
-        facts={hero.facts as Array<{ label: string; value: string }> | undefined}
-        builtWith={hero.builtWith as { label: string; items: string[] } | undefined}
+      <JsonLd schema={[organizationSchema(), websiteSchema(), ...(faq ? [faq] : [])]} />
+      <SiteHeader
+        nav={content.nav.primary}
+        cta={content.nav.cta}
+        wordmark={footer.wordmark}
+        name={content.meta.name}
+        since={content.meta.since}
       />
-      <SectionRenderer sections={sections} cases={cases} brand={{ wordmark: footer.wordmark, since: content.meta.since }} />
-    </SplitScrollTemplate>
+      <PremiumHome content={content} />
+      <SiteFooter
+        {...contactFacts()}
+        cta={footer.cta}
+        columns={footer.columns}
+        wordmark={footer.wordmark}
+        base={footer.base}
+        primaryCta={content.hero.actions[0]!}
+      />
     </>
   );
 }

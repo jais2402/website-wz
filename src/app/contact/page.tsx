@@ -31,92 +31,93 @@ export default function ContactPage() {
 
   return (
     <DocumentPage scene={{ scene: 'start', glyph: 'software' }}>
-        {/* The form carries its own H1 here: on this page it is the subject,
+      {/* The form carries its own H1 here: on this page it is the subject,
             not one section among many. */}
-        <ContactSection
-          id="contact"
-          headline={form.headline}
-          topics={form.topics}
-          fields={form.fields}
-          submit={form.submit}
-          promise={form.promise}
-          note={form.note}
-          requiredNote={form.requiredNote}
-          topicLabel={form.topicLabel}
-          topicCodes={form.topicCodes}
-          as="h1"
-        />
+      <ContactSection
+        email={content.meta.email}
+        id="contact"
+        headline={form.headline}
+        topics={form.topics}
+        fields={form.fields}
+        submit={form.submit}
+        promise={form.promise}
+        note={form.note}
+        requiredNote={form.requiredNote}
+        topicLabel={form.topicLabel}
+        topicCodes={form.topicCodes}
+        as="h1"
+      />
 
-        {/* The other ways to reach a person. Each renders only if the fact is
+      {/* The other ways to reach a person. Each renders only if the fact is
             there — no placeholder number, ever. */}
-        <section
-          aria-labelledby="contact-direct"
-          className="mt-section border-t border-line pt-section"
-        >
-          <h2 id="contact-direct" className="text-d2 text-balance text-ink">
-            Or reach us directly
-          </h2>
-          <dl className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+      <section
+        aria-labelledby="contact-direct"
+        className="mt-section border-line pt-section border-t"
+      >
+        <h2 id="contact-direct" className="text-d2 text-ink text-balance">
+          Or reach us directly
+        </h2>
+        <dl className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+          <div>
+            <dt>
+              <Eyebrow>Email</Eyebrow>
+            </dt>
+            <dd className="mt-1">
+              <a
+                href={`mailto:${footer.cta.email}`}
+                className="text-body text-ink-2 decoration-line-2 ease-brand hover:text-ink underline underline-offset-4 transition-colors duration-300"
+              >
+                {footer.cta.email}
+              </a>
+            </dd>
+          </div>
+
+          {phone ? (
             <div>
               <dt>
-                <Eyebrow>Email</Eyebrow>
+                <Eyebrow>Phone</Eyebrow>
               </dt>
               <dd className="mt-1">
                 <a
-                  href={`mailto:${footer.cta.email}`}
-                  className="text-body text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-brand hover:text-ink"
+                  href={phone.href}
+                  className="text-body text-ink-2 decoration-line-2 ease-brand hover:text-ink underline underline-offset-4 transition-colors duration-300"
                 >
-                  {footer.cta.email}
+                  {phone.display}
                 </a>
               </dd>
             </div>
+          ) : null}
 
-            {phone ? (
-              <div>
-                <dt>
-                  <Eyebrow>Phone</Eyebrow>
-                </dt>
-                <dd className="mt-1">
-                  <a
-                    href={phone.href}
-                    className="text-body text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-brand hover:text-ink"
-                  >
-                    {phone.display}
-                  </a>
-                </dd>
-              </div>
-            ) : null}
-
-            {office ? (
-              <div>
-                <dt>
-                  <Eyebrow>{office.label ?? 'Office'}</Eyebrow>
-                </dt>
-                <dd className="mt-1">
-                  <address className="not-italic text-body leading-relaxed text-ink-2">
-                    {office.lines?.map((line) => (
-                      <span key={line} className="block">
-                        {line}
-                      </span>
-                    ))}
-                    <span className="block">
-                      {[office.city, office.postalCode].filter(Boolean).join(' ')}
-                      {office.country ? `, ${office.country}` : ''}
+          {office ? (
+            <div>
+              <dt>
+                <Eyebrow>{office.label ?? 'Office'}</Eyebrow>
+              </dt>
+              <dd className="mt-1">
+                <address className="text-body text-ink-2 leading-relaxed not-italic">
+                  {office.lines?.map((line) => (
+                    <span key={line} className="block">
+                      {line}
                     </span>
-                  </address>
-                  {office.mapUrl ? (
-                    <a
-                      href={office.mapUrl}
-                      className="mt-2 inline-flex min-h-10 items-center text-small text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-brand hover:text-ink"
-                    >
-                      Open in Google Maps
-                    </a>
-                  ) : null}
-                </dd>
-              </div>
-            ) : null}
-          </dl>
-        </section>
+                  ))}
+                  <span className="block">
+                    {[office.city, office.postalCode].filter(Boolean).join(' ')}
+                    {office.country ? `, ${office.country}` : ''}
+                  </span>
+                </address>
+                {office.mapUrl ? (
+                  <a
+                    href={office.mapUrl}
+                    className="text-small text-ink-2 decoration-line-2 ease-brand hover:text-ink mt-2 inline-flex min-h-10 items-center underline underline-offset-4 transition-colors duration-300"
+                  >
+                    Open in Google Maps
+                  </a>
+                ) : null}
+              </dd>
+            </div>
+          ) : null}
+        </dl>
+      </section>
     </DocumentPage>
   );
 }

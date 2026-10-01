@@ -1,115 +1,67 @@
 import Link from 'next/link';
-import { Button, Eyebrow } from '@/components/atoms';
 import type { Link as ContentLink } from '@/types/content';
-
 export interface SiteFooterProps {
   cta: { title: string; email: string; body: string; markets?: string[] | undefined };
-  /** Rendered only when the fact exists. Absent slots render nothing (rule 1). */
   phone?: { display: string; href: string } | undefined;
   office?:
-    | { label?: string | undefined; lines?: string[] | undefined; city: string; region?: string | undefined; postalCode?: string | undefined; country: string; mapUrl?: string | undefined }
+    | {
+        label?: string | undefined;
+        lines?: string[] | undefined;
+        city: string;
+        region?: string | undefined;
+        postalCode?: string | undefined;
+        country: string;
+        mapUrl?: string | undefined;
+      }
     | undefined;
   columns: Array<{ title: string; links: ContentLink[] }>;
   wordmark: string;
   base: string[];
   primaryCta: ContentLink;
 }
-
-/**
- * Organism. The last chance to act.
- *
- * Never a dead end: the primary CTA repeats here in the same words it uses
- * everywhere else, and the email is offered for people who will not fill a
- * form (context.md §5).
- */
-export function SiteFooter({ cta, columns, wordmark, base, primaryCta, phone, office }: SiteFooterProps) {
+export function SiteFooter({ cta, columns, wordmark, base, primaryCta, office }: SiteFooterProps) {
   return (
-    <footer className="relative z-2 border-t border-line bg-panel px-gutter pb-10 pt-[clamp(72px,9vh,110px)]">
-      <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
+    <footer className="premium-footer">
+      <div className="footer-top">
         <div>
-          <h2 className="text-d2 text-balance text-ink">{cta.title}</h2>
-          <p className="mt-5 max-w-[46ch] text-lead text-ink-2">{cta.body}</p>
-
-          <div className="mt-7 flex flex-wrap items-center gap-3">
-            <Button href={primaryCta.href}>{primaryCta.label}</Button>
-            <a
-              href={`mailto:${cta.email}`}
-              className="inline-flex min-h-10 items-center text-body text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-brand hover:text-ink"
-            >
-              {cta.email}
-            </a>
-            {phone ? (
-              <a
-                href={phone.href}
-                className="inline-flex min-h-10 items-center text-body text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors duration-300 ease-brand hover:text-ink"
-              >
-                {phone.display}
-              </a>
-            ) : null}
-          </div>
-
-          {office ? (
-            <address className="mt-6 not-italic text-small leading-relaxed text-ink-3">
-              {office.label ? <Eyebrow>{office.label}</Eyebrow> : null}
-              <span className="mt-1 block">
-                {office.lines?.map((line) => (
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
-                <span className="block">
-                  {[office.city, office.postalCode].filter(Boolean).join(' ')}
-                  {office.country ? `, ${office.country}` : ''}
-                </span>
-              </span>
-            </address>
-          ) : null}
-
-          {cta.markets?.length ? (
-            <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2">
-              {cta.markets.map((market) => (
-                <li key={market}>
-                  <Eyebrow>{market}</Eyebrow>
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <Link href="/" className="premium-logo">
+            {wordmark}
+          </Link>
+          <p>
+            Custom software.
+            <br />
+            Built around your business.
+          </p>
+          <Link href={primaryCta.href} className="quiet-link">
+            {primaryCta.label}
+          </Link>
         </div>
-
-        <div className="grid gap-8 sm:grid-cols-3">
+        <div className="footer-columns">
           {columns.map((column) => (
             <nav key={column.title} aria-label={column.title}>
-              <Eyebrow>{column.title}</Eyebrow>
-              <ul className="mt-2">
-                {column.links.map((link) => (
-                  <li key={`${column.title}-${link.href}`}>
-                    <Link
-                      href={link.href}
-                      className="inline-flex min-h-10 items-center text-small text-ink-2 transition-colors duration-300 ease-brand hover:text-ink"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <span>{column.title}</span>
+              {column.links.map((link) => (
+                <Link key={link.href} href={link.href}>
+                  {link.label}
+                </Link>
+              ))}
             </nav>
           ))}
         </div>
       </div>
-
-      <p
-        aria-hidden="true"
-        className="mt-[clamp(56px,8vh,96px)] select-none text-[clamp(56px,13vw,180px)] font-medium leading-[0.85] tracking-[-0.05em] text-wordmark"
-      >
-        {wordmark}
-      </p>
-
-      <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-5">
-        {base.map((line) => (
-          <p key={line} className="text-caption text-ink-3">
-            {line}
-          </p>
+      <div className="footer-markets" id="regions">
+        <span>
+          {office?.city ?? 'Chennai'}, {office?.country ?? 'India'}
+        </span>
+        <p>{cta.markets?.join(', ')}</p>
+      </div>
+      <div className="footer-base">
+        {base.slice(0, 1).map((line) => (
+          <p key={line}>{line}</p>
         ))}
+        <a href="#main" aria-label="Back to top">
+          ↑
+        </a>
       </div>
     </footer>
   );

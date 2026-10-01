@@ -31,6 +31,7 @@ export interface ContactSectionProps {
   topicCodes?: Record<string, string> | undefined;
   /** `h1` on /contact, where the form is the page's subject. Default `h2`. */
   as?: 'h1' | 'h2' | undefined;
+  email?: string | undefined;
 }
 
 const AUTOCOMPLETE: Record<string, string> = { name: 'name', email: 'email' };
@@ -54,8 +55,20 @@ const AUTOCOMPLETE: Record<string, string> = { name: 'name', email: 'email' };
  * the form validates and reports state locally and does not pretend to deliver.
  */
 export function ContactSection({
-  id, side, scene, headline, topics, fields, submit, promise, note, requiredNote,
-  topicLabel = 'What is this about?', topicCodes, as: headingAs,
+  id,
+  side,
+  scene,
+  headline,
+  topics,
+  fields,
+  submit,
+  promise,
+  note,
+  requiredNote,
+  topicLabel = 'What is this about?',
+  topicCodes,
+  as: headingAs,
+  email = 'hello@wezigns.com',
 }: ContactSectionProps) {
   const [topic, setTopic] = useState<string | null>(null);
 
@@ -74,6 +87,7 @@ export function ContactSection({
     return () => document.removeEventListener('click', onClick);
   }, [topicCodes, topics]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [draft, setDraft] = useState<string | null>(null);
   const titleId = `${id}-title`;
 
   const short = fields.filter((f) => f.type !== 'textarea');
@@ -92,7 +106,15 @@ export function ContactSection({
       }
     }
     setErrors(next);
-    // Delivery is wired once architecture.md §6 is decided — see tasks.md Phase 4.
+    if (Object.keys(next).length) {
+      setDraft(null);
+      return;
+    }
+    if (data.get('company-url')) return;
+    const body = `Name: ${data.get('name')}\nEmail: ${data.get('email')}\nTopic: ${topic ?? 'General enquiry'}\n\n${data.get('message')}`;
+    setDraft(
+      `mailto:${email}?subject=${encodeURIComponent(`Wezigns enquiry — ${topic ?? 'General enquiry'}`)}&body=${encodeURIComponent(body)}`,
+    );
   }
 
   const renderField = (field: ContactField) => (
@@ -113,8 +135,21 @@ export function ContactSection({
     <Section id={id} side={side} scene={scene} labelledBy={titleId}>
       <HeadlineSplit headline={headline} id={titleId} level="d1" as={headingAs ?? 'h2'} />
 
-      <form noValidate onSubmit={onSubmit} className="mt-9 max-w-measure">
-        <TopicChips label={topicLabel} topics={topics} selected={topic} onSelect={setTopic} />
+      <form
+        noValidate
+        onSubmit={onSubmit}
+        onChange={() => setDraft(null)}
+        className="max-w-measure mt-9"
+      >
+        <TopicChips
+          label={topicLabel}
+          topics={topics}
+          selected={topic}
+          onSelect={(value) => {
+            setTopic(value);
+            setDraft(null);
+          }}
+        />
         <input type="hidden" name="topic" value={topic ?? ''} />
 
         {/* Honeypot — see .claude/agents/security-engineer.md. Never shown, never announced. */}
@@ -131,22 +166,38 @@ export function ContactSection({
         </div>
 
         {allRequired && requiredNote ? (
-          <p className="mt-3 text-caption text-ink-3">{requiredNote}</p>
+          <p className="text-caption text-ink-3 mt-3">{requiredNote}</p>
         ) : null}
 
         <Button type="submit" className="mt-5 w-full justify-center">
           {submit}
         </Button>
+        <p className="text-caption text-ink-3 mt-3">
+          This form prepares an email in your email app.
+        </p>
+        {draft ? (
+          <div role="status" className="border-line bg-raised mt-4 rounded-2xl border p-5">
+            <p className="text-small text-ink-2">
+              Your enquiry is ready. Open your email app to review and send it.
+            </p>
+            <a
+              href={draft}
+              className="text-small text-blueprint-t mt-2 inline-flex min-h-10 items-center underline underline-offset-4"
+            >
+              Open email draft ↗
+            </a>
+          </div>
+        ) : null}
 
         {/* The reply promise, UNDER the submit — context.md §5. */}
-        <div className="mt-4 grid grid-cols-[10px_minmax(0,1fr)] gap-3.5 border-y border-line py-3.5">
+        <div className="border-line mt-4 grid grid-cols-[10px_minmax(0,1fr)] gap-3.5 border-y py-3.5">
           <Swatch hue="pine" active className="mt-[7px]" />
-          <p className="text-body leading-normal text-ink-2">
-            <b className="font-medium text-ink">{promise.strong}</b> {promise.rest}
+          <p className="text-body text-ink-2 leading-normal">
+            <b className="text-ink font-medium">{promise.strong}</b> {promise.rest}
           </p>
         </div>
 
-        {note ? <p className="mt-3.5 text-caption text-ink-3">{note}</p> : null}
+        {note ? <p className="text-caption text-ink-3 mt-3.5">{note}</p> : null}
       </form>
     </Section>
   );
