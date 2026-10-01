@@ -27,6 +27,12 @@ const accents: Record<CaseModel, [number, number]> = {
   ai: [0x6c5bd6, 0x9b8af0],
   training: [0x234be8, 0x5274ff],
   tourism: [0x234be8, 0x5274ff],
+  people: [0x234be8, 0x5274ff],
+  revenue: [0x234be8, 0x5274ff],
+  operations: [0x234be8, 0x5274ff],
+  finance: [0x234be8, 0x5274ff],
+  industry: [0x234be8, 0x5274ff],
+  conversation: [0x234be8, 0x5274ff],
 };
 
 /** Lazy, local WebGL illustrations. Visible scenes breathe gently; offscreen and paused scenes stop. */
@@ -107,11 +113,23 @@ export function CaseSculpture({
       const camera = new T.PerspectiveCamera(34, 1, 0.1, 40);
       camera.position.set(4.5, 3.8, 6.2);
       camera.lookAt(0, 0.2, 0);
+      if (variant === 'automation' || variant === 'flow') {
+        camera.position.set(0, 0.3, 8.5);
+        camera.lookAt(0, 0, 0);
+      }
       if (container.classList.contains('capability-model')) {
         camera.zoom = 1.28;
         camera.updateProjectionMatrix();
       }
       scene.add(new T.HemisphereLight(0xffffff, 0x667dab, 3));
+      if (['people', 'revenue', 'operations', 'finance', 'industry'].includes(variant)) {
+        camera.zoom = 1.6;
+        camera.updateProjectionMatrix();
+      }
+      if (variant === 'conversation') {
+        camera.zoom = 1.25;
+        camera.updateProjectionMatrix();
+      }
       const key = new T.DirectionalLight(0xffffff, 4);
       key.position.set(3, 6, 4);
       key.castShadow = true;
@@ -183,9 +201,21 @@ export function CaseSculpture({
       let protection: InstanceType<typeof T.Mesh> | undefined;
       let narrative: ReturnType<typeof createNarrativeModel> | undefined;
       if (
-        ['construction', 'flow', 'automation', 'hosting', 'ai', 'training', 'tourism'].includes(
-          variant,
-        )
+        [
+          'construction',
+          'flow',
+          'automation',
+          'hosting',
+          'ai',
+          'training',
+          'tourism',
+          'people',
+          'revenue',
+          'operations',
+          'finance',
+          'industry',
+          'conversation',
+        ].includes(variant)
       ) {
         narrative = createNarrativeModel(
           T,
@@ -370,7 +400,11 @@ export function CaseSculpture({
       };
       function draw() {
         root.position.y = paused ? 0 : Math.sin(time * 0.8) * 0.035;
-        root.rotation.set(paused ? 0 : y * 0.18, -0.25 + (paused ? 0 : x * 0.3), 0);
+        root.rotation.set(
+          paused ? 0 : y * 0.12,
+          (variant === 'automation' || variant === 'flow' ? 0 : -0.25) + (paused ? 0 : x * 0.12),
+          0,
+        );
         const unfold = paused
           ? 0
           : (1 + (variant === 'simplify' ? 1 : -1) * Math.cos((time * Math.PI) / 4.5)) / 2;
@@ -587,65 +621,38 @@ export function CaseSculpture({
       aria-hidden="true"
     >
       <div className="case-model-fallback">
-        {variant === 'training' ? (
-          <svg viewBox="0 0 240 260" className="case-fallback-art">
-            <rect x="52" y="30" width="142" height="188" rx="18" fill="var(--premium-rule)" />
-            <rect
-              x="44"
-              y="22"
-              width="142"
-              height="188"
-              rx="18"
-              fill="var(--premium-raised)"
-              stroke="var(--premium-rule)"
-            />
-            <path d="M90 140v65l24-15 24 15v-65" fill="#218b7a" />
-            <circle cx="114" cy="104" r="45" fill="var(--premium-blue)" />
-            <path
-              d="m92 103 16 17 31-34"
-              fill="none"
-              stroke="var(--premium-on-blue)"
-              strokeWidth="8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <ellipse
-              cx="120"
-              cy="128"
-              rx="94"
-              ry="113"
-              fill="none"
-              stroke="#218b7a"
-              strokeWidth="2"
-            />
-          </svg>
-        ) : variant === 'tourism' ? (
-          <svg viewBox="0 0 280 260" className="case-fallback-art">
-            <ellipse
-              cx="140"
-              cy="211"
-              rx="116"
-              ry="30"
-              fill="none"
-              stroke="#c58b32"
-              strokeWidth="3"
-            />
-            {[0, 1, 2, 3, 4].map((index) => (
-              <g key={index} transform={`translate(${43 + index * 38} ${38 + index * 13})`}>
-                <path d="M0 0 18-12 18 137 0 149z" fill="var(--premium-rule)" />
-                <path
-                  d="M0 0 33 12 33 161 0 149z"
+        {variant === 'training' || variant === 'tourism' ? (
+          <svg viewBox="0 0 240 240" className="case-fallback-art">
+            {variant === 'training' ? (
+              [0, 1, 2, 3].map((i) => (
+                <rect
+                  key={i}
+                  x={36 + (i % 2) * 88}
+                  y={36 + Math.floor(i / 2) * 88}
+                  width="78"
+                  height="78"
+                  rx="10"
                   fill={
-                    index === 2
-                      ? 'var(--premium-blue)'
-                      : index % 2
-                        ? 'var(--premium-raised)'
-                        : '#218b7a'
+                    i === 0 ? 'var(--premium-blue)' : i === 3 ? '#218b7a' : 'var(--premium-raised)'
                   }
+                  stroke="var(--premium-rule)"
                 />
-                <circle cx="16" cy="-15" r="5" fill={index === 2 ? '#c58b32' : '#218b7a'} />
-              </g>
-            ))}
+              ))
+            ) : (
+              <>
+                <rect
+                  x="40"
+                  y="40"
+                  width="160"
+                  height="160"
+                  rx="12"
+                  fill="var(--premium-raised)"
+                  stroke="var(--premium-rule)"
+                />
+                <path d="M52 40h136q12 0 12 12v30H40V52q0-12 12-12" fill="#218b7a" />
+                <circle cx="120" cy="140" r="24" fill="var(--premium-blue)" />
+              </>
+            )}
           </svg>
         ) : (
           <>

@@ -46,3 +46,12 @@ Delivery now assembles a 3×3×3 cube from its foundation, through a visible fra
 The capability heading stays with the scroll journey. Services use a bento composition; capability sculptures are larger and have transparent backgrounds. Mobile shows all chapters, with sticky heading and navigation, while keyboard/click navigation follows the chosen chapter. Hero labels name People, Process, and Technology; the established-tools block is larger. Quantity metrics count once on entry; the year stays factual and uses a brief arrival transition. Simplify resolves scattered plates, Scale builds columns, and Secure closes its lock then holds a protective perimeter.
 
 Scene instances release their WebGL resources when offscreen, and explicitly lose disposed contexts, keeping repeated scrolling and tab switching within browser context limits. Pause/reduced motion retains static geometry and meaningful selected colours. Tested at 1045/888 and 1440/1000 desktop, and 390/888 and 320/800 mobile, across light/dark themes: all four scroll stages and delivery stages, no horizontal overflow, no browser errors, and no WCAG A/AA axe findings. Keyboard, exclusive accordions, moving signal scenes, pause, reduced-number rendering, and forced no-WebGL fallback were checked separately. All 18 existing tests, content validation, TypeScript, ESLint, webpack production export, and bundle budgets pass. Initial JS is 174 KB Brotli against 180 KB; lazy Three.js is 151.6 KB against 320 KB.
+
+## Simplified sculptures and business areas
+
+- Training now uses four joined pieces; tourism uses one calendar with a single event marker. Their non-WebGL fallbacks follow the same silhouettes.
+- Automation gears face the visitor directly. AI is a larger, single inset core with one small companion shape.
+- Integration uses five parallel input channels converging on a shared manifold, with packets following the active accordion.
+- Each business area has a dedicated abstract sculpture: people, growth, operations, balance, and industry. Contact uses two open brackets meeting around a shared point.
+- All additions reuse the existing visibility-based scene lifecycle, Pause control, and reduced-motion behaviour.
+- Validation: TypeScript, ESLint, 18 tests, static production build and bundle budgets; desktop/mobile browser checks reported no runtime errors, overflow, or WCAG A/AA violations.

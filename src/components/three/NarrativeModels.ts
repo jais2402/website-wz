@@ -7,7 +7,13 @@ export type NarrativeVariant =
   | 'hosting'
   | 'ai'
   | 'training'
-  | 'tourism';
+  | 'tourism'
+  | 'people'
+  | 'revenue'
+  | 'operations'
+  | 'finance'
+  | 'industry'
+  | 'conversation';
 
 /** Sculptural metaphors with their own geometry and component choreography. */
 export function createNarrativeModel(
@@ -161,56 +167,29 @@ export function createNarrativeModel(
     };
   }
   if (variant === 'flow') {
-    root.scale.setScalar(0.87);
-    const core = mesh(track(new T.IcosahedronGeometry(0.57, 1)), blue);
-    core.position.y = 0.3;
-    const halo = torus(0.86, 0.035, pearl);
-    halo.rotation.x = Math.PI / 2;
-    halo.position.y = 0.3;
-    const nodes: {
-      object: Three.Mesh;
-      material: Three.MeshPhysicalMaterial;
-      index: number;
-      base: Three.Vector3;
-    }[] = [];
+    // A manifold: five distinct inputs arrive at one shared channel.
+    const hub = mesh(rounded(0.65, 2.25, 0.65), blue);
+    hub.position.x = 0.65;
     for (let i = 0; i < 5; i++) {
-      const angle = (i * Math.PI * 2) / 5;
-      const position = new T.Vector3(
-        Math.cos(angle) * 2.02,
-        0.2 + Math.sin(angle) * 0.18,
-        Math.sin(angle) * 1.65,
-      );
-      const material = accents[i]!.clone();
-      materials.push(material);
-      const object = mesh(track(new T.IcosahedronGeometry(0.32, 1)), material);
-      object.position.copy(position);
-      nodes.push({ object, material, index: i, base: position });
+      const y = (i - 2) * 0.47;
+      const input = mesh(rounded(0.5, 0.28, 0.5), accents[i]!);
+      input.position.set(-1.45, y, 0);
       const path = tube(
-        [
-          new T.Vector3(0, 0.3, 0),
-          new T.Vector3(position.x * 0.48, 0.7, position.z * 0.25),
-          position,
-        ],
-        0.035,
+        [new T.Vector3(-1.2, y, 0), new T.Vector3(-0.4, y, 0), new T.Vector3(0.35, y, 0)],
+        0.045,
       );
       addSignal(path, i);
-      const rim = torus(0.43, 0.025, accents[i]!);
-      rim.rotation.x = Math.PI / 2;
-      rim.position.copy(position);
     }
+    const output = tube(
+      [new T.Vector3(0.95, 0, 0), new T.Vector3(1.35, 0, 0), new T.Vector3(1.85, 0, 0)],
+      0.07,
+      teal,
+    );
+    addSignal(output, 5, teal);
     return (time: number, stage: number, paused: boolean) => {
-      nodes.forEach(({ object, material, index, base }) => {
-        const selected = stage === index;
-        material.color.lerp(
-          stage < 0 || selected ? accents[index]!.color : pearl.color,
-          paused ? 1 : 0.09,
-        );
-        object.position.copy(base);
-        object.position.y += paused ? 0 : (selected ? 0.18 : 0.035) * Math.sin(time * 1.1 + index);
-        object.scale.setScalar(selected ? 1.12 : 1);
-      });
-      core.scale.setScalar(paused ? 1 : 1 + Math.sin(time * 0.9) * 0.035);
       signalMotion(time, stage, paused);
+      signals[5]!.object.visible = !paused;
+      hub.scale.z = paused ? 1 : 1 + Math.sin(time * 0.9) * 0.025;
     };
   }
   if (variant === 'automation') {
@@ -278,92 +257,123 @@ export function createNarrativeModel(
     };
   }
   if (variant === 'ai') {
-    const core = mesh(track(new T.OctahedronGeometry(0.65, 0)), violet);
-    const frames: Three.Mesh[] = [];
-    for (let i = 0; i < 3; i++) {
-      const frame = torus(1.18 + i * 0.17, 0.045, i === 1 ? blue : pearl);
-      frame.rotation.set((i * Math.PI) / 3, Math.PI / 4, (i * Math.PI) / 3);
-      frames.push(frame);
-    }
-    const points: Three.Mesh[] = [];
-    for (let i = 0; i < 6; i++) {
-      const point = mesh(sphere, i % 2 ? teal : violet);
-      points.push(point);
-    }
+    root.scale.setScalar(1.35);
+    const core = mesh(rounded(1.65, 1.65, 0.65), violet);
+    core.rotation.z = Math.PI / 4;
+    const inset = mesh(rounded(0.75, 0.75, 0.12), pearl);
+    inset.rotation.z = Math.PI / 4;
+    inset.position.z = 0.43;
+    const spark = mesh(track(new T.OctahedronGeometry(0.23)), teal);
+    spark.position.set(1.3, 0.75, 0);
     return (time: number, _stage: number, paused: boolean, interaction: number) => {
-      core.scale.setScalar(paused ? 1 : 1 + Math.sin(time * 0.9) * 0.055);
-      frames.forEach(
-        (frame, i) =>
-          (frame.position.y = paused
-            ? 0
-            : Math.sin(time * 0.8 + i) * 0.06 + interaction * (i - 1) * 0.13),
-      );
-      points.forEach((point, i) => {
-        const a = (i * Math.PI) / 3;
-        point.position.set(
-          Math.cos(a) * (1.55 + (paused ? 0 : Math.sin(time * 0.8 + i) * 0.1)),
-          Math.sin(a) * 1.2,
-          Math.sin(a * 2) * 0.5,
-        );
-      });
+      inset.position.z = 0.43 + (paused ? 0 : 0.05 * Math.sin(time * 0.9) + interaction * 0.16);
+      spark.position.y = 0.75 + (paused ? 0 : Math.sin(time * 0.8) * 0.12);
     };
   }
   if (variant === 'training') {
-    const badge = new T.Group();
-    root.add(badge);
-    badge.rotation.y = -0.12;
-    mesh(rounded(1.9, 2.2, 0.22), pearl, badge);
-    const seal = mesh(track(new T.CylinderGeometry(0.56, 0.56, 0.16, 48)), blue, badge);
-    seal.rotation.x = Math.PI / 2;
-    seal.position.set(0, 0.12, 0.23);
-    const checkPoints = [
-      new T.Vector3(-0.27, 0.13, 0.36),
-      new T.Vector3(-0.06, -0.08, 0.36),
-      new T.Vector3(0.31, 0.32, 0.36),
-    ];
-    const check = mesh(
-      track(new T.TubeGeometry(new T.CatmullRomCurve3(checkPoints), 20, 0.045, 8, false)),
-      pearl,
-      badge,
-    );
-    const ribbons: Three.Mesh[] = [];
-    for (let i = 0; i < 2; i++) {
-      const ribbon = mesh(rounded(0.25, 0.65, 0.08), i ? teal : blue, badge);
-      ribbon.position.set(i ? 0.24 : -0.24, -0.58, 0.24);
-      ribbon.rotation.z = i ? -0.12 : 0.12;
-      ribbons.push(ribbon);
+    // Separate working pieces become one dependable system.
+    const pieces: Three.Mesh[] = [];
+    for (let i = 0; i < 4; i++) {
+      const piece = mesh(rounded(1.02, 1.02, 0.72), [blue, pearl, pearl, teal][i]!);
+      pieces.push(piece);
     }
-    const orbit = torus(1.53, 0.026, teal);
-    orbit.rotation.y = 0.35;
     return (time: number, _stage: number, paused: boolean, interaction: number) => {
-      badge.position.y = paused ? 0 : Math.sin(time * 0.8) * 0.06;
-      seal.position.z = 0.23 + (paused ? 0 : interaction * 0.16);
-      check.position.z = paused ? 0 : interaction * 0.16;
-      ribbons.forEach(
-        (r, i) => (r.position.y = -0.58 + (paused ? 0 : Math.sin(time * 1.1 + i) * 0.04)),
+      const gap = paused ? 0.06 : 0.06 + (1 - Math.cos(time * 0.65)) * 0.09 + interaction * 0.12;
+      pieces.forEach((piece, i) =>
+        piece.position.set((i % 2 ? 1 : -1) * (0.54 + gap), (i < 2 ? 1 : -1) * (0.54 + gap), 0),
       );
     };
   }
-  // Tourism: many entries settle onto one shared timeline, rather than separate systems.
-  const spine = mesh(rounded(2.8, 0.16, 0.3), pearl);
-  spine.position.y = -0.85;
-  const pages: Three.Mesh[] = [];
-  for (let i = 0; i < 7; i++) {
-    const page = mesh(rounded(0.1, 1.65, 1.25), i === 3 ? blue : i % 3 === 0 ? teal : pearl);
-    page.position.set((i - 3) * 0.35, 0, 0);
-    pages.push(page);
-    const dot = mesh(sphere, i === 3 ? amber : teal);
-    dot.position.set((i - 3) * 0.35, 0.98, 0);
-    dot.scale.setScalar(0.6);
+  if (variant === 'tourism') {
+    // One shared event, with a single marker and two binding loops.
+    const calendar = mesh(rounded(2.15, 1.9, 0.26), pearl);
+    calendar.position.y = -0.1;
+    const header = mesh(rounded(2.15, 0.48, 0.3), teal);
+    header.position.set(0, 0.61, 0.03);
+    for (const x of [-0.62, 0.62]) {
+      const binding = torus(0.2, 0.055, pearl);
+      binding.position.set(x, 0.84, 0.06);
+      binding.rotation.y = Math.PI / 2;
+    }
+    const event = mesh(track(new T.SphereGeometry(0.32, 24, 16)), blue);
+    event.position.set(0, -0.25, 0.36);
+    return (time: number, _stage: number, paused: boolean, interaction: number) => {
+      event.position.z = 0.36 + (paused ? 0 : Math.sin(time * 0.85) * 0.04 + interaction * 0.12);
+    };
   }
-  const sweep = torus(1.53, 0.028, amber);
-  sweep.rotation.x = Math.PI / 2;
-  sweep.position.y = -0.72;
+  const parts: { object: Three.Mesh; base: Three.Vector3; index: number }[] = [];
+  const part = (
+    w: number,
+    h: number,
+    d: number,
+    x: number,
+    y: number,
+    z: number,
+    material: Three.Material,
+  ) => {
+    const object = mesh(rounded(w, h, d), material);
+    const base = new T.Vector3(x, y, z);
+    object.position.copy(base);
+    parts.push({ object, base, index: parts.length });
+    return object;
+  };
+  if (variant === 'people') {
+    for (let i = 0; i < 3; i++) {
+      const x = (i - 1) * 0.85;
+      part(0.54, i === 1 ? 1.35 : 0.95, 0.54, x, -0.25, 0, i === 1 ? blue : teal);
+      const head = mesh(track(new T.SphereGeometry(0.25, 20, 16)), pearl);
+      head.position.set(x, i === 1 ? 0.7 : 0.5, 0);
+    }
+  } else if (variant === 'revenue') {
+    for (let i = 0; i < 3; i++) {
+      const h = 0.65 + i * 0.55;
+      part(
+        0.65,
+        h,
+        0.65,
+        (i - 1) * 0.85,
+        -0.95 + h / 2,
+        0,
+        i === 2 ? teal : i === 1 ? blue : pearl,
+      );
+    }
+  } else if (variant === 'operations') {
+    for (let i = 0; i < 3; i++)
+      part(0.72, 0.72, 0.72, (i - 1) * 1.05, (i - 1) * 0.3, 0, accents[i]!);
+    tube(
+      [new T.Vector3(-1.1, -0.75, 0), new T.Vector3(0, -0.45, 0), new T.Vector3(1.1, -0.15, 0)],
+      0.055,
+      pearl,
+    );
+  } else if (variant === 'finance') {
+    part(0.38, 1.9, 0.38, 0, 0, 0, blue);
+    part(2.6, 0.18, 0.35, 0, 0.65, 0, pearl);
+    for (const x of [-0.95, 0.95]) {
+      part(0.08, 0.55, 0.08, x, 0.3, 0, pearl);
+      part(0.8, 0.2, 0.85, x, -0.1, 0, teal);
+    }
+  } else if (variant === 'industry') {
+    for (let i = 0; i < 3; i++) {
+      part(0.65, 1.1 + i * 0.25, 0.8, (i - 1) * 0.8, -0.1, 0, accents[i]!);
+      part(0.25, 0.4, 0.25, (i - 1) * 0.8, 0.75 + i * 0.125, 0, pearl);
+    }
+  } else {
+    // An open conversation: two brackets move towards a common point.
+    for (const side of [-1, 1]) {
+      const material = side < 0 ? blue : teal;
+      part(0.28, 1.8, 0.5, side * 1.1, 0, 0, material);
+      for (const y of [-0.78, 0.78]) part(0.95, 0.25, 0.5, side * 0.76, y, 0, material);
+    }
+    const core = mesh(track(new T.OctahedronGeometry(0.45)), pearl);
+    core.position.z = 0.15;
+  }
   return (time: number, _stage: number, paused: boolean, interaction: number) => {
-    pages.forEach((page, i) => {
-      page.position.y = paused ? 0 : Math.sin(time * 0.9 - i * 0.4) * 0.07;
-      page.position.x = (i - 3) * (0.35 + (paused ? 0 : interaction * 0.065));
+    parts.forEach(({ object, base, index }) => {
+      object.position.copy(base);
+      if (!paused) {
+        object.position.y += Math.sin(time * 0.75 + index * 0.35) * 0.035;
+        if (variant === 'conversation') object.position.x *= 1 - interaction * 0.12;
+      }
     });
-    sweep.scale.setScalar(paused ? 1 : 1 + Math.sin(time * 0.7) * 0.035);
   };
 }

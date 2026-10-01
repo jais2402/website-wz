@@ -2042,3 +2042,28 @@ body {
     height: 280px;
   }
 }
+
+/* Sculptures share the page surface; their silhouettes carry the distinction. */
+.business-chapters .business-model {
+  min-height: 0;
+  height: 210px;
+  width: 100%;
+  margin-bottom: 24px;
+  background: transparent;
+}
+.contact-layout .contact-model {
+  min-height: 0;
+  height: 300px;
+  max-width: 420px;
+  margin-top: 32px;
+  background: transparent;
+}
+@media (max-width: 700px) {
+  .business-chapters .business-model {
+    height: 200px;
+  }
+  .contact-layout .contact-model {
+    height: 240px;
+    margin-top: 20px;
+  }
+}

@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { CaseSculpture } from '@/components/three/CaseSculpture';
+const models = ['people', 'revenue', 'operations', 'finance', 'industry'] as const;
 import { useEffect, useRef, useState } from 'react';
 
 type BusinessArea = { title: string; systems: string[] };
@@ -26,6 +28,7 @@ export function BusinessJourney({ areas }: { areas: BusinessArea[] }) {
   }, []);
 
   function select(index: number) {
+    setActive(index);
     const reduced =
       window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       document.documentElement.dataset.motion === 'paused';
@@ -59,6 +62,7 @@ export function BusinessJourney({ areas }: { areas: BusinessArea[] }) {
             data-business-area={index}
             className={active === index ? 'is-current' : ''}
           >
+            <CaseSculpture variant={models[index % models.length]!} className="business-model" />
             <h4>{area.title}</h4>
             <ul>
               {area.systems.map((system) => (

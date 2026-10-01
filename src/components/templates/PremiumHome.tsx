@@ -312,6 +312,7 @@ export function PremiumHome({ content }: { content: SiteContent }) {
               >
                 {content.meta.TODO_business_facts.phone}
               </a>
+              <CaseSculpture variant="conversation" className="contact-model" />
             </div>
             <form onSubmit={prepareEmail} onChange={() => setEmailReady(false)}>
               <fieldset>
