@@ -13,7 +13,8 @@ export type NarrativeVariant =
   | 'operations'
   | 'finance'
   | 'industry'
-  | 'conversation';
+  | 'conversation'
+  | 'questions';
 
 /** Sculptural metaphors with their own geometry and component choreography. */
 export function createNarrativeModel(
@@ -105,6 +106,17 @@ export function createNarrativeModel(
   if (variant === 'construction') {
     const foundation = mesh(rounded(2.7, 0.16, 2.7), pearl);
     foundation.position.y = -1.06;
+    const planMaterial = new T.LineBasicMaterial({ color: 0x234be8 });
+    materials.push(planMaterial);
+    const planPoints: number[] = [];
+    for (let i = 0; i < 4; i++) {
+      const at = -1.11 + i * 0.74;
+      planPoints.push(at, -0.94, -1.11, at, -0.94, 1.11, -1.11, -0.94, at, 1.11, -0.94, at);
+    }
+    const planGeometry = track(new T.BufferGeometry());
+    planGeometry.setAttribute('position', new T.Float32BufferAttribute(planPoints, 3));
+    const plan = new T.LineSegments(planGeometry, planMaterial);
+    root.add(plan);
     const cellGeometry = rounded(0.66, 0.66, 0.66);
     const cells: {
       object: Three.Mesh;
@@ -142,13 +154,14 @@ export function createNarrativeModel(
     return (time: number, stage: number, paused: boolean, interaction: number) => {
       const step = Math.max(0, stage);
       frame.visible = step === 1 || step === 2;
+      plan.visible = step === 0;
       cells.forEach((cell) => {
-        const complete = step >= 2 || cell.level === 0 || (step === 1 && cell.corner);
+        const complete = step > 0 && (step >= 2 || cell.level === 0 || (step === 1 && cell.corner));
         cell.weight = paused
           ? Number(complete)
           : T.MathUtils.lerp(cell.weight, Number(complete), 0.06);
         const spacing = step === 3 ? 0.72 : 0.81;
-        cell.object.visible = cell.weight > 0.015;
+        cell.object.visible = step > 0 && cell.weight > 0.015;
         cell.object.scale.setScalar(Math.max(0.01, cell.weight));
         cell.object.position.set(
           cell.x * spacing,
@@ -257,17 +270,49 @@ export function createNarrativeModel(
     };
   }
   if (variant === 'ai') {
-    root.scale.setScalar(1.35);
-    const core = mesh(rounded(1.65, 1.65, 0.65), violet);
-    core.rotation.z = Math.PI / 4;
-    const inset = mesh(rounded(0.75, 0.75, 0.12), pearl);
-    inset.rotation.z = Math.PI / 4;
-    inset.position.z = 0.43;
-    const spark = mesh(track(new T.OctahedronGeometry(0.23)), teal);
-    spark.position.set(1.3, 0.75, 0);
-    return (time: number, _stage: number, paused: boolean, interaction: number) => {
-      inset.position.z = 0.43 + (paused ? 0 : 0.05 * Math.sin(time * 0.9) + interaction * 0.16);
-      spark.position.y = 0.75 + (paused ? 0 : Math.sin(time * 0.8) * 0.12);
+    // A small neural structure: one shared core and four connected decisions.
+    const core = mesh(track(new T.SphereGeometry(0.65, 32, 24)), violet);
+    const nodes: Three.Mesh[] = [];
+    for (let i = 0; i < 4; i++) {
+      const angle = Math.PI / 4 + (i * Math.PI) / 2;
+      const end = new T.Vector3(Math.cos(angle) * 1.3, Math.sin(angle) * 1.15, 0);
+      const path = tube(
+        [
+          new T.Vector3(end.x * 0.35, end.y * 0.35, 0),
+          new T.Vector3(end.x * 0.7, end.y * 0.7, 0.12),
+          end,
+        ],
+        0.075,
+        pearl,
+      );
+      const node = mesh(track(new T.SphereGeometry(0.24, 24, 16)), i % 2 ? teal : blue);
+      node.position.copy(end);
+      nodes.push(node);
+      addSignal(path, i, teal);
+    }
+    return (time: number, _stage: number, paused: boolean) => {
+      core.scale.setScalar(paused ? 1 : 1 + Math.sin(time * 0.85) * 0.025);
+      nodes.forEach((node, i) =>
+        node.scale.setScalar(paused ? 1 : 1 + Math.sin(time * 0.85 - i * 0.8) * 0.06),
+      );
+      signalMotion(time, -1, paused);
+    };
+  }
+  if (variant === 'questions') {
+    const curve = new T.CatmullRomCurve3([
+      new T.Vector3(-0.6, 0.63, 0),
+      new T.Vector3(-0.4, 1.02, 0),
+      new T.Vector3(0.35, 1.05, 0),
+      new T.Vector3(0.63, 0.64, 0),
+      new T.Vector3(0.38, 0.18, 0),
+      new T.Vector3(0, -0.12, 0),
+      new T.Vector3(0, -0.45, 0),
+    ]);
+    mesh(track(new T.TubeGeometry(curve, 64, 0.16, 16, false)), blue);
+    const dot = mesh(track(new T.SphereGeometry(0.19, 24, 16)), teal);
+    dot.position.set(0, -0.98, 0);
+    return (time: number, _stage: number, paused: boolean) => {
+      dot.position.y = -0.98 + (paused ? 0 : Math.sin(time * 0.8) * 0.045);
     };
   }
   if (variant === 'training') {

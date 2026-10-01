@@ -62,8 +62,8 @@ export function BusinessJourney({ areas }: { areas: BusinessArea[] }) {
             data-business-area={index}
             className={active === index ? 'is-current' : ''}
           >
-            <CaseSculpture variant={models[index % models.length]!} className="business-model" />
             <h4>{area.title}</h4>
+            <CaseSculpture variant={models[index % models.length]!} className="business-model" />
             <ul>
               {area.systems.map((system) => (
                 <li key={system}>{system}</li>

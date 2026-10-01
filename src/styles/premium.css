@@ -1651,6 +1651,7 @@ body {
 .integration-model.case-model {
   height: 420px;
   min-height: 0;
+  background: transparent;
   margin-top: 24px;
   border-radius: 16px;
 }
@@ -2065,5 +2066,21 @@ body {
   .contact-layout .contact-model {
     height: 240px;
     margin-top: 20px;
+  }
+}
+
+.business-chapters .business-model {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+.faq-layout .faq-model {
+  height: 260px;
+  min-height: 0;
+  background: transparent;
+  margin-top: 24px;
+}
+@media (max-width: 767px) {
+  .faq-layout .faq-model {
+    height: 210px;
   }
 }

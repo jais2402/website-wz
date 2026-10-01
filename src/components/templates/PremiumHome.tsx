@@ -278,6 +278,7 @@ export function PremiumHome({ content }: { content: SiteContent }) {
                 Sometimes custom software is the right answer. Sometimes it is not, and we will say
                 so.
               </p>
+              <CaseSculpture variant="questions" className="faq-model" />
             </div>
             <Reveal className="faq-answers" stagger={0.06}>
               {questions.map((q) => (

@@ -33,6 +33,7 @@ const accents: Record<CaseModel, [number, number]> = {
   finance: [0x234be8, 0x5274ff],
   industry: [0x234be8, 0x5274ff],
   conversation: [0x234be8, 0x5274ff],
+  questions: [0x234be8, 0x5274ff],
 };
 
 /** Lazy, local WebGL illustrations. Visible scenes breathe gently; offscreen and paused scenes stop. */
@@ -215,6 +216,7 @@ export function CaseSculpture({
           'finance',
           'industry',
           'conversation',
+          'questions',
         ].includes(variant)
       ) {
         narrative = createNarrativeModel(
@@ -402,7 +404,8 @@ export function CaseSculpture({
         root.position.y = paused ? 0 : Math.sin(time * 0.8) * 0.035;
         root.rotation.set(
           paused ? 0 : y * 0.12,
-          (variant === 'automation' || variant === 'flow' ? 0 : -0.25) + (paused ? 0 : x * 0.12),
+          (variant === 'automation' || variant === 'flow' ? 0 : -0.25) +
+            (paused ? 0 : variant === 'conversation' ? time * 0.22 : x * 0.12),
           0,
         );
         const unfold = paused
