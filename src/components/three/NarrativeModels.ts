@@ -270,32 +270,25 @@ export function createNarrativeModel(
     };
   }
   if (variant === 'ai') {
-    // A small neural structure: one shared core and four connected decisions.
-    const core = mesh(track(new T.SphereGeometry(0.65, 32, 24)), violet);
-    const nodes: Three.Mesh[] = [];
-    for (let i = 0; i < 4; i++) {
-      const angle = Math.PI / 4 + (i * Math.PI) / 2;
-      const end = new T.Vector3(Math.cos(angle) * 1.3, Math.sin(angle) * 1.15, 0);
-      const path = tube(
-        [
-          new T.Vector3(end.x * 0.35, end.y * 0.35, 0),
-          new T.Vector3(end.x * 0.7, end.y * 0.7, 0.12),
-          end,
-        ],
-        0.075,
-        pearl,
-      );
-      const node = mesh(track(new T.SphereGeometry(0.24, 24, 16)), i % 2 ? teal : blue);
-      node.position.copy(end);
-      nodes.push(node);
-      addSignal(path, i, teal);
+    // A processing core held between two open structural frames.
+    const core = mesh(rounded(0.95, 0.95, 0.95), violet);
+    core.rotation.set(0, 0, Math.PI / 4);
+    const bars: Three.Mesh[] = [];
+    for (const side of [-1, 1]) {
+      const upright = mesh(rounded(0.18, 2.05, 0.25), side < 0 ? blue : teal);
+      upright.position.x = side * 1.1;
+      for (const y of [-0.94, 0.94]) {
+        const bar = mesh(rounded(0.8, 0.18, 0.25), side < 0 ? blue : teal);
+        bar.position.set(side * 0.78, y, 0);
+        bars.push(bar);
+      }
     }
     return (time: number, _stage: number, paused: boolean) => {
-      core.scale.setScalar(paused ? 1 : 1 + Math.sin(time * 0.85) * 0.025);
-      nodes.forEach((node, i) =>
-        node.scale.setScalar(paused ? 1 : 1 + Math.sin(time * 0.85 - i * 0.8) * 0.06),
-      );
-      signalMotion(time, -1, paused);
+      core.position.y = paused ? 0 : Math.sin(time * 0.75) * 0.08;
+      core.rotation.y = paused ? 0 : Math.sin(time * 0.55) * 0.18;
+      bars.forEach((bar) => {
+        bar.position.z = paused ? 0 : Math.sin(time * 0.75) * 0.05;
+      });
     };
   }
   if (variant === 'questions') {

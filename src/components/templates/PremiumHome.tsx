@@ -128,7 +128,21 @@ export function PremiumHome({ content }: { content: SiteContent }) {
             <div className="technology-line" id="tech">
               <p>Built with established tools</p>
               <div>
-                {['AWS', 'Google Cloud', 'Stripe', 'Razorpay'].map((name) => (
+                {[
+                  'AWS',
+                  'Google Cloud',
+                  'Stripe',
+                  'Razorpay',
+                  'Solvable',
+                  'Inscribe',
+                  'Shopify',
+                  'Magento',
+                  'WordPress',
+                  'WooCommerce',
+                  'Twilio',
+                  'Mailchimp',
+                  'Klaviyo',
+                ].map((name) => (
                   <span key={name}>{name}</span>
                 ))}
               </div>
@@ -146,8 +160,8 @@ export function PremiumHome({ content }: { content: SiteContent }) {
           </Reveal>
           <Reveal className="intro-bottom">
             <p>
-              We understand the process, agree on scope and price, then build a system your team can
-              use and grow with.
+              We understand your business processes and build software around them—software that
+              grows with your business.
             </p>
             <div className="intro-proof" id="evidence">
               <div>
@@ -179,9 +193,8 @@ export function PremiumHome({ content }: { content: SiteContent }) {
                 <Link href={`/work#${item.slug}`} className="case-card-link">
                   <CaseSculpture variant={i === 0 ? 'training' : 'tourism'} />
                   <div className="case-details">
-                    <p className="case-sector">
-                      {item.sector} · {item.region}
-                    </p>
+                    <p className="case-sector">{item.sector}</p>
+                    <p className="case-location">Location: {item.region}</p>
                     <h3>{item.title}</h3>
                     <p className="case-description">{item.body[0]}</p>
                     <div className="case-metrics">
@@ -198,7 +211,6 @@ export function PremiumHome({ content }: { content: SiteContent }) {
               </article>
             ))}
           </div>
-          <p className="work-note">Client references shared where permission allows.</p>
         </section>
 
         <section id="build" className="premium-capabilities section-pad">
@@ -222,6 +234,7 @@ export function PremiumHome({ content }: { content: SiteContent }) {
                 {content.hero.actions[0]!.label}
               </Link>
             </div>
+            <CaseSculpture variant="ai" className="ai-feature-model" />
           </Reveal>
           <div className="integration-strip" id="integration">
             <div>
@@ -264,7 +277,7 @@ export function PremiumHome({ content }: { content: SiteContent }) {
           <div className="pricing-note" id="pricing">
             <div className="pricing-copy">
               <h3>We price the outcome, not the hours.</h3>
-              <p>No build starts before that number is agreed.</p>
+              <p>Scope, price, and timeline agreed before we build.</p>
             </div>
             <Action href="/#contact">{content.hero.actions[0]!.label}</Action>
           </div>

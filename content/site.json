@@ -33,11 +33,7 @@
       "offices": [
         {
           "label": "Chennai",
-          "lines": [
-            "#4 / 25B, 1st Floor, Block 1",
-            "Boopathy Street, Arcot Road",
-            "Virugambakkam"
-          ],
+          "lines": ["#4 / 25B, 1st Floor, Block 1", "Boopathy Street, Arcot Road", "Virugambakkam"],
           "city": "Chennai",
           "region": "Tamil Nadu",
           "postalCode": "600092",
@@ -121,14 +117,7 @@
     ],
     "builtWith": {
       "label": "We build with",
-      "items": [
-        "Razorpay",
-        "Stripe",
-        "Solvable",
-        "Inscribe",
-        "Google Cloud",
-        "AWS"
-      ]
+      "items": ["Razorpay", "Stripe", "Solvable", "Inscribe", "Google Cloud", "AWS"]
     }
   },
   "sections": [
@@ -263,13 +252,13 @@
       "items": [
         {
           "title": "Simplify",
-          "body": "Make complicated work easier to understand and easier to finish.",
-          "note": "Fewer steps for the people who use it every day."
+          "body": "Less manual work. Fewer steps.",
+          "note": "Make everyday tasks easier for your team."
         },
         {
           "title": "Scale",
-          "body": "Build the first version with the next version in mind.",
-          "note": "Start focused. Build the foundation properly. Grow from there."
+          "body": "Start focused. Build for growth.",
+          "note": "A strong foundation for what comes next."
         },
         {
           "title": "Secure",
@@ -686,18 +675,14 @@
       "slug": "safety-training",
       "n": "02",
       "hue": "blueprint",
-      "region": "India",
+      "region": "Dubai",
       "sector": "Safety training",
       "title": "One system instead of spreadsheets and chat threads",
       "body": [
         "A nationwide safety training operation ran on spreadsheets and messaging threads. We replaced them with one system: registration, trainer scheduling and compliance reporting, together.",
         "Administrative work fell by 80%. The system now handles more than 100,000 certifications a year, with proctored audits built in."
       ],
-      "tags": [
-        "Registration",
-        "Scheduling",
-        "Compliance"
-      ],
+      "tags": ["Registration", "Scheduling", "Compliance"],
       "metrics": [
         {
           "value": "−80%",
@@ -720,11 +705,7 @@
         "Operators, event planners and government agencies were coordinating a national tourism calendar over email and spreadsheets. We built the platform that gives them a single shared record of events and listings.",
         "It has run with zero unplanned downtime, handling up to 40,000 requests a minute at peak. Data stays in-country."
       ],
-      "tags": [
-        "Multi-operator",
-        "Event ledger",
-        "Localised data"
-      ],
+      "tags": ["Multi-operator", "Event ledger", "Localised data"],
       "metrics": [
         {
           "value": "Zero",
@@ -747,11 +728,7 @@
         "A large annual engineering event needed one place to see what hundreds of people were doing in real time. We built the operations dashboard and participant platform that gives them that.",
         "It runs on AWS for high availability, with low-latency monitoring and encrypted backups."
       ],
-      "tags": [
-        "Real-time",
-        "High concurrency",
-        "AWS"
-      ],
+      "tags": ["Real-time", "High concurrency", "AWS"],
       "metrics": [
         {
           "value": "Hundreds",
@@ -774,11 +751,7 @@
         "A regional B2B marketplace was checking every seller catalogue by hand. We built automated onboarding with real-time API integrations.",
         "Active sellers grew from 300 to 4,500, with the same core support team."
       ],
-      "tags": [
-        "Seller onboarding",
-        "Catalogue",
-        "Real-time APIs"
-      ],
+      "tags": ["Seller onboarding", "Catalogue", "Real-time APIs"],
       "metrics": [
         {
           "value": "300 → 4,500",

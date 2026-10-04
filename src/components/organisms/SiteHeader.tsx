@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { MotionToggle, ThemeToggle } from '@/components/atoms';
 import type { Link as ContentLink } from '@/types/content';
 
 export interface SiteHeaderProps {
@@ -60,8 +59,6 @@ export function SiteHeader({ nav, cta, wordmark, name }: SiteHeaderProps) {
           ))}
       </nav>
       <div className="header-actions">
-        <MotionToggle />
-        <ThemeToggle className="header-theme-toggle" />
         <Link href={cta.href} className="header-contact">
           <span className="header-cta-full">{cta.label}</span>
           <span className="header-cta-short">{cta.short ?? cta.label}</span>

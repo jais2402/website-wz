@@ -30,14 +30,11 @@ export const viewport: Viewport = {
 };
 
 /** Sets the theme before first paint so there is no flash. Runs once, inline. */
-const themeBoot = `(function(){try{
+const themeBoot = `(function(){
   var d=document.documentElement;
-  var t=localStorage.getItem('wz-theme');
-  if(t)d.setAttribute('data-theme',t);
-  var m=localStorage.getItem('wz-motion');
-  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  d.setAttribute('data-motion',(m==='paused'||(m===null&&reduce))?'paused':'running');
-}catch(e){}})();`;
+  d.setAttribute('data-theme','light');
+  d.setAttribute('data-motion','running');
+})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

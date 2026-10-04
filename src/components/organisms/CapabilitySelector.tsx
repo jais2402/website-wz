@@ -198,8 +198,8 @@ export function CapabilitySelector({ offerings }: { offerings: Capability[] }) {
                       <div className="case-model capability-model" aria-hidden="true" />
                     )}
                     <p>{group.description}</p>
-                    <Link href="/capabilities" className="quiet-link">
-                      All capabilities
+                    <Link href="/#contact" className="premium-button capability-cta">
+                      Let’s build your system
                     </Link>
                   </div>
                   <div className="capability-services">

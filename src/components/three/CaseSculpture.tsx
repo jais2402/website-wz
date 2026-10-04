@@ -405,7 +405,11 @@ export function CaseSculpture({
         root.rotation.set(
           paused ? 0 : y * 0.12,
           (variant === 'automation' || variant === 'flow' ? 0 : -0.25) +
-            (paused ? 0 : variant === 'conversation' ? time * 0.22 : x * 0.12),
+            (paused
+              ? 0
+              : variant === 'conversation' || variant === 'questions'
+                ? time * 0.22
+                : x * 0.12),
           0,
         );
         const unfold = paused
