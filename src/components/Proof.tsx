@@ -54,7 +54,7 @@ export function Proof() {
       </div>
 
       <div className="wrap">
-        <SplitReveal as="h2" className="display proof-title" text="Twelve years of replacing spreadsheets with systems people use every day." />
+        <SplitReveal as="h2" className="display proof-title" text="Twelve years of building software for growing businesses." />
         <div className="stats">
           {stats.map((s) => (
             <div className="stat" key={s.label}>
