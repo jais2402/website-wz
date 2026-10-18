@@ -131,6 +131,9 @@
 .loom-phase {
   grid-area: 1 / 1;
   align-self: end; /* size each card to its own text instead of the tallest phase */
+  justify-self: start;
+  width: fit-content; /* and to its own width, up to the .loom-phases max */
+  max-width: 100%;
   opacity: 0;
   transform: translateY(30px);
   filter: blur(8px);
