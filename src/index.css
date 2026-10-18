@@ -809,15 +809,6 @@ main,
   pointer-events: auto;
 }
 
-.story-index {
-  color: var(--lime);
-}
-
-.story-index em {
-  color: var(--muted);
-  font-style: normal;
-}
-
 .story-title {
   font-family: var(--f-display);
   font-size: clamp(4rem, 10vw, 9.5rem);

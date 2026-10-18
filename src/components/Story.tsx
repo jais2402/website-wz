@@ -42,9 +42,6 @@ export function Story() {
           <div className="story-panels">
             {principles.map((p, i) => (
               <article key={p.key} className={`story-panel${i === step ? ' is-active' : ''}`} aria-hidden={i !== step}>
-                <span className="story-index mono">
-                  {p.index} <em>/ 03</em>
-                </span>
                 <h2 className="story-title">{p.title}.</h2>
                 <p className="story-body">{p.body}</p>
                 <ul className="chip-row">

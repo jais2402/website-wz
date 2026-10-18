@@ -38,21 +38,18 @@ export const hero = {
 export const principles = [
   {
     key: 'simplify',
-    index: '01',
     title: 'Simplify',
     body: 'Less manual work and fewer steps, so everyday tasks get easier for the whole team.',
     chips: ['One source of truth', 'Fewer clicks', 'No re-typing'],
   },
   {
     key: 'scale',
-    index: '02',
     title: 'Scale',
     body: 'Start focused, ship what matters first, and lay a foundation that is ready to grow.',
     chips: ['Modular by design', 'Grows in stages', 'No rewrites'],
   },
   {
     key: 'secure',
-    index: '03',
     title: 'Secure',
     body: 'Security designed into the first version, then reviewed and maintained after launch.',
     chips: ['Built in from day one', 'Reviewed', 'Maintained'],
