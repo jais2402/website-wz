@@ -6,7 +6,8 @@ import { activeIndex, tabFill } from '@/lib/charts'
 import { CountUp, ModuleCard } from './Charts'
 import { SplitReveal } from './Reveal'
 
-const ICONS = ['◎', '◆', '▣', '▲', '✚']
+// One icon per entry in `areas`, in order.
+const ICONS = ['◎', '◆', '▣', '◈', '▲', '✚']
 // Bento: in a 4-column grid the first and last module span two columns.
 const WIDE = new Set([0, 5])
 

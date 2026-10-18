@@ -184,6 +184,22 @@ export const areas: Area[] = [
     ],
   },
   {
+    title: 'Ecommerce',
+    kpis: [
+      { label: 'Sales today', value: 4.6, prefix: '₹', suffix: 'L', decimals: 1 },
+      { label: 'Orders today', value: 312 },
+      { label: 'Conversion', value: 3.2, suffix: '%', decimals: 1 },
+    ],
+    modules: [
+      { name: 'Storefront', value: 9840, caption: 'visits today', delta: '+14%', chart: { kind: 'area', series: [32, 41, 38, 52, 58, 55, 69, 81] } },
+      { name: 'Orders', value: 312, caption: 'orders today', delta: '+22', chart: { kind: 'bars', series: [180, 214, 196, 240, 228, 276, 312] } },
+      { name: 'Payments', value: 99.1, suffix: '%', decimals: 1, caption: 'payments succeeded', chart: { kind: 'gauge', percent: 99 } },
+      { name: 'Catalogue', value: 1860, caption: 'products live', chart: { kind: 'dots', total: 48, on: 44 } },
+      { name: 'Returns', value: 2.4, suffix: '%', decimals: 1, caption: 'of orders returned', delta: '-0.6%', chart: { kind: 'line', series: [4.1, 3.8, 3.6, 3.3, 3.0, 2.8, 2.6, 2.4] } },
+      { name: 'Fulfilment', value: 287, caption: 'shipped today', chart: { kind: 'funnel', items: [['Placed', 312], ['Packed', 298], ['Shipped', 287], ['Delivered', 241]] } },
+    ],
+  },
+  {
     title: 'Finance & governance',
     kpis: [
       { label: 'Revenue MTD', value: 3.1, prefix: '₹', suffix: ' Cr', decimals: 1 },
