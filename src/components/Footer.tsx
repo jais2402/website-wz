@@ -11,6 +11,7 @@ export function Footer({ base = '' }: { base?: string }) {
           <div className="footer-brand">
             <Logo />
             <p>Custom software that grows with you. Designed, built, hosted and maintained from {brand.city}.</p>
+            <address className="footer-address">{brand.address.join(', ')}</address>
           </div>
           {footer.map((col) => (
             <nav key={col.title} className="footer-col" aria-label={col.title}>

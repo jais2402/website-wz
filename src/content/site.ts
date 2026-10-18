@@ -3,10 +3,13 @@
 export const brand = {
   name: 'Wezigns',
   legal: 'Wezigns Software Private Limited',
-  email: 'hello@wezigns.com',
+  email: 'contact@wezigns.com',
   phone: '+91 44 2364 3252',
   phoneHref: 'tel:+914423643252',
   city: 'Chennai, India',
+  // Head office, from wezigns.com. Brisbane and Stoke-on-Trent offices are not shown until confirmed current.
+  address: ['#4 / 25B, 1st Floor, Block 1', 'Boopathy Street, Arcot Road', 'Virugambakkam, Chennai 600092', 'India'],
+  mapsHref: 'https://www.google.com/maps/search/?api=1&query=Boopathy+Street+Arcot+Road+Virugambakkam+Chennai+600092',
 }
 
 export const nav = [
@@ -88,14 +91,14 @@ export const services = [
     key: 'build',
     kicker: 'Build a system',
     title: 'Software built around how your team works.',
-    items: ['Custom business software', 'Customer & partner platforms', 'Ecommerce: catalogue, orders, stock, payments', 'Websites'],
+    items: ['Custom business software', 'Customer & partner portals', 'Ecommerce: catalogue, orders, stock, payments', 'Mobile-first web apps and websites'],
     tone: 'lime',
   },
   {
     key: 'connect',
     kicker: 'Connect & automate',
     title: 'Connect the tools you already pay for.',
-    items: ['Business process automation', 'System integration', 'Data & reporting systems', 'AI & Gen-AI integrations'],
+    items: ['Business process automation', 'System and open-source integration', 'Data & reporting systems', 'AI & Gen-AI integrations'],
     tone: 'violet',
   },
   {
@@ -413,7 +416,7 @@ export const reach = {
 export const footer = [
   { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '#work'], ['Questions', '#faq']] },
   { title: 'Capabilities', links: [['Custom software', '#build'], ['Ecommerce systems', '#build'], ['System integration', '#integrations'], ['AI integrations', '#ai']] },
-  { title: 'Company', links: [['Contact', '#contact'], ['Case studies', '#work'], ['Email us', `mailto:${'hello@wezigns.com'}`]] },
+  { title: 'Company', links: [['Contact', '#contact'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
 // Second page: the time-loom concept (loom.html).

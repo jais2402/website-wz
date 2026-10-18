@@ -5,7 +5,7 @@ import { EnquiryForm } from '@/components/EnquiryForm'
 import { BuildArt, ConnectArt, RunArt } from '@/components/Illustrations'
 import { Marquee } from '@/components/Proof'
 import { SplitReveal } from '@/components/Reveal'
-import { loom, process, services, stats, tools, work } from '@/content/site'
+import { brand, loom, process, services, stats, tools, work } from '@/content/site'
 import { gsap, scrollToTarget } from '@/hooks/motion'
 
 /** Mounts children only once the element scrolls into view, so count-ups start when seen. */
@@ -347,6 +347,21 @@ export function LoomContact() {
           <p className="mono label">{loom.contact.kicker}</p>
           <SplitReveal as="h2" className="display loom-contact-title" text={loom.contact.title} />
           <p className="lead">{loom.contact.body}</p>
+          <address className="office">
+            <span className="mono office-label">Head office · Chennai</span>
+            <span className="office-lines">
+              {brand.address.map((l) => (
+                <span key={l}>{l}</span>
+              ))}
+            </span>
+            <span className="office-links">
+              <a href={brand.phoneHref}>{brand.phone}</a>
+              <a href={`mailto:${brand.email}`}>{brand.email}</a>
+              <a href={brand.mapsHref} target="_blank" rel="noopener noreferrer">
+                Open in Google Maps ↗
+              </a>
+            </span>
+          </address>
         </div>
         <div className="glass-card loom-contact-card">
           <EnquiryForm />

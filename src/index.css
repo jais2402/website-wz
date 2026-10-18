@@ -3086,6 +3086,15 @@ main,
   gap: 40px;
 }
 
+.footer-address {
+  margin-top: 12px;
+  font-style: normal;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-width: 34ch;
+}
+
 .footer-brand p {
   margin-top: 16px;
   color: var(--muted);
