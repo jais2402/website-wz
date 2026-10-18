@@ -10,16 +10,33 @@ export const brand = {
   // Head office, from wezigns.com. Brisbane and Stoke-on-Trent offices are not shown until confirmed current.
   address: ['#4 / 25B, 1st Floor, Block 1', 'Boopathy Street, Arcot Road', 'Virugambakkam, Chennai 600092', 'India'],
   mapsHref: 'https://www.google.com/maps/search/?api=1&query=Boopathy+Street+Arcot+Road+Virugambakkam+Chennai+600092',
+  url: 'https://www.wezigns.com',
 }
 
 export const nav = [
-  { label: 'What we build', href: '#build' },
-  { label: 'Before / after', href: '#before-after' },
+  { label: 'Systems', href: '/systems/people' },
   { label: 'Work', href: '#work' },
-  { label: 'How we build', href: '#process' },
-  { label: 'Pricing', href: '#pricing' },
+  { label: 'AI', href: '/ai' },
+  { label: 'How pricing works', href: '#pricing' },
+  { label: 'About', href: '/about' },
   { label: 'Questions', href: '#faq' },
 ]
+
+// The "Systems" nav item opens this menu. Order matches `areas` and the /systems/* pages.
+export const navSystems = [
+  { label: 'People & workforce', short: 'HR', href: '/systems/people' },
+  { label: 'Revenue & customers', short: 'CRM', href: '/systems/revenue' },
+  { label: 'Operations & supply chain', short: 'Inventory', href: '/systems/operations' },
+  { label: 'Ecommerce', short: 'Ecommerce', href: '/systems/ecommerce' },
+  { label: 'Finance & governance', short: 'Finance', href: '/systems/finance' },
+  { label: 'Industry systems', short: 'Industry', href: '/systems/industry' },
+]
+
+// Sticky call button on phones; the phone was how most simulated prospects actually got in touch.
+export const quickContact = { call: 'Call us', email: 'Email' }
+
+// Shown on every dashboard built from `areas`, so demo figures are never read as client results.
+export const sampleDataLabel = 'Sample data'
 
 export const hero = {
   eyebrow: 'Custom software · Since 2012',
@@ -481,7 +498,7 @@ export const footer = [
       ['Industry systems', '/systems/industry'],
     ],
   },
-  { title: 'Capabilities', links: [['Custom software', '#build'], ['System integration', '#integrations'], ['AI', '/ai']] },
+  { title: 'Capabilities', links: [['Custom software', '#build'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
   { title: 'Company', links: [['About', '/about'], ['Contact', '/contact'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
@@ -490,6 +507,8 @@ export const loom = {
   eyebrow: 'Custom business software · Since 2012',
   title: ['Every loose thread,', 'woven into', 'one system.'],
   sub: 'We design, build and run custom software for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
+  // Links straight to the system pages, which convert best (docs/audience-study/summary.md).
+  systemsLine: 'Systems we build',
   // Hero copy chosen by the simulated 5-second persona test (see docs/concept-study.md, "Hero copy test").
   phases: [
     { kicker: 'We map it', title: 'Start with a clear map of how work runs.', body: 'We map every spreadsheet, chat group and workaround your team relies on before we write a line of code.' },
@@ -531,3 +550,55 @@ export const loom = {
   contact: { kicker: 'Contact', title: 'Hand us the tangle.', body: 'Tell us what is slowing your team down. We reply within one working day.' },
 }
 
+
+// "Executive AI Summary": opens an AI assistant with a ready-made prompt about Wezigns. `{q}` is replaced with the
+// URL-encoded prompt. Gemini has no prompt URL, so it uses Google's AI Mode.
+export const aiSummary = {
+  title: 'Executive AI Summary',
+  body: 'Ask your AI assistant for a short, independent summary of Wezigns.',
+  prompt:
+    'Give me an executive summary of Wezigns Software Private Limited (https://www.wezigns.com), a custom software and systems company in Chennai, India, founded in 2012. Cover: what they build (business systems for HR, CRM, operations, ecommerce, finance and industry, plus AI workflows and custom AI solutions), who they serve (SMEs and MSMEs in India and 10 other countries), how they work and price projects, and what a growing business should ask them before starting.',
+  engines: [
+    { key: 'chatgpt', name: 'ChatGPT', url: 'https://chatgpt.com/?q={q}' },
+    { key: 'claude', name: 'Claude', url: 'https://claude.ai/new?q={q}' },
+    { key: 'perplexity', name: 'Perplexity', url: 'https://www.perplexity.ai/search?q={q}' },
+    { key: 'gemini', name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q={q}' },
+    { key: 'grok', name: 'Grok', url: 'https://grok.com/?q={q}' },
+  ],
+}
+
+// Technology stack. From the old wezigns.com (PHP, Laravel, CodeIgniter, WordPress, Magento, MySQL, Android) plus
+// what building today's systems and AI needs. Review before launch.
+export const stack = [
+  { group: 'Web & app front end', items: ['React', 'Next.js', 'TypeScript', 'Angular', 'HTML5 / CSS', 'Tailwind CSS'] },
+  { group: 'Back end & APIs', items: ['Node.js', 'Python', 'FastAPI', 'Django', 'PHP', 'Laravel', 'CodeIgniter', 'REST', 'GraphQL', 'Webhooks'] },
+  { group: 'Mobile', items: ['React Native', 'Flutter', 'Android', 'iOS', 'Progressive web apps'] },
+  { group: 'Databases & data', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'Elasticsearch', 'BigQuery'] },
+  { group: 'AI & machine learning', items: ['OpenAI', 'Claude', 'Gemini', 'Open-source models', 'LangChain', 'LlamaIndex', 'pgvector', 'Retrieval (RAG)', 'OCR & document AI', 'Whisper speech-to-text'] },
+  { group: 'Cloud, DevOps & security', items: ['AWS', 'Google Cloud', 'Microsoft Azure', 'Docker', 'Kubernetes', 'Terraform', 'GitHub Actions', 'Cloudflare', 'Monitoring & alerts'] },
+  { group: 'Commerce & content', items: ['Shopify', 'Magento', 'WooCommerce', 'WordPress', 'Headless CMS'] },
+  { group: 'Payments, messaging & integrations', items: ['Stripe', 'Razorpay', 'Twilio', 'WhatsApp Business API', 'Mailchimp', 'Klaviyo', 'Google Workspace', 'Microsoft 365'] },
+]
+
+export const technologyPage = {
+  kicker: 'Technology',
+  title: ['The stack behind', 'the systems', 'we build.'],
+  lead: 'For technical teams: the languages, frameworks, data and cloud tools we build with, how a Wezigns system fits together, and how we add AI. We pick the stack for your system, not the other way round.',
+  stackTitle: 'What we build with',
+  stackIntro: 'From the PHP and Laravel systems we have run since 2012 to today’s React, Python and AI work.',
+  layersTitle: 'How a system fits together',
+  layers: [
+    { name: 'Screens', text: 'Web and mobile apps your team and customers use, fast on any phone.', items: ['React', 'Next.js', 'React Native', 'Flutter'] },
+    { name: 'Business logic & APIs', text: 'The rules of your business: approvals, pricing, stock, payroll.', items: ['Node.js', 'Python', 'Laravel', 'REST / GraphQL'] },
+    { name: 'Data', text: 'One source of truth, backed up and searchable.', items: ['PostgreSQL', 'MySQL', 'Redis', 'Elasticsearch'] },
+    { name: 'Integrations', text: 'Connections to the tools you already pay for.', items: ['Payments', 'Messaging', 'Commerce', 'Accounting'] },
+    { name: 'AI', text: 'Models that read, flag and draft, with a person signing off.', items: ['OpenAI', 'Claude', 'Gemini', 'RAG'] },
+    { name: 'Hosting & monitoring', text: 'Run, watched and maintained after launch.', items: ['AWS', 'Google Cloud', 'Docker', 'Alerts'] },
+  ],
+  aiTitle: 'How we add AI',
+  ai: [
+    { title: 'Your data first', text: 'Answers come from your own records and documents, retrieved at the moment they are needed.' },
+    { title: 'The right model for the job', text: 'Hosted models such as OpenAI, Claude or Gemini, or open-source models where data must stay in your own cloud.' },
+    { title: 'People approve, everything is logged', text: 'Key decisions wait for a person. Every AI action is recorded.' },
+  ],
+}
