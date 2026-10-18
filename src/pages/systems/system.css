@@ -1,0 +1,540 @@
+/* ==========================================================================
+   System pages (/systems/<slug>), from SystemPage.tsx. Builds on pages.css (`pg-`) and the explorer's
+   dashboard styles in index.css (`.areas-screen`, `.mods`, `.mod`).
+   ========================================================================== */
+
+/* Role colours: Owner blue, Manager violet, Team coral. */
+.sy .who-owner {
+  --who: var(--lime);
+}
+
+.sy .who-manager {
+  --who: var(--violet);
+}
+
+.sy .who-team {
+  --who: var(--coral);
+}
+
+.sy-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.sy-who i {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--who) 55%, #fff), var(--who) 70%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--who) 18%, transparent);
+  flex-shrink: 0;
+}
+
+.sy-who .mono {
+  font-size: 0.68rem;
+}
+
+/* ---- Hero: the promise sits under the title in the serif accent, a size down ---- */
+.sy .pg-title {
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+}
+
+.sy .pg-title-line.serif {
+  margin-top: 0.25em;
+  font-size: 0.62em;
+  line-height: 1.08;
+  max-width: 20ch;
+}
+
+/* Dashboard, turned slightly towards the copy; it squares up on hover. */
+.sy-stage {
+  perspective: 1600px;
+}
+
+.sy-screen {
+  transform: rotateY(-10deg) rotateX(4deg);
+  transform-origin: 60% 50%;
+  transition: transform 0.9s var(--ease-out);
+}
+
+.sy-stage:hover .sy-screen {
+  transform: none;
+}
+
+.sy-screen .mods {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sy-screen .mod {
+  min-height: 150px;
+}
+
+/* ---- Sound familiar? Chat-style bubbles, nudged left and right ---- */
+.sy-bubbles {
+  columns: 3 280px;
+  column-gap: 20px;
+}
+
+.sy-bubble {
+  break-inside: avoid;
+  margin: 0 0 28px;
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.sy-bubble:nth-child(even) {
+  padding-left: 28px;
+  justify-items: end;
+}
+
+.sy-bubble:nth-child(odd) {
+  padding-right: 28px;
+}
+
+.sy-bubble blockquote {
+  position: relative;
+  margin: 0;
+  padding: 20px 22px;
+  border-radius: 22px 22px 22px 6px;
+  background:
+    radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--who) 12%, transparent), transparent 70%), var(--ink-3);
+  border: 1px solid var(--line);
+  font-size: 1.08rem;
+  line-height: 1.45;
+}
+
+.sy-bubble:nth-child(even) blockquote {
+  border-radius: 22px 22px 6px 22px;
+}
+
+/* Bubble tail */
+.sy-bubble blockquote::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 18px;
+  width: 16px;
+  height: 16px;
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg);
+  border-radius: 0 0 4px 0;
+}
+
+.sy-bubble:nth-child(even) blockquote::after {
+  left: auto;
+  right: 18px;
+}
+
+.sy-bubble figcaption {
+  padding: 0 6px;
+}
+
+/* ---- What we build ---- */
+.sy-modules {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sy-module {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: clamp(22px, 2.2vw, 30px);
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: var(--ink-2);
+  transition:
+    border-color 0.3s,
+    background 0.3s;
+}
+
+.sy-module:hover {
+  border-color: var(--line-2);
+  background: var(--ink-3);
+}
+
+.sy-module h3 {
+  margin-top: 8px;
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: -0.03em;
+}
+
+.sy-module p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.sy-glyph {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(77, 159, 255, 0.1);
+  color: var(--lime);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.sy-module:hover .sy-glyph {
+  transform: rotate(-8deg) scale(1.06);
+}
+
+.sy-glyph svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sy-glyph svg .fill {
+  fill: currentColor;
+  stroke: none;
+  opacity: 0.18;
+}
+
+.sy-glyph svg .dim {
+  opacity: 0.3;
+}
+
+.sy-glyph svg.sy-glyph-dots {
+  stroke-width: 3.6;
+}
+
+/* ---- What changes for you: before → thread → after ---- */
+.sy-impact-list {
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+
+.sy-impact-row {
+  --draw: 1;
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) clamp(56px, 8vw, 120px) minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.sy-before,
+.sy-after {
+  display: grid;
+  gap: 8px;
+  line-height: 1.45;
+}
+
+.sy-before {
+  color: var(--muted);
+}
+
+.sy-after {
+  font-family: var(--f-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  opacity: calc(0.3 + 0.7 * var(--draw));
+}
+
+.sy-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.64rem;
+  font-family: var(--f-mono);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.sy-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.sy-check {
+  width: 14px;
+  height: 14px;
+  fill: var(--lime);
+  stroke: none;
+}
+
+.sy-check path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Thread from muted coral to bright blue, ending in an arrowhead; it draws in with --draw. */
+.sy-thread {
+  position: relative;
+  height: 2px;
+}
+
+.sy-thread i {
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 122, 89, 0.5), var(--lime));
+  transform: scaleX(var(--draw));
+  transform-origin: left;
+}
+
+.sy-thread::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--lime);
+  border-right: 2px solid var(--lime);
+  transform: translateY(-50%) rotate(45deg);
+  opacity: var(--draw);
+}
+
+.sy-proof {
+  margin-top: 36px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 32px;
+  padding: clamp(24px, 3vw, 40px);
+}
+
+.sy-proof-value {
+  font-family: var(--f-display);
+  font-size: clamp(2.6rem, 5vw, 4.4rem);
+  font-weight: 650;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--lime);
+  white-space: nowrap;
+}
+
+.sy-proof-label {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 34ch;
+}
+
+.sy-proof-link {
+  color: var(--lime);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sy-proof-link span {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out);
+}
+
+.sy-proof-link:hover span {
+  transform: translateX(4px);
+}
+
+/* ---- Tools we use ---- */
+.sy-tool-rows {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.sy-tool-row {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px 24px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.sy-tool-row dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.sy-tool-row dd {
+  margin: 0;
+}
+
+/* ---- Close: case card + the other systems ---- */
+.sy-close {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+  padding-top: clamp(40px, 6vw, 80px);
+}
+
+.sy-case .case-card {
+  position: relative;
+  top: auto;
+  flex: none;
+  height: auto;
+  min-height: 420px;
+  box-shadow: none;
+}
+
+.sy-more-title {
+  font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+  margin-bottom: 24px;
+}
+
+.sy-more ul {
+  display: grid;
+  gap: 10px;
+}
+
+.sy-more-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: 16px;
+  row-gap: 4px;
+  align-items: center;
+  padding: 18px 22px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--ink-2);
+  transition:
+    border-color 0.3s,
+    background 0.3s;
+}
+
+.sy-more-card:hover {
+  border-color: rgba(77, 159, 255, 0.45);
+  background: var(--ink-3);
+}
+
+.sy-more-name {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+.sy-more-promise {
+  grid-column: 1;
+  grid-row: 2;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.sy-more-arrow {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: var(--lime);
+  font-size: 1.2rem;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.sy-more-card:hover .sy-more-arrow {
+  transform: translateX(5px);
+}
+
+/* ---- Tablet and phones ---- */
+@media (max-width: 1100px) {
+  .sy-modules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sy-impact-row {
+    grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr);
+  }
+
+  .sy-impact-row > .sy-who {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 899px) {
+  .sy-screen,
+  .sy-stage:hover .sy-screen {
+    transform: none;
+  }
+
+  .sy-screen .mod:nth-child(n + 3) {
+    display: none;
+  }
+
+  .sy-close {
+    grid-template-columns: 1fr;
+  }
+
+  .sy-case .case-card {
+    min-height: 0;
+  }
+
+  .sy-proof {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .sy-tool-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sy-modules {
+    grid-template-columns: 1fr;
+  }
+
+  .sy-bubble:nth-child(odd) {
+    padding-right: 24px;
+  }
+
+  .sy-bubble:nth-child(even) {
+    padding-left: 24px;
+  }
+
+  /* Before above after, joined by a short vertical thread. */
+  .sy-impact-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .sy-thread {
+    width: 2px;
+    height: 28px;
+    margin-left: 3px;
+  }
+
+  .sy-thread i {
+    background: linear-gradient(180deg, rgba(255, 122, 89, 0.5), var(--lime));
+    transform: scaleY(var(--draw));
+    transform-origin: top;
+  }
+
+  .sy-thread::after {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: -1px;
+    transform: translateX(-50%) rotate(135deg);
+  }
+}
+
+/* Small phones: the two dashboard modules stack so their charts keep room. */
+@media (max-width: 520px) {
+  .sy-screen .mods {
+    grid-template-columns: 1fr;
+  }
+}

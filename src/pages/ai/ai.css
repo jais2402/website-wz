@@ -1,0 +1,828 @@
+/* ==========================================================================
+   AI page (pages/ai/AiPage.tsx). Prefixed `aip-`: the home page AI section owns `ai-`.
+   Every animated element is drawn complete by default; keyframes only run when motion is allowed.
+   ========================================================================== */
+
+/* ---------- Hero visual ---------- */
+.aip-hero-svg {
+  display: block;
+  width: 100%;
+  max-width: 620px;
+  margin-inline: auto;
+  height: auto;
+  overflow: visible;
+}
+
+.aip-scan,
+.aip-knot-glow,
+.aip-knot-ring,
+.aip-out,
+.aip-person-check {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.aip-thread {
+  fill: none;
+  stroke: var(--violet);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 8;
+  opacity: 0.8;
+  animation: aip-dash 1.2s linear infinite;
+}
+
+.aip-thread:nth-of-type(2) {
+  stroke: #2fd0ff;
+}
+
+.aip-thread.is-out {
+  stroke: var(--lime);
+  opacity: 0.6;
+}
+
+.aip-doc-card {
+  fill: var(--ink-3);
+  stroke: var(--line-2);
+}
+
+.aip-doc-head {
+  fill: rgba(237, 237, 243, 0.55);
+}
+
+.aip-doc-tag {
+  fill: rgba(255, 122, 89, 0.25);
+  stroke: var(--coral);
+  stroke-width: 1;
+}
+
+.aip-doc-line {
+  fill: rgba(255, 255, 255, 0.14);
+  animation: aip-read 6s var(--ease-out) infinite both;
+}
+
+.aip-scan {
+  opacity: 0;
+  animation: aip-scan 6s ease-in-out infinite both;
+}
+
+.aip-knot-glow {
+  animation: aip-pulse 3s ease-in-out infinite;
+}
+
+.aip-knot-ring {
+  fill: none;
+  stroke: #8cc4ff;
+  stroke-width: 1.2;
+  opacity: 0.75;
+  animation: aip-spin 9s linear infinite;
+}
+
+.aip-knot-ring.is-1 {
+  stroke: var(--violet);
+  animation-duration: 12s;
+  animation-direction: reverse;
+}
+
+.aip-knot-ring.is-2 {
+  stroke: #2fd0ff;
+  animation-duration: 15s;
+}
+
+.aip-knot-core {
+  fill: #fff;
+  filter: drop-shadow(0 0 10px rgba(77, 159, 255, 0.95));
+}
+
+.aip-out {
+  --tone: var(--lime);
+  animation: aip-out 6s var(--ease-out) infinite both;
+}
+
+.aip-out.is-coral {
+  --tone: var(--coral);
+}
+
+.aip-out.is-violet {
+  --tone: var(--violet);
+}
+
+.aip-out-pill {
+  fill: var(--ink-3);
+  stroke: var(--line-2);
+}
+
+.aip-out.is-wait .aip-out-pill {
+  stroke: rgba(77, 159, 255, 0.55);
+  stroke-dasharray: 4 4;
+}
+
+.aip-out-dot {
+  fill: var(--tone);
+  filter: drop-shadow(0 0 6px var(--tone));
+}
+
+.aip-out-text {
+  fill: var(--text);
+  font-family: var(--f-display);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.aip-person {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.aip-person-check circle {
+  fill: var(--lime);
+  stroke: var(--ink-3);
+  stroke-width: 1.5;
+}
+
+.aip-person-check path {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+/* The person approves a beat after the chip arrives. */
+.aip-person-check {
+  animation: aip-approve 6s var(--ease-out) infinite both;
+  animation-delay: inherit;
+}
+
+@keyframes aip-dash {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+@keyframes aip-scan {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  6% {
+    opacity: 1;
+  }
+  38% {
+    opacity: 1;
+    transform: translateY(270px);
+  }
+  44%,
+  100% {
+    opacity: 0;
+    transform: translateY(270px);
+  }
+}
+
+@keyframes aip-read {
+  0%,
+  4% {
+    fill: rgba(255, 255, 255, 0.14);
+  }
+  8%,
+  80% {
+    fill: rgba(140, 196, 255, 0.6);
+  }
+  92%,
+  100% {
+    fill: rgba(255, 255, 255, 0.14);
+  }
+}
+
+@keyframes aip-pulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes aip-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes aip-out {
+  0%,
+  38% {
+    opacity: 0;
+    transform: translateX(-14px) scale(0.92);
+  }
+  46%,
+  86% {
+    opacity: 1;
+    transform: none;
+  }
+  94%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+@keyframes aip-approve {
+  0%,
+  60% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  66%,
+  86% {
+    opacity: 1;
+    transform: none;
+  }
+  94%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Two ways ---------- */
+.aip-ways {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+}
+
+.aip-way {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: clamp(24px, 3vw, 40px);
+}
+
+.aip-way.is-inside {
+  background: radial-gradient(70% 60% at 0% 0%, rgba(77, 159, 255, 0.16), transparent 70%), rgba(14, 14, 24, 0.55);
+}
+
+.aip-way.is-solution {
+  background: radial-gradient(70% 60% at 100% 0%, rgba(139, 123, 255, 0.18), transparent 70%), rgba(14, 14, 24, 0.55);
+}
+
+.aip-way-visual {
+  display: grid;
+  place-items: center;
+  height: 190px;
+  margin-bottom: 12px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: rgba(7, 7, 12, 0.5);
+  overflow: hidden;
+}
+
+.aip-way-label {
+  color: var(--lime);
+}
+
+.is-solution .aip-way-label {
+  color: var(--violet);
+}
+
+.aip-way-title {
+  font-family: var(--f-display);
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.aip-way-text {
+  color: var(--muted);
+  max-width: 46ch;
+}
+
+.aip-way-link {
+  justify-self: start;
+  margin-top: 8px;
+  padding: 8px 0;
+  color: var(--text);
+  font-weight: 500;
+  border-bottom: 1px solid var(--line-2);
+  transition:
+    border-color 0.3s,
+    color 0.3s;
+}
+
+.aip-way-link:hover,
+.aip-way-link:focus-visible {
+  color: #8cc4ff;
+  border-color: currentColor;
+}
+
+/* System window with AI working in one row */
+.aip-win {
+  width: min(300px, 82%);
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  background: var(--ink-3);
+  overflow: hidden;
+}
+
+.aip-win-bar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.aip-win-bar i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-2);
+}
+
+.aip-win-tab {
+  margin-left: 10px;
+  width: 64px;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.aip-win-body {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+}
+
+.aip-win-side {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 12px 10px;
+  border-right: 1px solid var(--line);
+}
+
+.aip-win-side span,
+.aip-win-rows span {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.aip-win-rows {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.aip-win-rows span {
+  height: 18px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.aip-win-rows span.is-ai {
+  position: relative;
+  border: 1px solid rgba(77, 159, 255, 0.5);
+  background: linear-gradient(90deg, rgba(77, 159, 255, 0.22), rgba(77, 159, 255, 0.04));
+  animation: aip-row 3.2s ease-in-out infinite;
+}
+
+.aip-ai-chip {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  translate: 0 -50%;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--lime);
+  color: var(--ink);
+  font-family: var(--f-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1.5;
+  box-shadow: 0 0 14px rgba(77, 159, 255, 0.7);
+}
+
+@keyframes aip-row {
+  50% {
+    box-shadow: 0 0 18px rgba(77, 159, 255, 0.35);
+  }
+}
+
+/* Standalone AI tool */
+.aip-tool {
+  display: grid;
+  gap: 10px;
+  width: min(250px, 78%);
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(139, 123, 255, 0.4);
+  background: var(--ink-3);
+  box-shadow: 0 0 40px rgba(139, 123, 255, 0.15);
+}
+
+.aip-tool-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aip-tool-orb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, #8cc4ff 30%, var(--violet) 75%);
+  box-shadow: 0 0 14px rgba(139, 123, 255, 0.8);
+  animation: aip-pulse 3s ease-in-out infinite;
+}
+
+.aip-tool-name {
+  width: 70px;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.aip-bubble {
+  display: grid;
+  gap: 6px;
+  border-radius: 10px;
+}
+
+.aip-bubble.is-q {
+  justify-self: end;
+  width: 62%;
+  height: 22px;
+  background: rgba(77, 159, 255, 0.22);
+}
+
+.aip-bubble.is-a {
+  width: 84%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.aip-bubble.is-a i {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.aip-bubble.is-a i + i {
+  width: 70%;
+}
+
+.aip-tool-src {
+  width: 52px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 123, 255, 0.6);
+}
+
+/* ---------- Inside your systems ---------- */
+.aip-inside {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 1.6vw, 22px);
+}
+
+.aip-inside-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: clamp(22px, 2.4vw, 32px);
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 60%), var(--ink-2);
+  transition:
+    border-color 0.4s,
+    transform 0.6s var(--ease-out);
+}
+
+.aip-inside-card:hover {
+  border-color: rgba(77, 159, 255, 0.45);
+  transform: translateY(-4px);
+}
+
+.aip-inside-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.aip-sys {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.aip-icon {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: #8cc4ff;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.aip-inside-card:hover .aip-icon {
+  filter: drop-shadow(0 0 8px rgba(77, 159, 255, 0.7));
+}
+
+.aip-card-title {
+  font-family: var(--f-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.aip-card-text {
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+/* ---------- Custom solutions ---------- */
+.aip-solutions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+}
+
+.aip-sol {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 12px;
+  padding: clamp(24px, 3vw, 36px);
+  container-type: inline-size;
+}
+
+.aip-flow {
+  display: flex;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(7, 7, 12, 0.45);
+  list-style: none;
+}
+
+.aip-flow li {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.aip-flow li:first-child {
+  flex: 0 1 auto;
+}
+
+.aip-flow-step {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: var(--ink-3);
+  font-size: 0.85rem;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.is-end .aip-flow-step {
+  border-color: rgba(77, 159, 255, 0.6);
+  box-shadow: 0 0 18px rgba(77, 159, 255, 0.25);
+}
+
+/* Dashed thread between steps, running toward the output (the home page weave style). */
+.aip-flow-thread {
+  flex: 1 1 18px;
+  min-width: 18px;
+  height: 2px;
+  margin: 0 6px;
+  background: repeating-linear-gradient(90deg, var(--violet) 0 6px, transparent 6px 14px);
+  background-size: 14px 2px;
+  animation: aip-flow-x 0.8s linear infinite;
+}
+
+.is-end .aip-flow-thread {
+  background-image: repeating-linear-gradient(90deg, var(--lime) 0 6px, transparent 6px 14px);
+}
+
+@keyframes aip-flow-x {
+  to {
+    background-position: 14px 0;
+  }
+}
+
+@keyframes aip-flow-y {
+  to {
+    background-position: 0 14px;
+  }
+}
+
+/* Narrow cards: the pipeline runs downward. */
+@container (max-width: 440px) {
+  .aip-flow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .aip-flow li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .aip-flow-thread {
+    flex: none;
+    width: 2px;
+    min-width: 0;
+    height: 18px;
+    margin: 4px 0 4px 20px;
+    background: repeating-linear-gradient(180deg, var(--violet) 0 6px, transparent 6px 14px);
+    background-size: 2px 14px;
+    animation-name: aip-flow-y;
+  }
+
+  .is-end .aip-flow-thread {
+    background-image: repeating-linear-gradient(180deg, var(--lime) 0 6px, transparent 6px 14px);
+  }
+}
+
+/* ---------- How we build it ---------- */
+.aip-how {
+  --p: 1;
+  --gap: clamp(16px, 2vw, 28px);
+  position: relative;
+}
+
+.aip-how-track {
+  position: absolute;
+  left: 7px;
+  right: calc((100% - 4 * var(--gap)) / 5 - 9px);
+  top: 7px;
+  height: 2px;
+  background: var(--line-2);
+}
+
+.aip-how-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--lime), var(--violet));
+  transform: scaleX(var(--p));
+  transform-origin: left center;
+  box-shadow: 0 0 12px rgba(77, 159, 255, 0.6);
+}
+
+.aip-how-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--gap);
+  list-style: none;
+}
+
+.aip-how-step {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.aip-how-knot {
+  width: 16px;
+  height: 16px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--line-2);
+  background: var(--ink);
+  transition:
+    background-color 0.4s,
+    border-color 0.4s,
+    box-shadow 0.4s,
+    transform 0.5s var(--ease-out);
+}
+
+.aip-how-knot.is-on {
+  border-color: #8cc4ff;
+  background: var(--lime);
+  box-shadow:
+    0 0 0 5px rgba(77, 159, 255, 0.15),
+    0 0 16px rgba(77, 159, 255, 0.8);
+  transform: scale(1.1);
+}
+
+.aip-how-title {
+  font-family: var(--f-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Guardrails */
+.aip-guards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 1.6vw, 22px);
+  margin-top: clamp(48px, 6vw, 88px);
+}
+
+.aip-guard {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 24px;
+  border-radius: 22px;
+}
+
+.aip-guard-title {
+  font-family: var(--f-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* ---------- Layout breakpoints ---------- */
+@media (max-width: 1099px) {
+  .aip-inside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 899px) {
+  .aip-ways,
+  .aip-solutions,
+  .aip-guards {
+    grid-template-columns: 1fr;
+  }
+
+  /* Steps stack; the thread runs down the left. */
+  .aip-how-track {
+    left: 7px;
+    right: auto;
+    top: 8px;
+    bottom: 24px;
+    width: 2px;
+    height: auto;
+  }
+
+  .aip-how-fill {
+    background: linear-gradient(180deg, var(--lime), var(--violet));
+    transform: scaleY(var(--p));
+    transform-origin: center top;
+  }
+
+  .aip-how-steps {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .aip-how-step {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  /* Hides the thread below the last knot (the page is flat ink this far down). */
+  .aip-how-step:last-child {
+    background: var(--ink);
+  }
+
+  .aip-how-knot {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 639px) {
+  .aip-inside {
+    grid-template-columns: 1fr;
+  }
+
+  .aip-way-visual {
+    height: 160px;
+  }
+}
+
+/* Reduced motion: everything rests in its finished state. */
+@media (prefers-reduced-motion: reduce) {
+  .aip-hero-svg *,
+  .aip-win-rows span.is-ai,
+  .aip-tool-orb,
+  .aip-flow-thread {
+    animation: none !important;
+  }
+
+  .aip-inside-card:hover {
+    transform: none;
+  }
+}

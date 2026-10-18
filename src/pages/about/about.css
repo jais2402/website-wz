@@ -1,0 +1,271 @@
+/* ==========================================================================
+   About page. Type-led and quiet: no canvas, thin lines, one glowing thread.
+   ========================================================================== */
+
+.ab h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.ab .pg-title {
+  max-width: 20ch;
+}
+
+/* Why SMEs and MSMEs */
+.ab-why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.ab-why-card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: clamp(28px, 3vw, 40px);
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 60%), var(--ink-3);
+  border: 1px solid var(--line);
+}
+
+.ab-why-card h3 {
+  font-size: clamp(1.4rem, 2vw, 1.75rem);
+}
+
+.ab-why-card p,
+.ab-moment p:not(.mono),
+.ab-step p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* Twelve years, one thread */
+.ab-thread {
+  position: relative;
+}
+
+.ab-thread-track {
+  position: absolute;
+  top: 7px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--line-2);
+  /* The thread runs on past today. */
+  -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, #000 88%, transparent);
+}
+
+.ab-thread-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--progress-gradient);
+  transform-origin: left center;
+}
+
+.ab-moments {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 40px);
+}
+
+.ab-moment {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.ab-knot {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-bottom: 26px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid var(--lime);
+  box-shadow: 0 0 24px rgba(77, 159, 255, 0.5);
+  transition:
+    border-color 0.4s,
+    box-shadow 0.4s;
+}
+
+.ab-knot i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  transition:
+    background 0.4s,
+    transform 0.4s var(--ease-out);
+}
+
+/* While scroll drives the thread, knots wait dim until the fill reaches them. */
+.ab-thread.is-live .ab-knot:not(.is-lit) {
+  border-color: var(--line-2);
+  box-shadow: none;
+}
+
+.ab-thread.is-live .ab-knot:not(.is-lit) i {
+  background: var(--line-2);
+  transform: scale(0.6);
+}
+
+.ab-moment-year {
+  color: #8cc4ff;
+}
+
+.ab-moment h3 {
+  font-size: clamp(1.35rem, 1.9vw, 1.7rem);
+}
+
+/* In numbers */
+.ab-stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+}
+
+.ab-stat {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 14px;
+  padding: 36px 24px 0 0;
+  min-width: 0;
+}
+
+.ab-stat + .ab-stat {
+  padding-left: 24px;
+  border-left: 1px solid var(--line);
+}
+
+.ab-stat-value {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(3.4rem, 8vw, 7.5rem);
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.ab-stat-hold {
+  opacity: 0;
+}
+
+.ab-stat-label {
+  color: var(--muted);
+  max-width: 24ch;
+}
+
+/* How we work: one thin line that the four steps sit on. */
+.ab-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  row-gap: 48px;
+}
+
+.ab-step {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 32px 24px 0 0;
+  border-top: 1px solid var(--line-2);
+}
+
+.ab-step-dot {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 16px rgba(77, 159, 255, 0.6);
+}
+
+.ab-step h3 {
+  font-size: clamp(1.6rem, 2.4vw, 2.2rem);
+}
+
+/* Phones and small tablets */
+@media (max-width: 899px) {
+  .ab-why-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ab-thread-track {
+    top: 8px;
+    bottom: 0;
+    left: 7px;
+    right: auto;
+    width: 2px;
+    height: auto;
+    -webkit-mask-image: linear-gradient(180deg, #000 85%, transparent);
+    mask-image: linear-gradient(180deg, #000 85%, transparent);
+  }
+
+  .ab-thread-fill {
+    transform-origin: center top;
+  }
+
+  .ab-moments {
+    grid-template-columns: 1fr;
+    gap: 44px;
+    padding-bottom: 24px;
+  }
+
+  .ab-moment {
+    padding-left: 44px;
+  }
+
+  .ab-knot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+  }
+
+  .ab-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .ab-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ab-stat,
+  .ab-stat + .ab-stat {
+    padding: 28px 0;
+    border-left: 0;
+  }
+
+  .ab-stat + .ab-stat {
+    border-top: 1px solid var(--line);
+  }
+
+  .ab-step {
+    padding-right: 16px;
+  }
+
+  .ab-step h3 {
+    font-size: 1.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-knot,
+  .ab-knot i {
+    transition: none;
+  }
+}

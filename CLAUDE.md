@@ -24,6 +24,10 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
 - `contact.html` → `src/contact/main.tsx` → `ContactPage.tsx`: `/contact` (clean URL in dev, preview and Vercel).
   Address, phone and email cards, the enquiry form (`ContactForm`, sending switchable in `lib/enquiry.ts`), and the
   loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`, SVG art in lite mode).
+- `about.html`, `ai.html`, `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
+  `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). Shared shell, hero, section
+  and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
+  Their copy is in `src/content/pages.ts`. Adding a page = an `.html` file + an entry in `INPUTS` in `vite.config.ts`.
 - `loom.html` → `src/loom/main.tsx`: the original concept-B page, kept **internal only** (not linked from the
   site). Both entries are listed in `build.rolldownOptions.input` in `vite.config.ts`.
 - The loom visuals are original, inspired by a reference image the client shared: never use Marvel/Loki names or

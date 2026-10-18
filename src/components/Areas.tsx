@@ -10,6 +10,8 @@ import { SplitReveal } from './Reveal'
 const ICONS = ['◎', '◆', '▣', '◈', '▲', '✚']
 // Bento: in a 4-column grid the first and last module span two columns.
 const WIDE = new Set([0, 5])
+// Each system's own page (/systems/<slug>), in `areas` order. Matches `systemPages` in content/pages.ts.
+const SLUGS = ['people', 'revenue', 'operations', 'ecommerce', 'finance', 'industry']
 
 /**
  * Systems explorer. On desktop the section pins and scrolling steps through each business system;
@@ -24,6 +26,12 @@ export function Areas() {
   const [mod, setMod] = useState(0)
   const area = areas[active]
   const nextArea = areas[(active + 1) % areas.length]
+  // Shown in the screen bar on desktop and under the "next system" button on phones.
+  const explore = (className: string) => (
+    <a className={className} href={`/systems/${SLUGS[active]}`}>
+      Explore {area.title} <span aria-hidden="true">→</span>
+    </a>
+  )
 
   useGSAP(
     () => {
@@ -114,6 +122,7 @@ export function Areas() {
             <div className="screen-bar">
               <span className="mono">wezigns / {area.title.toLowerCase()}</span>
               <span className="screen-status mono">
+                {explore('areas-explore')}
                 <span className="screen-step">
                   0{active + 1} / 0{areas.length}
                 </span>
@@ -158,6 +167,7 @@ export function Areas() {
               {nextArea.title} <span aria-hidden="true">→</span>
             </span>
           </button>
+          {explore('areas-explore-m')}
         </div>
       </div>
     </section>

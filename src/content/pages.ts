@@ -2,14 +2,13 @@
 // Rules: pain points and impact are written in the visitor's own words; no invented statistics (real case results
 // only, linked to Our Work); tools come from the shared `tools` list in site.ts, split per system.
 
-export type Voice = 'Owner' | 'Manager' | 'Team'
+export type Voice = 'Owner' | 'Manager' | 'Team member'
 
 export type SystemPage = {
   slug: string
   /** Index into `areas` in site.ts: reuses its KPIs and module dashboard. */
   area: number
   title: string
-  accent: string
   promise: string
   intro: string
   pains: { who: Voice; quote: string }[]
@@ -27,14 +26,13 @@ export const systemPages: SystemPage[] = [
     slug: 'people',
     area: 0,
     title: 'People & workforce',
-    accent: 'workforce',
     promise: 'Your people, payroll and paperwork in one place.',
     intro:
       'HR, payroll, attendance, appraisals, training and hiring in one system your team actually uses. No more chasing forms, rebuilding spreadsheets or asking who approved what.',
     pains: [
       { who: 'Owner', quote: 'I sign off payroll every month without really knowing if the numbers are right.' },
       { who: 'Manager', quote: 'Leave requests come in by WhatsApp, email and a sticky note on my desk.' },
-      { who: 'Team', quote: 'I have asked HR for my leave balance three times this week.' },
+      { who: 'Team member', quote: 'I have asked HR for my leave balance three times this week.' },
       { who: 'Manager', quote: 'Appraisal season means two weeks of chasing forms.' },
       { who: 'Owner', quote: 'When someone leaves, their training records leave with them.' },
     ],
@@ -49,7 +47,7 @@ export const systemPages: SystemPage[] = [
     impact: [
       { who: 'Owner', before: 'I approve payroll on trust.', after: 'I see how every number was worked out before I approve.' },
       { who: 'Manager', before: 'I chase leave requests across three apps.', after: 'Requests come to one place and I approve them from my phone.' },
-      { who: 'Team', before: 'I email HR to ask for a payslip.', after: 'I open the app and download it myself.' },
+      { who: 'Team member', before: 'I email HR to ask for a payslip.', after: 'I open the app and download it myself.' },
       { who: 'Manager', before: 'Appraisals take two weeks of follow-ups.', after: 'The system sends the reminders. I just read the reviews.' },
     ],
     proof: { value: '−80%', label: 'administrative work for a nationwide training operation', caseId: 'safety-training' },
@@ -60,14 +58,13 @@ export const systemPages: SystemPage[] = [
     slug: 'revenue',
     area: 1,
     title: 'Revenue & customers',
-    accent: 'customers',
     promise: 'Every customer, quote and invoice, followed through.',
     intro:
       'CRM, quotations, billing, support, renewals and partner portals working as one. Your team sees the whole customer, and fewer deals or payments slip through the cracks.',
     pains: [
       { who: 'Owner', quote: 'Our best customer list lives in one salesperson’s phone.' },
       { who: 'Manager', quote: 'I only find out a quote went cold when the customer has already gone elsewhere.' },
-      { who: 'Team', quote: 'I copy every quote into an invoice by hand.' },
+      { who: 'Team member', quote: 'I copy every quote into an invoice by hand.' },
       { who: 'Manager', quote: 'Support tickets sit in a shared inbox and nobody knows who owns them.' },
       { who: 'Owner', quote: 'Renewals sneak up on us every year.' },
     ],
@@ -82,7 +79,7 @@ export const systemPages: SystemPage[] = [
     impact: [
       { who: 'Owner', before: 'Customer history leaves when a salesperson does.', after: 'Every conversation stays with the company.' },
       { who: 'Manager', before: 'I find lost quotes after the fact.', after: 'I see every open quote and follow up the same day.' },
-      { who: 'Team', before: 'I retype quotes into invoices.', after: 'One click turns an accepted quote into an invoice.' },
+      { who: 'Team member', before: 'I retype quotes into invoices.', after: 'One click turns an accepted quote into an invoice.' },
       { who: 'Manager', before: 'Nobody knows who owns a ticket.', after: 'Every ticket has an owner and a clock.' },
     ],
     tools: [
@@ -90,20 +87,19 @@ export const systemPages: SystemPage[] = [
       { label: 'Payments', items: ['Stripe', 'Razorpay'] },
       { label: 'Messaging and email', items: ['Twilio', 'Mailchimp', 'Klaviyo'] },
     ],
-    caseId: 'recruitment',
+    caseId: 'marketplace',
   },
   {
     slug: 'operations',
     area: 2,
     title: 'Operations & supply chain',
-    accent: 'supply chain',
     promise: 'Orders, stock and production you can see in real time.',
     intro:
       'Orders, inventory, warehouse, procurement, production and assets in one live picture. Know what you have, what is coming and what is stuck, before a customer asks.',
     pains: [
       { who: 'Owner', quote: 'I find out we are out of stock when a customer calls.' },
       { who: 'Manager', quote: 'Purchase orders get approved on WhatsApp and nobody can find them later.' },
-      { who: 'Team', quote: 'I count the same shelf twice because the spreadsheet is never current.' },
+      { who: 'Team member', quote: 'I count the same shelf twice because the spreadsheet is never current.' },
       { who: 'Manager', quote: 'I can’t tell which line is running behind until the day is over.' },
       { who: 'Owner', quote: 'We bought a machine part we already had in the other warehouse.' },
     ],
@@ -118,7 +114,7 @@ export const systemPages: SystemPage[] = [
     impact: [
       { who: 'Owner', before: 'Stock-outs reach me through complaints.', after: 'The system warns us before stock runs low.' },
       { who: 'Manager', before: 'PO approvals are lost in chat.', after: 'Every PO has an approver, a date and a trail.' },
-      { who: 'Team', before: 'I recount shelves to trust the numbers.', after: 'The count I see is the count on the shelf.' },
+      { who: 'Team member', before: 'I recount shelves to trust the numbers.', after: 'The count I see is the count on the shelf.' },
       { who: 'Manager', before: 'I learn about delays at the end of the day.', after: 'I see a slow line while there is still time to fix it.' },
     ],
     tools: [HOSTING, { label: 'Order sources', items: ['Shopify', 'Magento', 'WooCommerce'] }, { label: 'Alerts', items: ['Twilio'] }],
@@ -128,14 +124,13 @@ export const systemPages: SystemPage[] = [
     slug: 'ecommerce',
     area: 3,
     title: 'Ecommerce',
-    accent: 'store',
     promise: 'A store that sells, with the operations behind it.',
     intro:
       'Storefront, orders, payments, catalogue, returns and fulfilment connected to the rest of your business. Selling online stops meaning a second set of spreadsheets.',
     pains: [
       { who: 'Owner', quote: 'The website takes orders, then someone types them into our system.' },
       { who: 'Manager', quote: 'Updating prices means editing two hundred products one by one.' },
-      { who: 'Team', quote: 'Customers ask where their order is and I have to check four places.' },
+      { who: 'Team member', quote: 'Customers ask where their order is and I have to check four places.' },
       { who: 'Manager', quote: 'Returns are a pile of emails nobody wants to open.' },
       { who: 'Owner', quote: 'We sold an item online that was already sold in the shop.' },
     ],
@@ -150,7 +145,7 @@ export const systemPages: SystemPage[] = [
     impact: [
       { who: 'Owner', before: 'Online orders are retyped by hand.', after: 'Orders land in the system the moment they are paid.' },
       { who: 'Manager', before: 'Price changes take a whole afternoon.', after: 'I change a price once and it updates everywhere.' },
-      { who: 'Team', before: 'I check four places to answer “where is my order?”', after: 'Customers get tracking updates without asking.' },
+      { who: 'Team member', before: 'I check four places to answer “where is my order?”', after: 'Customers get tracking updates without asking.' },
       { who: 'Owner', before: 'Online and shop stock disagree.', after: 'One stock count for every channel.' },
     ],
     proof: { value: '300 → 4,500', label: 'active sellers on a B2B marketplace, with no support staff added', caseId: 'marketplace' },
@@ -160,20 +155,19 @@ export const systemPages: SystemPage[] = [
       { label: 'Payments', items: ['Stripe', 'Razorpay'] },
       { label: 'Marketing', items: ['Klaviyo', 'Mailchimp'] },
     ],
-    caseId: 'marketplace',
+    caseId: 'online-retail',
   },
   {
     slug: 'finance',
     area: 4,
     title: 'Finance & governance',
-    accent: 'governance',
     promise: 'Money, approvals and audits you can trust.',
     intro:
       'Accounts, expenses, dashboards, audit, projects and approvals with one source of truth. Month-end gets shorter, and every number has a trail.',
     pains: [
       { who: 'Owner', quote: 'I don’t know our cash position until the accountant sends a spreadsheet.' },
       { who: 'Manager', quote: 'Expense claims arrive as photos of receipts on WhatsApp.' },
-      { who: 'Team', quote: 'Month-end means three days of copying numbers between files.' },
+      { who: 'Team member', quote: 'Month-end means three days of copying numbers between files.' },
       { who: 'Owner', quote: 'When the auditor asks who approved a payment, nobody is sure.' },
       { who: 'Manager', quote: 'Every report I need is a request to someone else.' },
     ],
@@ -188,24 +182,23 @@ export const systemPages: SystemPage[] = [
     impact: [
       { who: 'Owner', before: 'I wait for a spreadsheet to know our cash.', after: 'I check it on my phone any morning.' },
       { who: 'Manager', before: 'Receipts arrive as WhatsApp photos.', after: 'Claims come in with the receipt attached and a limit checked.' },
-      { who: 'Team', before: 'Month-end takes days of copying.', after: 'The numbers are already where they need to be.' },
+      { who: 'Team member', before: 'Month-end takes days of copying.', after: 'The numbers are already where they need to be.' },
       { who: 'Owner', before: 'Approvals are hard to prove.', after: 'Every approval has a name, a time and a reason.' },
     ],
     tools: [HOSTING, { label: 'Payments', items: ['Stripe', 'Razorpay'] }, { label: 'Document checks', items: ['Inscribe'] }],
-    caseId: 'safety-training',
+    caseId: 'tourism',
   },
   {
     slug: 'industry',
     area: 5,
     title: 'Industry systems',
-    accent: 'industry',
     promise: 'Software shaped around how your sector works.',
     intro:
       'Healthcare, education, property and hotels, lending, retail and logistics each have their own rules. We build systems that already speak your industry’s language.',
     pains: [
       { who: 'Owner', quote: 'Off-the-shelf software makes us work its way, not ours.' },
       { who: 'Manager', quote: 'We pay for five tools and still run the day on paper.' },
-      { who: 'Team', quote: 'I enter the same patient, student or guest details in three systems.' },
+      { who: 'Team member', quote: 'I enter the same patient, student or guest details in three systems.' },
       { who: 'Manager', quote: 'Our regulator wants reports our software can’t produce.' },
       { who: 'Owner', quote: 'Every new branch means another set of spreadsheets.' },
     ],
@@ -219,7 +212,7 @@ export const systemPages: SystemPage[] = [
     },
     impact: [
       { who: 'Owner', before: 'We bend our process to fit the software.', after: 'The software fits the way we already work.' },
-      { who: 'Team', before: 'I type the same details three times.', after: 'I enter them once and every screen has them.' },
+      { who: 'Team member', before: 'I type the same details three times.', after: 'I enter them once and every screen has them.' },
       { who: 'Manager', before: 'Compliance reports are built by hand.', after: 'The report the regulator wants is one click.' },
       { who: 'Owner', before: 'A new branch means new spreadsheets.', after: 'A new branch is a new login.' },
     ],
@@ -268,6 +261,11 @@ export const aboutPage = {
 export const aiPage = {
   kicker: 'AI',
   title: ['AI that does', 'real work', 'for your business.'],
+  heroLink: 'See the two ways',
+  heroVisualLabel: 'A record is read by AI, which flags it, drafts the next step and waits for a person to approve.',
+  waysTitle: 'Two ways to use AI',
+  waysLink: 'See how',
+  howKicker: 'How we build it',
   lead: 'Two ways to put AI to work: inside the systems you already run, or as a custom AI solution built around one job. Either way, a person signs off and your data stays yours.',
   ways: [
     {
@@ -283,7 +281,7 @@ export const aiPage = {
       text: 'A tool built around one job: answering from your documents, processing paperwork, running routine steps or talking to customers.',
     },
   ],
-  insideTitle: 'AI workflows inside your systems',
+  insideTitle: 'AI that works where your team already does',
   inside: [
     { system: 'Finance', title: 'Invoice matching', text: 'Reads each supplier invoice, matches it to the order and receipt, and flags anything that does not add up.' },
     { system: 'Operations', title: 'Reorder suggestions', text: 'Looks at sales and stock levels and suggests what to reorder, and when.' },
@@ -292,11 +290,11 @@ export const aiPage = {
     { system: 'Ecommerce', title: 'Product copy and search', text: 'Writes product descriptions and helps customers find what they mean, not just what they typed.' },
     { system: 'Every system', title: 'Ask your data', text: 'Ask a question in plain words, like “which orders are late this week?”, and get the answer with the records behind it.' },
   ],
-  solutionsTitle: 'Custom AI solutions',
+  solutionsTitle: 'AI built around one job',
   solutions: [
     { title: 'Assistants on your documents', text: 'Your team asks questions and gets answers from your own policies, manuals and records, with the source shown.', flow: ['Question', 'Your documents', 'Answer + source'] },
     { title: 'Document processing', text: 'Invoices, forms and IDs are read, the details pulled out and checked, then sent to the right system.', flow: ['Upload', 'Read & check', 'Into your system'] },
-    { title: 'Back-office agents', text: 'Routine steps like chasing approvals, updating records or preparing reports run on their own, and a person approves the result.', flow: ['Trigger', 'Agent does the steps', 'Person approves'] },
+    { title: 'Back-office agents', text: 'Routine steps like chasing approvals, updating records or preparing reports run on their own, and a person approves the result.', flow: ['Trigger', 'Agent runs it', 'Person approves'] },
     { title: 'Customer chat', text: 'Answers customers on your website or WhatsApp from your own information, and hands over to your team when it should.', flow: ['Customer asks', 'AI answers', 'Hands to staff'] },
   ],
   howTitle: 'How we build AI that works',

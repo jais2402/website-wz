@@ -3157,7 +3157,7 @@ main,
 
 .footer-top {
   display: grid;
-  grid-template-columns: 1.6fr repeat(3, 1fr);
+  grid-template-columns: 1.5fr repeat(4, 1fr);
   gap: 40px;
 }
 
@@ -3983,5 +3983,50 @@ main,
     color: var(--muted);
     font-size: 0.7rem;
     font-weight: 400;
+  }
+}
+
+/* ==========================================================================
+   Systems explorer: "Explore {system} →" link to the system's own page (Areas.tsx).
+   Desktop: a pill in the screen bar. Phones: a full-width link under the "next system" button.
+   ========================================================================== */
+.areas-explore {
+  margin-right: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(77, 159, 255, 0.35);
+  color: var(--lime);
+  white-space: nowrap;
+  transition: background 0.25s;
+}
+
+.areas-explore:hover {
+  background: rgba(77, 159, 255, 0.12);
+}
+
+.areas-explore-m {
+  display: none;
+}
+
+@media (max-width: 1220px) {
+  .areas .screen-step {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .areas-explore {
+    display: none;
+  }
+
+  .areas-explore-m {
+    display: block;
+    padding: 14px 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(77, 159, 255, 0.35);
+    background: rgba(77, 159, 255, 0.08);
+    color: var(--lime);
+    font-weight: 600;
+    text-align: center;
   }
 }
