@@ -243,7 +243,10 @@ export const ai = {
   ],
 }
 
-export const workSection = { title: 'Our Work' }
+export const workSection = {
+  title: 'Our Work',
+  next: { title: 'Your system could be next.', body: 'Tell us what is slowing your team down and we will map it with you.', cta: 'Tell us what is not working', href: '#contact' },
+}
 
 export const processSection = { kicker: 'How we build', title: 'Four stages. No surprises.' }
 
@@ -254,6 +257,8 @@ export const work = [
     sector: 'Safety training',
     title: 'One system for registration, trainer scheduling and compliance reporting.',
     before: 'Spreadsheets and chat threads',
+    hub: 'One system',
+    parts: ['Registration', 'Trainer scheduling', 'Compliance reporting'],
     metrics: [
       { value: '80%', label: 'less administrative work' },
       { value: '100,000+', label: 'certifications a year' },
@@ -266,6 +271,8 @@ export const work = [
     sector: 'Tourism',
     title: 'A shared platform for events and listings, used by operators, planners and agencies.',
     before: 'Disconnected listings and manual updates',
+    hub: 'Shared platform',
+    parts: ['Operators', 'Planners', 'Agencies'],
     metrics: [
       { value: '0', label: 'unplanned downtime' },
       { value: '40,000', label: 'requests per minute at peak' },
