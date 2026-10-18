@@ -31,6 +31,7 @@ function makeUniforms(extra: Record<string, THREE.IUniform> = {}) {
  */
 export function ThreadField({ quality, reducedMotion }: Props) {
   const group = useRef<THREE.Group>(null)
+  const centre = useRef(new THREE.Vector3())
   const threadMat = useRef<THREE.ShaderMaterial>(null)
   const riderMat = useRef<THREE.ShaderMaterial>(null)
   const core = useRef<THREE.Mesh>(null)
@@ -104,6 +105,11 @@ export function ThreadField({ quality, reducedMotion }: Props) {
     const turning = weights[2] + weights[3]
     group.current.rotation.y = spin.current * turning - weights[1] * 0.18 + state.pointer.x * 0.15
     group.current.rotation.x = 0.12 * weights[1] + 0.22 * weights[2] + 0.15 * weights[3] - state.pointer.y * 0.08
+
+    // Publish the shape's centre on screen for the page's guide light.
+    group.current.getWorldPosition(centre.current).project(state.camera)
+    sceneStore.core.x = (centre.current.x + 1) / 2
+    sceneStore.core.y = (1 - centre.current.y) / 2
   })
 
   return (

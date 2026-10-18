@@ -3729,3 +3729,79 @@ main,
     animation: none;
   }
 }
+
+/* ==========================================================================
+   Guide light: the loom's white glow travelling down the page with scroll (components/GuideLight.tsx)
+   ========================================================================== */
+.guide {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 40;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.guide.is-on {
+  opacity: 1;
+}
+
+.guide-light {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+
+/* Core + halo drawn as two gradients around the light's centre point. */
+.guide-light::before,
+.guide-light::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  translate: -50% -50%;
+}
+
+.guide-light::before {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(255, 244, 228, 0.42) 0%, rgba(184, 168, 255, 0.18) 24%, rgba(127, 108, 255, 0.06) 46%, transparent 70%);
+}
+
+.guide-light::after {
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  box-shadow:
+    0 0 18px 6px rgba(255, 248, 236, 0.95),
+    0 0 60px 22px rgba(184, 168, 255, 0.5);
+  animation: guidePulse 2.6s ease-in-out infinite;
+}
+
+.guide-light.is-trail::before {
+  opacity: 0.35;
+}
+
+.guide-light.is-trail::after {
+  opacity: 0.5;
+  animation: none;
+}
+
+@keyframes guidePulse {
+  50% {
+    scale: 1.18;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide-light::after {
+    animation: none;
+  }
+
+  .guide-light.is-trail {
+    display: none;
+  }
+}

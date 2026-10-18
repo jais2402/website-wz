@@ -70,6 +70,9 @@ src/
     Dust.tsx           ← background dust. ParticleField.tsx / Markers.tsx / shaders.ts are the old point-cloud
                          story, kept for reference and not rendered
   components/          ← one file per page section, in page order in App.tsx
+  components/GuideLight.tsx ← the loom's white glow travelling with scroll: loom mouth → weave knot → story shape
+                         centre → beside the proof headline. Anchor maths in lib/guide.ts; the 3D scenes publish
+                         screen positions (loomStore.mouth, sceneStore.core). Desktop only, off in lite mode.
   hooks/motion.ts      ← GSAP/ScrollTrigger registration, Lenis, scrollToTarget(), reduced-motion
   hooks/useCountUp.ts  ← count-up numbers (instant under reduced motion)
   components/Areas.tsx ← systems explorer: pins on desktop, scroll steps through the 5 systems; data + chart

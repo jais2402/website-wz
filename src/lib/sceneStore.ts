@@ -12,4 +12,6 @@ export const sceneStore = {
   globe: 0,
   /** Index into `countries` of the hovered country (its thread lights up), or -1. */
   highlight: -1,
+  /** Screen position of the story shape's centre as 0..1 viewport fractions (written each frame). */
+  core: { x: 0.7, y: 0.5 },
 }

@@ -255,6 +255,7 @@ function ContactRig({ reducedMotion }: { reducedMotion: boolean }) {
 /** Mouse parallax + scroll fly-in toward the loom mouth. Portrait screens pull back to fit the whole composition. */
 function CameraRig() {
   const look = useRef(new THREE.Vector3())
+  const mouth = useRef(new THREE.Vector3())
   useFrame(({ camera, pointer, size }, delta) => {
     const dt = Math.min(delta, 0.05)
     const portrait = size.height > size.width
@@ -269,6 +270,11 @@ function CameraRig() {
     // Aim below the loom so the composition rides in the upper part of the frame, above the copy.
     look.current.set(damp(look.current.x, (portrait ? 1.6 : -1.6) + p * 2.9, 2.2, dt), damp(look.current.y, portrait ? -1.5 : -1.8 + p * 1.8, 2.2, dt), 0)
     camera.lookAt(look.current)
+    // Publish the mouth's screen position for the page's guide light.
+    camera.updateMatrixWorld()
+    mouth.current.set(-0.25, 0, 0).project(camera)
+    loomStore.mouth.x = (mouth.current.x + 1) / 2
+    loomStore.mouth.y = (1 - mouth.current.y) / 2
   })
   return null
 }
@@ -289,7 +295,8 @@ export function LoomScene({ reducedMotion, active, onReady, view = 'hero' }: Sce
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       frameloop={active ? 'always' : 'never'}
     >
-      <color attach="background" args={['#04050c']} />
+      {/* Contact page: match the page ink so the masked edges melt into it. */}
+      <color attach="background" args={[view === 'contact' ? '#07070c' : '#04050c']} />
       <ambientLight intensity={0.25} />
       <pointLight position={[-0.6, 0, 0]} color="#fff2df" intensity={60} distance={9} />
       <pointLight position={[6, 3, 4]} color="#6f7dff" intensity={25} distance={20} />

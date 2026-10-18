@@ -5,6 +5,7 @@ import { Countries } from '@/components/Countries'
 import { Cursor } from '@/components/Cursor'
 import { Faq } from '@/components/Faq'
 import { Footer } from '@/components/Footer'
+import { GuideLight } from '@/components/GuideLight'
 import { Integrations } from '@/components/Integrations'
 import { Nav } from '@/components/Nav'
 import { Preloader } from '@/components/Preloader'
@@ -48,6 +49,7 @@ export default function App() {
       <div className="grain" aria-hidden="true" />
       <Cursor />
       <Nav />
+      {!lite && <GuideLight active={ready} />}
       <main>
         <LoomHero reducedMotion={reducedMotion} introReady={ready} />
         <Weave />

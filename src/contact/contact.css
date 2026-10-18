@@ -12,7 +12,8 @@
   min-height: 100vh;
 }
 
-/* The loom: bleeds off the top-right on desktop, edges dissolve into the page. Sits under the copy and cards. */
+/* The loom: bleeds off the top-right on desktop. The mask reaches full transparency inside the box on every
+   side that is not the viewport edge, so no rectangle shows against the page tint. */
 .cp-loom {
   position: absolute;
   top: 0;
@@ -23,8 +24,8 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 1.6s ease;
-  -webkit-mask-image: radial-gradient(ellipse 64% 58% at 62% 46%, #000 45%, transparent 100%);
-  mask-image: radial-gradient(ellipse 64% 58% at 62% 46%, #000 45%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 52% 44% at 56% 48%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 52% 44% at 56% 48%, #000 40%, transparent 100%);
 }
 
 .cp-loom.is-ready {
@@ -268,8 +269,8 @@
     width: auto;
     height: clamp(260px, 62vw, 420px);
     margin: 28px calc(-1 * var(--gutter, 16px)) -40px;
-    -webkit-mask-image: radial-gradient(ellipse 60% 58% at 50% 50%, #000 40%, transparent 100%);
-    mask-image: radial-gradient(ellipse 60% 58% at 50% 50%, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 46% at 50% 50%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 70% 46% at 50% 50%, #000 40%, transparent 100%);
   }
 }
 
