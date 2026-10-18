@@ -1,0 +1,14 @@
+import { lazy } from 'react'
+
+// Only the requested page's code is loaded.
+const AboutPage = lazy(() => import('./about/AboutPage').then((m) => ({ default: m.AboutPage })))
+const AiPage = lazy(() => import('./ai/AiPage').then((m) => ({ default: m.AiPage })))
+const SystemPage = lazy(() => import('./systems/SystemPage').then((m) => ({ default: m.SystemPage })))
+
+/** Picks the inner page from <body data-page="about | ai | system:<slug>">. */
+export function PageRouter({ page }: { page: string }) {
+  if (page === 'about') return <AboutPage />
+  if (page === 'ai') return <AiPage />
+  if (page.startsWith('system:')) return <SystemPage slug={page.slice('system:'.length)} />
+  return null
+}
