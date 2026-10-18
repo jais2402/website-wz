@@ -21,6 +21,9 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   integrations → countries globe
   (`components/Countries.tsx`) → FAQ → loom-style contact
   (`LoomContact`) → footer. `main.tsx` imports both `index.css` and `loom/loom.css`.
+- `contact.html` → `src/contact/main.tsx` → `ContactPage.tsx`: `/contact` (clean URL in dev, preview and Vercel).
+  Address, phone and email cards, the enquiry form (`ContactForm`, sending switchable in `lib/enquiry.ts`), and the
+  loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`, SVG art in lite mode).
 - `loom.html` → `src/loom/main.tsx`: the original concept-B page, kept **internal only** (not linked from the
   site). Both entries are listed in `build.rolldownOptions.input` in `vite.config.ts`.
 - The loom visuals are original, inspired by a reference image the client shared: never use Marvel/Loki names or

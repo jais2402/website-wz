@@ -7,11 +7,12 @@ import { Nav } from '@/components/Nav'
 import { SplitReveal } from '@/components/Reveal'
 import { brand, contactPage, countries, nav } from '@/content/site'
 import { gsap, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
+import { ContactLoom } from './ContactLoom'
 
 // Links back to the home page sections from this page.
 const homeNav = nav.map((l) => ({ ...l, href: l.href.startsWith('#') ? `/${l.href}` : l.href }))
 
-/** /contact: every way to reach Wezigns plus the enquiry form. No WebGL, so it is light on every device. */
+/** /contact: every way to reach Wezigns plus the enquiry form, with the loom beside the headline (SVG in lite mode). */
 export function ContactPage() {
   const reducedMotion = usePrefersReducedMotion()
   useSmoothScroll(!reducedMotion)
@@ -31,9 +32,12 @@ export function ContactPage() {
       <Nav items={homeNav} logoHref="/" cta={{ label: 'Send a message', href: '#contact-form' }} />
       <main ref={root} className="cp">
         <section className="wrap cp-head" aria-label="Contact Wezigns">
-          <p className="mono label">{contactPage.kicker}</p>
-          <SplitReveal as="h1" className="display cp-title" text={contactPage.title} trigger={false} />
-          <p className="lead">{contactPage.lead}</p>
+          <div className="cp-head-copy">
+            <p className="mono label">{contactPage.kicker}</p>
+            <SplitReveal as="h1" className="display cp-title" text={contactPage.title} trigger={false} />
+            <p className="lead">{contactPage.lead}</p>
+          </div>
+          <ContactLoom reducedMotion={reducedMotion} />
         </section>
 
         <section className="wrap cp-body">

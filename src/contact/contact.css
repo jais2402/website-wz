@@ -12,13 +12,38 @@
   min-height: 100vh;
 }
 
+/* The loom: bleeds off the top-right on desktop, edges dissolve into the page. Sits under the copy and cards. */
+.cp-loom {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(60vw, 1000px);
+  height: clamp(520px, 76vh, 760px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.6s ease;
+  -webkit-mask-image: radial-gradient(ellipse 64% 58% at 62% 46%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 64% 58% at 62% 46%, #000 45%, transparent 100%);
+}
+
+.cp-loom.is-ready {
+  opacity: 1;
+}
+
+.cp-head-copy,
+.cp-body {
+  position: relative;
+  z-index: 1;
+}
+
 .cp-title {
   font-size: clamp(2.8rem, 6.4vw, 6rem);
   max-width: 14ch;
 }
 
 .cp-head .lead {
-  max-width: 52ch;
+  max-width: 46ch;
 }
 
 .cp-body {
@@ -235,6 +260,16 @@
 @media (max-width: 899px) {
   .cp-body {
     grid-template-columns: 1fr;
+  }
+
+  /* Phones and tablets: the loom becomes a band under the lead instead of sitting behind the headline. */
+  .cp-loom {
+    position: relative;
+    width: auto;
+    height: clamp(260px, 62vw, 420px);
+    margin: 28px calc(-1 * var(--gutter, 16px)) -40px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 58% at 50% 50%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 60% 58% at 50% 50%, #000 40%, transparent 100%);
   }
 }
 

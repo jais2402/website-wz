@@ -1,7 +1,7 @@
 import { Billboard } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { buildParticles, buildStrands } from '@/lib/loom'
 import { damp } from '@/lib/math'
@@ -27,7 +27,9 @@ function makeCommonUniforms() {
   }
 }
 
-function Threads({ quality, reducedMotion }: { quality: Quality; reducedMotion: boolean }) {
+export type LoomView = 'hero' | 'contact'
+
+function Threads({ quality, reducedMotion, view }: { quality: Quality; reducedMotion: boolean; view: LoomView }) {
   const strandMat = useRef<THREE.ShaderMaterial>(null)
   const particleMat = useRef<THREE.ShaderMaterial>(null)
   const pointer = useRef(new THREE.Vector2(99, 99))
@@ -64,7 +66,8 @@ function Threads({ quality, reducedMotion }: { quality: Quality; reducedMotion: 
     // Pointer on the z=0 plane, eased so threads part smoothly instead of snapping.
     pointer.current.x = damp(pointer.current.x, (state.pointer.x * viewport.width) / 2 + state.camera.position.x * 0.5, 6, dt)
     pointer.current.y = damp(pointer.current.y, (state.pointer.y * viewport.height) / 2, 6, dt)
-    const strength = reducedMotion ? 0 : 1
+    // The contact canvas sits under the page copy and gets no pointer events, so no thread parting there.
+    const strength = reducedMotion || view === 'contact' ? 0 : 1
     if (strandMat.current) writeCommon(strandMat.current.uniforms, time, pointer.current, strength)
     if (particleMat.current) writeCommon(particleMat.current.uniforms, time, pointer.current, strength)
   })
@@ -220,6 +223,35 @@ function Glow({ position, scale, color, opacity = 1 }: { position: [number, numb
   )
 }
 
+/** Contact page: a slow three-quarter orbit round the loom, with gentle parallax from the mouse anywhere on the page. */
+function ContactRig({ reducedMotion }: { reducedMotion: boolean }) {
+  const look = useRef(new THREE.Vector3())
+  const mouse = useRef({ x: 0, y: 0 })
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1
+      mouse.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [])
+  useFrame(({ camera, clock, size }, delta) => {
+    const dt = Math.min(delta, 0.05)
+    const sway = reducedMotion ? 0 : Math.sin(clock.elapsedTime * 0.12)
+    const narrow = size.width < 640
+    const tx = -1.6 + sway * 0.9 + mouse.current.x * 0.7
+    const ty = 2.2 + mouse.current.y * 0.5
+    const tz = narrow ? 12.5 : 11
+    camera.position.x = damp(camera.position.x, tx, 2, dt)
+    camera.position.y = damp(camera.position.y, ty, 2, dt)
+    camera.position.z = damp(camera.position.z, tz, 2, dt)
+    // Wide frames aim left of the loom so it rides to the right, clear of the headline.
+    look.current.set(narrow ? 2.4 : 0.8, narrow ? 0 : -0.5, 0)
+    camera.lookAt(look.current)
+  })
+  return null
+}
+
 /** Mouse parallax + scroll fly-in toward the loom mouth. Portrait screens pull back to fit the whole composition. */
 function CameraRig() {
   const look = useRef(new THREE.Vector3())
@@ -241,9 +273,9 @@ function CameraRig() {
   return null
 }
 
-type SceneProps = { reducedMotion: boolean; active: boolean; onReady?: () => void }
+type SceneProps = { reducedMotion: boolean; active: boolean; onReady?: () => void; view?: LoomView }
 
-export function LoomScene({ reducedMotion, active, onReady }: SceneProps) {
+export function LoomScene({ reducedMotion, active, onReady, view = 'hero' }: SceneProps) {
   const quality = useMemo<Quality>(() => {
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
     return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 1000, points: 150, particles: 7500 }
@@ -267,9 +299,9 @@ export function LoomScene({ reducedMotion, active, onReady }: SceneProps) {
       <Glow position={[-0.25, 0, 0]} scale={2.8} color="#fff1dc" opacity={0.9} />
       <Glow position={[-0.4, 0, 0]} scale={9} color="#7f6cff" opacity={0.22} />
 
-      <Threads quality={quality} reducedMotion={reducedMotion} />
+      <Threads quality={quality} reducedMotion={reducedMotion} view={view} />
       <Loom reducedMotion={reducedMotion} />
-      <CameraRig />
+      {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} /> : <CameraRig />}
 
       <EffectComposer multisampling={0}>
         <Bloom mipmapBlur intensity={0.85} luminanceThreshold={0.28} luminanceSmoothing={0.4} radius={0.7} />
