@@ -3,9 +3,10 @@ import { useRef } from 'react'
 import { CountUp, ModuleCard } from '@/components/Charts'
 import { SplitReveal } from '@/components/Reveal'
 import { type SystemPage as Page, type Voice, systemsSection as copy } from '@/content/pages'
-import { type Area, type Chart, areas, workSection } from '@/content/site'
+import { type Area, type Chart, areas, brand, sampleDataLabel, workSection } from '@/content/site'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
 import { LoomContact } from '@/loom/sections'
+import '../print.css'
 import { PageHero, PageSection, PageShell } from '../shell'
 import { buildModules, type CaseStudy, findCase, findSystem, otherSystems } from './lookup'
 import './system.css'
@@ -21,6 +22,8 @@ function System({ page }: { page: Page }) {
   const caseStudy = findCase(page.caseId)
   const reducedMotion = usePrefersReducedMotion()
   const impact = useRef<HTMLDivElement>(null)
+  // Printed on the one-page summary so it can be forwarded.
+  const pageUrl = `${window.location.origin}${window.location.pathname}`
 
   // Each before → after thread draws in as its row arrives; the "after" side lights up with it.
   useGSAP(
@@ -39,6 +42,10 @@ function System({ page }: { page: Page }) {
 
   return (
     <PageShell className={`sy sy-${page.slug}`}>
+      <div className="print-only sy-print-head">
+        <b>{brand.name}</b>
+        <span>{pageUrl}</span>
+      </div>
       <PageHero
         kicker={copy.kicker}
         title={[`${page.title}.`, page.promise]}
@@ -58,6 +65,9 @@ function System({ page }: { page: Page }) {
             >
               See what we build
             </a>
+            <button type="button" className="btn btn-ghost btn-lg" onClick={() => window.print()}>
+              <DocIcon /> Download a one-page summary
+            </button>
           </>
         }
         visual={<Dashboard area={area} />}
@@ -170,6 +180,15 @@ function System({ page }: { page: Page }) {
         </nav>
       </section>
 
+      <aside className="print-only sy-print-contact">
+        <b>{brand.legal}</b>
+        <p>
+          {brand.phone} · {brand.email}
+        </p>
+        <p>{brand.address.join(', ')}</p>
+        <p>{pageUrl}</p>
+      </aside>
+
       <LoomContact />
     </PageShell>
   )
@@ -182,8 +201,11 @@ function Dashboard({ area }: { area: Area }) {
       <div className="areas-screen sy-screen">
         <div className="screen-bar">
           <span className="mono">wezigns / {area.title.toLowerCase()}</span>
-          <span className="screen-status mono">
-            <i className="live" /> synced
+          <span className="sy-bar-end">
+            <span className="mono sy-sample">{sampleDataLabel}</span>
+            <span className="screen-status mono">
+              <i className="live" /> synced
+            </span>
           </span>
         </div>
         <div className="screen-kpis">
@@ -246,6 +268,16 @@ function Who({ who }: { who: Voice }) {
       <i aria-hidden="true" />
       <span className="mono">{who}</span>
     </span>
+  )
+}
+
+/** Small page-with-lines icon for the summary button. */
+function DocIcon() {
+  return (
+    <svg className="sy-doc-icon" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M4 1.5h5.5L13 5v9.5H4z" />
+      <path d="M9.5 1.5V5H13M6.5 8.5h4M6.5 11h4" />
+    </svg>
   )
 }
 

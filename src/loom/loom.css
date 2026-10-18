@@ -68,6 +68,8 @@
 
 .loom-intro {
   left: var(--gutter);
+  /* Both edges pinned so the panel never sizes itself to the one-line systems row and runs off a phone screen. */
+  right: var(--gutter);
   bottom: 9vh;
   max-width: 760px;
   transition:
@@ -362,6 +364,75 @@
   .loom-intro,
   .loom-phases {
     bottom: 12vh;
+  }
+}
+
+/* Hero systems line: a label and one chip per system page, inside the intro glass (fades out with it).
+   No backdrop-filter on the chips: the panel itself is the glass. */
+.loom-systems {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 22px;
+}
+
+.loom-systems-label {
+  color: var(--muted);
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+
+.loom-systems ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.loom-systems a {
+  display: inline-block;
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 0.68rem;
+  white-space: nowrap;
+  transition:
+    color 0.25s,
+    border-color 0.25s,
+    background 0.25s;
+}
+
+.loom-systems a:hover,
+.loom-systems a:focus-visible {
+  color: var(--lime);
+  border-color: rgba(77, 159, 255, 0.45);
+  background: rgba(77, 159, 255, 0.08);
+}
+
+/* Phones: one row that swipes sideways, so the panel only grows by a single line. */
+@media (max-width: 640px) {
+  .loom-systems {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    margin-top: 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 85%, transparent);
+    mask-image: linear-gradient(to right, #000 85%, transparent);
+  }
+
+  .loom-systems::-webkit-scrollbar {
+    display: none;
+  }
+
+  .loom-systems ul {
+    flex-wrap: nowrap;
+    padding-right: 24px;
   }
 }
 

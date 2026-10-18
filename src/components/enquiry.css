@@ -1,0 +1,112 @@
+/* Enquiry forms: inline errors, honeypot, error box and sent state (shared by EnquiryForm and ContactForm). */
+
+.ef-row {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 600px) {
+  .ef-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.ef-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ef [aria-invalid='true'] {
+  border-color: #ff9c85;
+}
+
+.ef-error {
+  color: #ff9c85;
+  font-size: 0.88rem;
+}
+
+/* Honeypot: off-screen, not display:none, so simple bots still see and fill it. */
+.ef-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.ef-error-box:empty {
+  display: none;
+}
+
+.ef-error-box {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 156, 133, 0.4);
+  border-radius: 14px;
+  background: rgba(255, 122, 89, 0.08);
+  color: #ffc3b4;
+  line-height: 1.5;
+}
+
+.ef-error-alt {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.ef-error-alt a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.ef-retry {
+  font: inherit;
+  font-weight: 600;
+  color: #8cc4ff;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ef-done {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  padding: 12px 0;
+}
+
+.ef-done-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.ef-done h2,
+.ef-done h3 {
+  font-family: var(--f-display);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.035em;
+  outline: none;
+}
+
+.ef-done p {
+  color: var(--muted);
+  max-width: 46ch;
+  line-height: 1.55;
+}
+
+.ef-done a {
+  color: #8cc4ff;
+}

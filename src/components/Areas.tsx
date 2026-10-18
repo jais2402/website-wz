@@ -1,6 +1,6 @@
 import { useGSAP } from '@gsap/react'
-import { useRef, useState } from 'react'
-import { areas } from '@/content/site'
+import { type CSSProperties, useRef, useState } from 'react'
+import { areas, sampleDataLabel } from '@/content/site'
 import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { activeIndex, tabFill } from '@/lib/charts'
 import { CountUp, ModuleCard } from './Charts'
@@ -12,6 +12,19 @@ const ICONS = ['◎', '◆', '▣', '◈', '▲', '✚']
 const WIDE = new Set([0, 5])
 // Each system's own page (/systems/<slug>), in `areas` order. Matches `systemPages` in content/pages.ts.
 const SLUGS = ['people', 'revenue', 'operations', 'ecommerce', 'finance', 'industry']
+// The bar is a single flex row: the path label gives way (ellipsis) so the status side always fits at 375px.
+const BAR: CSSProperties = { gap: 10, alignItems: 'center' }
+const PATH: CSSProperties = { minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
+// "Sample data" chip: demo figures must never read as client results. Muted text, thin border.
+const SAMPLE: CSSProperties = {
+  marginRight: 6,
+  padding: '3px 8px',
+  borderRadius: 6,
+  border: '1px solid var(--line-2)',
+  color: 'var(--muted)',
+  fontSize: '0.62rem',
+  whiteSpace: 'nowrap',
+}
 
 /**
  * Systems explorer. On desktop the section pins and scrolling steps through each business system;
@@ -119,12 +132,14 @@ export function Areas() {
 
           <div className="areas-screen" role="tabpanel" aria-label={area.title} ref={screen}>
             <span className="screen-sweep" aria-hidden="true" />
-            <div className="screen-bar">
-              <span className="mono">wezigns / {area.title.toLowerCase()}</span>
-              <span className="screen-status mono">
+            <div className="screen-bar" style={BAR}>
+              <span className="mono" style={PATH}>
+                wezigns / {area.title.toLowerCase()}
+              </span>
+              <span className="screen-status mono" style={{ flexShrink: 0 }}>
                 {explore('areas-explore')}
-                <span className="screen-step">
-                  0{active + 1} / 0{areas.length}
+                <span className="screen-sample" style={SAMPLE}>
+                  {sampleDataLabel}
                 </span>
                 <i className="live" /> synced
               </span>

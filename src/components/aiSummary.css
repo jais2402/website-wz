@@ -1,0 +1,137 @@
+/* Executive AI Summary (footer row) */
+.ai-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 28px 48px;
+  margin-top: 56px;
+  padding-top: 40px;
+  border-top: 1px dashed var(--line-2);
+}
+
+.ai-summary-copy h2 {
+  font-family: var(--f-display);
+  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.ai-summary-copy p {
+  margin-top: 8px;
+  color: var(--muted);
+  max-width: 40ch;
+  line-height: 1.5;
+}
+
+.ai-summary-tiles {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 128px));
+  gap: 14px;
+}
+
+.ai-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  background: var(--ink-3);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.ai-tile svg {
+  width: 44%;
+  height: 44%;
+}
+
+.ai-tile:hover,
+.ai-tile:focus-visible {
+  transform: translateY(-3px);
+  border-color: rgba(77, 159, 255, 0.5);
+  box-shadow:
+    0 0 0 1px rgba(77, 159, 255, 0.18),
+    0 12px 30px -12px rgba(77, 159, 255, 0.45);
+}
+
+.ai-tile:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+  border-radius: 16px;
+}
+
+/* Engine name above the tile on hover / focus */
+.ai-tile-tip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--ink);
+  font-size: 0.68rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* keep the edge tips inside the page on narrow screens */
+.ai-summary-tiles li:first-child .ai-tile-tip {
+  left: 0;
+  transform: translate(0, 4px);
+}
+
+.ai-summary-tiles li:last-child .ai-tile-tip {
+  left: auto;
+  right: 0;
+  transform: translate(0, 4px);
+}
+
+.ai-tile:hover .ai-tile-tip,
+.ai-tile:focus-visible .ai-tile-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.ai-summary-tiles li:first-child .ai-tile:is(:hover, :focus-visible) .ai-tile-tip,
+.ai-summary-tiles li:last-child .ai-tile:is(:hover, :focus-visible) .ai-tile-tip {
+  transform: none;
+}
+
+@media (max-width: 900px) {
+  .ai-summary {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* five across, shrinking to fit (about 60px each at 375px) */
+  .ai-summary-tiles {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    max-width: 560px;
+  }
+
+  .ai-tile {
+    border-radius: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-tile,
+  .ai-tile-tip {
+    transition: none;
+  }
+
+  .ai-tile:hover,
+  .ai-tile:focus-visible {
+    transform: none;
+  }
+}

@@ -14,6 +14,7 @@ const INPUTS = {
   contact: page('contact.html'),
   about: page('about.html'),
   ai: page('ai.html'),
+  technology: page('technology.html'),
   ...Object.fromEntries(SYSTEMS.map((s) => [`systems/${s}`, page(`systems/${s}.html`)])),
 }
 

@@ -16,13 +16,14 @@ export type Enquiry = {
 export type EnquiryErrors = Partial<Record<'name' | 'email' | 'phone' | 'message', string>>
 
 /**
- * How enquiries are sent. Decided later by the client:
+ * How enquiries are sent:
+ * - 'endpoint' (default): POSTs JSON to `endpoint` (the Vercel function in api/enquiry.ts). If the function is not
+ *   there or not set up yet (404, 405, 501, 503, network failure), it falls back to mailto so nothing is lost.
  * - 'mailto': opens the visitor's email app with everything filled in (no backend).
- * - 'endpoint': POSTs JSON to `endpoint` (a Vercel function, Formspree, Web3Forms, …).
  */
 export const enquiryConfig: { method: 'mailto' | 'endpoint'; endpoint: string } = {
-  method: 'mailto',
-  endpoint: '',
+  method: 'endpoint',
+  endpoint: '/api/enquiry',
 }
 
 export const LIMITS = { name: 80, email: 120, company: 120, phone: 30, message: 2000, minMessage: 10 }
@@ -54,8 +55,8 @@ export function validateEnquiry(e: Enquiry): EnquiryErrors {
 
 export const isSpam = (e: Enquiry) => e.website.trim().length > 0
 
-/** The JSON body sent to an endpoint. Trimmed, honeypot removed. */
-export function enquiryPayload(e: Enquiry) {
+/** The JSON body sent to an endpoint. Trimmed, honeypot removed. `source` says which form sent it. */
+export function enquiryPayload(e: Enquiry, source = 'wezigns.com/contact') {
   return {
     name: e.name.trim(),
     email: e.email.trim(),
@@ -63,7 +64,7 @@ export function enquiryPayload(e: Enquiry) {
     phone: e.phone.trim() || undefined,
     topics: e.topics,
     message: e.message.trim(),
-    source: 'wezigns.com/contact',
+    source,
   }
 }
 
@@ -83,25 +84,61 @@ export function enquiryMailto(e: Enquiry): string {
   return `mailto:${brand.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`
 }
 
-export type SubmitResult = { ok: true; via: 'mailto' | 'endpoint' } | { ok: false; error: string }
+export type SubmitResult =
+  | { ok: true; via: 'endpoint' }
+  /** `fallback` is true when the endpoint was tried first and could not take the message. */
+  | { ok: true; via: 'mailto'; fallback: boolean }
+  | { ok: false; error: string }
 
-export async function submitEnquiry(e: Enquiry, config = enquiryConfig): Promise<SubmitResult> {
+type SubmitOptions = { source?: string; open?: (url: string) => void; timeoutMs?: number }
+
+// Statuses that mean "no working function here" rather than "your message failed": hand over to mailto.
+const FALLBACK_STATUS = new Set([404, 405, 501, 503])
+
+const openUrl = (url: string) => {
+  window.location.href = url
+}
+
+export async function submitEnquiry(e: Enquiry, config = enquiryConfig, opts: SubmitOptions = {}): Promise<SubmitResult> {
+  const open = opts.open ?? openUrl
   // Bots that fill the honeypot get a fake success and nothing is sent.
-  if (isSpam(e)) return { ok: true, via: config.method }
+  if (isSpam(e)) return config.method === 'endpoint' ? { ok: true, via: 'endpoint' } : { ok: true, via: 'mailto', fallback: false }
 
-  if (config.method === 'endpoint' && config.endpoint) {
-    try {
-      const res = await fetch(config.endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(enquiryPayload(e)),
-      })
-      return res.ok ? { ok: true, via: 'endpoint' } : { ok: false, error: `The server replied ${res.status}.` }
-    } catch {
-      return { ok: false, error: 'We could not reach the server. Check your connection and try again.' }
-    }
+  const mailto = (fallback: boolean): SubmitResult => {
+    open(enquiryMailto(e))
+    return { ok: true, via: 'mailto', fallback }
   }
 
-  window.location.href = enquiryMailto(e)
-  return { ok: true, via: 'mailto' }
+  if (config.method !== 'endpoint' || !config.endpoint) return mailto(false)
+
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 15000)
+  let res: Response
+  try {
+    res = await fetch(config.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(enquiryPayload(e, opts.source)),
+      signal: ctrl.signal,
+    })
+  } catch (err) {
+    // A timeout may still have reached us, so do not open a second copy in the mail app.
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      return { ok: false, error: 'The server took too long to answer. Please try again in a moment.' }
+    }
+    return mailto(true)
+  } finally {
+    clearTimeout(timer)
+  }
+
+  if (FALLBACK_STATUS.has(res.status)) return mailto(true)
+
+  const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null
+  if (res.ok) {
+    // A 200 that is not our JSON (e.g. a static host answering with index.html) means there is no function.
+    return data?.ok ? { ok: true, via: 'endpoint' } : mailto(true)
+  }
+  if (res.status === 400 && data?.error === 'invalid') return { ok: false, error: 'Some details did not pass our check. Please review the form and try again.' }
+  if (res.status === 413) return { ok: false, error: `Your message is too long. Please keep it under ${LIMITS.message} characters.` }
+  return { ok: false, error: `We could not send your message just now (error ${res.status}).` }
 }

@@ -2,7 +2,7 @@ import { useGSAP } from '@gsap/react'
 import { type CSSProperties, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
 import { LoomLiteArt } from '@/components/LiteArt'
-import { loom } from '@/content/site'
+import { loom, navSystems } from '@/content/site'
 import { useLite } from '@/hooks/useLite'
 import { gsap, ScrollTrigger } from '@/hooks/motion'
 import { loomStore } from './store'
@@ -89,6 +89,19 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
             ))}
           </h1>
           <p className="loom-sub loom-fade">{loom.sub}</p>
+          {/* Straight to the system pages; one swipeable row on phones. */}
+          <nav className="loom-systems loom-fade" aria-label={loom.systemsLine}>
+            <span className="mono loom-systems-label">{loom.systemsLine}</span>
+            <ul>
+              {navSystems.map((s) => (
+                <li key={s.href}>
+                  <a href={s.href} className="mono" title={s.label}>
+                    {s.short}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
 
         <div className="loom-phases">

@@ -13,6 +13,7 @@ import { Pricing } from '@/components/Pricing'
 import { Process } from '@/components/Process'
 import { Proof } from '@/components/Proof'
 import { Services } from '@/components/Services'
+import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
 import { Work } from '@/components/Work'
 import { usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
@@ -68,6 +69,7 @@ export default function App() {
         <LoomContact />
       </main>
       <Footer />
+      <StickyCall />
     </>
   )
 }

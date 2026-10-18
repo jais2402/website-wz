@@ -24,10 +24,13 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
 - `contact.html` → `src/contact/main.tsx` → `ContactPage.tsx`: `/contact` (clean URL in dev, preview and Vercel).
   Address, phone and email cards, the enquiry form (`ContactForm`, sending switchable in `lib/enquiry.ts`), and the
   loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`, SVG art in lite mode).
-- `about.html`, `ai.html`, `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
+- `about.html`, `ai.html`, `technology.html`, `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
   `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). Shared shell, hero, section
   and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
-  Their copy is in `src/content/pages.ts`. Adding a page = an `.html` file + an entry in `INPUTS` in `vite.config.ts`.
+  Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`). System pages print as
+  a one-page summary (`src/pages/print.css` + print rules in `system.css`).
+- `api/enquiry.ts`: Vercel Function that emails enquiries through Resend (`RESEND_API_KEY`, see
+  `docs/enquiry-setup.md`). Without it (e.g. `npm run dev`), both forms fall back to mailto. Adding a page = an `.html` file + an entry in `INPUTS` in `vite.config.ts`.
 - `loom.html` → `src/loom/main.tsx`: the original concept-B page, kept **internal only** (not linked from the
   site). Both entries are listed in `build.rolldownOptions.input` in `vite.config.ts`.
 - The loom visuals are original, inspired by a reference image the client shared: never use Marvel/Loki names or
@@ -65,7 +68,7 @@ src/
     sceneStore.ts      ← mutable bridge: ScrollTriggers write, the R3F loop reads
     charts.ts          ← SVG path builders, en-IN number formatting, pinned-explorer index/tab-fill maths
     geo.ts             ← great-circle arcs between lat/lon points, globe facing rotation
-    math.ts, mailto.ts
+    math.ts, enquiry.ts (form validation + send: POST /api/enquiry, mailto fallback), aiSummary.ts
   scene/               ← the single fixed WebGL canvas (lazy-loaded chunk)
     Scene.tsx          ← Canvas, camera rig, pauses rendering when no [data-3d-zone] is on screen
     ThreadField.tsx    ← story threads (760 strands × 130 pts + 4.2k riders desktop; 320 × 90 + 1.6k mobile);

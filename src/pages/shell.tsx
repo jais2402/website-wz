@@ -4,6 +4,7 @@ import { Cursor } from '@/components/Cursor'
 import { Footer } from '@/components/Footer'
 import { Nav } from '@/components/Nav'
 import { SplitReveal } from '@/components/Reveal'
+import { StickyCall } from '@/components/StickyCall'
 import { nav } from '@/content/site'
 import { gsap, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
 
@@ -40,6 +41,7 @@ export function PageShell({ children, className = '' }: { children: ReactNode; c
         {children}
       </main>
       <Footer base="/" />
+      <StickyCall />
     </>
   )
 }

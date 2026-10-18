@@ -1,17 +1,17 @@
 import { type FormEvent, useRef, useState } from 'react'
-import { brand, enquiryTopics } from '@/content/site'
+import { enquiryTopics } from '@/content/site'
 import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, validateEnquiry } from '@/lib/enquiry'
+import { EnquiryError, EnquirySent, type SendStatus } from './EnquiryForm'
 
 const EMPTY: Enquiry = { name: '', email: '', company: '', phone: '', topics: [], message: '', website: '' }
 type Field = keyof EnquiryErrors
-type Status = { kind: 'idle' } | { kind: 'sending' } | { kind: 'sent'; via: 'mailto' | 'endpoint' } | { kind: 'error'; message: string }
 
 /** Full enquiry form for the Contact page: inline validation, honeypot, and sending / success / error states. */
 export function ContactForm() {
   const [data, setData] = useState<Enquiry>(EMPTY)
   const [errors, setErrors] = useState<EnquiryErrors>({})
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({})
-  const [status, setStatus] = useState<Status>({ kind: 'idle' })
+  const [status, setStatus] = useState<SendStatus>({ kind: 'idle' })
   const formRef = useRef<HTMLFormElement>(null)
 
   const set = <K extends keyof Enquiry>(k: K, v: Enquiry[K]) => {
@@ -26,8 +26,7 @@ export function ContactForm() {
   }
   const toggleTopic = (t: string) => set('topics', data.topics.includes(t) ? data.topics.filter((x) => x !== t) : [...data.topics, t])
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault()
+  const send = async () => {
     const found = validateEnquiry(data)
     setErrors(found)
     setTouched({ name: true, email: true, phone: true, message: true })
@@ -37,8 +36,12 @@ export function ContactForm() {
       return
     }
     setStatus({ kind: 'sending' })
-    const result = await submitEnquiry(data)
+    const result = await submitEnquiry(data, undefined, { source: 'wezigns.com/contact' })
     setStatus(result.ok ? { kind: 'sent', via: result.via } : { kind: 'error', message: result.error })
+  }
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (status.kind !== 'sending') void send()
   }
 
   const err = (k: Field) => (touched[k] ? errors[k] : undefined)
@@ -52,37 +55,22 @@ export function ContactForm() {
 
   if (status.kind === 'sent') {
     return (
-      <div className="cf-done" role="status">
-        <span className="cf-done-icon" aria-hidden="true">
-          ✓
-        </span>
-        <h2>Thanks, {data.name.trim().split(' ')[0]}.</h2>
-        {status.via === 'mailto' ? (
-          <p>
-            Your email app should have opened with your message ready to send. If it did not, email us at{' '}
-            <a href={`mailto:${brand.email}`}>{brand.email}</a>.
-          </p>
-        ) : (
-          <p>We have your message and will reply within one working day.</p>
-        )}
-        <button
-          type="button"
-          className="btn btn-ghost"
-          onClick={() => {
-            setData(EMPTY)
-            setTouched({})
-            setErrors({})
-            setStatus({ kind: 'idle' })
-          }}
-        >
-          Send another message
-        </button>
-      </div>
+      <EnquirySent
+        heading="h2"
+        name={data.name}
+        via={status.via}
+        onReset={() => {
+          setData(EMPTY)
+          setTouched({})
+          setErrors({})
+          setStatus({ kind: 'idle' })
+        }}
+      />
     )
   }
 
   return (
-    <form ref={formRef} className="cf" noValidate onSubmit={onSubmit}>
+    <form ref={formRef} className="cf ef" noValidate onSubmit={onSubmit} aria-busy={status.kind === 'sending'}>
       <div className="cf-row">
         <div className="cf-field">
           <label htmlFor="cf-name">
@@ -147,9 +135,7 @@ export function ContactForm() {
         </button>
         <span className="cf-note">We reply within one working day.</span>
       </div>
-      <p className="cf-status" role="alert">
-        {status.kind === 'error' ? status.message : ''}
-      </p>
+      <EnquiryError status={status} onRetry={() => void send()} />
     </form>
   )
 }

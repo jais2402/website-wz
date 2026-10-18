@@ -1,0 +1,68 @@
+/* ==========================================================================
+   Sticky call pill on phones (StickyCall.tsx). Hidden from 900px.
+   ========================================================================== */
+.sticky-call {
+  position: fixed;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 48;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: rgba(13, 13, 21, 0.9);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.85);
+  translate: -50% calc(100% + 30px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    translate 0.5s var(--ease-out),
+    opacity 0.3s;
+}
+
+.sticky-call.is-shown {
+  translate: -50% 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sticky-call-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sticky-call-btn.is-call {
+  color: #fff;
+  background: linear-gradient(135deg, var(--cta-2), var(--cta-1) 60%, var(--cta-3));
+}
+
+.sticky-call-btn:active {
+  scale: 0.97;
+}
+
+@media (min-width: 900px) {
+  .sticky-call {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticky-call {
+    translate: -50% 0;
+    transition: opacity 0.2s;
+  }
+}

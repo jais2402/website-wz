@@ -1,0 +1,276 @@
+/* ==========================================================================
+   Technology page (/technology), from TechnologyPage.tsx. Builds on pages.css (`pg-`).
+   ========================================================================== */
+
+.tech h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.tech .pg-title {
+  max-width: 18ch;
+}
+
+/* ---- What we build with: masonry of group cards ---- */
+.tech-groups {
+  columns: 2 380px;
+  column-gap: 20px;
+}
+
+.tech-group {
+  break-inside: avoid;
+  display: grid;
+  gap: 18px;
+  margin-bottom: 20px;
+  padding: clamp(22px, 2.4vw, 30px);
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.035), transparent 60%), var(--ink-2);
+  transition: border-color 0.3s;
+}
+
+.tech-group:hover {
+  border-color: var(--line-2);
+}
+
+.tech .tech-group-label {
+  font-family: var(--f-mono);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: #8cc4ff;
+}
+
+/* ---- How a system fits together: stacked bands joined by connectors ---- */
+.tech-layers {
+  --step: 0.5s;
+  --cycle: 4s;
+  display: grid;
+}
+
+.tech-layer {
+  display: grid;
+}
+
+/* Bands widen a little towards the foundation. */
+.tech-band {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.4fr) minmax(0, 1.3fr);
+  align-items: center;
+  gap: 12px 28px;
+  margin-inline: calc((5 - var(--i)) * 1.4%);
+  padding: 22px 26px 22px 30px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--ink-2);
+}
+
+/* Accent edge, blue at the top shading to violet at the bottom. */
+.tech-band::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--violet) calc(var(--i) * 20%), var(--lime));
+}
+
+/* Lights up as the pulse reaches the band. */
+.tech-band::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid rgba(77, 159, 255, 0.55);
+  box-shadow: 0 0 32px -8px rgba(77, 159, 255, 0.45);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tech-band h3 {
+  font-size: clamp(1.2rem, 1.6vw, 1.4rem);
+}
+
+.tech-band p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.tech-band-chips {
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.tech-band .chip {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.tech-link {
+  position: relative;
+  justify-self: center;
+  --run: 36px;
+  width: 2px;
+  height: var(--run);
+  background: var(--line-2);
+}
+
+.tech-link i {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 12px 2px rgba(77, 159, 255, 0.7);
+  transform: translate(-50%, -8px);
+  opacity: 0;
+}
+
+.tech-layers.is-on .tech-band::after {
+  animation: tech-glow var(--cycle) ease-out infinite;
+  animation-delay: calc(var(--i) * var(--step));
+}
+
+.tech-layers.is-on .tech-link i {
+  animation: tech-pulse var(--cycle) linear infinite;
+  animation-delay: calc(var(--i) * var(--step) + 0.05s);
+}
+
+@keyframes tech-glow {
+  0% {
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  22%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* One step (0.45s of the 4s cycle) to travel the connector. */
+@keyframes tech-pulse {
+  0% {
+    transform: translate(-50%, -8px);
+    opacity: 0;
+  }
+  2%,
+  10% {
+    opacity: 1;
+  }
+  11.25%,
+  100% {
+    transform: translate(-50%, var(--run));
+    opacity: 0;
+  }
+}
+
+/* ---- How we add AI: glass cards over a soft glow ---- */
+.tech-ai {
+  position: relative;
+}
+
+.tech-ai::before {
+  content: '';
+  position: absolute;
+  inset: 20% 0 0;
+  background:
+    radial-gradient(40% 50% at 25% 60%, rgba(77, 159, 255, 0.14), transparent 70%),
+    radial-gradient(40% 50% at 80% 50%, rgba(139, 123, 255, 0.14), transparent 70%);
+  pointer-events: none;
+}
+
+.tech-ai > .wrap {
+  position: relative;
+}
+
+.tech-ai-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.tech-ai-card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: clamp(26px, 3vw, 38px);
+}
+
+.tech-ai-line {
+  width: 44px;
+  height: 2px;
+  margin-bottom: 10px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--lime), var(--violet));
+}
+
+.tech-ai-card h3 {
+  font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+}
+
+.tech-ai-card p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ---- Tablet and phones ---- */
+@media (max-width: 1100px) {
+  .tech-band {
+    grid-template-columns: minmax(140px, 0.8fr) minmax(0, 1.6fr);
+  }
+
+  .tech-band-chips {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 899px) {
+  .tech-ai-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tech-band {
+    grid-template-columns: 1fr;
+    margin-inline: 0;
+    padding: 20px 20px 20px 24px;
+  }
+
+  .tech-link {
+    --run: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tech-layers.is-on .tech-band::after,
+  .tech-layers.is-on .tech-link i {
+    animation: none;
+  }
+
+  .tech-group {
+    transition: none;
+  }
+}
+
+/* Print: the diagram as plain bands. */
+@media print {
+  .tech-band {
+    margin-inline: 0;
+    break-inside: avoid;
+  }
+
+  .tech-band::after,
+  .tech-link i,
+  .tech-ai::before {
+    display: none;
+  }
+}

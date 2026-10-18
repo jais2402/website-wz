@@ -1,4 +1,4 @@
-import { type Enquiry, enquiryMailto, enquiryPayload, isSpam, submitEnquiry, validateEnquiry } from './enquiry'
+import { type Enquiry, enquiryConfig, enquiryMailto, enquiryPayload, isSpam, submitEnquiry, validateEnquiry } from './enquiry'
 
 const valid: Enquiry = {
   name: 'Asha Rao',
@@ -57,22 +57,72 @@ describe('payload, honeypot and mailto', () => {
 })
 
 describe('submitEnquiry', () => {
-  it('fakes success for spam without sending anything', async () => {
-    const fetchSpy = vi.spyOn(globalThis, 'fetch')
-    const r = await submitEnquiry({ ...valid, website: 'x' }, { method: 'endpoint', endpoint: '/api/enquiry' })
-    expect(r.ok).toBe(true)
-    expect(fetchSpy).not.toHaveBeenCalled()
-    fetchSpy.mockRestore()
+  const cfg = { method: 'endpoint' as const, endpoint: '/api/enquiry' }
+  const reply = (body: unknown, status: number) => new Response(typeof body === 'string' ? body : JSON.stringify(body), { status })
+  let fetchSpy: ReturnType<typeof vi.spyOn>
+  const open = vi.fn()
+
+  beforeEach(() => {
+    fetchSpy = vi.spyOn(globalThis, 'fetch')
+    open.mockReset()
+  })
+  afterEach(() => fetchSpy.mockRestore())
+
+  it('defaults to the /api/enquiry endpoint', () => {
+    expect(enquiryConfig).toEqual({ method: 'endpoint', endpoint: '/api/enquiry' })
   })
 
-  it('posts JSON to the endpoint and reports failures', async () => {
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('{}', { status: 200 }))
-    expect(await submitEnquiry(valid, { method: 'endpoint', endpoint: '/api/enquiry' })).toEqual({ ok: true, via: 'endpoint' })
-    const body = JSON.parse((fetchSpy.mock.calls[0][1] as RequestInit).body as string)
-    expect(body.email).toBe('asha@example.com')
+  it('fakes success for spam without sending anything', async () => {
+    const r = await submitEnquiry({ ...valid, website: 'x' }, cfg, { open })
+    expect(r.ok).toBe(true)
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(open).not.toHaveBeenCalled()
+  })
 
-    fetchSpy.mockResolvedValueOnce(new Response('nope', { status: 500 }))
-    expect((await submitEnquiry(valid, { method: 'endpoint', endpoint: '/api/enquiry' })).ok).toBe(false)
-    fetchSpy.mockRestore()
+  it('posts JSON to the endpoint and reports success', async () => {
+    fetchSpy.mockResolvedValueOnce(reply({ ok: true }, 200))
+    expect(await submitEnquiry(valid, cfg, { open, source: '/about' })).toEqual({ ok: true, via: 'endpoint' })
+    const [url, init] = fetchSpy.mock.calls[0] as [string, RequestInit]
+    expect(url).toBe('/api/enquiry')
+    const body = JSON.parse(init.body as string)
+    expect(body).toMatchObject({ email: 'asha@example.com', source: '/about' })
+    expect(body).not.toHaveProperty('website')
+    expect(open).not.toHaveBeenCalled()
+  })
+
+  it('falls back to mailto when the function is not configured (503)', async () => {
+    fetchSpy.mockResolvedValueOnce(reply({ ok: false, error: 'not-configured' }, 503))
+    expect(await submitEnquiry(valid, cfg, { open })).toEqual({ ok: true, via: 'mailto', fallback: true })
+    expect(open).toHaveBeenCalledWith(enquiryMailto(valid))
+  })
+
+  it('falls back to mailto when there is no function (404) or a 200 that is not our JSON', async () => {
+    fetchSpy.mockResolvedValueOnce(reply('Not found', 404))
+    expect(await submitEnquiry(valid, cfg, { open })).toEqual({ ok: true, via: 'mailto', fallback: true })
+    fetchSpy.mockResolvedValueOnce(reply('<!doctype html>', 200))
+    expect(await submitEnquiry(valid, cfg, { open })).toEqual({ ok: true, via: 'mailto', fallback: true })
+    expect(open).toHaveBeenCalledTimes(2)
+  })
+
+  it('falls back to mailto when the network fails', async () => {
+    fetchSpy.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+    expect(await submitEnquiry(valid, cfg, { open })).toEqual({ ok: true, via: 'mailto', fallback: true })
+    expect(open).toHaveBeenCalledOnce()
+  })
+
+  it('shows an error (no mailto) when the server fails to send (500 / 502)', async () => {
+    fetchSpy.mockResolvedValueOnce(reply({ ok: false, error: 'send-failed' }, 500))
+    const r = await submitEnquiry(valid, cfg, { open })
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.error).toContain('500')
+    fetchSpy.mockResolvedValueOnce(reply({ ok: false, error: 'invalid', fields: ['email'] }, 400))
+    expect((await submitEnquiry(valid, cfg, { open })).ok).toBe(false)
+    expect(open).not.toHaveBeenCalled()
+  })
+
+  it('uses mailto directly when configured that way', async () => {
+    expect(await submitEnquiry(valid, { method: 'mailto', endpoint: '' }, { open })).toEqual({ ok: true, via: 'mailto', fallback: false })
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(open).toHaveBeenCalledOnce()
   })
 })

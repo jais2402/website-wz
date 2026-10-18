@@ -25,6 +25,11 @@
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }
 
+.pg-hero-copy {
+  /* Grid items default to min-width: auto; without this a long word widens the column past a phone screen. */
+  min-width: 0;
+}
+
 .pg-title {
   display: grid;
   font-size: clamp(2.6rem, 6vw, 5.6rem);
@@ -67,7 +72,19 @@
 }
 
 @media (max-width: 899px) {
+  /* minmax(0, …): a plain 1fr can't shrink below its widest child (the hero dashboard). */
   .pg-hero.has-visual {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pg-hero-visual {
+    min-width: 0;
+  }
+}
+
+/* Phones: long single words ("workforce.", "Operations") must fit at 375px. */
+@media (max-width: 480px) {
+  .pg-title {
+    font-size: clamp(2rem, 10vw, 2.6rem);
   }
 }

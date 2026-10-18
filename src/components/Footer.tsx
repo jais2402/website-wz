@@ -1,5 +1,6 @@
 import { brand, countries, footer } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
+import { AiSummary } from './AiSummary'
 import { Logo } from './Logo'
 
 /** `base` prefixes in-page links when the footer is used on another page (e.g. './' from the loom page). */
@@ -34,6 +35,7 @@ export function Footer({ base = '' }: { base?: string }) {
           ))}
         </div>
         <p className="footer-countries mono">{countries.map((c) => c.name).join(' · ')}</p>
+        <AiSummary />
       </div>
       <div className="footer-word" aria-hidden="true">
         Wezigns

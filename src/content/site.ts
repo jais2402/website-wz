@@ -552,7 +552,7 @@ export const loom = {
 
 
 // "Executive AI Summary": opens an AI assistant with a ready-made prompt about Wezigns. `{q}` is replaced with the
-// URL-encoded prompt. Gemini has no prompt URL, so it uses Google's AI Mode.
+// URL-encoded prompt. Gemini has no prompt URL, so its tile opens Google's AI Mode (Gemini-powered).
 export const aiSummary = {
   title: 'Executive AI Summary',
   body: 'Ask your AI assistant for a short, independent summary of Wezigns.',
@@ -562,7 +562,7 @@ export const aiSummary = {
     { key: 'chatgpt', name: 'ChatGPT', url: 'https://chatgpt.com/?q={q}' },
     { key: 'claude', name: 'Claude', url: 'https://claude.ai/new?q={q}' },
     { key: 'perplexity', name: 'Perplexity', url: 'https://www.perplexity.ai/search?q={q}' },
-    { key: 'gemini', name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q={q}' },
+    { key: 'gemini', name: 'Gemini', url: 'https://www.google.com/search?udm=50&q={q}' },
     { key: 'grok', name: 'Grok', url: 'https://grok.com/?q={q}' },
   ],
 }

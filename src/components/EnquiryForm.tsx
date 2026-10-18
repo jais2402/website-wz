@@ -1,55 +1,186 @@
-import { useState } from 'react'
+import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
 import { brand, enquiryTopics } from '@/content/site'
-import { buildMailto } from '@/lib/mailto'
+import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, validateEnquiry } from '@/lib/enquiry'
+import './enquiry.css'
 
-/** Enquiry composer shared by both pages. Opens the visitor's own mail app; nothing is sent by the site. */
+export type SendStatus =
+  | { kind: 'idle' }
+  | { kind: 'sending' }
+  | { kind: 'sent'; via: 'endpoint' | 'mailto' }
+  | { kind: 'error'; message: string }
+
+const firstName = (name: string) => name.trim().split(/\s+/)[0] || 'there'
+
+/** Success panel shared by both enquiry forms. Takes focus so keyboard and screen-reader users land on it. */
+export function EnquirySent({ name, via, onReset, heading: Heading = 'h3' }: { name: string; via: 'endpoint' | 'mailto'; onReset: () => void; heading?: 'h2' | 'h3' }) {
+  const ref = useRef<HTMLHeadingElement>(null)
+  useEffect(() => ref.current?.focus(), [])
+  return (
+    <div className="ef-done" role="status">
+      <span className="ef-done-icon" aria-hidden="true">
+        ✓
+      </span>
+      <Heading ref={ref} tabIndex={-1}>
+        Thanks, {firstName(name)}.
+      </Heading>
+      {via === 'endpoint' ? (
+        <p>Your message is with us. We reply within one working day.</p>
+      ) : (
+        <p>
+          Your email app should have opened with your message ready. Press send there and we reply within one working day. If nothing opened, write to{' '}
+          <a href={`mailto:${brand.email}`}>{brand.email}</a> or call <a href={brand.phoneHref}>{brand.phone}</a>.
+        </p>
+      )}
+      <button type="button" className="btn btn-ghost" onClick={onReset}>
+        Send another message
+      </button>
+    </div>
+  )
+}
+
+/** Error area shared by both forms. Always rendered so the live region exists before the message arrives. */
+export function EnquiryError({ status, onRetry }: { status: SendStatus; onRetry: () => void }) {
+  return (
+    <div className="ef-error-box" role="alert">
+      {status.kind === 'error' && (
+        <>
+          <p>{status.message}</p>
+          <p className="ef-error-alt">
+            <button type="button" className="ef-retry" onClick={onRetry}>
+              Try again
+            </button>{' '}
+            or reach us directly: <a href={`mailto:${brand.email}`}>{brand.email}</a> · <a href={brand.phoneHref}>{brand.phone}</a>
+          </p>
+        </>
+      )}
+    </div>
+  )
+}
+
+const EMPTY: Enquiry = { name: '', email: '', company: '', phone: '', topics: [], message: '', website: '' }
+type Field = 'name' | 'email' | 'message'
+const FIELDS: Field[] = ['name', 'email', 'message']
+
+/** Short enquiry form in the contact block on every page. Sends through /api/enquiry (mailto fallback). */
 export function EnquiryForm() {
-  const [topics, setTopics] = useState<string[]>([])
-  const [name, setName] = useState('')
-  const [message, setMessage] = useState('')
+  const uid = useId()
+  const [data, setData] = useState<Enquiry>(EMPTY)
+  const [errors, setErrors] = useState<EnquiryErrors>({})
+  const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({})
+  const [status, setStatus] = useState<SendStatus>({ kind: 'idle' })
+  const formRef = useRef<HTMLFormElement>(null)
 
-  const toggle = (t: string) => setTopics((cur) => (cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t]))
+  const set = <K extends keyof Enquiry>(k: K, v: Enquiry[K]) => {
+    const next = { ...data, [k]: v }
+    setData(next)
+    if (k in touched) setErrors(validateEnquiry(next))
+  }
+  const toggle = (t: string) => set('topics', data.topics.includes(t) ? data.topics.filter((x) => x !== t) : [...data.topics, t])
+
+  const send = async () => {
+    const found = validateEnquiry(data)
+    setErrors(found)
+    setTouched({ name: true, email: true, message: true })
+    const first = FIELDS.find((f) => found[f])
+    if (first) {
+      formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`)?.focus()
+      return
+    }
+    setStatus({ kind: 'sending' })
+    const result = await submitEnquiry(data, undefined, { source: `${location.pathname} (contact block)` })
+    setStatus(result.ok ? { kind: 'sent', via: result.via } : { kind: 'error', message: result.error })
+  }
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (status.kind !== 'sending') void send()
+  }
+
+  if (status.kind === 'sent') {
+    return (
+      <EnquirySent
+        name={data.name}
+        via={status.via}
+        onReset={() => {
+          setData(EMPTY)
+          setTouched({})
+          setErrors({})
+          setStatus({ kind: 'idle' })
+        }}
+      />
+    )
+  }
+
+  const id = (k: string) => `${uid}-${k}`
+  const err = (k: Field) => (touched[k] ? errors[k] : undefined)
+  const fieldProps = (k: Field) => ({
+    name: k,
+    id: id(k),
+    'aria-invalid': !!err(k),
+    'aria-describedby': err(k) ? id(`${k}-error`) : undefined,
+    onBlur: () => {
+      setTouched((t) => ({ ...t, [k]: true }))
+      setErrors(validateEnquiry(data))
+    },
+  })
+  const error = (k: Field) =>
+    err(k) && (
+      <span className="ef-error" id={id(`${k}-error`)}>
+        {err(k)}
+      </span>
+    )
+  const sending = status.kind === 'sending'
 
   return (
-    <form
-      className="composer"
-      onSubmit={(e) => {
-        e.preventDefault()
-        window.location.href = buildMailto(topics, name, message)
-      }}
-    >
+    <form ref={formRef} className="composer ef" noValidate onSubmit={onSubmit} aria-busy={sending}>
       <fieldset>
         <legend className="mono">I need help with</legend>
         <div className="chip-row">
           {enquiryTopics.map((t) => (
-            <button
-              type="button"
-              key={t}
-              className={`chip chip-btn${topics.includes(t) ? ' is-on' : ''}`}
-              aria-pressed={topics.includes(t)}
-              onClick={() => toggle(t)}
-            >
+            <button type="button" key={t} className={`chip chip-btn${data.topics.includes(t) ? ' is-on' : ''}`} aria-pressed={data.topics.includes(t)} onClick={() => toggle(t)}>
               {t}
             </button>
           ))}
         </div>
       </fieldset>
-      <label className="field">
-        <span className="mono">Your name</span>
-        <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" maxLength={80} />
-      </label>
-      <label className="field">
-        <span className="mono">What is slowing your team down?</span>
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} maxLength={2000} />
-      </label>
+      <div className="ef-row">
+        <div className="ef-field">
+          <label className="field" htmlFor={id('name')}>
+            <span className="mono">Your name</span>
+            <input {...fieldProps('name')} autoComplete="name" required maxLength={LIMITS.name} value={data.name} onChange={(e) => set('name', e.target.value)} />
+          </label>
+          {error('name')}
+        </div>
+        <div className="ef-field">
+          <label className="field" htmlFor={id('email')}>
+            <span className="mono">Email</span>
+            <input {...fieldProps('email')} type="email" autoComplete="email" required maxLength={LIMITS.email} value={data.email} onChange={(e) => set('email', e.target.value)} />
+          </label>
+          {error('email')}
+        </div>
+      </div>
+      <div className="ef-field">
+        <label className="field" htmlFor={id('message')}>
+          <span className="mono">What is slowing your team down?</span>
+          <textarea {...fieldProps('message')} rows={3} required maxLength={LIMITS.message} value={data.message} onChange={(e) => set('message', e.target.value)} />
+        </label>
+        {error('message')}
+      </div>
+
+      {/* Honeypot: hidden from people and screen readers; bots tend to fill every field. */}
+      <div className="ef-hp" aria-hidden="true">
+        <label htmlFor={id('website')}>Website</label>
+        <input id={id('website')} name="website" tabIndex={-1} autoComplete="off" value={data.website} onChange={(e) => set('website', e.target.value)} />
+      </div>
+
       <div className="composer-foot">
-        <button type="submit" className="btn btn-lime btn-lg">
-          Start the conversation <span aria-hidden="true">→</span>
+        <button type="submit" className="btn btn-lime btn-lg" disabled={sending}>
+          {sending ? 'Sending…' : 'Start the conversation'} <span aria-hidden="true">→</span>
         </button>
         <span className="mono composer-alt">
           or <a href={`mailto:${brand.email}`}>{brand.email}</a> · <a href={brand.phoneHref}>{brand.phone}</a>
         </span>
       </div>
+      <EnquiryError status={status} onRetry={() => void send()} />
     </form>
   )
 }

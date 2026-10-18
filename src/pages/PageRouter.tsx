@@ -3,12 +3,16 @@ import { lazy } from 'react'
 // Only the requested page's code is loaded.
 const AboutPage = lazy(() => import('./about/AboutPage').then((m) => ({ default: m.AboutPage })))
 const AiPage = lazy(() => import('./ai/AiPage').then((m) => ({ default: m.AiPage })))
+const TechnologyPage = lazy(() =>
+  import('./technology/TechnologyPage').then((m) => ({ default: m.TechnologyPage })),
+)
 const SystemPage = lazy(() => import('./systems/SystemPage').then((m) => ({ default: m.SystemPage })))
 
-/** Picks the inner page from <body data-page="about | ai | system:<slug>">. */
+/** Picks the inner page from <body data-page="about | ai | technology | system:<slug>">. */
 export function PageRouter({ page }: { page: string }) {
   if (page === 'about') return <AboutPage />
   if (page === 'ai') return <AiPage />
+  if (page === 'technology') return <TechnologyPage />
   if (page.startsWith('system:')) return <SystemPage slug={page.slice('system:'.length)} />
   return null
 }

@@ -3,7 +3,10 @@ import { useRef, useState } from 'react'
 import { gsap, lockScroll } from '@/hooks/motion'
 import { LogoMark } from './Logo'
 
-/** Counter-driven intro (0 → 100) that wipes away to reveal the scene. Skipped instantly for reduced motion. */
+// Phones and touch tablets skip the intro so the headline and offer line are on screen at once.
+const SKIP_QUERY = '(max-width: 768px), (pointer: coarse)'
+
+/** Counter-driven intro (0 → 100) that wipes away to reveal the scene. Skipped for reduced motion and on phones. */
 export function Preloader({
   reducedMotion,
   onDone,
@@ -18,7 +21,7 @@ export function Preloader({
 
   useGSAP(
     () => {
-      if (reducedMotion) {
+      if (reducedMotion || window.matchMedia(SKIP_QUERY).matches) {
         setGone(true)
         onDone()
         return

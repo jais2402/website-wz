@@ -1,0 +1,149 @@
+/* ==========================================================================
+   Print for inner pages: a clean, light A4 document. Page-specific print rules sit at the end of each page's
+   CSS (system.css, technology.css). Elements marked `.print-only` show only on paper.
+   ========================================================================== */
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 14mm 16mm;
+  }
+
+  :root {
+    --ink: #fff;
+    --ink-2: #fff;
+    --ink-3: #fff;
+    --text: #15151c;
+    --muted: #4a4b57;
+    --line: #e1e1e8;
+    --line-2: #cdcdd8;
+    --lime: #1f6fd6;
+  }
+
+  html,
+  body,
+  .pg {
+    background: #fff !important;
+    color: var(--text);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    font-size: 10pt;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  /* Screen-only chrome */
+  .nav,
+  .footer,
+  .cursor,
+  .grain,
+  .preloader,
+  .sticky-call,
+  .loom-contact,
+  .pg-actions,
+  .pg-hero-visual,
+  .btn {
+    display: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Anything still waiting to scroll in is shown as it would end up. */
+  [data-reveal],
+  .w > span {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+
+  .pg {
+    overflow: visible;
+  }
+
+  .wrap {
+    width: 100%;
+    padding: 0;
+  }
+
+  .pg-hero,
+  .pg-hero.has-visual {
+    display: block;
+    padding: 0 0 6mm;
+  }
+
+  .pg-title {
+    margin-top: 2mm;
+    font-size: 26pt;
+    max-width: none;
+  }
+
+  .pg-title-line.serif {
+    color: var(--lime);
+  }
+
+  .pg-lead,
+  .lead {
+    margin-top: 3mm;
+    max-width: none;
+    font-size: 10.5pt;
+    color: #2c2d36;
+  }
+
+  .label {
+    margin-bottom: 2mm;
+  }
+
+  .pg-section {
+    padding: 5mm 0 0;
+  }
+
+  .pg-section-head {
+    gap: 1mm;
+    margin-bottom: 3.5mm;
+    max-width: none;
+  }
+
+  .pg-h2 {
+    font-size: 15pt;
+    max-width: none;
+    break-after: avoid;
+  }
+
+  h3 {
+    break-after: avoid;
+  }
+
+  .chip {
+    padding: 1px 7px;
+    font-size: 8pt;
+    background: none;
+    border-color: var(--line-2);
+  }
+
+  .chip-row {
+    gap: 4px;
+  }
+
+  .glass-card {
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 1px solid var(--line);
+  }
+}

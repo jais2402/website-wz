@@ -67,6 +67,46 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+/* Screen bar: the path gives way (ellipsis) so the sample chip and status always fit at 375px. */
+.sy-screen .screen-bar {
+  align-items: center;
+  gap: 10px;
+}
+
+.sy-screen .screen-bar > .mono {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sy-bar-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Demo figures must never read as client results. */
+.sy-sample {
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--line-2);
+  color: var(--muted);
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.sy-doc-icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .sy-screen .mod {
   min-height: 150px;
 }
@@ -536,5 +576,197 @@
 @media (max-width: 520px) {
   .sy-screen .mods {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Print: the one-page summary (shared rules in pages/print.css) ---- */
+@media print {
+  .sy-close,
+  .sy-proof-link {
+    display: none !important;
+  }
+
+  .sy .sy-print-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 8mm;
+    padding-bottom: 3mm;
+    margin-bottom: 6mm;
+    border-bottom: 1px solid var(--line-2);
+    font-size: 9pt;
+    color: var(--muted);
+  }
+
+  .sy-print-head b {
+    font-family: var(--f-display);
+    font-size: 13pt;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .sy .pg-title {
+    font-size: 24pt;
+  }
+
+  .sy .pg-title-line.serif {
+    max-width: none;
+  }
+
+  /* Pains: a plain two-column list with a coloured bullet per role. */
+  .sy-bubbles {
+    columns: 2;
+    column-gap: 8mm;
+  }
+
+  .sy-bubble,
+  .sy-bubble:nth-child(odd),
+  .sy-bubble:nth-child(even) {
+    margin: 0 0 3mm;
+    padding: 0;
+    gap: 0.5mm;
+    justify-items: start;
+  }
+
+  .sy-bubble blockquote,
+  .sy-bubble:nth-child(even) blockquote {
+    padding: 0 0 0 4mm;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    font-size: 10pt;
+    line-height: 1.4;
+  }
+
+  .sy-bubble blockquote::after {
+    display: none;
+  }
+
+  .sy-bubble blockquote::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--who);
+  }
+
+  .sy-bubble figcaption {
+    padding: 0 0 0 4mm;
+  }
+
+  .sy-who i {
+    display: none;
+  }
+
+  .sy-who .mono {
+    font-size: 7pt;
+  }
+
+  /* What we build */
+  .sy-modules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3mm 8mm;
+  }
+
+  .sy-module {
+    gap: 1mm;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    break-inside: avoid;
+  }
+
+  .sy-glyph {
+    display: none;
+  }
+
+  .sy-module h3 {
+    margin: 0;
+    font-size: 11pt;
+  }
+
+  .sy-module p {
+    font-size: 9.5pt;
+  }
+
+  /* Before → after as two columns */
+  .sy-impact-row {
+    --draw: 1 !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1mm 8mm;
+    padding: 2.5mm 0;
+    align-items: start;
+    break-inside: avoid;
+  }
+
+  .sy-impact-row > .sy-who,
+  .sy-thread {
+    display: none;
+  }
+
+  .sy-before,
+  .sy-after {
+    gap: 1mm;
+    font-size: 10pt;
+  }
+
+  .sy-after {
+    opacity: 1;
+  }
+
+  .sy-proof {
+    margin-top: 4mm;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6mm;
+    padding: 3mm 5mm;
+    break-inside: avoid;
+  }
+
+  .sy-proof-value {
+    font-size: 20pt;
+  }
+
+  .sy-proof-label {
+    font-size: 10pt;
+  }
+
+  /* Tools */
+  .sy-tool-row {
+    grid-template-columns: 48mm minmax(0, 1fr);
+    gap: 4mm;
+    padding: 1.5mm 0;
+    break-inside: avoid;
+  }
+
+  .sy-tool-row dt {
+    font-size: 7.5pt;
+  }
+
+  /* Contact details close the summary. */
+  .sy-print-contact {
+    margin-top: 8mm;
+    padding-top: 4mm;
+    border-top: 1px solid var(--line-2);
+    font-size: 9pt;
+    line-height: 1.5;
+    color: var(--muted);
+    break-inside: avoid;
+  }
+
+  .sy-print-contact b {
+    display: block;
+    margin-bottom: 1mm;
+    font-size: 10.5pt;
+    color: var(--text);
+  }
+}
+
+/* Phones: long single words ("workforce.", "Operations") must fit at 375px. */
+@media screen and (max-width: 480px) {
+  .sy .pg-title {
+    font-size: clamp(2rem, 10vw, 2.4rem);
   }
 }

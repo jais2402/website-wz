@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Nav: systems menu (Nav.tsx). The rest of the nav lives in index.css.
+   ========================================================================== */
+.nav-drop {
+  position: relative;
+}
+
+.nav-links .nav-drop-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.nav-drop.is-open .nav-drop-trigger {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-caret {
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  rotate: 45deg;
+  transition: rotate 0.3s var(--ease-out), margin 0.3s var(--ease-out);
+}
+
+.nav-drop.is-open .nav-caret {
+  rotate: -135deg;
+  margin-top: 3px;
+}
+
+/* The padding is a hover bridge between the trigger and the panel. */
+.nav-menu {
+  position: absolute;
+  top: 100%;
+  left: -12px;
+  padding-top: 14px;
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 -6px;
+  transition:
+    opacity 0.25s,
+    translate 0.35s var(--ease-out),
+    visibility 0s 0.35s;
+}
+
+.nav-drop.is-open .nav-menu {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  transition:
+    opacity 0.25s,
+    translate 0.35s var(--ease-out),
+    visibility 0s;
+}
+
+/* Near-opaque: a backdrop-filter inside the scrolled (blurred) nav has nothing to blur. */
+.nav-menu-panel {
+  width: 340px;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+  border-radius: 22px;
+  border: 1px solid var(--line-2);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 60%),
+    rgba(13, 13, 21, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 30px 80px -30px rgba(0, 0, 0, 0.8);
+}
+
+.nav-links .nav-menu-panel a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  color: var(--text);
+}
+
+.nav-menu-panel .mono,
+.nav-sheet-systems .mono {
+  font-size: 0.66rem;
+  color: var(--muted);
+  transition: color 0.25s;
+}
+
+.nav-links .nav-menu-panel a:hover,
+.nav-links .nav-menu-panel a:focus-visible {
+  background: rgba(77, 159, 255, 0.1);
+}
+
+.nav-menu-panel a:hover .mono,
+.nav-menu-panel a:focus-visible .mono {
+  color: var(--lime);
+}
+
+/* Burger menu: the six systems nested under a "Systems" label. Long menus scroll inside the sheet. */
+.nav-sheet {
+  max-height: calc(100dvh - 110px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.nav-sheet-group {
+  padding: 10px 12px 6px;
+}
+
+.nav-sheet-label {
+  color: var(--muted);
+}
+
+.nav-sheet-systems {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.nav-sheet .nav-sheet-systems a {
+  display: grid;
+  gap: 3px;
+  height: 100%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.9rem;
+  line-height: 1.25;
+}
+
+.nav-sheet .nav-sheet-systems a:active,
+.nav-sheet .nav-sheet-systems a:hover {
+  border-color: rgba(77, 159, 255, 0.35);
+}
+
+.nav-sheet-systems a:hover .mono {
+  color: var(--lime);
+}
+
+@media (max-width: 360px) {
+  .nav-sheet-systems {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-menu,
+  .nav-drop.is-open .nav-menu,
+  .nav-caret {
+    transition: none;
+    translate: none;
+  }
+}
