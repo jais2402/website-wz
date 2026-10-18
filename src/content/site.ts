@@ -470,8 +470,19 @@ export const contactPage = {
 
 export const footer = [
   { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '#work'], ['Questions', '#faq']] },
-  { title: 'Capabilities', links: [['Custom software', '#build'], ['Ecommerce systems', '#build'], ['System integration', '#integrations'], ['AI integrations', '#ai']] },
-  { title: 'Company', links: [['Contact', '/contact'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
+  {
+    title: 'Systems',
+    links: [
+      ['People & workforce', '/systems/people'],
+      ['Revenue & customers', '/systems/revenue'],
+      ['Operations & supply chain', '/systems/operations'],
+      ['Ecommerce', '/systems/ecommerce'],
+      ['Finance & governance', '/systems/finance'],
+      ['Industry systems', '/systems/industry'],
+    ],
+  },
+  { title: 'Capabilities', links: [['Custom software', '#build'], ['System integration', '#integrations'], ['AI', '/ai']] },
+  { title: 'Company', links: [['About', '/about'], ['Contact', '/contact'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
 // Second page: the time-loom concept (loom.html).

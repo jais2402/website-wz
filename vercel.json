@@ -60,7 +60,7 @@
     },
     {
       "source": "/about-us",
-      "destination": "/",
+      "destination": "/about",
       "permanent": true
     },
     {

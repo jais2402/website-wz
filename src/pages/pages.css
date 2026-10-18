@@ -1,0 +1,92 @@
+/* ==========================================================================
+   Inner pages (About, AI, systems/*): shared shell and blocks from pages/shell.tsx.
+   Page-specific styles live next to each page (about.css, ai.css, system.css).
+   ========================================================================== */
+.pg {
+  position: relative;
+  z-index: 1;
+  background:
+    radial-gradient(45% 40% at 85% 0%, rgba(77, 159, 255, 0.12), transparent 70%),
+    radial-gradient(40% 40% at 0% 30%, rgba(139, 123, 255, 0.08), transparent 70%),
+    var(--ink);
+  overflow-x: clip;
+}
+
+.pg-hero {
+  display: grid;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+  padding-top: clamp(130px, 18vh, 190px);
+  padding-bottom: clamp(56px, 8vw, 110px);
+}
+
+.pg-hero.has-visual {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.pg-title {
+  display: grid;
+  font-size: clamp(2.6rem, 6vw, 5.6rem);
+  margin-top: 14px;
+}
+
+.pg-title-line.serif {
+  color: #8cc4ff;
+}
+
+.pg-lead {
+  margin-top: 24px;
+  max-width: 52ch;
+}
+
+.pg-actions {
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pg-section {
+  padding: clamp(64px, 9vw, 130px) 0;
+}
+
+.pg-section-head {
+  display: grid;
+  gap: 14px;
+  margin-bottom: clamp(32px, 4vw, 56px);
+  max-width: 820px;
+}
+
+.pg-h2 {
+  font-size: clamp(2rem, 4.2vw, 3.6rem);
+}
+
+.pg-section-intro {
+  max-width: 58ch;
+}
+
+.pg-cta {
+  padding-top: clamp(40px, 6vw, 80px);
+  padding-bottom: clamp(80px, 10vw, 140px);
+}
+
+.pg-cta-card {
+  display: grid;
+  justify-items: start;
+  gap: 20px;
+  padding: clamp(32px, 5vw, 72px);
+  background:
+    radial-gradient(70% 90% at 100% 100%, rgba(37, 99, 235, 0.28), transparent 70%),
+    rgba(255, 255, 255, 0.03);
+}
+
+.pg-cta-title {
+  font-size: clamp(2rem, 4.4vw, 3.8rem);
+  max-width: 18ch;
+}
+
+@media (max-width: 899px) {
+  .pg-hero.has-visual {
+    grid-template-columns: 1fr;
+  }
+}
