@@ -176,6 +176,10 @@
 
 
 /* Weave: in → knot → out */
+.weave-knot-m {
+  display: none;
+}
+
 .weave {
   border-radius: 40px 40px 0 0;
   border-top: 1px solid var(--line);
@@ -286,11 +290,71 @@
     grid-template-columns: 1fr;
   }
 
+  /* Phones: a tangled heap of workarounds above a glowing knot; scroll pulls them in (see Weave in hero.tsx). */
+  .weave-grid {
+    position: relative;
+    margin-top: 40px;
+    gap: 0;
+  }
+
   .weave-svg {
-    min-height: 0;
-    height: 160px;
-    transform: rotate(90deg) scale(0.4);
-    margin: -40px 0;
+    display: none;
+  }
+
+  .weave-in {
+    position: relative;
+    display: block;
+    height: 200px;
+  }
+
+  .weave-in li,
+  .weave-in li:nth-child(odd),
+  .weave-in li:nth-child(3n) {
+    position: absolute;
+    left: var(--hx);
+    top: var(--hy);
+    max-width: 62%;
+    transform: none;
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  }
+
+  .weave-knot-m {
+    display: block;
+    justify-self: center;
+    width: 22px;
+    height: 22px;
+    margin: 36px 0 34px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow:
+      0 0 0 6px rgba(77, 159, 255, 0.15),
+      0 0 28px 8px rgba(77, 159, 255, 0.55);
+  }
+
+  /* Threads above and below the knot. */
+  .weave-knot-m::before,
+  .weave-knot-m::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 1px;
+    height: 30px;
+    translate: -50% 0;
+  }
+
+  .weave-knot-m {
+    position: relative;
+  }
+
+  .weave-knot-m::before {
+    bottom: 100%;
+    background: linear-gradient(to top, var(--violet), transparent);
+  }
+
+  .weave-knot-m::after {
+    top: 100%;
+    background: linear-gradient(to bottom, var(--lime), transparent);
   }
 }
 

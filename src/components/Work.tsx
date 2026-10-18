@@ -1,74 +1,114 @@
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
-import { work, workSection } from '@/content/site'
+import { pastWork, work, workSection } from '@/content/site'
 import { gsap, scrollToTarget } from '@/hooks/motion'
 import { SplitReveal } from './Reveal'
 
+type Card = {
+  id: string
+  sector: string
+  place?: string
+  title: string
+  body: string
+  metrics?: readonly { value: string; label: string }[]
+  tags: readonly string[]
+  tone: string
+}
+
+const cards: Card[] = [...work, ...pastWork]
+
 /**
- * Case studies as one bento block: each case is a single tile (sector, headline, story, results, tags) and the
- * four tiles interlock in a 6-column grid, wide / narrow on the first row and narrow / wide on the second.
+ * Case studies as a row of cards. Desktop: the section pins and scrolling moves the row sideways (like Services),
+ * with a progress line. Phones and reduced motion: a swipeable row with scroll snap.
  */
 export function Work() {
   const root = useRef<HTMLElement>(null)
+  const row = useRef<HTMLDivElement>(null)
+  const bar = useRef<HTMLSpanElement>(null)
 
   useGSAP(
     () => {
-      gsap.from('.case-tile', {
-        y: 40,
-        opacity: 0,
-        duration: 0.9,
-        ease: 'expo.out',
-        stagger: 0.08,
-        scrollTrigger: { trigger: '.cases-bento', start: 'top 80%' },
+      const mm = gsap.matchMedia()
+      mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+        const distance = () => row.current!.scrollWidth - row.current!.clientWidth
+        gsap.to(row.current, {
+          x: () => -distance(),
+          ease: 'none',
+          scrollTrigger: {
+            trigger: root.current,
+            start: 'top top',
+            end: () => `+=${distance()}`,
+            pin: true,
+            scrub: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (st) => {
+              if (bar.current) bar.current.style.transform = `scaleX(${st.progress})`
+            },
+          },
+        })
       })
+      return () => mm.revert()
     },
     { scope: root },
   )
 
+  const next = workSection.next
   return (
     <section id="work" ref={root} className="panel work">
-      <div className="wrap">
-        <div className="work-head">
+      <div className="work-row" ref={row}>
+        <div className="work-intro">
           <SplitReveal as="h2" className="display" text={workSection.title} />
-          <div className="work-next">
-            <p>{workSection.next.title}</p>
-            <a
-              className="btn btn-lime"
-              href={workSection.next.href}
-              onClick={(e) => {
-                e.preventDefault()
-                scrollToTarget(workSection.next.href)
-              }}
-            >
-              {workSection.next.cta} <span aria-hidden="true">→</span>
-            </a>
-          </div>
+          <p className="lead">{next.body}</p>
+          <span className="drag-hint mono work-hint" aria-hidden="true">
+            {workSection.hint}
+          </span>
+          <span className="drag-hint mono work-hint-touch" aria-hidden="true">
+            {workSection.hintTouch}
+          </span>
         </div>
 
-        <div className="cases-bento">
-          {work.map((c, i) => (
-            <article key={c.id} id={c.id} className={`case-tile tone-${c.tone} t${i}`}>
-              <span className="mono case-tile-tag">
-                {c.sector} · {c.place}
-              </span>
+        <div className="work-cards">
+          {cards.map((c) => (
+            <article key={c.id} id={c.id} className={`case-card tone-${c.tone}`}>
+              <span className="mono case-card-tag">{c.place ? `${c.sector} · ${c.place}` : c.sector}</span>
               <h3>{c.title}</h3>
-              <p className="case-tile-body">{c.body}</p>
-              <dl className="case-tile-metrics">
-                {c.metrics.map((m) => (
-                  <div key={m.label}>
-                    <dt>{m.value}</dt>
-                    <dd>{m.label}</dd>
-                  </div>
-                ))}
-              </dl>
-              <ul className="case-tile-tags">
+              <p className="case-card-body">{c.body}</p>
+              {c.metrics?.length ? (
+                <dl className="case-card-metrics">
+                  {c.metrics.map((m) => (
+                    <div key={m.label}>
+                      <dt>{m.value}</dt>
+                      <dd>{m.label}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+              <ul className="case-card-tags">
                 {c.tags.map((t) => (
                   <li key={t}>{t}</li>
                 ))}
               </ul>
             </article>
           ))}
+
+          <article className="case-card case-card-next">
+            <h3>{next.title}</h3>
+            <p className="case-card-body">{next.body}</p>
+            <a
+              className="btn btn-lime"
+              href={next.href}
+              onClick={(e) => {
+                e.preventDefault()
+                scrollToTarget(next.href)
+              }}
+            >
+              {next.cta} <span aria-hidden="true">→</span>
+            </a>
+          </article>
         </div>
+      </div>
+      <div className="work-progress" aria-hidden="true">
+        <span ref={bar} />
       </div>
     </section>
   )

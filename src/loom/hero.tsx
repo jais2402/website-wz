@@ -1,5 +1,5 @@
 import { useGSAP } from '@gsap/react'
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
 import { LoomLiteArt } from '@/components/LiteArt'
 import { loom } from '@/content/site'
@@ -106,20 +106,78 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   )
 }
 
-/** Inputs on the left, outputs on the right, joined by animated threads that converge through a knot. */
+// Phone "heap": where each crossed-out workaround lands in the tangle (x %, y px, rotation deg).
+const HEAP = [
+  [2, 0, -6],
+  [36, 14, 5],
+  [10, 40, -3],
+  [42, 58, 7],
+  [0, 86, -8],
+  [30, 104, 4],
+  [14, 130, -5],
+  [40, 150, 6],
+]
+
+/**
+ * Inputs on the left, outputs on the right, joined by animated threads that converge through a knot.
+ * Phones: the inputs sit in a tangled heap; scrolling pulls each one into the knot and the outcomes come out below.
+ */
 export function Weave() {
+  const root = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia()
+      mm.add('(max-width: 899px) and (prefers-reduced-motion: no-preference)', () => {
+        const knot = root.current!.querySelector<HTMLElement>('.weave-knot-m')!
+        const pile = root.current!.querySelector<HTMLElement>('.weave-in')!
+        const heap = gsap.utils.toArray<HTMLElement>('.weave-in li')
+        // Offset from an item's centre to the knot's centre. Uses layout offsets (both inside .weave-grid), which
+        // ignore transforms, so a refresh mid-animation still measures from the untouched heap.
+        const toKnot = (el: HTMLElement, axis: 'x' | 'y') =>
+          axis === 'x'
+            ? knot.offsetLeft + knot.offsetWidth / 2 - (pile.offsetLeft + el.offsetLeft + el.offsetWidth / 2)
+            : knot.offsetTop + knot.offsetHeight / 2 - (pile.offsetTop + el.offsetTop + el.offsetHeight / 2)
+        gsap.set(heap, { rotate: (i: number) => HEAP[i % HEAP.length][2] })
+        gsap
+          .timeline({
+            scrollTrigger: { trigger: '.weave-grid', start: 'top 70%', end: 'bottom 85%', scrub: 0.8, invalidateOnRefresh: true },
+          })
+          .to(heap, {
+            x: (_, el) => toKnot(el, 'x'),
+            y: (_, el) => toKnot(el, 'y'),
+            rotate: 0,
+            scale: 0.15,
+            opacity: 0,
+            ease: 'power2.in',
+            duration: 1,
+            stagger: 0.12,
+          })
+          .to(knot, { scale: 1.8, duration: 0.3, ease: 'power2.out' }, '-=0.4')
+          .to(knot, { scale: 1, duration: 0.4, ease: 'power2.inOut' })
+          .from('.weave-out li', { y: -24, opacity: 0, scale: 0.9, duration: 0.6, stagger: 0.14, ease: 'back.out(1.6)' }, '-=0.5')
+      })
+      return () => mm.revert()
+    },
+    { scope: root },
+  )
+
   return (
-    <section id="weave" className="panel weave">
+    <section id="weave" ref={root} className="panel weave">
       <div className="wrap">
         <SplitReveal as="h2" className="display weave-title" text={loom.weave.title} />
         <div className="weave-grid">
           <ul className="weave-in">
-            {loom.threadsIn.map((t) => (
-              <li key={t}>
-                <s>{t}</s>
-              </li>
-            ))}
+            {loom.threadsIn.map((t, i) => {
+              const [x, y] = HEAP[i % HEAP.length]
+              return (
+                <li key={t} style={{ '--hx': `${x}%`, '--hy': `${y}px` } as CSSProperties}>
+                  <s>{t}</s>
+                </li>
+              )
+            })}
           </ul>
+          <span className="weave-knot-m" aria-hidden="true" />
           <svg className="weave-svg" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
             {loom.threadsIn.map((_, i) => {
               const y = 25 + i * (350 / (loom.threadsIn.length - 1))

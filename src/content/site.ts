@@ -248,6 +248,8 @@ export const ai = {
 
 export const workSection = {
   title: 'Our Work',
+  hint: 'Keep scrolling →',
+  hintTouch: 'Swipe for more →',
   next: { title: 'Your system could be next.', body: 'Tell us what is slowing your team down and we will map it with you.', cta: 'Tell us what is not working', href: '#contact' },
 }
 
@@ -306,6 +308,51 @@ export const work = [
     ],
     tags: ['Seller onboarding', 'Catalogue', 'Real-time APIs'],
     tone: 'lime',
+  },
+] as const
+
+// Earlier systems from the wezigns.com portfolio, confirmed by the client as real systems (not brochure sites).
+// The old site has no case data, so these have no published results and no client names. Review the wording.
+export const pastWork = [
+  {
+    id: 'car-rental',
+    sector: 'Car rental',
+    title: 'Bookings and the fleet, run from one admin.',
+    body: 'Online booking for a car rental company. Customers pick a car and dates; the team manages vehicles and reservations in one place.',
+    tags: ['Online booking', 'Fleet admin', 'Reservations'],
+    tone: 'violet',
+  },
+  {
+    id: 'recruitment',
+    sector: 'Recruitment',
+    title: 'Job portals that keep every application on track.',
+    body: 'Job portals for recruitment firms. Candidates search and apply, employers post roles, and recruiters follow every application.',
+    tags: ['Job listings', 'Applications', 'Recruiter dashboard'],
+    tone: 'coral',
+  },
+  {
+    id: 'online-retail',
+    sector: 'Retail',
+    title: 'Online stores with the orders behind them.',
+    body: 'Online stores for retail and fashion brands: catalogue, cart and checkout, with order management behind one admin.',
+    tags: ['Catalogue', 'Checkout', 'Order management'],
+    tone: 'lime',
+  },
+  {
+    id: 'education',
+    sector: 'Education',
+    title: 'Courses, enquiries and sign-ups in one portal.',
+    body: 'Portals for tutoring and admissions providers. Course listings, student enquiries and enrolments are handled online.',
+    tags: ['Course listings', 'Enquiries', 'Enrolment'],
+    tone: 'violet',
+  },
+  {
+    id: 'fundraising',
+    sector: 'Non-profit',
+    title: 'Giving made simple, for donors and the charity.',
+    body: 'A fundraising platform: campaign pages, online donations and donor records, kept in one place.',
+    tags: ['Campaigns', 'Online giving', 'Donor records'],
+    tone: 'coral',
   },
 ] as const
 

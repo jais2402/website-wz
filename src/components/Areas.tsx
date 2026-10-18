@@ -21,7 +21,9 @@ export function Areas() {
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
   const trigger = useRef<ScrollTrigger | null>(null)
   const [active, setActive] = useState(0)
+  const [mod, setMod] = useState(0)
   const area = areas[active]
+  const nextArea = areas[(active + 1) % areas.length]
 
   useGSAP(
     () => {
@@ -70,6 +72,7 @@ export function Areas() {
     const st = trigger.current
     if (!st) {
       setActive(i)
+      setMod(0)
       return
     }
     scrollToTarget(st.start + ((i + 0.5) / areas.length) * (st.end - st.start))
@@ -129,13 +132,32 @@ export function Areas() {
                   </div>
                 ))}
               </div>
-              <div className="mods">
+              <div
+                className="mods"
+                onScroll={(e) => {
+                  // Phone swipe strip: which module card is in view (drives the dots).
+                  const el = e.currentTarget
+                  const card = el.firstElementChild as HTMLElement | null
+                  if (card) setMod(Math.round(el.scrollLeft / (card.offsetWidth + 8)))
+                }}
+              >
                 {area.modules.map((m, i) => (
                   <ModuleCard key={m.name} m={m} wide={WIDE.has(i)} index={i} />
                 ))}
               </div>
             </div>
+            <div className="mods-dots" aria-hidden="true">
+              {area.modules.map((m, i) => (
+                <span key={m.name} className={i === mod ? 'is-on' : ''} />
+              ))}
+            </div>
           </div>
+          <button type="button" className="areas-next" onClick={() => select((active + 1) % areas.length)}>
+            <span className="mono">Next system</span>
+            <span>
+              {nextArea.title} <span aria-hidden="true">→</span>
+            </span>
+          </button>
         </div>
       </div>
     </section>
