@@ -123,14 +123,6 @@ main,
   margin-bottom: 24px;
 }
 
-.label::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--lime);
-}
-
 .display {
   font-family: var(--f-display);
   font-weight: 600;

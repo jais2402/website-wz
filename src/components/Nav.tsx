@@ -41,7 +41,7 @@ export function Nav({
         ))}
       </nav>
       <a href={cta.href} className="btn btn-lime nav-cta" onClick={go(cta.href)}>
-        <span className="btn-dot" /> {cta.label}
+        {cta.label}
       </a>
       <button className="nav-burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
         <span />

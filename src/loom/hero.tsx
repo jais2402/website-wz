@@ -79,7 +79,7 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
 
         <div className={`loom-intro${phase >= 0 ? ' is-gone' : ''}`}>
           <p className="mono loom-eyebrow loom-fade">
-            <span className="pulse" /> {loom.eyebrow}
+            {loom.eyebrow}
           </p>
           <h1 className="loom-title">
             {loom.title.map((l, i) => (
