@@ -48,13 +48,13 @@ export function Proof() {
   return (
     <section ref={root} className="panel proof">
       <div className="proof-tools">
-        <p className="mono label">Built on established tools, not experiments</p>
+        <p className="mono label">Tools we build with</p>
         <Marquee items={tools} />
         <Marquee items={[...tools].reverse()} reverse />
       </div>
 
       <div className="wrap">
-        <SplitReveal as="h2" className="display proof-title" text="Twelve years of replacing the mess with systems people actually use." />
+        <SplitReveal as="h2" className="display proof-title" text="Twelve years of replacing spreadsheets with systems people use every day." />
         <div className="stats">
           {stats.map((s) => (
             <div className="stat" key={s.label}>

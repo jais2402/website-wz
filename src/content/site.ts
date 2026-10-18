@@ -55,7 +55,7 @@ export const principles = [
     index: '03',
     title: 'Secure',
     body: 'Security designed into the first version, then reviewed and maintained after launch.',
-    chips: ['Built-in, not bolted-on', 'Reviewed', 'Maintained'],
+    chips: ['Built in from day one', 'Reviewed', 'Maintained'],
   },
 ]
 
@@ -83,22 +83,22 @@ export const stats = [
 
 export const servicesSection = {
   kicker: 'Your technology partner',
-  title: 'A technology partner that grows your business.',
-  body: 'From operations to sales to finance, we design, build, host and maintain the software behind every part of your business, from the first workshop to years after launch.',
+  title: 'A technology partner for every part of your business.',
+  body: 'Operations, sales, finance, HR. We design, build, host and maintain the software behind each of them, from the first workshop to years after launch.',
 }
 
 export const services = [
   {
     key: 'build',
     kicker: 'Build a system',
-    title: 'Software shaped around how you actually work.',
+    title: 'Software built around how your team works.',
     items: ['Custom business software', 'Customer & partner platforms', 'Ecommerce: catalogue, orders, stock, payments', 'Websites'],
     tone: 'lime',
   },
   {
     key: 'connect',
     kicker: 'Connect & automate',
-    title: 'Your tools, finally talking to each other.',
+    title: 'Connect the tools you already pay for.',
     items: ['Business process automation', 'System integration', 'Data & reporting systems', 'AI & Gen-AI integrations'],
     tone: 'violet',
   },
@@ -223,12 +223,12 @@ export const areas: Area[] = [
 
 export const ai = {
   eyebrow: 'AI integration',
-  title: 'Make your systems more intelligent with AI.',
-  body: 'We help you implement responsible, secure AI that improves and speeds up the way your business runs, so you reach your goals faster.',
+  title: 'Put AI to work inside your systems.',
+  body: 'We add AI to the software you already run. It reads your records, flags what needs attention and drafts the next step. A person signs off before anything goes through.',
   points: [
-    { title: 'Responsible by design.', text: 'A person approves every key decision, and every action is logged.' },
-    { title: 'Secure with your data.', text: 'It works from your own records, inside your systems, not the open internet.' },
-    { title: 'Faster, measurable results.', text: 'Less manual checking and quicker decisions, aimed at your business goals.' },
+    { title: 'A person signs off.', text: 'AI suggests. Someone on your team approves every key decision.' },
+    { title: 'Your data stays put.', text: 'It works from your own records, inside your own systems.' },
+    { title: 'Less checking by hand.', text: 'Invoices, orders and approvals move without someone re-reading every line.' },
   ],
 }
 
@@ -275,7 +275,7 @@ export const process = [
 export const pricing = {
   kicker: 'Pricing',
   title: ['Priced on outcomes,', 'not hours.'],
-  body: 'You get one price and one timeline, agreed before any building starts. No meter running in the background.',
+  body: 'You get one price and one timeline, agreed before any building starts.',
   cta: { label: 'Get a price for your system', href: '#contact' },
   sets: [
     { name: 'Scope', text: 'What the system has to do, and for whom.' },
@@ -314,7 +314,7 @@ export const faq = [
   },
   {
     q: 'How do you handle security?',
-    a: 'Security is built in from the first version, then reviewed and maintained after launch. It is never an add-on.',
+    a: 'Security is built into the first version, then reviewed and maintained after launch.',
   },
   {
     q: 'Can you take over software another company built?',
@@ -326,7 +326,7 @@ export const faq = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Cost depends on scope, integrations and how much your process changes, not on the technology. You get a price and timeline at the end of the Shape stage.',
+    a: 'Cost depends on scope, integrations and how much your process changes. You get a price and timeline at the end of the Shape stage.',
   },
 ]
 
@@ -385,11 +385,11 @@ export const loom = {
   hudOut: 'Output · one timeline',
   // Hero copy chosen by the simulated 5-second persona test (see docs/concept-study.md, "Hero copy test").
   phases: [
-    { kicker: '01 · We map it', title: 'Accelerate your business with technology and clarity.', body: 'We map every spreadsheet, chat group and workaround your team relies on, so you see how work really happens before we write a line of code.' },
-    { kicker: '02 · We build it', title: 'Software that simplifies your workflows.', body: 'Orders, people, approvals and reports in one place, connected to the tools you already use, with security built in from day one.' },
-    { kicker: '03 · We run it', title: 'A long-lasting partner for your business goals.', body: 'We host, monitor and maintain what we build, and keep improving it after launch, so it grows with your business.' },
+    { kicker: '01 · We map it', title: 'Start with a clear map of how work runs.', body: 'We map every spreadsheet, chat group and workaround your team relies on before we write a line of code.' },
+    { kicker: '02 · We build it', title: 'One system, built around your workflow.', body: 'Orders, people, approvals and reports in one place, connected to the tools you already use, with security built in from day one.' },
+    { kicker: '03 · We run it', title: 'We stay on after launch.', body: 'We host, monitor and maintain what we build, and keep improving it as your business grows.' },
   ],
-  weave: { kicker: 'From chaos to clarity', title: 'Swap the workarounds for customised software with Wezigns.' },
+  weave: { kicker: 'What changes', title: 'Swap the workarounds for customised software with Wezigns.' },
   threadsIn: ['orders_FINAL_v7.xlsx', 'Ops WhatsApp group', 'Email approvals', 'Paper forms', 'Legacy database', 'Side tools', 'Manual re-entry', 'Who approved this?'],
   threadsOut: ['One source of truth', 'Approvals with an audit trail', 'Live dashboards', 'Connected tools', 'Secure by default', 'Grows in stages'],
   closing: { title: 'Hand us the tangle.', body: 'Tell us what is not working. We reply within one working day.', cta: 'Start the conversation', href: '#contact' },
@@ -421,6 +421,6 @@ export const loom = {
   },
   looms: { kicker: 'Three looms, one team', title: 'Build it. Connect it. Keep it running.' },
   timelines: { kicker: 'Work', title: 'Two tangles, straightened.' },
-  contact: { kicker: 'Contact', title: 'Hand us the tangle.', body: 'We reply within one working day. No sales script, just a conversation about the problem.' },
+  contact: { kicker: 'Contact', title: 'Hand us the tangle.', body: 'Tell us what is slowing your team down. We reply within one working day.' },
 }
 

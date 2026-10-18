@@ -9,11 +9,10 @@ export default defineConfig({
   // three.js lives in its own lazy chunk (~245 kB gzip); that size is expected.
   build: {
     chunkSizeWarningLimit: 1000,
-    // Multi-page: the main site and the loom concept page.
     rolldownOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
-        loom: fileURLToPath(new URL('./loom.html', import.meta.url)),
+        // loom.html (concept B) is internal only: served by `npm run dev`, not shipped in production builds.
       },
     },
   },
