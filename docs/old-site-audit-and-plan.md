@@ -20,31 +20,63 @@ Source: https://www.wezigns.com/ (16 pages crawled: home, about-us, our-services
 **Conclusion:** the useful parts are the **contact details** (full address, possibly the AU and UK offices) and **a few
 service lines** that match today's offer. There are **no new case studies** to take: the four real ones are already on the site.
 
-## Plan
+## Decisions so far
 
-### 1. Content updates (src/content/site.ts)
-1. Contact: add the full Chennai address; use one email address across the site (decision needed).
-2. Offices: if confirmed current, show Brisbane and Stoke-on-Trent alongside Chennai (contact page + country list).
-3. Services: add "Web and customer portals", "Open-source integration and customisation" and "Mobile-first web
-   apps" to the existing service lists; add a "Security reviews and penetration testing" line under
-   *Keep it running* only if still offered.
-4. Work: no changes (old portfolio has no usable results).
+- Email: **contact@wezigns.com** everywhere. ✅ done
+- Offices: **Chennai only** until Brisbane / Stoke-on-Trent are confirmed. ✅ done
+- Content update (address, service lines): ✅ done in commit `6f3aa7a`
+- Form submission method: **to be decided later.** The page is built so the method can be swapped without UI changes.
 
-### 2. New Contact Us page (`/contact`)
-- New Vite page `contact.html` sharing the nav, footer, fonts and lite mode; clean URL `/contact` via vercel.json.
-- Layout: headline + short promise ("reply within one working day"), office cards (address, `tel:` phone,
-  `mailto:` email, "Open in Google Maps" link; no embedded map, to avoid third-party cookies), and the enquiry form.
-- Form fields: name, company (optional), email, phone (optional), what you need (topic chips), message. Inline
-  validation, accessible labels and errors, a clear success state.
-- Submission (decision needed): keep today's "opens your email app", or send through a form service / a Vercel
-  serverless function so it works for everyone.
-- Nav gets a **Contact** link; header CTA goes to `/contact`. The contact block at the bottom of the home page stays.
-- Page title/description, mobile and lite-mode checks.
+## Detailed plan: Contact Us page (awaiting approval)
 
-### 3. Keep old links working
-Add redirects in vercel.json so old URLs land on the right new page: `/contact-us` → `/contact`,
-`/our-services` → `/#build`, `/portfolio` and `/portfolio-item-*` → `/#work`, `/about-us` and `/index` → `/`,
-`/careers` → `/` (or a careers page later).
+### Goal
+A dedicated page at `/contact` that gives anyone, including people arriving from a search or an old wezigns.com
+link, every way to reach Wezigns, plus the enquiry form, in one place. It works in full and lite mode.
 
-### 4. Verify
-Tests for any new logic (form validation), lint, typecheck, build, desktop and mobile checks, lite mode, then push.
+### Page structure (top to bottom)
+1. **Nav** (same as home). Adds a **Contact** link; the blue header button goes to `/contact`.
+2. **Header block**
+   - Label: "Contact"
+   - Headline: "Tell us what is not working."
+   - Lead: "We reply within one working day. You get scope, price and timeline in writing before anything is built."
+     (the second sentence is from the original site's work page)
+3. **Two-column body** (stacks on mobile: details first, then form)
+   - **Left: ways to reach us**
+     - Head office card: address (4 lines), "Open in Google Maps ↗" (plain link, no embedded map, so no Google cookies).
+     - Phone card: +91 44 2364 3252 (tap to call), office hours (**needs your input**, or I leave it out).
+     - Email card: contact@wezigns.com (tap to email), "Reply within one working day".
+     - Small "Working with teams in 11 countries" line linking back to the countries section on the home page.
+   - **Right: enquiry form (glass card)**
+     - Fields: Name*, Email*, Company, Phone, "I need help with" topic chips (existing six), Message*.
+     - Inline validation on blur and submit: required fields, email format, message min 10 characters, max lengths.
+       Errors are announced to screen readers and focus moves to the first error.
+     - Honeypot field (hidden) to filter basic spam bots.
+     - States: idle → sending → success ("Thanks, {name}. We'll reply within one working day.") → error with retry.
+4. **Short FAQ strip** (3 questions reused from the home FAQ: cost, taking over software, small businesses).
+5. **Footer** (same as home).
+
+### Form submission (pluggable, decided later)
+- One `submitEnquiry(data)` function in `src/lib/enquiry.ts` with a single setting choosing the method:
+  - `mailto` (default today): opens the visitor's email app with everything pre-filled.
+  - `endpoint`: POSTs JSON to a URL (Vercel function, Formspree or Web3Forms) and shows the success state.
+- Switching later is one config change; the page and validation do not change.
+
+### Technical
+- New Vite entry `contact.html` + `src/contact/main.tsx` + `ContactPage.tsx`, reusing Nav, Footer, EnquiryForm
+  (extended), LiteProvider, fonts and tokens. No three.js on this page (it stays light by design).
+- `vercel.json`: `cleanUrls` so `/contact` serves `contact.html`.
+- Page meta: title "Contact | Wezigns", description, Open Graph tags.
+- Nav links on the contact page point back to home sections (`/#build`, `/#work`, …).
+
+### Redirects from the old site (same release)
+`/contact-us` → `/contact` · `/our-services` → `/#build` · `/portfolio`, `/portfolio-item-*` → `/#work` ·
+`/about-us`, `/index` → `/` · `/careers` → `/` (until a careers page exists). All permanent (301).
+
+### Tests and checks
+- Unit tests: validation rules, mailto builder, endpoint payload, honeypot.
+- Lint, typecheck, build; desktop 1440 and mobile 375 checks; keyboard-only and screen-reader labels; lite mode.
+- Then commit and push to `immersive-redesign` (with your go-ahead).
+
+### Open questions for you
+1. Office hours to show (e.g. Mon–Fri 9:30–18:30 IST), or leave them out?
+2. Keep the 3-question FAQ strip on the contact page, or keep the page minimal?
