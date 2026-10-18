@@ -1,0 +1,48 @@
+import { brand, countries, footer } from '@/content/site'
+import { scrollToTarget } from '@/hooks/motion'
+import { Logo } from './Logo'
+
+/** `base` prefixes in-page links when the footer is used on another page (e.g. './' from the loom page). */
+export function Footer({ base = '' }: { base?: string }) {
+  return (
+    <footer className="footer">
+      <div className="wrap">
+        <div className="footer-top">
+          <div className="footer-brand">
+            <Logo />
+            <p>Custom software that grows with you. Designed, built, hosted and maintained from {brand.city}.</p>
+          </div>
+          {footer.map((col) => (
+            <nav key={col.title} className="footer-col" aria-label={col.title}>
+              <p className="mono">{col.title}</p>
+              {col.links.map(([label, href]) => (
+                <a
+                  key={label}
+                  href={href.startsWith('#') ? `${base}${href}` : href}
+                  onClick={(e) => {
+                    if (!base && href.startsWith('#')) {
+                      e.preventDefault()
+                      scrollToTarget(href)
+                    }
+                  }}
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+          ))}
+        </div>
+        <p className="footer-countries mono">{countries.map((c) => c.name).join(' · ')}</p>
+      </div>
+      <div className="footer-word" aria-hidden="true">
+        Wezigns
+      </div>
+      <div className="wrap footer-bottom mono">
+        <span>© 2026 {brand.legal}</span>
+        <span>
+          <a href={`mailto:${brand.email}`}>{brand.email}</a> · <a href={brand.phoneHref}>{brand.phone}</a>
+        </span>
+      </div>
+    </footer>
+  )
+}
