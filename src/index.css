@@ -3164,6 +3164,83 @@ main,
 }
 
 /* ==========================================================================
+   Lite mode (no WebGL): static SVG stand-ins for the 3D scenes
+   ========================================================================== */
+.lite-art {
+  display: block;
+  pointer-events: none;
+}
+
+.lite-loom {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lite-story {
+  position: absolute;
+  right: max(var(--gutter), calc((100vw - 1320px) / 2));
+  top: 50%;
+  translate: 0 -50%;
+  width: min(46vw, 620px);
+  height: auto;
+}
+
+.lite-story g {
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out);
+}
+
+.lite-story g.is-on {
+  opacity: 1;
+}
+
+.lite-thread {
+  fill: none;
+  stroke: #e9d7b0;
+  stroke-opacity: 0.55;
+  stroke-width: 1.4;
+}
+
+.lite-thread.alt {
+  stroke: #8cc4ff;
+}
+
+.countries-lite {
+  display: grid;
+  place-items: center;
+}
+
+.lite-globe {
+  width: min(100%, 560px);
+  height: auto;
+}
+
+@media (max-width: 899px) {
+  .lite-story {
+    top: 22%;
+    right: 50%;
+    translate: 50% -50%;
+    width: min(80vw, 420px);
+  }
+
+  /* In the countries section the art goes above the card on phones. */
+  .countries-lite {
+    order: -1;
+  }
+
+  /* No WebGL globe to make room for, so drop the tall top padding. */
+  .is-lite .countries {
+    padding-top: 110px;
+  }
+
+  .lite-globe {
+    width: min(78vw, 360px);
+  }
+}
+
+/* ==========================================================================
    Keyframes
    ========================================================================== */
 @keyframes ping {

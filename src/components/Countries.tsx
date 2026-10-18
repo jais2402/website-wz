@@ -4,6 +4,8 @@ import { countries, reach } from '@/content/site'
 import { ScrollTrigger } from '@/hooks/motion'
 import { flagEmoji } from '@/lib/flags'
 import { sceneStore } from '@/lib/sceneStore'
+import { useLite } from '@/hooks/useLite'
+import { GlobeLiteArt } from './LiteArt'
 import { SplitReveal } from './Reveal'
 
 const indexOf = (name: string) => countries.findIndex((c) => c.name === name)
@@ -14,6 +16,7 @@ const indexOf = (name: string) => countries.findIndex((c) => c.name === name)
  */
 export function Countries() {
   const root = useRef<HTMLElement>(null)
+  const { lite } = useLite()
 
   useGSAP(
     () => {
@@ -77,6 +80,11 @@ export function Countries() {
               ))}
           </ul>
         </div>
+        {lite && (
+          <div className="countries-lite">
+            <GlobeLiteArt />
+          </div>
+        )}
       </div>
     </section>
   )

@@ -1,7 +1,9 @@
 import { useGSAP } from '@gsap/react'
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
+import { LoomLiteArt } from '@/components/LiteArt'
 import { loom } from '@/content/site'
+import { useLite } from '@/hooks/useLite'
 import { gsap, ScrollTrigger } from '@/hooks/motion'
 import { loomStore } from './store'
 
@@ -12,10 +14,20 @@ const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.Loo
 
 /** Pinned hero: scroll flies the camera into the loom while the copy steps through three phases. */
 export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean; introReady: boolean }) {
+  const { lite, fallBack } = useLite()
   const root = useRef<HTMLElement>(null)
   const [phase, setPhase] = useState(-1)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
+
+  // If the GPU drops the WebGL context (common on low-memory phones), swap to the static art.
+  useEffect(() => {
+    const canvas = root.current?.querySelector('.loom-canvas canvas')
+    if (!ready || !canvas) return
+    const onLost = () => fallBack('WebGL context lost')
+    canvas.addEventListener('webglcontextlost', onLost)
+    return () => canvas.removeEventListener('webglcontextlost', onLost)
+  }, [ready, fallBack])
 
   // Pause the WebGL loop when the hero is fully off screen.
   useEffect(() => {
@@ -55,10 +67,14 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   return (
     <section id="top" ref={root} className="loom-hero" aria-label={loom.title.join(' ')}>
       <div className="loom-sticky">
-        <div className={`loom-canvas${ready ? ' is-ready' : ''}`} aria-hidden="true">
-          <Suspense fallback={null}>
-            <LoomScene reducedMotion={reducedMotion} active={active} onReady={() => setReady(true)} />
-          </Suspense>
+        <div className={`loom-canvas${ready || lite ? ' is-ready' : ''}`} aria-hidden="true">
+          {lite ? (
+            <LoomLiteArt />
+          ) : (
+            <Suspense fallback={null}>
+              <LoomScene reducedMotion={reducedMotion} active={active} onReady={() => setReady(true)} />
+            </Suspense>
+          )}
         </div>
 
         <div className={`loom-intro${phase >= 0 ? ' is-gone' : ''}`}>

@@ -15,6 +15,7 @@ import { Services } from '@/components/Services'
 import { Story } from '@/components/Story'
 import { Work } from '@/components/Work'
 import { usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
+import { useFpsWatchdog, useLite } from '@/hooks/useLite'
 import { LoomHero, Weave } from '@/loom/hero'
 import { BeforeAfter, LoomContact } from '@/loom/sections'
 
@@ -29,15 +30,21 @@ const Scene = lazy(() => import('@/scene/Scene').then((m) => ({ default: m.Scene
  */
 export default function App() {
   const reducedMotion = usePrefersReducedMotion()
+  const { lite } = useLite()
   const [ready, setReady] = useState(false)
   useSmoothScroll(!reducedMotion)
+  // Once the intro is done, check the 3D keeps up; if not, switch to the lite (no-WebGL) site.
+  useFpsWatchdog(ready && !reducedMotion)
 
   return (
     <>
-      <Preloader reducedMotion={reducedMotion} caption="Untangling the threads" onDone={() => setReady(true)} />
-      <Suspense fallback={<div className="canvas-root canvas-fallback" aria-hidden="true" />}>
-        <Scene reducedMotion={reducedMotion} />
-      </Suspense>
+      <Preloader reducedMotion={reducedMotion || lite} caption="Untangling the threads" onDone={() => setReady(true)} />
+      {/* Lite mode never downloads three.js: the story and globe use static SVG art instead. */}
+      {!lite && (
+        <Suspense fallback={<div className="canvas-root canvas-fallback" aria-hidden="true" />}>
+          <Scene reducedMotion={reducedMotion} />
+        </Suspense>
+      )}
       <div className="grain" aria-hidden="true" />
       <Cursor />
       <Nav />
