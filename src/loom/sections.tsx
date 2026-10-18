@@ -309,8 +309,8 @@ export function Timelines() {
             <div className="tl-track">
               <div className="tl-start">
                 <span className="tl-tangle" aria-hidden="true" />
-                <span className="mono">Before</span>
-                <s>{c.before}</s>
+                <span className="mono">{c.sector}</span>
+                <span>{c.tags.join(' · ')}</span>
               </div>
               <div className="tl-thread">
                 <span className="tl-thread-line" aria-hidden="true">

@@ -250,34 +250,59 @@ export const workSection = {
 
 export const processSection = { kicker: 'How we build', title: 'Four stages. No surprises.' }
 
+// Case studies, from the original site's content (content/site.json on main). Client names are not published.
 export const work = [
   {
     id: 'safety-training',
     place: 'Dubai',
     sector: 'Safety training',
-    title: 'One system for registration, trainer scheduling and compliance reporting.',
-    before: 'Spreadsheets and chat threads',
-    hub: 'One system',
-    parts: ['Registration', 'Trainer scheduling', 'Compliance reporting'],
+    title: 'One system instead of spreadsheets and chat threads.',
+    body: 'Registration, trainer scheduling and compliance reporting for a nationwide training operation, in one place.',
     metrics: [
-      { value: '80%', label: 'less administrative work' },
+      { value: '−80%', label: 'administrative work' },
       { value: '100,000+', label: 'certifications a year' },
     ],
+    tags: ['Registration', 'Scheduling', 'Compliance'],
     tone: 'lime',
   },
   {
     id: 'tourism',
     place: 'Singapore',
     sector: 'Tourism',
-    title: 'A shared platform for events and listings, used by operators, planners and agencies.',
-    before: 'Disconnected listings and manual updates',
-    hub: 'Shared platform',
-    parts: ['Operators', 'Planners', 'Agencies'],
+    title: 'One record of events, instead of email threads.',
+    body: 'A shared record of events and listings for operators, planners and government agencies. Data stays in-country.',
     metrics: [
-      { value: '0', label: 'unplanned downtime' },
-      { value: '40,000', label: 'requests per minute at peak' },
+      { value: 'Zero', label: 'unplanned downtime' },
+      { value: '40,000', label: 'requests a minute at peak' },
     ],
+    tags: ['Multi-operator', 'Event ledger', 'Localised data'],
     tone: 'violet',
+  },
+  {
+    id: 'engineering-event',
+    place: 'Dubai',
+    sector: 'Engineering event',
+    title: 'One dashboard for hundreds of people running one event.',
+    body: 'An operations dashboard and participant platform for a large annual engineering event, on AWS.',
+    metrics: [
+      { value: 'Hundreds', label: 'people coordinated live' },
+      { value: 'AWS', label: 'high-availability set-up' },
+    ],
+    tags: ['Real-time', 'High concurrency', 'AWS'],
+    tone: 'coral',
+  },
+  {
+    id: 'marketplace',
+    place: 'Retail',
+    sector: 'Marketplace',
+    title: 'Sellers grew fifteen times over. Support headcount did not.',
+    body: 'Automated seller onboarding with real-time API integrations for a regional B2B marketplace.',
+    metrics: [
+      { value: '300 → 4,500', label: 'active sellers' },
+      { value: '+0', label: 'support headcount added' },
+    ],
+    tags: ['Seller onboarding', 'Catalogue', 'Real-time APIs'],
+    tone: 'lime',
   },
 ] as const
 
