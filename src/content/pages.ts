@@ -233,7 +233,7 @@ export const systemsSection = {
   impactTitle: 'What changes for you',
   toolsTitle: 'Tools we use',
   moreTitle: 'Other systems we build',
-  cta: { title: 'Tell us how your team works today.', body: 'We map it with you, then give you one price and one timeline before anything is built.', label: 'Tell us what is not working', href: '/contact' },
+  cta: { label: 'Tell us what is not working', href: '/contact' },
 }
 
 export const aboutPage = {
@@ -255,7 +255,7 @@ export const aboutPage = {
   ],
   numbersTitle: 'In numbers',
   processTitle: 'How we work',
-  cta: { title: 'Let’s talk about your business.', label: 'Tell us what is not working', href: '/contact' },
+  cta: { label: 'Tell us what is not working', href: '/contact' },
 }
 
 export const aiPage = {
@@ -310,5 +310,5 @@ export const aiPage = {
     { title: 'Your data stays put.', text: 'It works from your own records, inside your own systems.' },
     { title: 'Everything is logged.', text: 'You can see what the AI did, when, and why.' },
   ],
-  cta: { title: 'Which job would you hand to AI first?', label: 'Tell us what is not working', href: '/contact' },
+  cta: { label: 'Tell us what is not working', href: '/contact' },
 }

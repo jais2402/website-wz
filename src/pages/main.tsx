@@ -1,6 +1,7 @@
 import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@/index.css'
+import '@/loom/loom.css'
 import './pages.css'
 import { LiteProvider } from '@/components/LiteProvider'
 import { PageRouter } from './PageRouter'

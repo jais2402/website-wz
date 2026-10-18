@@ -1,5 +1,6 @@
 /* ==========================================================================
    Inner pages (About, AI, systems/*): shared shell and blocks from pages/shell.tsx.
+   Every page closes with the landing page's contact block (LoomContact, styled in loom/loom.css).
    Page-specific styles live next to each page (about.css, ai.css, system.css).
    ========================================================================== */
 .pg {
@@ -63,26 +64,6 @@
 
 .pg-section-intro {
   max-width: 58ch;
-}
-
-.pg-cta {
-  padding-top: clamp(40px, 6vw, 80px);
-  padding-bottom: clamp(80px, 10vw, 140px);
-}
-
-.pg-cta-card {
-  display: grid;
-  justify-items: start;
-  gap: 20px;
-  padding: clamp(32px, 5vw, 72px);
-  background:
-    radial-gradient(70% 90% at 100% 100%, rgba(37, 99, 235, 0.28), transparent 70%),
-    rgba(255, 255, 255, 0.03);
-}
-
-.pg-cta-title {
-  font-size: clamp(2rem, 4.4vw, 3.8rem);
-  max-width: 18ch;
 }
 
 @media (max-width: 899px) {

@@ -106,18 +106,3 @@ export function PageSection({
     </section>
   )
 }
-
-/** Closing call to action, the same on every page. */
-export function CtaBand({ title, body, label, href }: { title: string; body?: string; label: string; href: string }) {
-  return (
-    <section className="pg-cta wrap">
-      <div className="pg-cta-card glass-card" data-reveal>
-        <SplitReveal as="h2" className="display pg-cta-title" text={title} />
-        {body && <p className="lead">{body}</p>}
-        <a className="btn btn-lime btn-lg" href={href}>
-          {label} <span aria-hidden="true">→</span>
-        </a>
-      </div>
-    </section>
-  )
-}

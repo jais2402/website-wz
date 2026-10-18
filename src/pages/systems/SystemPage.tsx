@@ -5,7 +5,8 @@ import { SplitReveal } from '@/components/Reveal'
 import { type SystemPage as Page, type Voice, systemsSection as copy } from '@/content/pages'
 import { type Area, type Chart, areas, workSection } from '@/content/site'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
-import { CtaBand, PageHero, PageSection, PageShell } from '../shell'
+import { LoomContact } from '@/loom/sections'
+import { PageHero, PageSection, PageShell } from '../shell'
 import { buildModules, type CaseStudy, findCase, findSystem, otherSystems } from './lookup'
 import './system.css'
 
@@ -169,7 +170,7 @@ function System({ page }: { page: Page }) {
         </nav>
       </section>
 
-      <CtaBand {...copy.cta} />
+      <LoomContact />
     </PageShell>
   )
 }

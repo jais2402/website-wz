@@ -4,7 +4,8 @@ import { CountUp } from '@/components/Charts'
 import { aboutPage } from '@/content/pages'
 import { process, stats } from '@/content/site'
 import { gsap } from '@/hooks/motion'
-import { CtaBand, PageHero, PageSection, PageShell } from '../shell'
+import { LoomContact } from '@/loom/sections'
+import { PageHero, PageSection, PageShell } from '../shell'
 import './about.css'
 
 export function AboutPage() {
@@ -58,7 +59,7 @@ export function AboutPage() {
         </ol>
       </PageSection>
 
-      <CtaBand title={p.cta.title} label={p.cta.label} href={p.cta.href} />
+      <LoomContact />
     </PageShell>
   )
 }

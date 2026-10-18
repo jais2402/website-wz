@@ -2,7 +2,8 @@ import { useGSAP } from '@gsap/react'
 import { type MouseEvent, type ReactNode, useRef } from 'react'
 import { aiPage } from '@/content/pages'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
-import { CtaBand, PageHero, PageSection, PageShell } from '../shell'
+import { LoomContact } from '@/loom/sections'
+import { PageHero, PageSection, PageShell } from '../shell'
 import './ai.css'
 
 // The AI page: AI inside the systems you run, and custom AI solutions. Styles in ai.css (classes prefixed `aip-`,
@@ -37,7 +38,7 @@ export function AiPage() {
       <Inside />
       <Solutions />
       <How />
-      <CtaBand title={aiPage.cta.title} label={aiPage.cta.label} href={aiPage.cta.href} />
+      <LoomContact />
     </PageShell>
   )
 }
