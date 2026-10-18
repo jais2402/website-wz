@@ -78,6 +78,7 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
         <div className="loom-phases">
           {loom.phases.map((p, i) => (
             <article key={p.title} className={`loom-phase${i === phase ? ' is-active' : ''}`} aria-hidden={i !== phase}>
+              <span className="mono">{p.kicker}</span>
               <h2>{p.title}</h2>
               <p>{p.body}</p>
             </article>
