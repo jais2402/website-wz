@@ -249,7 +249,6 @@ export const ai = {
 export const workSection = {
   title: 'Our Work',
   hint: 'Keep scrolling →',
-  hintTouch: 'Swipe for more →',
   next: { title: 'Your system could be next.', body: 'Tell us what is slowing your team down and we will map it with you.', cta: 'Tell us what is not working', href: '#contact' },
 }
 

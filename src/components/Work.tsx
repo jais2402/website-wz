@@ -1,5 +1,5 @@
 import { useGSAP } from '@gsap/react'
-import { useRef } from 'react'
+import { type CSSProperties, useRef } from 'react'
 import { pastWork, work, workSection } from '@/content/site'
 import { gsap, scrollToTarget } from '@/hooks/motion'
 import { SplitReveal } from './Reveal'
@@ -19,7 +19,8 @@ const cards: Card[] = [...work, ...pastWork]
 
 /**
  * Case studies as a row of cards. Desktop: the section pins and scrolling moves the row sideways (like Services),
- * with a progress line. Phones and reduced motion: a swipeable row with scroll snap.
+ * with a progress line. Phones: a vertical deck where each card sticks and the next slides over it.
+ * Reduced motion on desktop: a swipeable row.
  */
 export function Work() {
   const root = useRef<HTMLElement>(null)
@@ -62,14 +63,11 @@ export function Work() {
           <span className="drag-hint mono work-hint" aria-hidden="true">
             {workSection.hint}
           </span>
-          <span className="drag-hint mono work-hint-touch" aria-hidden="true">
-            {workSection.hintTouch}
-          </span>
         </div>
 
         <div className="work-cards">
-          {cards.map((c) => (
-            <article key={c.id} id={c.id} className={`case-card tone-${c.tone}`}>
+          {cards.map((c, i) => (
+            <article key={c.id} id={c.id} className={`case-card tone-${c.tone}`} style={{ '--i': i } as CSSProperties}>
               <span className="mono case-card-tag">{c.place ? `${c.sector} · ${c.place}` : c.sector}</span>
               <h3>{c.title}</h3>
               <p className="case-card-body">{c.body}</p>

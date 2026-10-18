@@ -2350,10 +2350,6 @@ main,
   margin-top: 8px;
 }
 
-.work-hint-touch {
-  display: none;
-}
-
 .work-cards {
   display: flex;
   gap: 18px;
@@ -2487,11 +2483,12 @@ main,
   transform-origin: left;
 }
 
-@media (max-width: 899px), (prefers-reduced-motion: reduce) {
+/* Reduced motion on desktop: a plain swipe row instead of the pin. */
+@media (min-width: 900px) and (prefers-reduced-motion: reduce) {
   .work-row {
     display: block;
     height: auto;
-    padding: clamp(90px, 14vw, 120px) 0;
+    padding: 120px 0;
   }
 
   .work-intro {
@@ -2503,28 +2500,64 @@ main,
     display: none;
   }
 
-  .work-intro .work-hint-touch {
-    display: inline-block;
-  }
-
   .work-cards {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scroll-padding: 0 var(--gutter);
     padding: 6px var(--gutter) 10px;
-    scrollbar-width: none;
-    overscroll-behavior-x: contain;
-  }
-
-  .work-cards::-webkit-scrollbar {
-    display: none;
   }
 
   .case-card {
-    flex-basis: min(82vw, 360px);
-    height: auto;
-    min-height: 400px;
     scroll-snap-align: start;
+  }
+
+  .work-progress {
+    display: none;
+  }
+}
+
+/* Phones: cards scroll up and down as a deck. Each one sticks under the nav, a little lower than the last,
+   and the next card slides up over it. */
+@media (max-width: 899px) {
+  /* clip, not hidden: hidden would make .work a scroll container and stop the cards sticking. */
+  .work {
+    overflow: clip;
+  }
+
+  .work-row {
+    display: block;
+    height: auto;
+    padding: clamp(90px, 14vw, 120px) var(--gutter);
+  }
+
+  .work-intro {
+    margin-bottom: 28px;
+  }
+
+  .work-hint {
+    display: none;
+  }
+
+  .work-cards {
+    display: grid;
+    gap: 16px;
+  }
+
+  .case-card {
+    position: sticky;
+    top: calc(84px + var(--i, 0) * 8px);
+    height: auto;
+    min-height: 380px;
+    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  .case-card:hover {
+    transform: none;
+  }
+
+  .case-card-next {
+    min-height: 300px;
+    top: auto;
+    position: relative;
   }
 
   .work-progress {
