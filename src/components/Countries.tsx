@@ -51,7 +51,6 @@ export function Countries() {
     <section id="countries" ref={root} className="countries" data-3d-zone aria-labelledby="countries-title">
       <div className="wrap countries-grid">
         <div className="glass-card countries-card">
-          <p className="mono label">{reach.kicker}</p>
           <SplitReveal as="h2" className="display countries-title" text={reach.title} />
           <p className="lead">{reach.body}</p>
 

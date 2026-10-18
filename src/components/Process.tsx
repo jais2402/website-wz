@@ -41,12 +41,11 @@ export function Process() {
           <div className="process-line" aria-hidden="true">
             <span className="process-line-fill" />
           </div>
-          {process.map((s, i) => (
+          {process.map((s) => (
             <div className="step" key={s.title}>
               <span className="step-node" aria-hidden="true">
                 <i />
               </span>
-              <span className="mono step-num">Stage 0{i + 1}</span>
               <h3>{s.title}</h3>
               <p>{s.body}</p>
             </div>

@@ -55,7 +55,6 @@ export function Services() {
     <section id="build" ref={root} className="panel services">
       <div className="services-track" ref={track}>
         <div className="services-intro">
-          <p className="mono label">{servicesSection.kicker}</p>
           <SplitReveal as="h2" className="display" text={servicesSection.title} />
           <p className="lead">{servicesSection.body}</p>
           <span className="drag-hint mono" aria-hidden="true">

@@ -13,7 +13,6 @@ const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.Loo
 /** Pinned hero: scroll flies the camera into the loom while the copy steps through three phases. */
 export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean; introReady: boolean }) {
   const root = useRef<HTMLElement>(null)
-  const count = useRef<HTMLSpanElement>(null)
   const [phase, setPhase] = useState(-1)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
@@ -46,8 +45,6 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
         onUpdate: (st) => {
           loomStore.progress = st.progress
           loomStore.order = Math.min(1, st.progress * 1.4)
-          // Loose-thread counter runs down from 1000 to 1 as the tangle is woven.
-          if (count.current) count.current.textContent = String(Math.max(1, Math.round(1000 * (1 - st.progress) ** 2)))
           setPhase(st.progress < 0.12 ? -1 : Math.min(2, Math.floor((st.progress - 0.12) / 0.29)))
         },
       })
@@ -80,23 +77,13 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
 
         <div className="loom-phases">
           {loom.phases.map((p, i) => (
-            <article key={p.kicker} className={`loom-phase${i === phase ? ' is-active' : ''}`} aria-hidden={i !== phase}>
-              <span className="mono">{p.kicker}</span>
+            <article key={p.title} className={`loom-phase${i === phase ? ' is-active' : ''}`} aria-hidden={i !== phase}>
               <h2>{p.title}</h2>
               <p>{p.body}</p>
             </article>
           ))}
         </div>
 
-        <div className="loom-hud mono loom-fade" aria-hidden="true">
-          <span className="hud-in">
-            <i /> {loom.hudIn}: <b ref={count}>1000</b>
-          </span>
-          <span className="hud-scroll">Scroll to weave</span>
-          <span className="hud-out">
-            {loom.hudOut} <i />
-          </span>
-        </div>
       </div>
     </section>
   )
@@ -107,7 +94,6 @@ export function Weave() {
   return (
     <section id="weave" className="panel weave">
       <div className="wrap">
-        <p className="mono label">{loom.weave.kicker}</p>
         <SplitReveal as="h2" className="display weave-title" text={loom.weave.title} />
         <div className="weave-grid">
           <ul className="weave-in">

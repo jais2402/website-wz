@@ -41,7 +41,6 @@ export function Pricing() {
       <div className="wrap">
         <div className="pricing-grid">
           <div className="pricing-copy">
-            <p className="mono label">{pricing.kicker}</p>
             <h2 id="pricing-title" className="pricing-title" aria-label={pricing.title.join(' ')}>
               {pricing.title.map((l, i) => (
                 <span className="price-line" key={l} aria-hidden="true">
@@ -109,7 +108,6 @@ export function Pricing() {
           {pricing.steps.map((s, i) => (
             <li key={s.name} className={i === pricing.steps.length - 1 ? 'is-final' : undefined}>
               <span className="price-knot" aria-hidden="true" />
-              <span className="mono">0{i + 1}</span>
               <h3>{s.name}</h3>
               <p>{s.text}</p>
             </li>

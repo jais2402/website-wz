@@ -50,7 +50,6 @@ export function AIDemo() {
     <section id="ai" className="panel ai">
       <div className="wrap ai-grid">
         <div className="ai-copy">
-          <p className="mono label">{ai.eyebrow}</p>
           <SplitReveal as="h2" className="display" text={ai.title} />
           <p className="lead">{ai.body}</p>
           <ul className="ai-points">

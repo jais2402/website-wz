@@ -10,7 +10,6 @@ export function Integrations() {
     <section id="integrations" className="panel integrations">
       <div className="wrap integrations-grid">
         <div>
-          <p className="mono label">{integrationsSection.kicker}</p>
           <SplitReveal as="h2" className="display" text={integrationsSection.title} />
           <p className="lead">{integrationsSection.body}</p>
         </div>

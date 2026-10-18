@@ -82,7 +82,6 @@ export const stats = [
 ]
 
 export const servicesSection = {
-  kicker: 'Your technology partner',
   title: 'A technology partner for every part of your business.',
   body: 'Operations, sales, finance, HR. We design, build, host and maintain the software behind each of them, from the first workshop to years after launch.',
 }
@@ -222,7 +221,6 @@ export const areas: Area[] = [
 ]
 
 export const ai = {
-  eyebrow: 'AI integration',
   title: 'Put AI to work inside your systems.',
   body: 'We add AI to the software you already run. It reads your records, flags what needs attention and drafts the next step. A person signs off before anything goes through.',
   points: [
@@ -232,7 +230,7 @@ export const ai = {
   ],
 }
 
-export const workSection = { kicker: 'Case studies', title: 'Our Work' }
+export const workSection = { title: 'Our Work' }
 
 export const processSection = { kicker: 'How we build', title: 'Four stages. No surprises.' }
 
@@ -273,7 +271,6 @@ export const process = [
 // Pricing section. Built only from statements on the client's site: outcomes not hours, agreed before
 // building starts, cost driven by scope / integrations / process change (not technology), price from Shape.
 export const pricing = {
-  kicker: 'Pricing',
   title: ['Priced on outcomes,', 'not hours.'],
   body: 'You get one price and one timeline, agreed before any building starts.',
   cta: { label: 'Get a price for your system', href: '#contact' },
@@ -291,7 +288,6 @@ export const pricing = {
 }
 
 export const integrationsSection = {
-  kicker: 'Integrations',
   title: 'Integrates with the software you already use.',
   body: 'Accounting and CRM tools, payment gateways, government portals, identity checks, maps, and the legacy database nobody wants to touch. Your new system talks to all of them, so data moves on its own.',
 }
@@ -355,7 +351,6 @@ export const countries = [
 
 // Countries section: Chennai HQ with threads to every country we serve (names must match `countries`).
 export const reach = {
-  kicker: 'Where we work',
   title: 'Delivered across 11 countries.',
   body: 'Designed and built in Chennai. Running every day for teams across Asia, the Middle East, Europe, Australia and the Americas.',
   hq: 'India',
@@ -381,15 +376,13 @@ export const loom = {
   eyebrow: 'Custom business software · Since 2012',
   title: ['Every loose thread,', 'woven into', 'one system.'],
   sub: 'We design, build and run custom software for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
-  hudIn: 'Input · loose threads',
-  hudOut: 'Output · one timeline',
   // Hero copy chosen by the simulated 5-second persona test (see docs/concept-study.md, "Hero copy test").
   phases: [
-    { kicker: '01 · We map it', title: 'Start with a clear map of how work runs.', body: 'We map every spreadsheet, chat group and workaround your team relies on before we write a line of code.' },
-    { kicker: '02 · We build it', title: 'One system, built around your workflow.', body: 'Orders, people, approvals and reports in one place, connected to the tools you already use, with security built in from day one.' },
-    { kicker: '03 · We run it', title: 'We stay on after launch.', body: 'We host, monitor and maintain what we build, and keep improving it as your business grows.' },
+    { title: 'Start with a clear map of how work runs.', body: 'We map every spreadsheet, chat group and workaround your team relies on before we write a line of code.' },
+    { title: 'One system, built around your workflow.', body: 'Orders, people, approvals and reports in one place, connected to the tools you already use, with security built in from day one.' },
+    { title: 'We stay on after launch.', body: 'We host, monitor and maintain what we build, and keep improving it as your business grows.' },
   ],
-  weave: { kicker: 'What changes', title: 'Swap the workarounds for customised software with Wezigns.' },
+  weave: { title: 'Swap the workarounds for customised software with Wezigns.' },
   threadsIn: ['orders_FINAL_v7.xlsx', 'Ops WhatsApp group', 'Email approvals', 'Paper forms', 'Legacy database', 'Side tools', 'Manual re-entry', 'Who approved this?'],
   threadsOut: ['One source of truth', 'Approvals with an audit trail', 'Live dashboards', 'Connected tools', 'Secure by default', 'Grows in stages'],
   closing: { title: 'Hand us the tangle.', body: 'Tell us what is not working. We reply within one working day.', cta: 'Start the conversation', href: '#contact' },

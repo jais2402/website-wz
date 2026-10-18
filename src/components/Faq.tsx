@@ -8,7 +8,6 @@ export function Faq() {
     <section id="faq" className="panel faq">
       <div className="wrap faq-grid">
         <div>
-          <p className="mono label">Questions</p>
           <SplitReveal as="h2" className="display" text="Straight answers." />
         </div>
         <div className="faq-list">

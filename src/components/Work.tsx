@@ -27,7 +27,6 @@ export function Work() {
   return (
     <section id="work" ref={root} className="panel work">
       <div className="wrap">
-        <p className="mono label">{workSection.kicker}</p>
         <SplitReveal as="h2" className="display" text={workSection.title} />
       </div>
       <div className="cases">
