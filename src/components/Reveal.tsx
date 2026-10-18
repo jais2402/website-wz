@@ -2,7 +2,7 @@ import { useGSAP } from '@gsap/react'
 import { Fragment, type ReactNode, useRef } from 'react'
 import { gsap } from '@/hooks/motion'
 
-type Tag = 'span' | 'div' | 'h2' | 'h3' | 'p'
+type Tag = 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'p'
 type SplitProps = { text: string; as?: Tag; className?: string; delay?: number; trigger?: boolean }
 
 /** Word-by-word masked rise. Words stay readable to screen readers via the aria-label on the wrapper. */

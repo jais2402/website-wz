@@ -5,13 +5,32 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      // Clean URLs in dev and preview, matching Vercel's cleanUrls: /contact → /contact.html
+      name: 'clean-urls',
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          if (req.url && /^\/contact\/?(\?.*)?$/.test(req.url)) req.url = req.url.replace(/^\/contact\/?/, '/contact.html')
+          next()
+        })
+      },
+      configurePreviewServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          if (req.url && /^\/contact\/?(\?.*)?$/.test(req.url)) req.url = req.url.replace(/^\/contact\/?/, '/contact.html')
+          next()
+        })
+      },
+    },
+  ],
   // three.js lives in its own lazy chunk (~245 kB gzip); that size is expected.
   build: {
     chunkSizeWarningLimit: 1000,
     rolldownOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        contact: fileURLToPath(new URL('./contact.html', import.meta.url)),
         // loom.html (concept B) is internal only: served by `npm run dev`, not shipped in production builds.
       },
     },

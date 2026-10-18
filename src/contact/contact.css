@@ -1,0 +1,245 @@
+/* ==========================================================================
+   Contact page (/contact). Builds on the tokens and components in index.css.
+   ========================================================================== */
+.cp {
+  position: relative;
+  z-index: 1;
+  padding: clamp(130px, 16vh, 180px) 0 clamp(80px, 10vw, 140px);
+  background:
+    radial-gradient(45% 55% at 85% 10%, rgba(77, 159, 255, 0.14), transparent 70%),
+    radial-gradient(40% 50% at 0% 90%, rgba(139, 123, 255, 0.12), transparent 70%),
+    var(--ink);
+  min-height: 100vh;
+}
+
+.cp-title {
+  font-size: clamp(2.8rem, 6.4vw, 6rem);
+  max-width: 14ch;
+}
+
+.cp-head .lead {
+  max-width: 52ch;
+}
+
+.cp-body {
+  margin-top: clamp(48px, 6vw, 80px);
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) 1.2fr;
+  gap: clamp(20px, 3vw, 40px);
+  align-items: start;
+}
+
+.cp-cards {
+  display: grid;
+  gap: 14px;
+}
+
+.cp-card {
+  display: grid;
+  gap: 10px;
+  padding: clamp(20px, 2.4vw, 28px);
+  font-style: normal;
+}
+
+.cp-card-label {
+  color: var(--muted);
+}
+
+.cp-card-lines {
+  display: grid;
+  line-height: 1.55;
+}
+
+.cp-big {
+  font-family: var(--f-display);
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.cp-big:hover,
+.cp-link:hover,
+.cp-reach a:hover {
+  color: #8cc4ff;
+}
+
+.cp-link {
+  color: #8cc4ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cp-card-note {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.cp-reach {
+  margin-top: 6px;
+  color: var(--muted);
+}
+
+.cp-reach a {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cp-form {
+  padding: clamp(22px, 3vw, 40px);
+  scroll-margin-top: 110px;
+}
+
+/* Form */
+.cf {
+  display: grid;
+  gap: 18px;
+}
+
+.cf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.cf-field {
+  display: grid;
+  gap: 8px;
+}
+
+.cf-field label,
+.cf-topics legend {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.cf-field label span {
+  color: #8cc4ff;
+}
+
+.cf-field label em {
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.7;
+}
+
+.cf input,
+.cf textarea {
+  font: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  padding: 13px 15px;
+  resize: vertical;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.cf input:focus,
+.cf textarea:focus {
+  outline: none;
+  border-color: var(--lime);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.cf [aria-invalid='true'] {
+  border-color: var(--coral);
+}
+
+.cf-error {
+  color: #ff9c85;
+  font-size: 0.85rem;
+}
+
+.cf-topics {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.cf-topics legend {
+  margin-bottom: 10px;
+}
+
+/* Honeypot: off-screen, not display:none, so simple bots still see and fill it. */
+.cf-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.cf-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 20px;
+}
+
+.cf-note {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.cf-status:empty {
+  display: none;
+}
+
+.cf-status {
+  color: #ff9c85;
+}
+
+.cf-done {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  padding: 12px 0;
+}
+
+.cf-done-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.cf-done h2 {
+  font-family: var(--f-display);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  letter-spacing: -0.035em;
+}
+
+.cf-done p {
+  color: var(--muted);
+  max-width: 46ch;
+  line-height: 1.55;
+}
+
+.cf-done a {
+  color: #8cc4ff;
+}
+
+@media (max-width: 899px) {
+  .cp-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .cf-row {
+    grid-template-columns: 1fr;
+  }
+}

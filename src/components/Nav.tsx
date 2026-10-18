@@ -7,8 +7,9 @@ type NavItem = { label: string; href: string }
 
 export function Nav({
   items = nav,
-  cta = { label: 'Tell us what is not working', href: '#contact' },
-}: { items?: readonly NavItem[]; cta?: NavItem }) {
+  cta = { label: 'Tell us what is not working', href: '/contact' },
+  logoHref = '#top',
+}: { items?: readonly NavItem[]; cta?: NavItem; logoHref?: string }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -29,7 +30,7 @@ export function Nav({
 
   return (
     <header className={`nav${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
-      <a href="#top" className="nav-logo" onClick={go('#top')} aria-label={`${brand.name} home`}>
+      <a href={logoHref} className="nav-logo" onClick={go(logoHref)} aria-label={`${brand.name} home`}>
         <Logo />
       </a>
       <nav className="nav-links" aria-label="Primary">

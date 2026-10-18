@@ -413,10 +413,19 @@ export const reach = {
   ],
 }
 
+// Contact page (/contact)
+export const contactPage = {
+  kicker: 'Contact',
+  title: 'Tell us what is not working.',
+  lead: 'We reply within one working day. You get scope, price and timeline in writing before anything is built.',
+  phoneNote: 'Head office, Chennai',
+  emailNote: 'We reply within one working day.',
+}
+
 export const footer = [
   { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '#work'], ['Questions', '#faq']] },
   { title: 'Capabilities', links: [['Custom software', '#build'], ['Ecommerce systems', '#build'], ['System integration', '#integrations'], ['AI integrations', '#ai']] },
-  { title: 'Company', links: [['Contact', '#contact'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
+  { title: 'Company', links: [['Contact', '/contact'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
 // Second page: the time-loom concept (loom.html).

@@ -27,7 +27,7 @@ service lines** that match today's offer. There are **no new case studies** to t
 - Content update (address, service lines): ✅ done in commit `6f3aa7a`
 - Form submission method: **to be decided later.** The page is built so the method can be swapped without UI changes.
 
-## Detailed plan: Contact Us page (awaiting approval)
+## Detailed plan: Contact Us page (approved, built)
 
 ### Goal
 A dedicated page at `/contact` that gives anyone, including people arriving from a search or an old wezigns.com
@@ -77,6 +77,7 @@ link, every way to reach Wezigns, plus the enquiry form, in one place. It works 
 - Lint, typecheck, build; desktop 1440 and mobile 375 checks; keyboard-only and screen-reader labels; lite mode.
 - Then commit and push to `immersive-redesign` (with your go-ahead).
 
-### Open questions for you
-1. Office hours to show (e.g. Mon–Fri 9:30–18:30 IST), or leave them out?
-2. Keep the 3-question FAQ strip on the contact page, or keep the page minimal?
+### Open questions (built with the defaults; easy to add later)
+1. Office hours: left out until confirmed.
+2. FAQ strip: left out to keep the page minimal.
+3. Form method: `mailto` until decided. Switch `enquiryConfig` in `src/lib/enquiry.ts` to `endpoint`.

@@ -35,5 +35,43 @@
         }
       ]
     }
+  ],
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/contact-us",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/our-services",
+      "destination": "/#build",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio",
+      "destination": "/#work",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio-item-:slug",
+      "destination": "/#work",
+      "permanent": true
+    },
+    {
+      "source": "/about-us",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/index",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/careers",
+      "destination": "/",
+      "permanent": true
+    }
   ]
 }
