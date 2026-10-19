@@ -18,6 +18,14 @@ type Card = {
 
 const cards: Card[] = [...work, ...pastWork]
 
+/** Right edge of the card row inside `.work-row`, plus the row's end padding. */
+function cardsEnd(row: HTMLElement) {
+  const box = row.querySelector<HTMLElement>('.work-cards')
+  if (!box) return row.clientWidth
+  const pad = parseFloat(getComputedStyle(row).paddingRight) || 0
+  return box.offsetLeft + box.offsetWidth + pad
+}
+
 /**
  * Case studies as a row of cards. Desktop: the section pins and scrolling moves the row sideways (like Services),
  * with a progress line. Phones: a vertical deck where each card sticks and the next slides over it.
@@ -51,7 +59,7 @@ export function Work() {
         y: cardsBox.offsetTop + c.offsetTop,
       }))
       // Negative sag: the thread arcs up between cards, in the open space above them.
-      setSvg({ d: threadPath(start, knots, -42), w: el.scrollWidth, h: el.offsetHeight })
+      setSvg({ d: threadPath(start, knots, -42), w: cardsEnd(el), h: el.offsetHeight })
     }
     measure()
     const ro = new ResizeObserver(measure)
@@ -63,7 +71,8 @@ export function Work() {
     () => {
       const mm = gsap.matchMedia()
       mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
-        const distance = () => row.current!.scrollWidth - row.current!.clientWidth
+        // Scroll exactly to the last card. Measured from the cards, not scrollWidth, which the thread SVG also widens.
+        const distance = () => Math.max(0, cardsEnd(row.current!) - row.current!.clientWidth)
         gsap.to(row.current, {
           x: () => -distance(),
           ease: 'none',
