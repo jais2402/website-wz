@@ -507,6 +507,20 @@ export const footer = [
   { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
+// Footer bottom row, beside the copyright.
+export const legalLinks = [
+  { label: 'Privacy policy', href: '/privacy-policy' },
+  { label: 'Terms and conditions', href: '/terms-and-conditions' },
+  { label: 'Cookie policy', href: '/cookie-policy' },
+  { label: 'Sitemap', href: '/sitemap' },
+]
+
+// One line beside each enquiry form's submit button: the purpose, stated where the details are collected.
+export const privacyNotice = {
+  text: 'We use your details only to reply to your enquiry. See our',
+  link: { label: 'privacy policy', href: '/privacy-policy' },
+}
+
 // Second page: the time-loom concept (loom.html).
 export const loom = {
   eyebrow: 'Custom business software · Since 2012',

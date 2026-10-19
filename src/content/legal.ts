@@ -1,10 +1,10 @@
-// Copy for the legal pages: Privacy Policy, Terms of Use and Cookie Statement.
+// Copy for the legal pages: Privacy Policy, Terms and Conditions and Cookie Policy.
 // DRAFT: written from the research in docs/legal/research.md. A qualified lawyer must review all of it before it
 // is published. Placeholders are in [square brackets]; search for "[" to find them.
 // The text describes the site as it will be at launch: fonts self-hosted (no Google Fonts requests), no cookies,
 // no analytics. If the code changes (analytics, embeds, cookies), update this file and the research notes first.
 
-import { brand } from './site'
+import { brand } from './site.ts'
 
 export type LegalSection = { id: string; heading: string; body: string[] }
 export type LegalDoc = { title: string; lead: string; sections: LegalSection[] }
@@ -151,7 +151,7 @@ export const privacyPolicy: LegalDoc = {
 }
 
 export const termsOfUse: LegalDoc = {
-  title: 'Terms of Use',
+  title: 'Terms and Conditions',
   lead: 'These terms cover your use of this website. They are not a contract for software work: that is always a separate written agreement.',
   sections: [
     {
@@ -248,7 +248,7 @@ export const termsOfUse: LegalDoc = {
 }
 
 export const cookieStatement: LegalDoc = {
-  title: 'Cookie Statement',
+  title: 'Cookie Policy',
   lead: 'This website uses no cookies. There is no cookie banner because there is nothing to ask you about.',
   sections: [
     {

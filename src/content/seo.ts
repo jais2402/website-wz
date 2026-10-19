@@ -72,6 +72,10 @@ export type PageId =
   | 'contact'
   | 'notFound'
   | 'loom'
+  | 'privacy'
+  | 'terms'
+  | 'cookies'
+  | 'sitemap'
 
 /** JSON-LD type of the page itself. `Service` pages get a WebPage node plus Service nodes. */
 export type PageSchema = 'WebPage' | 'CollectionPage' | 'AboutPage' | 'ContactPage' | 'Service'
@@ -99,7 +103,7 @@ export type SeoPage = {
   /** Name of the Service on a system page. */
   serviceName?: string
   /** llms.txt section and link label. */
-  llms?: { section: 'Systems' | 'AI' | 'Company' | 'Contact'; label: string }
+  llms?: { section: 'Systems' | 'AI' | 'Company' | 'Contact' | 'Legal'; label: string }
 }
 
 const HOME: Crumb = { name: 'Home', path: '/' }
@@ -279,6 +283,59 @@ export const pages: SeoPage[] = [
     breadcrumb: [],
     schema: 'WebPage',
     indexable: false,
+  },
+  // Legal pages and the HTML sitemap: last, so the social cards of the pages above keep their seeds.
+  {
+    id: 'privacy',
+    file: 'privacy-policy.html',
+    path: '/privacy-policy',
+    title: 'Privacy Policy: How Wezigns Handles Your Data',
+    description:
+      'How Wezigns handles the details you send through our enquiry forms: what we collect, who processes it, how long we keep it, and how to use your rights.',
+    card: { kicker: 'Legal', title: 'What we collect, and what we do not.' },
+    breadcrumb: [HOME, { name: 'Privacy policy', path: '/privacy-policy' }],
+    schema: 'WebPage',
+    indexable: true,
+    llms: { section: 'Legal', label: 'Privacy policy' },
+  },
+  {
+    id: 'terms',
+    file: 'terms-and-conditions.html',
+    path: '/terms-and-conditions',
+    title: 'Website Terms and Conditions | Wezigns',
+    description:
+      'The terms for using the Wezigns website: acceptable use, intellectual property, case studies and sample figures, our liability and Indian governing law.',
+    card: { kicker: 'Legal', title: 'The terms for using this website.' },
+    breadcrumb: [HOME, { name: 'Terms and conditions', path: '/terms-and-conditions' }],
+    schema: 'WebPage',
+    indexable: true,
+    llms: { section: 'Legal', label: 'Terms and conditions' },
+  },
+  {
+    id: 'cookies',
+    file: 'cookie-policy.html',
+    path: '/cookie-policy',
+    title: 'Cookie Policy: No Cookies, No Tracking | Wezigns',
+    description:
+      'The Wezigns website sets no cookies and stores nothing in your browser. No analytics, no tracking pixels, no third-party fonts. Here is what that means.',
+    card: { kicker: 'Legal', title: 'No cookies. No tracking.' },
+    breadcrumb: [HOME, { name: 'Cookie policy', path: '/cookie-policy' }],
+    schema: 'WebPage',
+    indexable: true,
+    llms: { section: 'Legal', label: 'Cookie policy' },
+  },
+  {
+    id: 'sitemap',
+    file: 'sitemap.html',
+    path: '/sitemap',
+    title: 'Sitemap: Every Page on the Wezigns Website',
+    description:
+      'Every page on the Wezigns website in one list: the six business systems we build, AI, technology, about us, contact, home page sections and legal pages.',
+    card: { kicker: 'Sitemap', title: 'Every page, in one place.' },
+    breadcrumb: [HOME, { name: 'Sitemap', path: '/sitemap' }],
+    schema: 'CollectionPage',
+    indexable: true,
+    llms: { section: 'Legal', label: 'Sitemap (every page)' },
   },
 ]
 

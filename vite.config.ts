@@ -19,6 +19,10 @@ const INPUTS = {
   ai: page('ai.html'),
   technology: page('technology.html'),
   notFound: page('404.html'),
+  privacy: page('privacy-policy.html'),
+  terms: page('terms-and-conditions.html'),
+  cookies: page('cookie-policy.html'),
+  sitemap: page('sitemap.html'),
   ...Object.fromEntries(SYSTEMS.map((s) => [`systems/${s}`, page(`systems/${s}.html`)])),
 }
 

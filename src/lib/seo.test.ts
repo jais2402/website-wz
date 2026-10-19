@@ -1,5 +1,6 @@
 import { brand, countries, faq } from '@/content/site'
 import { pages, seoData, site } from '@/content/seo'
+import { sitemapPage } from '@/content/sitemap'
 import {
   absoluteUrl,
   applyHead,
@@ -100,11 +101,50 @@ describe('page data', () => {
   })
 })
 
+describe('legal pages and the HTML sitemap', () => {
+  const ids = ['privacy', 'terms', 'cookies', 'sitemap']
+
+  it('are indexable, with the agreed URLs, a two-step breadcrumb and a page type', () => {
+    expect(ids.map((id) => page(id).path)).toEqual([
+      '/privacy-policy',
+      '/terms-and-conditions',
+      '/cookie-policy',
+      '/sitemap',
+    ])
+    for (const id of ids) {
+      const p = page(id)
+      expect(p.indexable, id).toBe(true)
+      expect(p.breadcrumb, id).toHaveLength(2)
+      expect(p.llms?.section, id).toBe('Legal')
+    }
+    expect(graphOf('privacy').some((n) => typeIn(n, 'WebPage'))).toBe(true)
+    expect(graphOf('sitemap').some((n) => typeIn(n, 'CollectionPage'))).toBe(true)
+  })
+
+  it('name their page in data-page, preload the self-hosted fonts and load no Google Fonts', () => {
+    const dataPage = { privacy: 'legal:privacy', terms: 'legal:terms', cookies: 'legal:cookies', sitemap: 'sitemap' }
+    for (const [id, value] of Object.entries(dataPage)) {
+      const html = htmlFiles[`../../${page(id).file}`] ?? ''
+      expect(html, id).toContain(`<body data-page="${value}">`)
+      expect(html, id).toMatch(/<link rel="preload" href="\/fonts\/[^"]+\.woff2" as="font"/)
+    }
+    for (const [file, html] of Object.entries(htmlFiles)) expect(html, file).not.toContain('fonts.googleapis.com')
+  })
+
+  it('the HTML sitemap lists every indexable page', () => {
+    const hrefs = sitemapPage.groups.flatMap((g) => g.links.map((l) => l.href))
+    for (const p of pages.filter((p) => p.indexable)) expect(hrefs, p.id).toContain(p.path)
+    expect(new Set(hrefs).size).toBe(hrefs.length)
+  })
+})
+
 describe('pageForFile', () => {
   it('finds pages by entry file', () => {
     expect(pageForFile(pages, '/systems/people.html')?.id).toBe('people')
     expect(pageForFile(pages, 'index.html')?.id).toBe('home')
     expect(pageForFile(pages, 'systems\\finance.html')?.id).toBe('finance')
+    expect(pageForFile(pages, 'privacy-policy.html')?.id).toBe('privacy')
+    expect(pageForFile(pages, 'sitemap.html')?.id).toBe('sitemap')
     expect(pageForFile(pages, 'nope.html')).toBeUndefined()
   })
 })
@@ -215,7 +255,9 @@ describe('jsonLd', () => {
 describe('sitemapXml', () => {
   it('lists only indexable pages with absolute www URLs and lastmod', () => {
     const xml = sitemapXml(pages, site, '2026-10-19')
-    expect(xml.match(/<url>/g)).toHaveLength(12)
+    expect(xml.match(/<url>/g)).toHaveLength(16)
+    for (const path of ['/privacy-policy', '/terms-and-conditions', '/cookie-policy', '/sitemap'])
+      expect(xml).toContain(`<loc>https://www.wezigns.com${path}</loc>`)
     expect(xml).toContain('<loc>https://www.wezigns.com/</loc>')
     expect(xml).toContain('<loc>https://www.wezigns.com/systems/industry</loc>')
     expect(xml).not.toContain('/404')
@@ -231,6 +273,8 @@ describe('llmsTxt', () => {
     expect(txt.startsWith('# Wezigns\n\n> ')).toBe(true)
     expect(txt).toContain('## Systems')
     expect(txt).toContain('## Contact')
+    expect(txt).toContain('## Legal')
+    expect(txt).toContain('[Privacy policy](https://www.wezigns.com/privacy-policy)')
     for (const p of pages.filter((p) => p.indexable)) {
       expect(txt).toContain(`](${absoluteUrl(site.origin, p.path)})`)
     }

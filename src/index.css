@@ -3227,6 +3227,31 @@ main,
   border-top: 1px solid var(--line);
 }
 
+/* Copyright and the legal links, small and muted. Wraps to its own lines on phones. */
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 20px;
+}
+
+.footer-legal nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.footer-legal a,
+.footer-bottom a {
+  color: var(--muted);
+  transition: color 0.2s;
+}
+
+.footer-legal a:hover,
+.footer-bottom a:hover {
+  color: var(--text);
+}
+
 /* ==========================================================================
    Shared: glass card
    ========================================================================== */

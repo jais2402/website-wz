@@ -3,7 +3,9 @@
 // see; React replaces it on load. Pure string builders: no React, no DOM. Imports use relative paths with the .ts
 // extension so the plugin can load this file outside the app's `@/` alias.
 
+import { legalMeta } from '../content/legal.ts'
 import { aboutPage, aiPage, notFoundPage, servicesPage, systemPages, systemsSection } from '../content/pages.ts'
+import { type LegalKey, legalCopy, legalPages, sitemapPage } from '../content/sitemap.ts'
 import {
   ai,
   areas,
@@ -15,6 +17,7 @@ import {
   footer,
   integrations,
   integrationsSection,
+  legalLinks,
   loom,
   nav,
   navSystems,
@@ -34,10 +37,20 @@ import {
   work,
   workSection,
 } from '../content/site.ts'
+import { formatLegalDate, legalAnchor } from './legal.ts'
 
 /** Page ids: one per shipped HTML file. Systems are `system:<slug>`. */
 export type SnapshotPage =
-  'home' | 'services' | 'ai' | 'technology' | 'about' | 'contact' | 'notFound' | `system:${string}`
+  | 'home'
+  | 'services'
+  | 'ai'
+  | 'technology'
+  | 'about'
+  | 'contact'
+  | 'notFound'
+  | 'sitemap'
+  | `system:${string}`
+  | `legal:${LegalKey}`
 
 type Link = { label: string; href: string }
 
@@ -108,7 +121,8 @@ function footerHtml(onHome: boolean): string {
       address('Head office · Chennai') +
       cols +
       p(countries.map((c) => c.name).join(' · ')) +
-      p(`© 2026 ${brand.legal}`),
+      p(`© 2026 ${brand.legal}`) +
+      tag('nav', ulHtml(legalLinks.map((l) => a(l.href, l.label))), ' aria-label="Legal"'),
   )
 }
 
@@ -521,6 +535,44 @@ function notFoundPageHtml(): string {
   )
 }
 
+function legalPageHtml(key: string): string | null {
+  const entry = legalPages.find((l) => l.key === key)
+  if (!entry) return null
+  const { doc } = entry
+  const others = legalPages.filter((l) => l.key !== key)
+  const updated = tag('time', t(formatLegalDate(legalMeta.updated)), ` datetime="${t(legalMeta.updated)}"`)
+  return page(
+    section(p(legalCopy.kicker) + h1(doc.title) + p(doc.lead) + tag('p', `${t(legalCopy.updated)} ${updated}`)) +
+      (legalMeta.reviewNote
+        ? tag('aside', p(legalCopy.draftLabel) + p(legalMeta.reviewNote), ` aria-label="${t(legalCopy.draftLabel)}"`)
+        : '') +
+      tag(
+        'nav',
+        p(legalCopy.tocTitle) +
+          ulHtml(doc.sections.map((x) => a(`#${legalAnchor(x.id)}`, x.heading))) +
+          p(legalCopy.otherTitle) +
+          ulHtml(others.map((o) => a(o.path, o.label))),
+        ` aria-label="${t(legalCopy.tocTitle)}"`,
+      ) +
+      tag(
+        'article',
+        doc.sections.map((x) => section(h2(x.heading) + x.body.map(p).join(''), legalAnchor(x.id))).join(''),
+      ) +
+      contactBlock(),
+  )
+}
+
+function sitemapPageHtml(): string {
+  const x = sitemapPage
+  return page(
+    section(p(x.kicker) + h1(line(x.title)) + p(x.lead)) +
+      x.groups
+        .map((g) => section(h2(g.title) + ulHtml(g.links.map((l) => `${a(l.href, l.label)} ${t(l.text)}`))))
+        .join('') +
+      contactBlock(),
+  )
+}
+
 /** The snapshot for a page id, or null for an unknown page (the plugin then leaves #root empty). */
 export function snapshot(id: string): string | null {
   switch (id) {
@@ -538,7 +590,10 @@ export function snapshot(id: string): string | null {
       return contactPageHtml()
     case 'notFound':
       return notFoundPageHtml()
+    case 'sitemap':
+      return sitemapPageHtml()
   }
+  if (id.startsWith('legal:')) return legalPageHtml(id.slice('legal:'.length))
   return id.startsWith('system:') ? systemPageHtml(id.slice('system:'.length)) : null
 }
 
@@ -551,6 +606,8 @@ export const snapshotPages: SnapshotPage[] = [
   'technology',
   'about',
   'contact',
+  ...legalPages.map((l) => `legal:${l.key}` as const),
+  'sitemap',
   'notFound',
 ]
 
@@ -562,6 +619,10 @@ const FILES: Record<string, SnapshotPage> = {
   'ai.html': 'ai',
   'technology.html': 'technology',
   '404.html': 'notFound',
+  'privacy-policy.html': 'legal:privacy',
+  'terms-and-conditions.html': 'legal:terms',
+  'cookie-policy.html': 'legal:cookies',
+  'sitemap.html': 'sitemap',
 }
 
 /**

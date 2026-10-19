@@ -25,7 +25,9 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   Pages keep the old wezigns.com slugs (`/contact-us`, `/about-us`, `/our-services`) so those URLs need no redirect.
   Address, phone and email cards, the enquiry form (`ContactForm`, sending switchable in `lib/enquiry.ts`), and the
   loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`, SVG art in lite mode).
-- `about-us.html`, `our-services.html` (systems overview), `ai.html`, `technology.html`, `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
+- `about-us.html`, `our-services.html` (systems overview), `ai.html`, `technology.html`, `privacy-policy.html`,
+  `terms-and-conditions.html`, `cookie-policy.html`, `sitemap.html` (legal copy in `src/content/legal.ts`, drafts for
+  legal review; no cookie banner because the site sets no cookies or storage, see `docs/legal/research.md`), `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
   `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). Shared shell, hero, section
   and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
   Every hero has a visual: a 3D loom variant (`pages/HeroLoom.tsx` → `LoomScene variant`: `classic` for contact,

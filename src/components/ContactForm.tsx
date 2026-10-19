@@ -1,7 +1,7 @@
 import { type FormEvent, useRef, useState } from 'react'
 import { enquiryTopics } from '@/content/site'
 import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, validateEnquiry } from '@/lib/enquiry'
-import { EnquiryError, EnquirySent, type SendStatus } from './EnquiryForm'
+import { EnquiryError, EnquirySent, PrivacyNote, type SendStatus } from './EnquiryForm'
 
 const EMPTY: Enquiry = { name: '', email: '', company: '', phone: '', topics: [], message: '', website: '' }
 type Field = keyof EnquiryErrors
@@ -134,6 +134,7 @@ export function ContactForm() {
           {status.kind === 'sending' ? 'Sending…' : 'Send message'} <span aria-hidden="true">→</span>
         </button>
         <span className="cf-note">We reply within one working day.</span>
+        <PrivacyNote />
       </div>
       <EnquiryError status={status} onRetry={() => void send()} />
     </form>

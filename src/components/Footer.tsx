@@ -1,4 +1,4 @@
-import { brand, countries, footer } from '@/content/site'
+import { brand, countries, footer, legalLinks } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
 import { AiSummary } from './AiSummary'
 import { Logo } from './Logo'
@@ -41,7 +41,16 @@ export function Footer({ base = '' }: { base?: string }) {
         Wezigns
       </div>
       <div className="wrap footer-bottom mono">
-        <span>© 2026 {brand.legal}</span>
+        <div className="footer-legal">
+          <span>© 2026 {brand.legal}</span>
+          <nav aria-label="Legal">
+            {legalLinks.map((l) => (
+              <a key={l.href} href={l.href}>
+                {l.label}
+              </a>
+            ))}
+          </nav>
+        </div>
         <span>
           <a href={`mailto:${brand.email}`}>{brand.email}</a> · <a href={brand.phoneHref}>{brand.phone}</a>
         </span>

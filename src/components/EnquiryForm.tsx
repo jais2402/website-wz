@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
-import { brand, enquiryTopics } from '@/content/site'
+import { brand, enquiryTopics, privacyNotice } from '@/content/site'
 import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, validateEnquiry } from '@/lib/enquiry'
 import './enquiry.css'
 
@@ -54,6 +54,15 @@ export function EnquiryError({ status, onRetry }: { status: SendStatus; onRetry:
         </>
       )}
     </div>
+  )
+}
+
+/** The one-line privacy notice beside each form's submit button. */
+export function PrivacyNote() {
+  return (
+    <p className="ef-privacy">
+      {privacyNotice.text} <a href={privacyNotice.link.href}>{privacyNotice.link.label}</a>.
+    </p>
   )
 }
 
@@ -179,6 +188,7 @@ export function EnquiryForm() {
         <span className="mono composer-alt">
           or <a href={`mailto:${brand.email}`}>{brand.email}</a> · <a href={brand.phoneHref}>{brand.phone}</a>
         </span>
+        <PrivacyNote />
       </div>
       <EnquiryError status={status} onRetry={() => void send()} />
     </form>

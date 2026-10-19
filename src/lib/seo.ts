@@ -297,7 +297,7 @@ export function sitemapXml(pages: SeoPage[], site: SeoSite, lastmod: string) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`
 }
 
-const LLMS_SECTIONS = ['Systems', 'AI', 'Company', 'Contact'] as const
+const LLMS_SECTIONS = ['Systems', 'AI', 'Company', 'Contact', 'Legal'] as const
 
 /** llms.txt (llmstxt.org): H1 name, blockquote summary, key facts, then sections of links. */
 export function llmsTxt(pages: SeoPage[], site: SeoSite, data: SeoData) {

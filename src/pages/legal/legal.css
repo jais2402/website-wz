@@ -1,0 +1,407 @@
+/* ==========================================================================
+   Legal pages (privacy, terms, cookies) and the HTML sitemap. Quiet and readable: a compact hero with a small
+   thread mark, a sticky contents list on desktop and prose at a comfortable measure.
+   ========================================================================== */
+
+/* Hero */
+.lg-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: clamp(24px, 5vw, 72px);
+  padding-top: clamp(128px, 17vh, 176px);
+  padding-bottom: clamp(32px, 4vw, 56px);
+}
+
+.lg-hero-copy {
+  min-width: 0;
+}
+
+.lg-title {
+  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  max-width: 18ch;
+}
+
+.lg-lead {
+  max-width: 62ch;
+}
+
+.lg-updated {
+  margin-top: 20px;
+  color: var(--muted);
+}
+
+.lg-updated time {
+  color: var(--text);
+}
+
+/* The thread mark: drawn once, then a slow glow. Static under reduced motion. */
+.lg-mark {
+  position: relative;
+  width: clamp(120px, 14vw, 196px);
+}
+
+.lg-mark::before {
+  content: '';
+  position: absolute;
+  inset: 12% 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(77, 159, 255, 0.22), transparent);
+  filter: blur(18px);
+  animation: lg-breathe 6s ease-in-out infinite;
+}
+
+.lg-mark svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.lg-mark-thread {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: lg-draw 2.2s var(--ease-out) 0.2s forwards;
+}
+
+.lg-mark-thread:nth-of-type(2n) {
+  animation-delay: 0.45s;
+}
+
+.lg-mark-thread:nth-of-type(3n) {
+  animation-delay: 0.7s;
+}
+
+.lg-mark-weft {
+  opacity: 0;
+  animation: lg-fade 1.6s ease 1s forwards;
+}
+
+.lg-mark-weft path {
+  stroke-opacity: 0.22;
+}
+
+.lg-mark-knot {
+  opacity: 0;
+  animation: lg-fade 0.8s ease 1.4s forwards;
+}
+
+@keyframes lg-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes lg-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lg-breathe {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Draft notice, shown while legalMeta.reviewNote is set */
+.lg-draft {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 16px;
+  padding: 16px 20px;
+  border: 1px dashed rgba(255, 122, 89, 0.55);
+  border-radius: 16px;
+  background: rgba(255, 122, 89, 0.07);
+  line-height: 1.5;
+}
+
+.lg-draft p {
+  margin: 0;
+}
+
+.lg-draft-label {
+  color: var(--coral);
+}
+
+/* Contents + prose */
+.lg-body {
+  display: grid;
+  grid-template-columns: minmax(200px, 270px) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(40px, 6vw, 104px);
+  padding-top: clamp(40px, 5vw, 72px);
+  padding-bottom: clamp(72px, 9vw, 130px);
+}
+
+.lg-toc {
+  position: sticky;
+  top: 112px;
+  max-height: calc(100vh - 136px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.lg-toc-title {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
+.lg-toc-other {
+  margin-top: 28px;
+}
+
+.lg-toc ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lg-toc a {
+  display: block;
+  padding: 6px 0 6px 14px;
+  border-left: 1px solid var(--line-2);
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.lg-toc a:hover,
+.lg-toc a:focus-visible {
+  color: var(--text);
+  border-left-color: var(--lime);
+}
+
+.lg-prose {
+  min-width: 0;
+  max-width: 70ch;
+}
+
+.lg-prose section {
+  /* Clears the fixed nav for TOC links (Lenis reads this too). */
+  scroll-margin-top: 112px;
+}
+
+.lg-prose section + section {
+  margin-top: clamp(40px, 5vw, 56px);
+}
+
+.lg-prose h2 {
+  margin: 0 0 16px;
+  font-family: var(--f-display);
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.lg-prose p {
+  margin: 0 0 16px;
+  color: #c9cbd8;
+  font-size: 1.02rem;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.lg-prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* [placeholders] still to be filled in */
+.lg-ph {
+  padding: 0 0.2em;
+  border-radius: 4px;
+  background: rgba(255, 122, 89, 0.14);
+  color: #ffb39e;
+}
+
+/* Sitemap */
+.lg-map {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(40px, 5vw, 72px) clamp(32px, 5vw, 80px);
+  padding-top: clamp(24px, 3vw, 40px);
+  padding-bottom: clamp(72px, 9vw, 130px);
+}
+
+.lg-map-group {
+  min-width: 0;
+}
+
+.lg-map-title {
+  margin: 0 0 8px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-2);
+  font-family: var(--f-display);
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.lg-map ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lg-map-link {
+  display: grid;
+  gap: 4px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.lg-map-label {
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.lg-map-text {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.lg-map-link:hover .lg-map-label,
+.lg-map-link:focus-visible .lg-map-label {
+  color: var(--lime);
+}
+
+/* Tablets and phones: contents become a plain list above the text */
+@media (max-width: 899px) {
+  .lg-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lg-toc {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--ink-2);
+  }
+
+  .lg-map {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Phones: the text gets the full width; the mark sits small beside the short kicker. */
+@media (max-width: 560px) {
+  .lg-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lg-hero-copy,
+  .lg-mark {
+    grid-area: 1 / 1;
+  }
+
+  .lg-mark {
+    justify-self: end;
+    align-self: start;
+    width: 48px;
+    margin-top: -18px;
+  }
+
+  .lg-title {
+    font-size: clamp(2rem, 9vw, 2.4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-mark::before,
+  .lg-mark-thread,
+  .lg-mark-weft,
+  .lg-mark-knot {
+    animation: none;
+  }
+
+  .lg-mark-thread {
+    stroke-dashoffset: 0;
+  }
+
+  .lg-mark-weft,
+  .lg-mark-knot {
+    opacity: 1;
+  }
+}
+
+@media print {
+  .lg-mark,
+  .lg-toc {
+    display: none !important;
+  }
+
+  .lg-hero {
+    display: block;
+    padding: 0 0 5mm;
+  }
+
+  .lg-title {
+    font-size: 24pt;
+    max-width: none;
+  }
+
+  .lg-updated time {
+    color: var(--text);
+  }
+
+  .lg-draft {
+    border-color: #c0573c;
+    background: none;
+  }
+
+  .lg-body {
+    display: block;
+    padding: 4mm 0 0;
+  }
+
+  .lg-prose {
+    max-width: none;
+  }
+
+  .lg-prose section + section {
+    margin-top: 5mm;
+  }
+
+  .lg-prose h2 {
+    font-size: 13pt;
+    margin-bottom: 2mm;
+    break-after: avoid;
+  }
+
+  .lg-prose p {
+    color: #2c2d36;
+    font-size: 10pt;
+    line-height: 1.55;
+    margin-bottom: 2.5mm;
+  }
+
+  .lg-ph {
+    background: none;
+    color: inherit;
+    outline: 1px solid #c0573c;
+  }
+
+  .lg-map {
+    display: block;
+    padding: 0;
+  }
+
+  .lg-map-group {
+    break-inside: avoid;
+    margin-bottom: 6mm;
+  }
+
+  .lg-map-link {
+    padding: 2mm 0;
+  }
+}

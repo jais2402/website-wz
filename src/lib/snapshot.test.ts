@@ -1,5 +1,8 @@
+import { legalMeta } from '@/content/legal'
 import { aboutPage, aiPage, notFoundPage, servicesPage, systemPages, systemsSection } from '@/content/pages'
+import { legalPages, sitemapPage } from '@/content/sitemap'
 import { brand, faq, loom, stats } from '@/content/site'
+import { legalAnchor } from './legal'
 import { escapeHtml, pageForFile, snapshot, snapshotPages } from './snapshot'
 
 const html = (id: string) => {
@@ -19,6 +22,10 @@ const PAGES = [
   '/technology',
   '/about-us',
   '/contact-us',
+  '/privacy-policy',
+  '/terms-and-conditions',
+  '/cookie-policy',
+  '/sitemap',
 ]
 
 describe('snapshot', () => {
@@ -91,6 +98,35 @@ describe('snapshot', () => {
     }
   })
 
+  it.each(legalPages)(
+    'legal:$key carries the full legal text, its contents list and the draft note',
+    ({ key, doc }) => {
+      const s = html(`legal:${key}`)
+      expect(h1Text(s)).toBe(escapeHtml(doc.title))
+      expect(s).toContain(escapeHtml(doc.lead))
+      expect(s).toContain(`datetime="${legalMeta.updated}"`)
+      if (legalMeta.reviewNote) expect(s).toContain(escapeHtml(legalMeta.reviewNote))
+      for (const sec of doc.sections) {
+        const id = legalAnchor(sec.id)
+        expect(s).toContain(`<section id="${id}"><h2>${escapeHtml(sec.heading)}</h2>`)
+        expect(hrefs(s)).toContain(`#${id}`)
+        for (const para of sec.body) expect(s).toContain(`<p>${escapeHtml(para)}</p>`)
+      }
+      // The closing contact block keeps the only #contact.
+      expect(count(s, /id="contact"/g)).toBe(1)
+    },
+  )
+
+  it('sitemap lists every group and link with its blurb', () => {
+    const s = html('sitemap')
+    expect(h1Text(s)).toBe(sitemapPage.title.join(' '))
+    for (const g of sitemapPage.groups) {
+      expect(s).toContain(`<h2>${escapeHtml(g.title)}</h2>`)
+      for (const l of g.links)
+        expect(s).toContain(`<li>${`<a href="${l.href}">${escapeHtml(l.label)}</a>`} ${escapeHtml(l.text)}</li>`)
+    }
+  })
+
   it('in-page anchors point back to the home page from other pages', () => {
     expect(hrefs(html('home'))).toContain('#work')
     expect(hrefs(html('about'))).toContain('/#work')
@@ -110,6 +146,7 @@ describe('snapshot', () => {
   it('returns null for unknown pages', () => {
     expect(snapshot('loom')).toBeNull()
     expect(snapshot('system:nope')).toBeNull()
+    expect(snapshot('legal:nope')).toBeNull()
   })
 })
 
@@ -124,6 +161,10 @@ describe('pageForFile', () => {
     expect(pageForFile('404.html')).toBe('notFound')
     expect(pageForFile('systems/people.html')).toBe('system:people')
     expect(pageForFile('systems\\finance.html')).toBe('system:finance')
+    expect(pageForFile('privacy-policy.html')).toBe('legal:privacy')
+    expect(pageForFile('terms-and-conditions.html')).toBe('legal:terms')
+    expect(pageForFile('cookie-policy.html')).toBe('legal:cookies')
+    expect(pageForFile('sitemap.html')).toBe('sitemap')
   })
 
   it('leaves the internal loom page and unknown files alone', () => {
