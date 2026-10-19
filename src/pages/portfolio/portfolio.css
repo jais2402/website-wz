@@ -217,9 +217,7 @@
 }
 
 .pf-case-art.case-art {
-  height: clamp(70px, 8vw, 110px);
-  max-height: none;
-  margin: 0 0 4px;
+  margin: 0 0 8px;
 }
 
 .pf-results-label {
@@ -273,7 +271,7 @@
 }
 
 .pf-case.is-lead .pf-case-art.case-art {
-  height: clamp(90px, 12vw, 170px);
+  max-width: 480px;
 }
 
 .pf-case.is-lead .pf-metrics dt {

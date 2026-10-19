@@ -60,14 +60,9 @@ export function PortfolioPage() {
                 </p>
                 <h3>{c.title}</h3>
                 <p className="pf-case-body">{c.body}</p>
-                <ul className="pf-tags">
-                  {c.tags.map((t) => (
-                    <li key={t}>{t}</li>
-                  ))}
-                </ul>
               </div>
               <div className="pf-case-proof">
-                <CaseArt seed={i + 1} className="pf-case-art" />
+                <CaseArt modules={c.tags} className="pf-case-art" />
                 <p className="mono pf-results-label">{p.resultsLabel}</p>
                 <dl className="pf-metrics">
                   {c.metrics.map((m) => (

@@ -969,6 +969,7 @@ main,
 .services {
   padding: 0;
   overflow: hidden;
+  overflow: clip; /* see .work: hidden can still be scrolled sideways */
   background: linear-gradient(180deg, var(--ink), var(--ink-2));
 }
 
@@ -2322,6 +2323,9 @@ main,
 .work {
   padding: 0;
   overflow: hidden;
+  /* clip, not just hidden: a hidden box can still be scrolled sideways (trackpad swipe, focus on an off-screen
+     card), which pushed the pinned row past the last card. */
+  overflow: clip;
   position: relative;
 }
 
@@ -4277,35 +4281,76 @@ main,
   width: 100%;
 }
 
-/* Our Work card motif (Work.tsx CaseArt): fills the space between the story and the results. */
+/* Our Work card motif (CaseArt): a small window of the system, one row per module. */
 .case-art {
-  display: block;
+  display: grid;
+  gap: 10px;
   width: 100%;
-  flex: 1 1 auto;
-  min-height: 64px;
-  max-height: 150px;
+  max-width: 420px;
   margin: 6px 0 2px;
-  overflow: visible;
+  padding: 12px 14px 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--tone) 22%, var(--line));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--tone) 8%, transparent), transparent 70%);
 }
 
-.case-art path {
+.case-art-bar {
+  display: flex;
+  gap: 5px;
+}
+
+.case-art-bar i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.case-art ul {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.case-art li {
+  display: grid;
+  grid-template-columns: minmax(0, 7.5em) minmax(0, 1fr) 14px;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.case-art-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.case-art-track {
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.case-art-track b {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 40%, transparent), var(--tone));
+}
+
+.case-art-ok {
+  width: 14px;
+  height: 14px;
   fill: none;
   stroke: var(--tone);
+  stroke-width: 1.8;
   stroke-linecap: round;
-}
-
-.case-art-tangle {
-  stroke-width: 1.1;
-}
-
-.case-art-out {
-  stroke-width: 1.6;
-  opacity: 0.9;
-}
-
-.case-art-knot {
-  fill: var(--tone);
-  filter: drop-shadow(0 0 6px var(--tone));
+  stroke-linejoin: round;
 }
 
 /* The motif now holds the space; results follow it instead of being pushed to the bottom. */
@@ -4318,8 +4363,4 @@ main,
     min-height: 0;
   }
 
-  .case-art {
-    flex: none;
-    height: 72px;
-  }
 }

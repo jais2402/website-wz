@@ -1,33 +1,4 @@
-import {
-  ART_W,
-  KNOT,
-  WEAVE_END_X,
-  WEAVE_H,
-  WEAVE_KNOT,
-  WEAVE_W,
-  orderedThreads,
-  tangleThreads,
-  weaveThreads,
-} from './caseArt'
-
-describe('case card art', () => {
-  it('draws stable, seed-dependent tangles that all end at the knot', () => {
-    const a = tangleThreads(1)
-    expect(tangleThreads(1)).toEqual(a)
-    expect(tangleThreads(2)).not.toEqual(a)
-    expect(a).toHaveLength(6)
-    for (const d of a) expect(d.endsWith(`${KNOT.x} ${KNOT.y}`)).toBe(true)
-  })
-
-  it('leaves the knot as parallel lines to the right edge', () => {
-    const out = orderedThreads(3)
-    expect(out).toHaveLength(3)
-    for (const d of out) {
-      expect(d.startsWith(`M${KNOT.x} ${KNOT.y}`)).toBe(true)
-      expect(d).toContain(`L${ART_W} `)
-    }
-  })
-})
+import { WEAVE_END_X, WEAVE_H, WEAVE_KNOT, WEAVE_W, weaveThreads } from './caseArt'
 
 describe('portfolio hero weave', () => {
   const seeds = [1, 2, 3, 4, 5, 6, 7, 8, 9]

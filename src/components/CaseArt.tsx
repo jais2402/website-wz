@@ -1,24 +1,31 @@
-import { ART_H, ART_W, KNOT, orderedThreads, tangleThreads } from '@/lib/caseArt'
-
 /**
- * Case motif: this case's tangle pulled into a knot and leaving as clean lines, in the case's accent colour
- * (`--tone` on an ancestor). Used on the home page's Our Work cards and on /portfolio.
+ * Case motif: a small code-drawn window of the system we built, one row per module (the case's tags), each with a
+ * filled bar and a check, in the case's accent colour (`--tone` on an ancestor). Used on the home page's Our Work
+ * cards and on /portfolio. Bar lengths vary by position so rows don't look identical.
  */
-export function CaseArt({ seed, className = '' }: { seed: number; className?: string }) {
+const FILL = [88, 66, 78, 54]
+
+export function CaseArt({ modules, className = '' }: { modules: readonly string[]; className?: string }) {
   return (
-    <svg
-      className={`case-art ${className}`.trim()}
-      viewBox={`0 0 ${ART_W} ${ART_H}`}
-      preserveAspectRatio="xMidYMid meet"
-      aria-hidden="true"
-    >
-      {tangleThreads(seed).map((d, k) => (
-        <path key={`t${k}`} d={d} className="case-art-tangle" style={{ opacity: 0.35 + (k % 3) * 0.15 }} />
-      ))}
-      {orderedThreads().map((d, k) => (
-        <path key={`o${k}`} d={d} className="case-art-out" />
-      ))}
-      <circle cx={KNOT.x} cy={KNOT.y} r="5" className="case-art-knot" />
-    </svg>
+    <div className={`case-art ${className}`.trim()} aria-hidden="true">
+      <div className="case-art-bar">
+        <i />
+        <i />
+        <i />
+      </div>
+      <ul>
+        {modules.slice(0, 4).map((m, k) => (
+          <li key={m}>
+            <span className="case-art-name">{m}</span>
+            <span className="case-art-track">
+              <b style={{ width: `${FILL[k % FILL.length]}%` }} />
+            </span>
+            <svg viewBox="0 0 12 12" className="case-art-ok">
+              <path d="M2.5 6.3 5 8.6l4.5-5" />
+            </svg>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

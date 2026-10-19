@@ -137,7 +137,7 @@ export function Work() {
               </span>
               <h3>{c.title}</h3>
               <p className="case-card-body">{c.body}</p>
-              <CaseArt seed={i + 1} />
+              <CaseArt modules={c.tags} />
               {c.metrics?.length ? (
                 <dl className="case-card-metrics">
                   {c.metrics.map((m) => (
@@ -148,11 +148,6 @@ export function Work() {
                   ))}
                 </dl>
               ) : null}
-              <ul className="case-card-tags">
-                {c.tags.map((t) => (
-                  <li key={t}>{t}</li>
-                ))}
-              </ul>
             </article>
           ))}
 
