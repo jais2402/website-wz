@@ -27,9 +27,10 @@
   --cream-2: #e8e4d8;
   --cream-ink: #14141a;
 
-  --f-display: 'Inter Tight', 'Inter', system-ui, sans-serif;
-  --f-body: 'Inter', system-ui, sans-serif;
-  --f-serif: 'Instrument Serif', Georgia, serif;
+  /* One sans family: Satoshi for display, body and (italic) emphasis; Inter only fills glyphs Satoshi lacks. */
+  --f-display: 'Satoshi', 'Inter', system-ui, sans-serif;
+  --f-body: 'Satoshi', 'Inter', system-ui, sans-serif;
+  --f-serif: var(--f-display);
   --f-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   --gutter: clamp(16px, 4vw, 56px);
@@ -144,10 +145,11 @@ main,
 }
 
 .serif {
-  font-family: var(--f-serif);
+  /* Emphasis is the italic of the same family, not a second typeface. */
+  font-family: var(--f-display);
   font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
   color: var(--lime);
 }
 

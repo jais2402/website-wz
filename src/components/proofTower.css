@@ -133,3 +133,10 @@
     animation: none;
   }
 }
+
+/* Keep the headline clear of the tower on desktop (Satoshi sets wider than a condensed face). */
+@media (min-width: 900px) {
+  .proof-wrap .proof-title {
+    max-width: min(20ch, calc(100% - clamp(190px, 19vw, 280px) - max(var(--gutter), 4vw) - 32px));
+  }
+}

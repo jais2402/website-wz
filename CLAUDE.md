@@ -122,8 +122,9 @@ src/
   for history; light blue `#8cc4ff` replaced the old gold), primary CTA blue gradient `--cta-1/2/3`, violet
   `#8b7bff`, coral `#ff7a59`, cream `#f2efe6` for the single light section (AI demo). No yellow/lime in UI text,
   icons or symbols. The 3D threads (loom hero, story) keep their multicolour / gold palette.
-- Type: Inter Tight (display, tight negative tracking), Inter (body), Instrument Serif italic (accent words),
-  JetBrains Mono (uppercase labels).
+- Type: **Satoshi** (one variable family for display, body and italic emphasis: accent words are Satoshi italic, not a
+  second typeface) + JetBrains Mono (labels). Self-hosted in `public/fonts` (`src/fonts.css`); Inter stays only as a
+  glyph fallback (Satoshi has no ₹).
 - Copy that sits over 3D gets a **frosted glass** panel (`.hero-glass`, `.story-copy`, `.loom-intro`, `.glass-card`):
   never put body text straight onto the particles. Don't put `filter`/`opacity < 1` on an ancestor of a glass
   panel while it is visible; that disables `backdrop-filter`.

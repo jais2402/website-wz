@@ -13,7 +13,8 @@ mkdirSync(out, { recursive: true })
 
 const W = 1200
 const H = 630
-const FONT = 'Inter Tight, Inter, Helvetica Neue, Helvetica, Arial, sans-serif'
+// Satoshi, the site's typeface (TTF copy for rendering only; the site serves the woff2 in public/fonts).
+const FONT = 'Satoshi, Helvetica Neue, Helvetica, Arial, sans-serif'
 const MONO = 'JetBrains Mono, SF Mono, Menlo, monospace'
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -100,7 +101,7 @@ function card(page, i) {
 function render(svg, width, name) {
   const img = new Resvg(svg, {
     fitTo: { mode: 'width', value: width },
-    font: { loadSystemFonts: true, defaultFontFamily: 'Helvetica' },
+    font: { fontFiles: [new URL('./fonts/Satoshi-Variable.ttf', import.meta.url).pathname], loadSystemFonts: true, defaultFontFamily: 'Satoshi' },
   }).render()
   const rgba = Uint8Array.from(img.pixels)
   const png = Buffer.from(UPNG.encode([rgba.buffer], img.width, img.height, 256))
