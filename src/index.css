@@ -2044,6 +2044,8 @@ main,
 
 .ai-card {
   position: absolute;
+  /* Above the app window's running outline (.ai-app::after), which is painted after its children. */
+  z-index: 2;
   left: 18px;
   right: 18px;
   bottom: -40px;
@@ -4205,6 +4207,7 @@ main,
 
 .case-knot {
   position: absolute;
+  z-index: 2; /* above the card's running outline */
   top: -7px;
   left: 50%;
   width: 14px;
