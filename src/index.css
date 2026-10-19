@@ -4357,6 +4357,51 @@ main,
   background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 40%, transparent), var(--tone));
 }
 
+/* Activity chart: takes the card's spare height, so cards without results are not left half empty. */
+.case-art-chart {
+  display: none;
+  align-items: flex-end;
+  gap: 5px;
+  min-height: 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.case-art-chart i {
+  flex: 1;
+  border-radius: 3px 3px 1px 1px;
+  background: linear-gradient(180deg, var(--tone), color-mix(in srgb, var(--tone) 20%, transparent));
+  opacity: 0.75;
+}
+
+.case-art-chart i:last-child {
+  opacity: 1;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--tone) 60%, transparent);
+}
+
+/* Desktop row of cards: the window grows into the free space and shows the chart. */
+@media (min-width: 900px) {
+  .work .case-card .case-art {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-width: none;
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .work .case-card .case-art-chart {
+    display: flex;
+  }
+
+  /* Cards with results: the figures fill the bottom, so the window keeps its natural height. */
+  .work .case-card:has(.case-card-metrics) .case-art {
+    flex: none;
+  }
+
+  .work .case-card:has(.case-card-metrics) .case-art-chart {
+    display: none;
+  }
+}
+
 .case-art-ok {
   width: 14px;
   height: 14px;
