@@ -5,6 +5,7 @@ import { ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { CtaStrip } from '@/components/CtaStrip'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
+import { StackVisual } from './StackVisual'
 import '../print.css'
 import './technology.css'
 
@@ -33,6 +34,7 @@ export function TechnologyPage() {
             </a>
           </>
         }
+        visual={<StackVisual />}
       />
 
       <PageSection id="stack" title={p.stackTitle} intro={p.stackIntro} className="tech-stack">

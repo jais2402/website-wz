@@ -6,6 +6,7 @@ import { ctas, process, stats } from '@/content/site'
 import { gsap } from '@/hooks/motion'
 import { CtaStrip } from '@/components/CtaStrip'
 import { LoomContact } from '@/loom/sections'
+import { HeroLoom } from '../HeroLoom'
 import { PageHero, PageSection, PageShell } from '../shell'
 import './about.css'
 
@@ -27,6 +28,7 @@ export function AboutPage() {
             </a>
           </>
         }
+        visual={<HeroLoom />}
       />
 
       <PageSection title={p.whyTitle} className="ab-why">

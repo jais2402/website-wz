@@ -238,8 +238,8 @@ export const systemsSection = {
 
 export const aboutPage = {
   kicker: 'About Wezigns',
-  title: ['The leading systems and', 'custom software provider', 'for SMEs and MSMEs.'],
-  lead: 'We are a software studio in Chennai. Since 2012 we have built the systems growing businesses run on: the portals, stores, dashboards and tools that replace spreadsheets, chat threads and manual work.',
+  title: ['From small business', 'to enterprise', 'systems.'],
+  lead: 'The leading systems and custom software provider for SMEs and MSMEs. We are a software studio in Chennai, and since 2012 we have built the systems growing businesses run on: the portals, stores, dashboards and tools that replace spreadsheets, chat threads and manual work.',
   whyTitle: 'Why small and growing businesses work with us',
   why: [
     { title: 'Built around how you work.', text: 'We start from your people and your process, not from a template. The software fits the business, not the other way round.' },
@@ -311,4 +311,21 @@ export const aiPage = {
     { title: 'Everything is logged.', text: 'You can see what the AI did, when, and why.' },
   ],
   cta: { label: 'Tell us what is not working', href: '/contact' },
+}
+
+// 404 page (404.html): Vercel serves it for any unknown URL.
+export const notFoundPage = {
+  kicker: 'Page not found',
+  title: ['This thread', 'leads', 'nowhere.'],
+  lead: 'The page you were looking for has moved or never existed. Head back to the home page, or tell us what you were after and we will point you to it.',
+  home: { label: 'Back to the home page', href: '/' },
+  linksTitle: 'Or go straight to',
+  links: [
+    { label: 'Systems we build', text: 'HR, CRM, operations, ecommerce, finance and industry', href: '/systems/people' },
+    { label: 'AI', text: 'AI inside your systems and custom AI solutions', href: '/ai' },
+    { label: 'Technology', text: 'The stack behind the systems we build', href: '/technology' },
+    { label: 'Our work', text: 'Case studies from 11 countries', href: '/#work' },
+    { label: 'About', text: 'Chennai, since 2012', href: '/about' },
+    { label: 'Contact', text: 'Phone, email, address and the enquiry form', href: '/contact' },
+  ],
 }

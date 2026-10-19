@@ -24,10 +24,11 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
 - `contact.html` → `src/contact/main.tsx` → `ContactPage.tsx`: `/contact` (clean URL in dev, preview and Vercel).
   Address, phone and email cards, the enquiry form (`ContactForm`, sending switchable in `lib/enquiry.ts`), and the
   loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`, SVG art in lite mode).
-- `about.html`, `ai.html`, `technology.html`, `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
+- `about.html`, `ai.html`, `technology.html`, `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
   `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). Shared shell, hero, section
   and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
-  Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`). System pages print as
+  Every hero has a visual: the 3D loom (`pages/HeroLoom.tsx`, About and 404), the live dashboard (systems), the
+  animated SVG (AI), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`). System pages print as
   a one-page summary (`src/pages/print.css` + print rules in `system.css`).
 - `api/enquiry.ts`: Vercel Function that emails enquiries through Resend (`RESEND_API_KEY`, see
   `docs/enquiry-setup.md`). Without it (e.g. `npm run dev`), both forms fall back to mailto. Adding a page = an `.html` file + an entry in `INPUTS` in `vite.config.ts`.

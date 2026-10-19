@@ -64,7 +64,12 @@ function Threads({ quality, reducedMotion, view }: { quality: Quality; reducedMo
     const dt = Math.min(delta, 0.05)
     const time = reducedMotion ? 6 : state.clock.elapsedTime
     // Pointer on the z=0 plane, eased so threads part smoothly instead of snapping.
-    pointer.current.x = damp(pointer.current.x, (state.pointer.x * viewport.width) / 2 + state.camera.position.x * 0.5, 6, dt)
+    pointer.current.x = damp(
+      pointer.current.x,
+      (state.pointer.x * viewport.width) / 2 + state.camera.position.x * 0.5,
+      6,
+      dt,
+    )
     pointer.current.y = damp(pointer.current.y, (state.pointer.y * viewport.height) / 2, 6, dt)
     // The contact canvas sits under the page copy and gets no pointer events, so no thread parting there.
     const strength = reducedMotion || view === 'contact' ? 0 : 1
@@ -148,9 +153,7 @@ function Loom({ reducedMotion }: { reducedMotion: boolean }) {
     if (dish.current) dish.current.rotation.x -= delta * 0.35
   })
 
-  const metal = (
-    <meshStandardMaterial color="#2b3042" metalness={0.9} roughness={0.32} emissive="#0c0f1a" />
-  )
+  const metal = <meshStandardMaterial color="#2b3042" metalness={0.9} roughness={0.32} emissive="#0c0f1a" />
 
   return (
     <group>
@@ -199,9 +202,22 @@ function Loom({ reducedMotion }: { reducedMotion: boolean }) {
   )
 }
 
-function Glow({ position, scale, color, opacity = 1 }: { position: [number, number, number]; scale: number; color: string; opacity?: number }) {
+function Glow({
+  position,
+  scale,
+  color,
+  opacity = 1,
+}: {
+  position: [number, number, number]
+  scale: number
+  color: string
+  opacity?: number
+}) {
   const mat = useRef<THREE.ShaderMaterial>(null)
-  const uniforms = useMemo(() => ({ uTime: { value: 0 }, uColor: { value: new THREE.Color(color).multiplyScalar(opacity) } }), [color, opacity])
+  const uniforms = useMemo(
+    () => ({ uTime: { value: 0 }, uColor: { value: new THREE.Color(color).multiplyScalar(opacity) } }),
+    [color, opacity],
+  )
   useFrame(({ clock }) => {
     if (mat.current) mat.current.uniforms.uTime.value = clock.elapsedTime
   })
@@ -239,14 +255,16 @@ function ContactRig({ reducedMotion }: { reducedMotion: boolean }) {
     const dt = Math.min(delta, 0.05)
     const sway = reducedMotion ? 0 : Math.sin(clock.elapsedTime * 0.12)
     const narrow = size.width < 640
+    // Inner-page hero card (640–800px canvas): a little closer and centred on the loom.
+    const card = !narrow && size.width < 800
     const tx = -1.6 + sway * 0.9 + mouse.current.x * 0.7
     const ty = 2.2 + mouse.current.y * 0.5
-    const tz = narrow ? 12.5 : 11
+    const tz = narrow ? 12.5 : card ? 9.5 : 11
     camera.position.x = damp(camera.position.x, tx, 2, dt)
     camera.position.y = damp(camera.position.y, ty, 2, dt)
     camera.position.z = damp(camera.position.z, tz, 2, dt)
     // Wide frames aim left of the loom so it rides to the right, clear of the headline.
-    look.current.set(narrow ? 2.4 : 0.8, narrow ? 0 : -0.5, 0)
+    look.current.set(narrow || card ? 2.4 : 0.8, narrow || card ? 0 : -0.5, 0)
     camera.lookAt(look.current)
   })
   return null
@@ -268,7 +286,11 @@ function CameraRig() {
     camera.position.y = damp(camera.position.y, ty, 2.2, dt)
     camera.position.z = damp(camera.position.z, tz, 2.2, dt)
     // Aim below the loom so the composition rides in the upper part of the frame, above the copy.
-    look.current.set(damp(look.current.x, (portrait ? 1.6 : -1.6) + p * 2.9, 2.2, dt), damp(look.current.y, portrait ? -1.5 : -1.8 + p * 1.8, 2.2, dt), 0)
+    look.current.set(
+      damp(look.current.x, (portrait ? 1.6 : -1.6) + p * 2.9, 2.2, dt),
+      damp(look.current.y, portrait ? -1.5 : -1.8 + p * 1.8, 2.2, dt),
+      0,
+    )
     camera.lookAt(look.current)
     // Publish the mouth's screen position for the page's guide light.
     camera.updateMatrixWorld()
