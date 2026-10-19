@@ -1,5 +1,5 @@
 import { useGSAP } from '@gsap/react'
-import { type ReactNode, useRef } from 'react'
+import { Fragment, type ReactNode, useRef } from 'react'
 import { Cursor } from '@/components/Cursor'
 import { Footer } from '@/components/Footer'
 import { Nav } from '@/components/Nav'
@@ -65,10 +65,12 @@ export function PageHero({
       <div className="pg-hero-copy">
         <p className="mono label">{kicker}</p>
         <h1 className="display pg-title">
+          {/* Grid items: the space between lines is not rendered, but keeps textContent readable. */}
           {title.map((line, i) => (
-            <span key={line} className={`pg-title-line${i === title.length - 1 && title.length > 1 ? ' serif' : ''}`}>
-              {line}
-            </span>
+            <Fragment key={line}>
+              {i > 0 && ' '}
+              <span className={`pg-title-line${i === title.length - 1 && title.length > 1 ? ' serif' : ''}`}>{line}</span>
+            </Fragment>
           ))}
         </h1>
         <p className="lead pg-lead">{lead}</p>

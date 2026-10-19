@@ -1,5 +1,5 @@
 import { useGSAP } from '@gsap/react'
-import { useRef } from 'react'
+import { Fragment, useRef } from 'react'
 import { pricing } from '@/content/site'
 import { gsap, scrollToTarget } from '@/hooks/motion'
 
@@ -12,13 +12,17 @@ export function Pricing() {
 
   useGSAP(
     () => {
-      gsap.fromTo('.price-line > span', { yPercent: 110 }, {
-        yPercent: 0,
-        duration: 1.1,
-        ease: 'expo.out',
-        stagger: 0.1,
-        scrollTrigger: { trigger: root.current, start: 'top 70%' },
-      })
+      gsap.fromTo(
+        '.price-line > span',
+        { yPercent: 110 },
+        {
+          yPercent: 0,
+          duration: 1.1,
+          ease: 'expo.out',
+          stagger: 0.1,
+          scrollTrigger: { trigger: root.current, start: 'top 70%' },
+        },
+      )
       gsap.from('.price-row', {
         x: 24,
         opacity: 0,
@@ -27,11 +31,15 @@ export function Pricing() {
         stagger: 0.08,
         scrollTrigger: { trigger: '.price-card', start: 'top 75%' },
       })
-      gsap.fromTo('.price-thread-fill', { scaleX: 0 }, {
-        scaleX: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: '.price-steps', start: 'top 85%', end: 'top 45%', scrub: true },
-      })
+      gsap.fromTo(
+        '.price-thread-fill',
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          ease: 'none',
+          scrollTrigger: { trigger: '.price-steps', start: 'top 85%', end: 'top 45%', scrub: true },
+        },
+      )
     },
     { scope: root },
   )
@@ -43,9 +51,12 @@ export function Pricing() {
           <div className="pricing-copy">
             <h2 id="pricing-title" className="pricing-title" aria-label={pricing.title.join(' ')}>
               {pricing.title.map((l, i) => (
-                <span className="price-line" key={l} aria-hidden="true">
-                  <span className={i === 1 ? 'serif' : undefined}>{l}</span>
-                </span>
+                <Fragment key={l}>
+                  {i > 0 && ' '}
+                  <span className="price-line" aria-hidden="true">
+                    <span className={i === 1 ? 'serif' : undefined}>{l}</span>
+                  </span>
+                </Fragment>
               ))}
             </h2>
             <p className="lead">{pricing.body}</p>
@@ -70,7 +81,9 @@ export function Pricing() {
             <ul>
               {pricing.sets.map((d) => (
                 <li className="price-row" key={d.name}>
-                  <span className="price-check" aria-hidden="true">✓</span>
+                  <span className="price-check" aria-hidden="true">
+                    ✓
+                  </span>
                   <div>
                     <b>{d.name}</b>
                     <span>{d.text}</span>
@@ -82,7 +95,9 @@ export function Pricing() {
             <ul>
               {pricing.doesnt.map((d) => (
                 <li className="price-row is-not" key={d}>
-                  <span className="price-check" aria-hidden="true">✕</span>
+                  <span className="price-check" aria-hidden="true">
+                    ✕
+                  </span>
                   <div>
                     <b>
                       <s>{d}</s>
@@ -105,13 +120,13 @@ export function Pricing() {
             <span className="price-thread-fill" />
           </span>
           <ol>
-          {pricing.steps.map((s, i) => (
-            <li key={s.name} className={i === pricing.steps.length - 1 ? 'is-final' : undefined}>
-              <span className="price-knot" aria-hidden="true" />
-              <h3>{s.name}</h3>
-              <p>{s.text}</p>
-            </li>
-          ))}
+            {pricing.steps.map((s, i) => (
+              <li key={s.name} className={i === pricing.steps.length - 1 ? 'is-final' : undefined}>
+                <span className="price-knot" aria-hidden="true" />
+                <h3>{s.name}</h3>
+                <p>{s.text}</p>
+              </li>
+            ))}
           </ol>
         </div>
       </div>

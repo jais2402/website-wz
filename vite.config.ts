@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 import { existsSync } from 'node:fs'
 import { defineConfig } from 'vite'
+import { seo } from './scripts/vite-seo.ts'
+import { snapshotPlugin } from './scripts/vite-snapshot.ts'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
 const page = (path: string) => fileURLToPath(new URL(`./${path}`, import.meta.url))
@@ -30,6 +32,9 @@ function cleanUrl(req: { url?: string }, _res: unknown, next: () => void) {
 export default defineConfig({
   plugins: [
     react(),
+    // Head tags + JSON-LD + sitemap.xml/llms.txt (seo), and each page's copy as crawlable HTML in #root (snapshot).
+    seo(),
+    snapshotPlugin(),
     {
       // Clean URLs in dev and preview, matching Vercel's cleanUrls: /contact-us → /contact-us.html,
       // /systems/people → /systems/people.html. Only rewrites when that .html page exists.

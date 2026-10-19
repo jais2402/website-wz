@@ -335,7 +335,7 @@ function Glyph({ kind }: { kind: Chart['kind'] }) {
     }
   })()
   return (
-    <svg viewBox="0 0 24 24" className={`sy-glyph-${kind}`}>
+    <svg viewBox="0 0 24 24" className={`sy-glyph-${kind}`} aria-hidden="true">
       {shape}
     </svg>
   )

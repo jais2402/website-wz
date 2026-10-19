@@ -54,7 +54,7 @@ export function ConnectArt() {
   ]
   return (
     <div className="art art-connect" aria-hidden="true">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
         {nodes.slice(1).map((n, i) => (
           <line key={i} x1="50" y1="50" x2={n.x} y2={n.y} className="flow" style={{ animationDelay: `${i * -0.4}s` }} />
         ))}
@@ -79,7 +79,7 @@ export function RunArt() {
         </span>
         <span>99.99%</span>
       </div>
-      <svg viewBox="0 0 120 70" className="pulse-line">
+      <svg viewBox="0 0 120 70" className="pulse-line" aria-hidden="true">
         <path d={d} />
         <path d={d} className="pulse-glow" />
       </svg>

@@ -18,7 +18,7 @@ function LineChart({ series, fill }: { series: number[]; fill: boolean }) {
   return (
     // The reveal is a clip-path wipe on the wrapper: dash tricks break with non-scaling strokes in Chrome.
     <div className="ch-line-wrap">
-      <svg className="ch-line" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+      <svg className="ch-line" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--lime)" stopOpacity="0.35" />
@@ -63,7 +63,7 @@ function Gauge({ percent }: { percent: number }) {
   // Half-circle arc; pathLength=1 lets the dash animate from 0 to `percent` regardless of size.
   const arc = 'M10 60 A50 50 0 0 1 110 60'
   return (
-    <svg className="ch-gauge" viewBox="0 0 120 66">
+    <svg className="ch-gauge" viewBox="0 0 120 66" aria-hidden="true">
       <path d={arc} pathLength={1} className="ch-gauge-track" />
       <path d={arc} pathLength={1} className="ch-gauge-fill" style={{ ['--p' as string]: percent / 100 }} />
       {Array.from({ length: 11 }, (_, i) => {

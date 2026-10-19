@@ -1,5 +1,5 @@
 import { useGSAP } from '@gsap/react'
-import { type CSSProperties, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { type CSSProperties, Fragment, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
 import { LoomLiteArt } from '@/components/LiteArt'
 import { ctas, loom, navSystems } from '@/content/site'
@@ -80,10 +80,14 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
         <div className={`loom-intro${phase >= 0 ? ' is-gone' : ''}`}>
           <p className="mono loom-eyebrow loom-fade">{loom.eyebrow}</p>
           <h1 className="loom-title">
+            {/* The space between block lines keeps textContent readable ("thread, woven"); it renders nothing. */}
             {loom.title.map((l, i) => (
-              <span className="loom-line" key={l}>
-                <span className={i === 2 ? 'serif' : undefined}>{l}</span>
-              </span>
+              <Fragment key={l}>
+                {i > 0 && ' '}
+                <span className="loom-line">
+                  <span className={i === 2 ? 'serif' : undefined}>{l}</span>
+                </span>
+              </Fragment>
             ))}
           </h1>
           <p className="loom-sub loom-fade">{loom.sub}</p>

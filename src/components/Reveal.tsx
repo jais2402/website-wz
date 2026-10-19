@@ -32,12 +32,14 @@ export function SplitReveal({ text, as = 'span', className, delay = 0, trigger =
   )
   return (
     <Tag ref={ref} className={className} aria-label={text}>
-      {text.split(' ').map((word, i) => (
-        // The space must sit outside the inline-block mask or it collapses.
+      {text.split(' ').map((word, i, words) => (
+        // The space must sit outside the inline-block mask or it collapses. No trailing space after the
+        // last word, so textContent matches the aria-label exactly.
         <Fragment key={i}>
           <span className="w" aria-hidden="true">
             <span>{word}</span>
-          </span>{' '}
+          </span>
+          {i < words.length - 1 && ' '}
         </Fragment>
       ))}
     </Tag>

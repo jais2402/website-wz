@@ -13,12 +13,15 @@ function useInView<T extends Element>(threshold = 0.35) {
   const ref = useRef<T>(null)
   const [seen, setSeen] = useState(false)
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        setSeen(true)
-        io.disconnect()
-      }
-    }, { threshold })
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setSeen(true)
+          io.disconnect()
+        }
+      },
+      { threshold },
+    )
     if (ref.current) io.observe(ref.current)
     return () => io.disconnect()
   }, [threshold])
@@ -98,7 +101,15 @@ export function LoomStats() {
           {stats.map((s, i) => (
             <div key={s.label} className="loom-stat glass-card">
               <span className="loom-stat-thread" aria-hidden="true" />
-              <b>{seen ? <CountUp value={s.value} suffix={s.suffix} delay={i * 120} group={!s.plain} /> : s.plain ? s.value : 0}</b>
+              <b>
+                {seen ? (
+                  <CountUp value={s.value} suffix={s.suffix} delay={i * 120} group={!s.plain} />
+                ) : s.plain ? (
+                  s.value
+                ) : (
+                  0
+                )}
+              </b>
               <span>{s.label}</span>
             </div>
           ))}
@@ -136,7 +147,7 @@ export function BeforeAfter() {
         <div className="ba-stage" style={{ ['--pos' as string]: `${pos}%` }}>
           {/* Before: the tangle */}
           <div className="ba-layer ba-before" aria-hidden="true">
-            <svg className="ba-tangle" viewBox="0 0 600 360" preserveAspectRatio="none">
+            <svg className="ba-tangle" viewBox="0 0 600 360" preserveAspectRatio="none" aria-hidden="true">
               {Array.from({ length: 14 }, (_, i) => (
                 <path
                   key={i}
@@ -178,9 +189,12 @@ export function BeforeAfter() {
                     <small>Approvals pending</small>0
                   </b>
                 </div>
-                <svg className="ba-chart" viewBox="0 0 300 80" preserveAspectRatio="none">
+                <svg className="ba-chart" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
                   <path d="M0 64 L40 58 L80 60 L120 44 L160 46 L200 30 L240 26 L300 12" />
-                  <path d="M0 64 L40 58 L80 60 L120 44 L160 46 L200 30 L240 26 L300 12 L300 80 L0 80 Z" className="fill" />
+                  <path
+                    d="M0 64 L40 58 L80 60 L120 44 L160 46 L200 30 L240 26 L300 12 L300 80 L0 80 Z"
+                    className="fill"
+                  />
                 </svg>
                 <ul className="ba-rows">
                   <li>
@@ -202,7 +216,17 @@ export function BeforeAfter() {
           <span className="ba-handle" aria-hidden="true">
             <i>
               {/* SVG, not a text glyph: a character's baseline sits it below the circle's centre. */}
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
                 <path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4" />
               </svg>
             </i>
