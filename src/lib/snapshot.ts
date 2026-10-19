@@ -4,7 +4,16 @@
 // extension so the plugin can load this file outside the app's `@/` alias.
 
 import { legalMeta } from '../content/legal.ts'
-import { aboutPage, aiPage, notFoundPage, servicesPage, systemPages, systemsSection } from '../content/pages.ts'
+import { type SystemSlug, systemTools } from '../content/systemTools.ts'
+import {
+  aboutPage,
+  aiPage,
+  notFoundPage,
+  portfolioPage,
+  servicesPage,
+  systemPages,
+  systemsSection,
+} from '../content/pages.ts'
 import { type LegalKey, legalCopy, legalPages, sitemapPage } from '../content/sitemap.ts'
 import {
   ai,
@@ -46,6 +55,7 @@ export type SnapshotPage =
   | 'ai'
   | 'technology'
   | 'about'
+  | 'portfolio'
   | 'contact'
   | 'notFound'
   | 'sitemap'
@@ -257,6 +267,7 @@ function home(): string {
   const workHtml = section(
     h2(workSection.title) +
       p(next.body) +
+      tag('p', a(workSection.all.href, workSection.all.label)) +
       cases.map(caseCard).join('') +
       tag('article', h3(next.title) + p(next.body) + tag('p', a(next.href, next.cta))),
     'work',
@@ -375,7 +386,9 @@ function systemPageHtml(slug: string): string | null {
   const proof = sp.proof
     ? tag(
         'aside',
-        tag('p', tag('strong', t(sp.proof.value))) + p(sp.proof.label) + tag('p', a('/#work', 'Read the case')),
+        tag('p', tag('strong', t(sp.proof.value))) +
+          p(sp.proof.label) +
+          tag('p', a(`/portfolio#${sp.proof.caseId}`, 'Read the case')),
       )
     : ''
   return page(
@@ -401,7 +414,12 @@ function systemPageHtml(slug: string): string | null {
       ctaStrip(ctas.system) +
       section(
         h2(copy.toolsTitle) +
-          tag('dl', sp.tools.map((g) => tag('dt', t(g.label)) + tag('dd', t(g.items.join(', ')))).join('')),
+          tag(
+            'dl',
+            systemTools[sp.slug as SystemSlug]
+              .map((g) => tag('dt', t(g.label)) + tag('dd', t(g.tools.map((x) => `${x.name} (${x.role})`).join(', '))))
+              .join(''),
+          ),
       ) +
       section(
         (caseStudy ? p(workSection.title) + caseCard(caseStudy) : '') +
@@ -486,7 +504,7 @@ function technologyPageHtml(): string {
 function aboutPageHtml(): string {
   const x = aboutPage
   return page(
-    hero(x.kicker, line(x.title), x.lead, [x.cta, { label: 'See our work', href: '/#work' }]) +
+    hero(x.kicker, line(x.title), x.lead, [x.cta, { label: 'See our work', href: '/portfolio' }]) +
       section(h2(x.whyTitle) + x.why.map((w) => tag('article', h3(w.title) + p(w.text))).join('')) +
       section(
         h2(x.storyTitle) +
@@ -507,6 +525,17 @@ function aboutPageHtml(): string {
             true,
           ),
       ) +
+      contactBlock(),
+  )
+}
+
+function portfolioPageHtml(): string {
+  const x = portfolioPage
+  return page(
+    hero(x.kicker, line(x.title), x.lead, [ctas.contact, x.systemsLink]) +
+      section(p(x.featuredKicker) + h2(x.featuredTitle) + p(x.featuredIntro) + work.map(caseCard).join('')) +
+      section(p(x.pastKicker) + h2(x.pastTitle) + p(x.pastIntro) + pastWork.map(caseCard).join('')) +
+      ctaStrip(ctas.portfolio) +
       contactBlock(),
   )
 }
@@ -586,6 +615,8 @@ export function snapshot(id: string): string | null {
       return technologyPageHtml()
     case 'about':
       return aboutPageHtml()
+    case 'portfolio':
+      return portfolioPageHtml()
     case 'contact':
       return contactPageHtml()
     case 'notFound':
@@ -605,6 +636,7 @@ export const snapshotPages: SnapshotPage[] = [
   'ai',
   'technology',
   'about',
+  'portfolio',
   'contact',
   ...legalPages.map((l) => `legal:${l.key}` as const),
   'sitemap',
@@ -618,6 +650,7 @@ const FILES: Record<string, SnapshotPage> = {
   'our-services.html': 'services',
   'ai.html': 'ai',
   'technology.html': 'technology',
+  'portfolio.html': 'portfolio',
   '404.html': 'notFound',
   'privacy-policy.html': 'legal:privacy',
   'terms-and-conditions.html': 'legal:terms',

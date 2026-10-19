@@ -2348,6 +2348,21 @@ main,
   margin-top: 8px;
 }
 
+/* "See all our work →": the link to /portfolio under the intro. */
+.work-all {
+  justify-self: start;
+  color: #8cc4ff;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(140, 196, 255, 0.35);
+  padding-bottom: 2px;
+  transition: border-color 0.25s, color 0.25s;
+}
+
+.work-all:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
 .work-cards {
   display: flex;
   gap: 18px;
@@ -2387,7 +2402,14 @@ main,
 }
 
 .case-card-tag {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
   color: var(--tone);
+}
+
+.case-card-place {
+  color: var(--muted);
 }
 
 .case-card h3 {
@@ -3196,9 +3218,39 @@ main,
 }
 
 .footer-countries {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 28px;
   margin-top: 64px;
   color: var(--muted);
-  line-height: 1.8;
+}
+
+.footer-countries > .mono {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Country names spaced apart, no separator characters. */
+.footer-countries ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-countries li {
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.footer-reach {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
 }
 
 .footer-word {
@@ -4027,10 +4079,6 @@ main,
   background: rgba(77, 159, 255, 0.12);
 }
 
-.areas-explore-m {
-  display: none;
-}
-
 @media (max-width: 1220px) {
   .areas .screen-step {
     display: none;
@@ -4040,17 +4088,6 @@ main,
 @media (max-width: 899px) {
   .areas-explore {
     display: none;
-  }
-
-  .areas-explore-m {
-    display: block;
-    padding: 14px 18px;
-    border-radius: 18px;
-    border: 1px solid rgba(77, 159, 255, 0.35);
-    background: rgba(77, 159, 255, 0.08);
-    color: var(--lime);
-    font-weight: 600;
-    text-align: center;
   }
 }
 
@@ -4063,10 +4100,10 @@ main,
 
 .faq-ask {
   display: grid;
-  gap: 10px;
-  margin-top: 36px;
-  padding: 24px;
-  max-width: 420px;
+  gap: 6px;
+  margin-top: 32px;
+  padding: 24px 24px 22px;
+  max-width: 440px;
   border-radius: 20px;
   border: 1px solid var(--line);
   background: var(--ink-3);
@@ -4075,23 +4112,39 @@ main,
 .faq-ask-title {
   font-family: var(--f-display);
   font-weight: 600;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   letter-spacing: -0.02em;
 }
 
 .faq-ask-body {
   color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
+/* Two equal-height actions in a row; they share the width and wrap to full-width rows when space runs out. */
 .faq-ask-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 10px;
+  margin-top: 14px;
 }
 
 .faq-ask-actions .btn {
-  overflow-wrap: anywhere;
+  flex: 1 1 auto;
+  justify-content: center;
+  padding: 11px 18px;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 560px) {
+  .faq-ask {
+    max-width: none;
+  }
+
+  .faq-ask-actions .btn {
+    flex-basis: 100%;
+  }
 }
 
 /* Our Work thread: strung from the intro through a knot on every card, drawn in by the sideways scroll. */
@@ -4173,4 +4226,100 @@ main,
 /* The woven tower is positioned against the headline block. */
 .proof-wrap {
   position: relative;
+}
+
+/* ==========================================================================
+   Systems explorer call to action (under the tabs on desktop, under the dashboard on phones)
+   ========================================================================== */
+@media (min-width: 900px) {
+  .areas-screen {
+    grid-row: span 2;
+  }
+
+  .areas-cta {
+    grid-column: 1;
+    align-self: end;
+  }
+}
+
+.areas-cta {
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(77, 159, 255, 0.28);
+  background:
+    radial-gradient(90% 120% at 100% 100%, rgba(37, 99, 235, 0.2), transparent 70%),
+    var(--ink-3);
+}
+
+.areas-cta-title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.areas-cta-body {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.areas-cta-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.areas-cta-actions .btn {
+  justify-content: center;
+  width: 100%;
+}
+
+/* Our Work card motif (Work.tsx CaseArt): fills the space between the story and the results. */
+.case-art {
+  display: block;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 64px;
+  max-height: 150px;
+  margin: 6px 0 2px;
+  overflow: visible;
+}
+
+.case-art path {
+  fill: none;
+  stroke: var(--tone);
+  stroke-linecap: round;
+}
+
+.case-art-tangle {
+  stroke-width: 1.1;
+}
+
+.case-art-out {
+  stroke-width: 1.6;
+  opacity: 0.9;
+}
+
+.case-art-knot {
+  fill: var(--tone);
+  filter: drop-shadow(0 0 6px var(--tone));
+}
+
+/* The motif now holds the space; results follow it instead of being pushed to the bottom. */
+.case-card .case-art + .case-card-metrics {
+  margin-top: 0;
+}
+
+@media (max-width: 899px) {
+  .case-card {
+    min-height: 0;
+  }
+
+  .case-art {
+    flex: none;
+    height: 72px;
+  }
 }

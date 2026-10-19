@@ -1,5 +1,6 @@
 import { aiSummary, brand } from '@/content/site'
 import { summaryUrl } from '@/lib/aiSummary'
+import { track } from '@/lib/analytics'
 import { AiLogo } from './AiLogos'
 import './aiSummary.css'
 
@@ -8,8 +9,9 @@ export function AiSummary() {
   return (
     <section className="ai-summary" aria-labelledby="ai-summary-title">
       <div className="ai-summary-copy">
-        <h2 id="ai-summary-title">{aiSummary.title}</h2>
-        <p>{aiSummary.body}</p>
+        <h2 id="ai-summary-title" className="mono">
+          {aiSummary.title}
+        </h2>
       </div>
       <ul className="ai-summary-tiles">
         {aiSummary.engines.map((engine) => (
@@ -19,6 +21,7 @@ export function AiSummary() {
               href={summaryUrl(engine.url, aiSummary.prompt)}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => track('ai_summary_click', { engine: engine.key })}
               aria-label={`Summarise ${brand.name} with ${engine.name} (opens in a new tab)`}
             >
               <AiLogo engine={engine.key} />

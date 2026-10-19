@@ -29,7 +29,7 @@ export const legalPages: { key: LegalKey; path: string; label: string; text: str
     key: 'cookies',
     path: '/cookie-policy',
     label: legalLabel('/cookie-policy'),
-    text: 'No cookies and no tracking, and what that means for you',
+    text: 'The cookies we use, and how to accept, reject or change them',
     doc: cookieStatement,
   },
 ]
@@ -62,6 +62,7 @@ export const sitemapPage = {
         { label: 'Systems overview', href: '/our-services', text: blurb('/our-services') },
         { label: 'AI', href: '/ai', text: blurb('/ai') },
         { label: 'Technology', href: '/technology', text: blurb('/technology') },
+        { label: 'Our work', href: '/portfolio', text: blurb('/portfolio') },
         { label: 'About us', href: '/about-us', text: blurb('/about-us') },
         { label: 'Contact us', href: '/contact-us', text: blurb('/contact-us') },
       ],
@@ -74,7 +75,6 @@ export const sitemapPage = {
       title: 'Home page sections',
       links: [
         { label: explore('#build'), href: '/#build', text: 'The three jobs we do for every system' },
-        { label: explore('#work'), href: '/#work', text: blurb('/#work') },
         { label: explore('#process'), href: '/#process', text: 'Four stages, from the first workshop to after launch' },
         { label: 'Pricing', href: '/#pricing', text: pricing.body },
         { label: explore('#faq'), href: '/#faq', text: 'Straight answers to the questions we hear most' },

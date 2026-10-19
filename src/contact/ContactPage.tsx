@@ -1,6 +1,7 @@
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
 import { ContactForm } from '@/components/ContactForm'
+import { CookieBanner } from '@/components/CookieBanner'
 import { Cursor } from '@/components/Cursor'
 import { Footer } from '@/components/Footer'
 import { Nav } from '@/components/Nav'
@@ -81,6 +82,7 @@ export function ContactPage() {
         </section>
       </main>
       <Footer base="/" />
+      <CookieBanner />
     </>
   )
 }

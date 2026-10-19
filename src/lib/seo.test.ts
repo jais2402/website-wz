@@ -1,4 +1,4 @@
-import { brand, countries, faq } from '@/content/site'
+import { brand, countries, faq, pastWork, work } from '@/content/site'
 import { pages, seoData, site } from '@/content/seo'
 import { sitemapPage } from '@/content/sitemap'
 import {
@@ -145,6 +145,7 @@ describe('pageForFile', () => {
     expect(pageForFile(pages, 'systems\\finance.html')?.id).toBe('finance')
     expect(pageForFile(pages, 'privacy-policy.html')?.id).toBe('privacy')
     expect(pageForFile(pages, 'sitemap.html')?.id).toBe('sitemap')
+    expect(pageForFile(pages, 'portfolio.html')?.id).toBe('portfolio')
     expect(pageForFile(pages, 'nope.html')).toBeUndefined()
   })
 })
@@ -252,10 +253,45 @@ describe('jsonLd', () => {
   })
 })
 
+describe('portfolio', () => {
+  const url = 'https://www.wezigns.com/portfolio'
+
+  it('is an indexable CollectionPage at /portfolio with a Home › Our work breadcrumb', () => {
+    const p = page('portfolio')
+    expect(p).toMatchObject({ file: 'portfolio.html', path: '/portfolio', schema: 'CollectionPage', indexable: true })
+    expect(p.breadcrumb.map((c) => c.name)).toEqual(['Home', 'Our work'])
+    const crumbs = graphOf('portfolio').find((n) => typeIn(n, 'BreadcrumbList'))!.itemListElement as { item: string }[]
+    expect(crumbs.map((c) => c.item)).toEqual(['https://www.wezigns.com/', url])
+    const html = htmlFiles['../../portfolio.html'] ?? ''
+    expect(html).toContain('<body data-page="portfolio">')
+    expect(html).toMatch(/<link rel="preload" href="\/fonts\/[^"]+\.woff2" as="font"/)
+  })
+
+  it('lists every case in an ItemList that the page names as its main entity', () => {
+    const g = graphOf('portfolio')
+    const webPage = g.find((n) => typeIn(n, 'CollectionPage'))!
+    expect(webPage.mainEntity).toEqual({ '@id': `${url}#cases` })
+    const list = g.find((n) => typeIn(n, 'ItemList'))!
+    const cases = [...work, ...pastWork]
+    expect(list['@id']).toBe(`${url}#cases`)
+    expect(list.numberOfItems).toBe(cases.length)
+    const items = list.itemListElement as { position: number; url: string; item: { name: string; '@type': string } }[]
+    expect(items.map((i) => i.url)).toEqual(cases.map((c) => `${url}#${c.id}`))
+    expect(items.map((i) => i.item.name)).toEqual(cases.map((c) => c.title))
+    expect(items.map((i) => i.position)).toEqual(cases.map((_, i) => i + 1))
+    expect(items.every((i) => i.item['@type'] === 'CreativeWork')).toBe(true)
+  })
+
+  it('is in llms.txt', () => {
+    expect(llmsTxt(pages, site, seoData)).toContain(`](${url}):`)
+  })
+})
+
 describe('sitemapXml', () => {
   it('lists only indexable pages with absolute www URLs and lastmod', () => {
     const xml = sitemapXml(pages, site, '2026-10-19')
-    expect(xml.match(/<url>/g)).toHaveLength(16)
+    expect(xml.match(/<url>/g)).toHaveLength(17)
+    expect(xml).toContain('<loc>https://www.wezigns.com/portfolio</loc>')
     for (const path of ['/privacy-policy', '/terms-and-conditions', '/cookie-policy', '/sitemap'])
       expect(xml).toContain(`<loc>https://www.wezigns.com${path}</loc>`)
     expect(xml).toContain('<loc>https://www.wezigns.com/</loc>')

@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
-import { brand, enquiryTopics, privacyNotice } from '@/content/site'
-import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, validateEnquiry } from '@/lib/enquiry'
+import { brand, enquiryTopics, marketingOptIn, privacyNotice } from '@/content/site'
+import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, trackLead, validateEnquiry } from '@/lib/enquiry'
 import './enquiry.css'
 
 export type SendStatus =
@@ -66,7 +66,25 @@ export function PrivacyNote() {
   )
 }
 
-const EMPTY: Enquiry = { name: '', email: '', company: '', phone: '', topics: [], message: '', website: '' }
+/**
+ * The optional, unticked marketing opt-in shared by both forms. Its own labelled checkbox, separate from sending the
+ * enquiry: leaving it unticked changes nothing about the enquiry.
+ */
+export function MarketingOptIn({ id, checked, onChange }: { id: string; checked: boolean; onChange: (checked: boolean) => void }) {
+  return (
+    <div className="ef-optin">
+      <input type="checkbox" id={id} name="marketing" checked={checked} onChange={(e) => onChange(e.target.checked)} aria-describedby={`${id}-hint`} />
+      <label htmlFor={id}>
+        {marketingOptIn.label}
+        <span className="ef-optin-hint" id={`${id}-hint`}>
+          {marketingOptIn.hint}
+        </span>
+      </label>
+    </div>
+  )
+}
+
+const EMPTY: Enquiry = { name: '', email: '', company: '', phone: '', topics: [], message: '', website: '', marketing: false }
 type Field = 'name' | 'email' | 'message'
 const FIELDS: Field[] = ['name', 'email', 'message']
 
@@ -97,6 +115,7 @@ export function EnquiryForm() {
     }
     setStatus({ kind: 'sending' })
     const result = await submitEnquiry(data, undefined, { source: `${location.pathname} (contact block)` })
+    if (result.ok) trackLead('contact_block', data)
     setStatus(result.ok ? { kind: 'sent', via: result.via } : { kind: 'error', message: result.error })
   }
   const onSubmit = (e: FormEvent) => {
@@ -174,6 +193,7 @@ export function EnquiryForm() {
         </label>
         {error('message')}
       </div>
+      <MarketingOptIn id={id('marketing')} checked={data.marketing} onChange={(v) => set('marketing', v)} />
 
       {/* Honeypot: hidden from people and screen readers; bots tend to fill every field. */}
       <div className="ef-hp" aria-hidden="true">

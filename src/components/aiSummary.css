@@ -1,37 +1,22 @@
-/* Executive AI Summary (footer row): one slim line, bare icons, the engine name on hover / focus. */
+/* Executive AI Summary: a footer-column block like Prudent AI's: a small column heading and a row of icon tiles. */
 .ai-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 14px 32px;
-  margin-top: 40px;
-  padding-top: 22px;
-  border-top: 1px dashed var(--line-2);
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
 }
 
-.ai-summary-copy {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 4px 14px;
-}
-
+/* Same treatment as the footer column headings. */
 .ai-summary-copy h2 {
-  font-family: var(--f-display);
-  font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.ai-summary-copy p {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--muted);
-  font-size: 0.88rem;
 }
 
 .ai-summary-tiles {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
@@ -39,27 +24,24 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  opacity: 0.72;
-  filter: saturate(0.85);
+  width: 52px;
+  height: 46px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
   transition:
-    opacity 0.25s ease,
-    filter 0.25s ease,
-    transform 0.25s var(--ease-out);
+    background 0.2s ease,
+    transform 0.2s var(--ease-out);
 }
 
 .ai-tile svg {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
 }
 
 .ai-tile:hover,
 .ai-tile:focus-visible {
-  opacity: 1;
-  filter: saturate(1.1) drop-shadow(0 0 10px rgba(140, 196, 255, 0.35));
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateY(-1px);
 }
 
 .ai-tile:focus-visible {
@@ -67,14 +49,14 @@
   outline-offset: 2px;
 }
 
-/* Engine name above the icon on hover / focus */
+/* Engine name above the tile on hover / focus */
 .ai-tile-tip {
   position: absolute;
   bottom: calc(100% + 6px);
   left: 50%;
   transform: translate(-50%, 4px);
   padding: 5px 9px;
-  border-radius: 7px;
+  border-radius: 6px;
   background: var(--text);
   color: var(--ink);
   font-size: 0.64rem;
@@ -86,9 +68,8 @@
     transform 0.2s ease;
 }
 
-.ai-summary-tiles li:last-child .ai-tile-tip {
-  left: auto;
-  right: 0;
+.ai-summary-tiles li:first-child .ai-tile-tip {
+  left: 0;
   transform: translate(0, 4px);
 }
 
@@ -98,24 +79,8 @@
   transform: translate(-50%, 0);
 }
 
-.ai-summary-tiles li:last-child .ai-tile:is(:hover, :focus-visible) .ai-tile-tip {
+.ai-summary-tiles li:first-child .ai-tile:is(:hover, :focus-visible) .ai-tile-tip {
   transform: none;
-}
-
-@media (max-width: 640px) {
-  .ai-summary {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .ai-summary-tiles li:first-child .ai-tile-tip {
-    left: 0;
-    transform: translate(0, 4px);
-  }
-
-  .ai-summary-tiles li:first-child .ai-tile:is(:hover, :focus-visible) .ai-tile-tip {
-    transform: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

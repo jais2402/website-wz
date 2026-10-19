@@ -1,6 +1,7 @@
 import { brand, countries, footer, legalLinks } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
 import { AiSummary } from './AiSummary'
+import { CookieSettingsButton } from './CookieBanner'
 import { Logo } from './Logo'
 
 /** `base` prefixes in-page links when the footer is used on another page (e.g. './' from the loom page). */
@@ -34,7 +35,14 @@ export function Footer({ base = '' }: { base?: string }) {
             </nav>
           ))}
         </div>
-        <p className="footer-countries mono">{countries.map((c) => c.name).join(' · ')}</p>
+        <div className="footer-countries">
+          <span className="mono">Systems live in {countries.length} countries</span>
+          <ul>
+            {countries.map((c) => (
+              <li key={c.name}>{c.name}</li>
+            ))}
+          </ul>
+        </div>
         <AiSummary />
       </div>
       <div className="footer-word" aria-hidden="true">
@@ -49,10 +57,14 @@ export function Footer({ base = '' }: { base?: string }) {
                 {l.label}
               </a>
             ))}
+            <CookieSettingsButton />
           </nav>
         </div>
         <span>
-          <a href={`mailto:${brand.email}`}>{brand.email}</a> · <a href={brand.phoneHref}>{brand.phone}</a>
+          <span className="footer-reach">
+            <a href={`mailto:${brand.email}`}>{brand.email}</a>
+            <a href={brand.phoneHref}>{brand.phone}</a>
+          </span>
         </span>
       </div>
     </footer>

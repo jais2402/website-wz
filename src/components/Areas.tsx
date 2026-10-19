@@ -1,7 +1,8 @@
 import { useGSAP } from '@gsap/react'
 import { type CSSProperties, useRef, useState } from 'react'
-import { areas, sampleDataLabel } from '@/content/site'
+import { areas, ctas, navSystems, sampleDataLabel } from '@/content/site'
 import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
+import { track } from '@/lib/analytics'
 import { activeIndex, tabFill } from '@/lib/charts'
 import { CountUp, ModuleCard } from './Charts'
 import { SplitReveal } from './Reveal'
@@ -182,7 +183,23 @@ export function Areas() {
               {nextArea.title} <span aria-hidden="true">→</span>
             </span>
           </button>
-          {explore('areas-explore-m')}
+          {/* Call to action for the selected system: under the tabs on desktop, under the dashboard on phones. */}
+          <div className="areas-cta">
+            <p className="areas-cta-title">{ctas.explorer.title}</p>
+            <p className="areas-cta-body">{ctas.explorer.body}</p>
+            <div className="areas-cta-actions">
+              <a
+                className="btn btn-lime"
+                href={ctas.contact.href}
+                onClick={() => track('cta_click', { label: ctas.contact.label, location: 'systems_explorer', system: SLUGS[active] })}
+              >
+                {ctas.contact.label} <span aria-hidden="true">→</span>
+              </a>
+              <a className="btn btn-ghost" href={`/systems/${SLUGS[active]}`}>
+                {ctas.explorer.explore(navSystems[active]?.short ?? area.title)} <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>

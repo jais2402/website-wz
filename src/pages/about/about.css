@@ -14,27 +14,44 @@
 }
 
 /* Why SMEs and MSMEs */
-.ab-why-grid {
+.ab-why-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 2vw, 24px);
+  border-top: 1px solid var(--line);
 }
 
-.ab-why-card {
+.ab-why-row {
   display: grid;
-  align-content: start;
-  gap: 14px;
-  padding: clamp(28px, 3vw, 40px);
-  border-radius: var(--radius);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 60%), var(--ink-3);
-  border: 1px solid var(--line);
+  grid-template-columns: minmax(0, 1.2fr) clamp(48px, 8vw, 140px) minmax(0, 1fr);
+  align-items: center;
+  column-gap: clamp(20px, 3vw, 40px);
+  padding: clamp(26px, 3.4vw, 44px) 0;
+  border-bottom: 1px solid var(--line);
 }
 
-.ab-why-card h3 {
-  font-size: clamp(1.4rem, 2vw, 1.75rem);
+.ab-why-row h3 {
+  font-size: clamp(1.9rem, 3.6vw, 3.2rem);
+  letter-spacing: -0.04em;
 }
 
-.ab-why-card p,
+.ab-why-thread {
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(77, 159, 255, 0.15), rgba(140, 196, 255, 0.7));
+  transform: scaleX(0.55);
+  transform-origin: left;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.6s;
+}
+
+.ab-why-row:hover .ab-why-thread {
+  transform: scaleX(1);
+  box-shadow: 0 0 12px rgba(77, 159, 255, 0.5);
+}
+
+.ab-why-row p {
+  max-width: 44ch;
+}
+
+.ab-why-row p,
 .ab-moment p:not(.mono),
 .ab-step p {
   color: var(--muted);
@@ -198,8 +215,13 @@
 
 /* Phones and small tablets */
 @media (max-width: 899px) {
-  .ab-why-grid {
-    grid-template-columns: 1fr;
+  .ab-why-row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 14px;
+  }
+
+  .ab-why-thread {
+    width: 64px;
   }
 
   .ab-thread-track {

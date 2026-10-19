@@ -31,11 +31,11 @@ describe('formatLegalDate', () => {
 
 describe('splitPlaceholders', () => {
   it('marks [square bracket] placeholders and keeps the rest as text', () => {
-    expect(splitPlaceholders('CIN: [CIN]. GSTIN: [GSTIN].')).toEqual([
+    expect(splitPlaceholders('CIN: [CIN]. Name: [Name].')).toEqual([
       { text: 'CIN: ', placeholder: false },
       { text: '[CIN]', placeholder: true },
-      { text: '. GSTIN: ', placeholder: false },
-      { text: '[GSTIN]', placeholder: true },
+      { text: '. Name: ', placeholder: false },
+      { text: '[Name]', placeholder: true },
       { text: '.', placeholder: false },
     ])
     expect(splitPlaceholders('No placeholders.')).toEqual([{ text: 'No placeholders.', placeholder: false }])
@@ -49,5 +49,28 @@ describe('splitPlaceholders', () => {
           .join(''),
       ).toBe(s)
     }
+  })
+})
+
+describe('legal copy', () => {
+  const docs = [privacyPolicy, termsOfUse, cookieStatement]
+  const allText = docs.flatMap((d) => [d.lead, ...d.sections.flatMap((s) => [s.heading, ...s.body])]).join('\n')
+
+  it('keeps only the agreed placeholders', () => {
+    const found = new Set(allText.match(/\[[^\]]+\]/g))
+    expect([...found].sort()).toEqual(['[CIN]', '[Designation]', '[Grievance Officer name]'])
+  })
+
+  it('no longer claims the site uses no cookies or no tracking', () => {
+    expect(allText).not.toMatch(/no cookies|no tracking|does not use cookies|sets no cookies|GSTIN|confirm\]/i)
+  })
+
+  it('names every cookie and storage item the site uses', () => {
+    const cookies = cookieStatement.sections.flatMap((s) => s.body).join('\n')
+    for (const name of ['wz-consent', '_ga', '_ga_<container-id>', 'Cookie settings']) expect(cookies).toContain(name)
+  })
+
+  it('uses no em dashes', () => {
+    expect(allText).not.toContain('—')
   })
 })

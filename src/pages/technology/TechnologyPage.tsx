@@ -61,15 +61,19 @@ export function TechnologyPage() {
       <CtaStrip {...ctas.technology} />
 
       <PageSection title={p.aiTitle} className="tech-ai">
-        <ul className="tech-ai-grid">
+        {/* A pipeline, not cards: your data → the right model → a person approves, on one thread with a moving pulse. */}
+        <ol className="tech-flow">
+          <span className="tech-flow-line" aria-hidden="true">
+            <i />
+          </span>
           {p.ai.map((a) => (
-            <li key={a.title} className="glass-card tech-ai-card" data-reveal>
-              <span className="tech-ai-line" aria-hidden="true" />
+            <li key={a.title} className="tech-flow-step" data-reveal>
+              <span className="tech-flow-knot" aria-hidden="true" />
               <h3>{a.title}</h3>
               <p>{a.text}</p>
             </li>
           ))}
-        </ul>
+        </ol>
       </PageSection>
 
       <LoomContact />

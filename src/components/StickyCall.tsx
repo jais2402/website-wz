@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { brand, quickContact } from '@/content/site'
+import { track } from '@/lib/analytics'
 import './stickyCall.css'
 
 /**
@@ -33,7 +34,11 @@ export function StickyCall() {
 
   return (
     <div className={`sticky-call${shown ? ' is-shown' : ''}`} aria-hidden={!shown} inert={!shown}>
-      <a href={brand.phoneHref} className="sticky-call-btn is-call">
+      <a
+        href={brand.phoneHref}
+        className="sticky-call-btn is-call"
+        onClick={() => track('cta_click', { label: 'call', location: 'sticky_call' })}
+      >
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
           <path
             d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"
@@ -42,9 +47,19 @@ export function StickyCall() {
         </svg>
         {quickContact.call}
       </a>
-      <a href={`mailto:${brand.email}`} className="sticky-call-btn">
+      <a
+        href={`mailto:${brand.email}`}
+        className="sticky-call-btn"
+        onClick={() => track('cta_click', { label: 'email', location: 'sticky_call' })}
+      >
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-          <path d="M4 6h16v12H4z M4 7l8 6 8-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+          <path
+            d="M4 6h16v12H4z M4 7l8 6 8-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
         </svg>
         {quickContact.email}
       </a>

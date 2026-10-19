@@ -1,7 +1,15 @@
 import { legalMeta } from '@/content/legal'
-import { aboutPage, aiPage, notFoundPage, servicesPage, systemPages, systemsSection } from '@/content/pages'
+import {
+  aboutPage,
+  aiPage,
+  notFoundPage,
+  portfolioPage,
+  servicesPage,
+  systemPages,
+  systemsSection,
+} from '@/content/pages'
 import { legalPages, sitemapPage } from '@/content/sitemap'
-import { brand, faq, loom, stats } from '@/content/site'
+import { brand, faq, loom, pastWork, stats, work } from '@/content/site'
 import { legalAnchor } from './legal'
 import { escapeHtml, pageForFile, snapshot, snapshotPages } from './snapshot'
 
@@ -20,6 +28,7 @@ const PAGES = [
   ...systemPages.map((s) => `/systems/${s.slug}`),
   '/ai',
   '/technology',
+  '/portfolio',
   '/about-us',
   '/contact-us',
   '/privacy-policy',
@@ -37,10 +46,11 @@ describe('snapshot', () => {
     expect(s).toMatch(/<footer>.*<\/footer><\/div>$/)
   })
 
-  it.each(snapshotPages)('%s links to every page and to Work', (id) => {
+  it.each(snapshotPages)('%s links to every page, including Our work', (id) => {
     const links = hrefs(html(id))
     for (const href of PAGES) expect(links).toContain(href)
-    expect(links.some((h) => h.endsWith('#work'))).toBe(true)
+    // Our work is its own page now: no page sends readers to the old home-page anchor.
+    expect(links).not.toContain('/#work')
   })
 
   it.each(snapshotPages)('%s carries the NAP and the copyright line', (id) => {
@@ -128,9 +138,32 @@ describe('snapshot', () => {
   })
 
   it('in-page anchors point back to the home page from other pages', () => {
-    expect(hrefs(html('home'))).toContain('#work')
-    expect(hrefs(html('about'))).toContain('/#work')
-    expect(hrefs(html('about'))).not.toContain('#work')
+    expect(hrefs(html('home'))).toContain('#pricing')
+    expect(hrefs(html('about'))).toContain('/#pricing')
+    expect(hrefs(html('about'))).not.toContain('#pricing')
+  })
+
+  it('portfolio: one H1, every case with its sector, tags and metrics, and no numbers on earlier systems', () => {
+    const s = html('portfolio')
+    expect(h1Text(s)).toBe(portfolioPage.title.join(' '))
+    for (const h of [portfolioPage.featuredTitle, portfolioPage.pastTitle, loom.contact.title])
+      expect(s).toContain(`<h2>${escapeHtml(h)}</h2>`)
+    for (const c of [...work, ...pastWork]) {
+      expect(s).toContain(`<article id="${c.id}">`)
+      expect(s).toContain(`<h3>${escapeHtml(c.title)}</h3>`)
+      expect(s).toContain(escapeHtml(c.body))
+      for (const t of c.tags) expect(s).toContain(`<li>${escapeHtml(t)}</li>`)
+    }
+    for (const c of work)
+      for (const m of c.metrics) expect(s).toContain(`<dt>${escapeHtml(m.value)}</dt><dd>${escapeHtml(m.label)}</dd>`)
+    expect(count(s, /<dl>/g)).toBe(work.length)
+    expect(hrefs(s)).toContain('/our-services')
+  })
+
+  it('home and system pages link to the portfolio', () => {
+    expect(hrefs(html('home'))).toContain('/portfolio')
+    const linked = systemPages.find((sp) => sp.proof)!
+    expect(hrefs(html(`system:${linked.slug}`))).toContain(`/portfolio#${linked.proof!.caseId}`)
   })
 
   it('escapes text', () => {
@@ -158,6 +191,7 @@ describe('pageForFile', () => {
     expect(pageForFile('our-services.html')).toBe('services')
     expect(pageForFile('ai.html')).toBe('ai')
     expect(pageForFile('technology.html')).toBe('technology')
+    expect(pageForFile('portfolio.html')).toBe('portfolio')
     expect(pageForFile('404.html')).toBe('notFound')
     expect(pageForFile('systems/people.html')).toBe('system:people')
     expect(pageForFile('systems\\finance.html')).toBe('system:finance')

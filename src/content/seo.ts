@@ -2,7 +2,7 @@
 // breadcrumbs and the facts in JSON-LD. Read by the build (scripts/vite-seo.ts, scripts/og-cards.mjs), so this file
 // and what it imports stay plain data (no React, no DOM) and use explicit `.ts` imports for Node.
 // Rules (docs/seo/plan.md): titles ≤ 60 chars, descriptions 140–160 chars, visible H1s unchanged, no GST claims.
-import { brand, countries, faq } from './site.ts'
+import { brand, countries, faq, pastWork, work } from './site.ts'
 import { aiPage, systemPages } from './pages.ts'
 
 // Full country names for structured data; `countries` uses short labels for the globe.
@@ -76,6 +76,7 @@ export type PageId =
   | 'terms'
   | 'cookies'
   | 'sitemap'
+  | 'portfolio'
 
 /** JSON-LD type of the page itself. `Service` pages get a WebPage node plus Service nodes. */
 export type PageSchema = 'WebPage' | 'CollectionPage' | 'AboutPage' | 'ContactPage' | 'Service'
@@ -315,10 +316,10 @@ export const pages: SeoPage[] = [
     id: 'cookies',
     file: 'cookie-policy.html',
     path: '/cookie-policy',
-    title: 'Cookie Policy: No Cookies, No Tracking | Wezigns',
+    title: 'Cookie Policy: Your Choice, Your Control | Wezigns',
     description:
-      'The Wezigns website sets no cookies and stores nothing in your browser. No analytics, no tracking pixels, no third-party fonts. Here is what that means.',
-    card: { kicker: 'Legal', title: 'No cookies. No tracking.' },
+      'The cookies and browser storage on the Wezigns website: one item that remembers your choice, and Google Analytics only if you accept. How to change it.',
+    card: { kicker: 'Legal', title: 'Analytics only if you say yes.' },
     breadcrumb: [HOME, { name: 'Cookie policy', path: '/cookie-policy' }],
     schema: 'WebPage',
     indexable: true,
@@ -337,11 +338,33 @@ export const pages: SeoPage[] = [
     indexable: true,
     llms: { section: 'Legal', label: 'Sitemap (every page)' },
   },
+  // Added after the legal pages so the social cards above keep their seeds.
+  {
+    id: 'portfolio',
+    file: 'portfolio.html',
+    path: '/portfolio',
+    title: 'Our Work: Case Studies and Systems Built | Wezigns',
+    description:
+      'Case studies from Wezigns: a training system that cut admin work by 80%, a marketplace that grew from 300 to 4,500 sellers, and more systems built since 2012.',
+    card: { kicker: 'Our work', title: 'Systems we have built for growing businesses.' },
+    breadcrumb: [HOME, { name: 'Our work', path: '/portfolio' }],
+    schema: 'CollectionPage',
+    indexable: true,
+    llms: { section: 'Company', label: 'Our work (case studies)' },
+  },
 ]
 
 /** Content the JSON-LD builders read (FAQ, system modules, AI offers). */
 export const seoData = {
   faq,
+  // Every case on /portfolio, in page order (case studies with results first). `id` is the case's anchor there.
+  cases: [...work, ...pastWork].map((c) => ({
+    id: c.id,
+    name: c.title,
+    description: c.body,
+    sector: c.sector,
+    keywords: [...c.tags],
+  })),
   systems: systemPages.map((s) => ({ slug: s.slug, title: s.title, intro: s.intro, modules: s.modules })),
   ai: {
     ways: aiPage.ways.map((w) => ({ key: w.key, title: w.title, text: w.text })),

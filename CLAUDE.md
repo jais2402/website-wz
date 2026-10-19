@@ -27,12 +27,12 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`, SVG art in lite mode).
 - `about-us.html`, `our-services.html` (systems overview), `ai.html`, `technology.html`, `privacy-policy.html`,
   `terms-and-conditions.html`, `cookie-policy.html`, `sitemap.html` (legal copy in `src/content/legal.ts`, drafts for
-  legal review; no cookie banner because the site sets no cookies or storage, see `docs/legal/research.md`), `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
+  legal review, see `docs/legal/research.md`; GA4 loads only after the cookie banner's Accept, see `docs/analytics.md`), `portfolio.html` (`/portfolio`, all case studies + earlier systems), `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
   `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). Shared shell, hero, section
   and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
   Every hero has a visual: a 3D loom variant (`pages/HeroLoom.tsx` → `LoomScene variant`: `classic` for contact,
   `spindle` (diagonal, blue, orbit rings) for About, `frayed` (broken, coral) for 404), the live dashboard (systems), the
-  animated SVG (AI), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`). System pages print as
+  animated SVG (AI), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`; each system page's tool groups are in `src/content/systemTools.ts`, research in `docs/tools-research.md`). System pages print as
   a one-page summary (`src/pages/print.css` + print rules in `system.css`).
 - `api/enquiry.ts`: Vercel Function that emails enquiries through Resend (`RESEND_API_KEY`, see
   `docs/enquiry-setup.md`). Without it (e.g. `npm run dev`), both forms fall back to mailto. Adding a page = an `.html` file + an entry in `INPUTS` in `vite.config.ts`.

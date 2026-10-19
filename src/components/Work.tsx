@@ -3,6 +3,7 @@ import { type CSSProperties, useLayoutEffect, useRef, useState } from 'react'
 import { pastWork, work, workSection } from '@/content/site'
 import { gsap, scrollToTarget } from '@/hooks/motion'
 import { threadPath } from '@/lib/thread'
+import { CaseArt } from './CaseArt'
 import { SplitReveal } from './Reveal'
 
 type Card = {
@@ -118,6 +119,9 @@ export function Work() {
         <div className="work-intro">
           <SplitReveal as="h2" className="display" text={workSection.title} />
           <p className="lead">{next.body}</p>
+          <a className="work-all" href={workSection.all.href}>
+            {workSection.all.label} <span aria-hidden="true">→</span>
+          </a>
           <span className="drag-hint mono work-hint" aria-hidden="true">
             {workSection.hint}
           </span>
@@ -127,9 +131,13 @@ export function Work() {
           {cards.map((c, i) => (
             <article key={c.id} id={c.id} className={`case-card tone-${c.tone}`} style={{ '--i': i } as CSSProperties}>
               <span className="case-knot" aria-hidden="true" />
-              <span className="mono case-card-tag">{c.place ? `${c.sector} · ${c.place}` : c.sector}</span>
+              <span className="mono case-card-tag">
+                {c.sector}
+                {c.place && <span className="case-card-place">{c.place}</span>}
+              </span>
               <h3>{c.title}</h3>
               <p className="case-card-body">{c.body}</p>
+              <CaseArt seed={i + 1} />
               {c.metrics?.length ? (
                 <dl className="case-card-metrics">
                   {c.metrics.map((m) => (

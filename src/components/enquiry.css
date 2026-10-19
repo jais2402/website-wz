@@ -125,3 +125,74 @@
 .ef-done a {
   color: #8cc4ff;
 }
+
+/* Marketing opt-in: its own optional, unticked checkbox under the message, separate from sending the enquiry.
+   `input[type='checkbox']` outranks the `.cf input` text-field styles on the Contact page. */
+.ef-optin {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.ef-optin input[type='checkbox'] {
+  appearance: none;
+  flex: none;
+  display: grid;
+  place-content: center;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.ef-optin input[type='checkbox']::before {
+  content: '';
+  width: 10px;
+  height: 5px;
+  border-left: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  transform: translateY(-1px) rotate(-45deg) scale(0);
+  transition: transform 0.15s;
+}
+
+.ef-optin input[type='checkbox']:checked {
+  border-color: var(--lime);
+  background: var(--lime);
+}
+
+.ef-optin input[type='checkbox']:checked::before {
+  transform: translateY(-1px) rotate(-45deg) scale(1);
+}
+
+.ef-optin input[type='checkbox']:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.ef-optin label {
+  display: grid;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.ef-optin-hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ef-optin input[type='checkbox'],
+  .ef-optin input[type='checkbox']::before {
+    transition: none;
+  }
+}

@@ -182,6 +182,7 @@ export function jsonLd(page: SeoPage, site: SeoSite, data: SeoData): Json {
   if (services.length === 1) webPage.mainEntity = { '@id': services[0]['@id'] }
   if (services.length > 1) webPage.mainEntity = services.map((s) => ({ '@id': s['@id'] }))
   if (page.id === 'services') webPage.mainEntity = { '@id': `${url}#systems` }
+  if (page.id === 'portfolio') webPage.mainEntity = { '@id': `${url}#cases` }
   graph.push(webPage)
 
   if (page.breadcrumb.length) {
@@ -232,6 +233,29 @@ export function jsonLd(page: SeoPage, site: SeoSite, data: SeoData): Json {
           },
         }
       }),
+    })
+  }
+
+  if (page.id === 'portfolio') {
+    graph.push({
+      '@type': 'ItemList',
+      '@id': `${url}#cases`,
+      name: 'Systems we have built',
+      numberOfItems: data.cases.length,
+      itemListElement: data.cases.map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${url}#${c.id}`,
+        item: {
+          '@type': 'CreativeWork',
+          '@id': `${url}#${c.id}`,
+          name: c.name,
+          description: c.description,
+          genre: c.sector,
+          keywords: c.keywords.join(', '),
+          creator: org,
+        },
+      })),
     })
   }
 

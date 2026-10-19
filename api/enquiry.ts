@@ -9,6 +9,21 @@ const MAX_BODY = 16 * 1024
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const PHONE_RE = /^[+()\d\s-]{6,}$/
 
+/** The exact opt-in wording on both forms (marketingOptIn.label in src/content/site.ts; the test checks they match). */
+export const MARKETING_WORDING = 'Email me occasional updates from Wezigns. You can unsubscribe at any time.'
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+/** '20 Oct 2026, 14:32 IST' (IST is always UTC+5:30). Mirrors formatIst in src/lib/enquiry.ts. */
+export function formatIst(date: Date): string {
+  const d = new Date(date.getTime() + 330 * 60_000)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} IST`
+}
+
+/** The record of the marketing choice. The time is when the server received the enquiry. */
+export const marketingLine = (marketing: boolean, at: Date) =>
+  marketing ? `Yes (opted in on ${formatIst(at)}: '${MARKETING_WORDING}')` : 'No'
+
 export type CleanEnquiry = {
   name: string
   email: string
@@ -16,6 +31,8 @@ export type CleanEnquiry = {
   phone: string
   topics: string[]
   message: string
+  /** Opted in to marketing emails. Anything but a literal `true` counts as no. */
+  marketing: boolean
   source: string
 }
 
@@ -41,6 +58,7 @@ export function parseEnquiry(input: unknown): { ok: true; value: CleanEnquiry } 
     phone: str(o.phone),
     topics: Array.isArray(o.topics) ? o.topics.map(str).filter(Boolean).map(line) : [],
     message: str(o.message),
+    marketing: o.marketing === true,
     source: line(str(o.source)),
   }
   const fields: string[] = []
@@ -57,7 +75,7 @@ export function parseEnquiry(input: unknown): { ok: true; value: CleanEnquiry } 
 export const escapeHtml = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
 
-export function enquiryEmail(e: CleanEnquiry) {
+export function enquiryEmail(e: CleanEnquiry, receivedAt = new Date()) {
   const subject = line(`Enquiry: ${e.topics.length ? e.topics.join(', ') : 'General'}${e.company ? ` (${e.company})` : ''} from ${e.name}`)
   const rows: [string, string][] = [
     ['Name', e.name],
@@ -66,6 +84,7 @@ export function enquiryEmail(e: CleanEnquiry) {
     ['Phone', e.phone],
     ['Help with', e.topics.join(', ')],
     ['Sent from', e.source],
+    ['Marketing emails', marketingLine(e.marketing, receivedAt)],
   ]
   const filled = rows.filter(([, val]) => val)
   const html = [

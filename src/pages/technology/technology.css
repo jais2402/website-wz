@@ -192,34 +192,78 @@
   position: relative;
 }
 
-.tech-ai-grid {
+.tech-flow {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 2vw, 24px);
+  gap: clamp(24px, 4vw, 64px);
+  padding-top: 8px;
 }
 
-.tech-ai-card {
+/* The thread through the three knots, with a light travelling along it. */
+.tech-flow-line {
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  top: 17px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(77, 159, 255, 0.7), rgba(139, 123, 255, 0.7));
+  box-shadow: 0 0 12px rgba(77, 159, 255, 0.45);
+  overflow: hidden;
+}
+
+.tech-flow-line i {
+  position: absolute;
+  top: -3px;
+  left: 0;
+  width: 90px;
+  height: 8px;
+  border-radius: 8px;
+  background: radial-gradient(closest-side, #fff, rgba(255, 255, 255, 0));
+  animation: techFlowPulse 3.2s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+}
+
+@keyframes techFlowPulse {
+  from {
+    transform: translateX(-90px);
+  }
+  to {
+    transform: translateX(110vw);
+  }
+}
+
+.tech-flow-step {
+  position: relative;
   display: grid;
   align-content: start;
-  gap: 14px;
-  padding: clamp(26px, 3vw, 38px);
+  gap: 12px;
 }
 
-.tech-ai-line {
-  width: 44px;
-  height: 2px;
-  margin-bottom: 10px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, var(--lime), var(--violet));
+.tech-flow-knot {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: #8cc4ff;
+  border: 3px solid var(--ink);
+  box-shadow:
+    0 0 0 1px rgba(140, 196, 255, 0.6),
+    0 0 18px 4px rgba(77, 159, 255, 0.55);
 }
 
-.tech-ai-card h3 {
-  font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+.tech-flow-step h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(1.35rem, 1.9vw, 1.75rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
-.tech-ai-card p {
+.tech-flow-step p {
   color: var(--muted);
   line-height: 1.55;
+  max-width: 34ch;
 }
 
 /* ---- Tablet and phones ---- */
@@ -235,8 +279,30 @@
 }
 
 @media (max-width: 899px) {
-  .tech-ai-grid {
-    grid-template-columns: 1fr;
+  /* Phones: the thread runs down the left. */
+  .tech-flow {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: 38px;
+  }
+
+  .tech-flow-line {
+    left: 9px;
+    right: auto;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    height: auto;
+  }
+
+  .tech-flow-line i {
+    display: none;
+  }
+
+  .tech-flow-knot {
+    position: absolute;
+    left: -38px;
+    top: 4px;
+    margin: 0;
   }
 
   .tech-band {
@@ -252,7 +318,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .tech-layers.is-on .tech-band::after,
-  .tech-layers.is-on .tech-link i {
+  .tech-layers.is-on .tech-link i,
+  .tech-flow-line i {
     animation: none;
   }
 

@@ -1,5 +1,6 @@
 import { useGSAP } from '@gsap/react'
 import { Fragment, type ReactNode, useRef } from 'react'
+import { CookieBanner } from '@/components/CookieBanner'
 import { Cursor } from '@/components/Cursor'
 import { Footer } from '@/components/Footer'
 import { Nav } from '@/components/Nav'
@@ -42,6 +43,7 @@ export function PageShell({ children, className = '' }: { children: ReactNode; c
       </main>
       <Footer base="/" />
       <StickyCall />
+      <CookieBanner />
     </>
   )
 }

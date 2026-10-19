@@ -4,6 +4,10 @@ import './index.css'
 import './loom/loom.css'
 import App from './App.tsx'
 import { LiteProvider } from './components/LiteProvider'
+import { initAnalytics } from './lib/ga'
+
+// Consent-gated GA: no script or cookie until the visitor accepts; nothing at all without an ID.
+initAnalytics()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

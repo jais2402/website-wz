@@ -1,6 +1,6 @@
 // Copy for the inner pages: About, the six system pages and the AI page.
 // Rules: pain points and impact are written in the visitor's own words; no invented statistics (real case results
-// only, linked to Our Work); tools come from the shared `tools` list in site.ts, split per system.
+// only, linked to Our Work); each system's tools are in systemTools.ts.
 
 export type Voice = 'Owner' | 'Manager' | 'Team member'
 
@@ -15,11 +15,9 @@ export type SystemPage = {
   modules: Record<string, string>
   impact: { who: Voice; before: string; after: string }[]
   proof?: { value: string; label: string; caseId: string }
-  tools: { label: string; items: string[] }[]
   caseId: string
 }
 
-const HOSTING = { label: 'Hosted on', items: ['AWS', 'Google Cloud'] }
 
 export const systemPages: SystemPage[] = [
   {
@@ -51,7 +49,6 @@ export const systemPages: SystemPage[] = [
       { who: 'Manager', before: 'Appraisals take two weeks of follow-ups.', after: 'The system sends the reminders. I just read the reviews.' },
     ],
     proof: { value: '−80%', label: 'administrative work for a nationwide training operation', caseId: 'safety-training' },
-    tools: [HOSTING, { label: 'Connects to', items: ['Twilio (SMS and WhatsApp alerts)', 'Mailchimp (staff updates)'] }],
     caseId: 'safety-training',
   },
   {
@@ -81,11 +78,6 @@ export const systemPages: SystemPage[] = [
       { who: 'Manager', before: 'I find lost quotes after the fact.', after: 'I see every open quote and follow up the same day.' },
       { who: 'Team member', before: 'I retype quotes into invoices.', after: 'One click turns an accepted quote into an invoice.' },
       { who: 'Manager', before: 'Nobody knows who owns a ticket.', after: 'Every ticket has an owner and a clock.' },
-    ],
-    tools: [
-      HOSTING,
-      { label: 'Payments', items: ['Stripe', 'Razorpay'] },
-      { label: 'Messaging and email', items: ['Twilio', 'Mailchimp', 'Klaviyo'] },
     ],
     caseId: 'marketplace',
   },
@@ -117,7 +109,6 @@ export const systemPages: SystemPage[] = [
       { who: 'Team member', before: 'I recount shelves to trust the numbers.', after: 'The count I see is the count on the shelf.' },
       { who: 'Manager', before: 'I learn about delays at the end of the day.', after: 'I see a slow line while there is still time to fix it.' },
     ],
-    tools: [HOSTING, { label: 'Order sources', items: ['Shopify', 'Magento', 'WooCommerce'] }, { label: 'Alerts', items: ['Twilio'] }],
     caseId: 'engineering-event',
   },
   {
@@ -149,12 +140,6 @@ export const systemPages: SystemPage[] = [
       { who: 'Owner', before: 'Online and shop stock disagree.', after: 'One stock count for every channel.' },
     ],
     proof: { value: '300 → 4,500', label: 'active sellers on a B2B marketplace, with no support staff added', caseId: 'marketplace' },
-    tools: [
-      HOSTING,
-      { label: 'Store platforms', items: ['Shopify', 'Magento', 'WooCommerce', 'WordPress'] },
-      { label: 'Payments', items: ['Stripe', 'Razorpay'] },
-      { label: 'Marketing', items: ['Klaviyo', 'Mailchimp'] },
-    ],
     caseId: 'online-retail',
   },
   {
@@ -185,7 +170,6 @@ export const systemPages: SystemPage[] = [
       { who: 'Team member', before: 'Month-end takes days of copying.', after: 'The numbers are already where they need to be.' },
       { who: 'Owner', before: 'Approvals are hard to prove.', after: 'Every approval has a name, a time and a reason.' },
     ],
-    tools: [HOSTING, { label: 'Payments', items: ['Stripe', 'Razorpay'] }, { label: 'Document checks', items: ['Inscribe'] }],
     caseId: 'tourism',
   },
   {
@@ -216,12 +200,6 @@ export const systemPages: SystemPage[] = [
       { who: 'Manager', before: 'Compliance reports are built by hand.', after: 'The report the regulator wants is one click.' },
       { who: 'Owner', before: 'A new branch means new spreadsheets.', after: 'A new branch is a new login.' },
     ],
-    tools: [
-      HOSTING,
-      { label: 'Payments', items: ['Stripe', 'Razorpay'] },
-      { label: 'Messaging', items: ['Twilio'] },
-      { label: 'Document checks', items: ['Inscribe'] },
-    ],
     caseId: 'education',
   },
 ]
@@ -231,7 +209,7 @@ export const systemsSection = {
   painsTitle: 'Sound familiar?',
   buildTitle: 'What we build',
   impactTitle: 'What changes for you',
-  toolsTitle: 'Tools we use',
+  toolsTitle: 'Connects to the tools you use',
   moreTitle: 'Other systems we build',
   cta: { label: 'Tell us what is not working', href: '/contact-us' },
 }
@@ -324,7 +302,7 @@ export const notFoundPage = {
     { label: 'Systems we build', text: 'HR, CRM, operations, ecommerce, finance and industry', href: '/our-services' },
     { label: 'AI', text: 'AI inside your systems and custom AI solutions', href: '/ai' },
     { label: 'Technology', text: 'The stack behind the systems we build', href: '/technology' },
-    { label: 'Our work', text: 'Case studies from 11 countries', href: '/#work' },
+    { label: 'Our work', text: 'Case studies and the systems we have built', href: '/portfolio' },
     { label: 'About', text: 'Chennai, since 2012', href: '/about-us' },
     { label: 'Contact', text: 'Phone, email, address and the enquiry form', href: '/contact-us' },
   ],
@@ -342,5 +320,21 @@ export const servicesPage = {
   modulesLabel: 'Modules',
   servicesTitle: 'What we do for every system',
   servicesIntro: 'The same three jobs, whichever system you start with.',
-  workLink: { label: 'See systems we have built', href: '/#work' },
+  workLink: { label: 'See systems we have built', href: '/portfolio' },
+}
+
+// Our work (portfolio.html, the old site's /portfolio URL). The cases themselves are `work` and `pastWork` in site.ts,
+// shared with the home page's Our Work section. Earlier systems have no published results: never add numbers to them.
+export const portfolioPage = {
+  kicker: 'Our work',
+  title: ['Systems we have built', 'for growing', 'businesses.'],
+  lead: 'Training platforms, event dashboards, marketplaces, stores and portals that replaced spreadsheets, email threads and manual work. Client names stay private.',
+  systemsLink: { label: 'See the systems we build', href: '/our-services' },
+  featuredKicker: 'Case studies',
+  featuredTitle: 'What changed for our clients.',
+  featuredIntro: 'Four systems, what each one replaced and the numbers it moved.',
+  resultsLabel: 'Results',
+  pastKicker: 'Earlier systems',
+  pastTitle: 'More systems from our portfolio.',
+  pastIntro: 'Built for clients over the years. We did not publish results for these, so we only describe what each system does.',
 }

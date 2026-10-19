@@ -215,3 +215,56 @@ What would trigger a banner or a re-think:
 
 `[Grievance Officer name]`, `[Designation]`, `[CIN]`, `[GSTIN]`, `privacy@wezigns.com [confirm]`, `24 months [confirm]`,
 and the `reviewNote`. Search the file for `[` to find them all.
+
+## Update 20 Oct 2026: GA4 + marketing emails
+
+**Client decisions.** The site adds Google Analytics 4 (page views and events only; Google signals and all
+advertising features off; event data retention 14 months). GA loads only after the visitor accepts the cookie banner
+(Consent Mode v2, basic mode: no Google tag and no pings before consent). The choice is kept in localStorage
+`wz-consent` (strictly necessary, 12 months) and can be changed from a "Cookie settings" link in the footer. Both
+enquiry forms get a separate, optional, unticked box: "Email me occasional updates from Wezigns. You can unsubscribe
+at any time." Enquiry details may be used to reply by email or phone (no promotional calls). Marketing is email only.
+
+**Why consent comes before GA (EU and UK).** `_ga` and `_ga_<container-id>` are non-essential cookies, so ePrivacy
+Directive Art. 5(3) (as implemented in the Netherlands, Telecommunicatiewet art. 11.7a, and in the Czech Republic,
+Act 127/2005 s. 89(3)) and PECR reg. 6 in the UK need prior opt-in consent. The UK's new statistical-purposes
+exception (Data (Use and Access) Act 2025) does not comfortably cover GA, because data goes to a third party that
+also has its own uses, so we treat GA as consent-only everywhere. Basic Consent Mode is the safe variant: advanced
+mode sends cookieless pings before consent, which regulators may still see as access to the device. The GDPR lawful
+basis for the analytics itself is then consent (Art. 6(1)(a)), and Reject must be as easy as Accept. Google is
+named as a recipient; the US transfer rests on Google LLC's EU-US Data Privacy Framework certification, with the
+SCCs in Google's data processing terms as back-up.
+
+**India (DPDP Act 2023 and Rules 2025).** Once the main duties are in force (~13 May 2027), analytics needs consent
+with a notice: none of the s. 7 legitimate uses fits website analytics (s. 7(a) covers data the person gives for a
+specified purpose, which analytics is not). The banner gives a free, specific, informed, unambiguous, affirmative
+choice and an equally easy way to withdraw (s. 6(4)). Until then the SPDI Rules apply, and they are met by the
+notice and consent.
+
+**Marketing emails.** EU and UK: sending marketing email to individuals needs prior consent (PECR reg. 22; ePrivacy
+Art. 13, and the Dutch and Czech rules). The "soft opt-in" for existing customers does not apply to people who only
+sent an enquiry, so we rely on a separate, unticked box, never bundled with sending the enquiry (GDPR Art. 7(2)
+and (4)). Every email needs a working unsubscribe link, and the right to object to direct marketing is absolute
+(GDPR Art. 21(2) and (3)). India has no specific email anti-spam statute. The DPDP Act still applies: consent for a
+specified purpose (s. 6), purpose limitation (the enquiry data is not reused for marketing without that consent),
+withdrawal as easy as giving it, and erasure when consent is withdrawn (s. 8(7)). TRAI's Telecom Commercial
+Communications Customer Preference Regulations 2018 (DND, DLT registration) are not engaged, because there are no
+promotional calls or SMS: phone numbers are used only to reply to the enquiry.
+
+**Record of consent.** The controller must be able to show consent was given (GDPR Art. 7(1); DPDP s. 6(10)). Each
+enquiry email now states "Marketing emails: Yes (opted in on <date, time> IST: '<exact wording>')" or "Marketing
+emails: No". On the endpoint path the time is when the server received it; on the mailto fallback it is when the
+visitor pressed send. Keep that email (or copy the line into the mailing tool) for as long as the address is on the
+list. After an unsubscribe, keep only the address on a suppression list so it is never emailed again.
+
+**Retention.** Enquiries: 24 months after the last contact unless the person becomes a client. Marketing list: until
+the person unsubscribes, then suppression list only. GA event data: 14 months. Consent choice: 12 months in the
+browser.
+
+**Copy changed.** Privacy Policy (purposes and bases, Google as recipient, "what we do not do", rights including
+withdrawal and objection to marketing, retention, security limited to statements that are true), Cookie Policy
+(rewritten around `wz-consent`, `_ga`, `_ga_<container-id>` and the "Cookie settings" link), Terms (no liability
+figure), form notice and opt-in. GSTIN, the liability figure and the unverified security and log-retention claims
+were removed. Remaining placeholders: `[Grievance Officer name]`, `[Designation]`, `[CIN]`. If a mailing tool
+(Mailchimp, Brevo, Resend Audiences and so on) is chosen, name it in the Privacy Policy "Who handles your data"
+section before the first send, and check its DPA and transfer basis.

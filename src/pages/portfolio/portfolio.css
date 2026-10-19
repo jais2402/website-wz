@@ -1,0 +1,410 @@
+/* ==========================================================================
+   Our work (/portfolio, PortfolioPage.tsx). Classes prefixed `pf-`.
+   Tones: lime (accent blue), violet, coral, set as --tone by .tone-* on each case.
+   ========================================================================== */
+.pf .tone-lime {
+  --tone: var(--lime);
+}
+
+.pf .tone-violet {
+  --tone: var(--violet);
+}
+
+.pf .tone-coral {
+  --tone: var(--coral);
+}
+
+/* ---- Hero visual: every case's tangle through one knot, out as ordered lines ---- */
+.pf-weave {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  margin-left: auto;
+}
+
+.pf-weave svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.pf-weave path {
+  fill: none;
+  stroke: var(--tone);
+  stroke-linecap: round;
+}
+
+.pf-weave-in {
+  stroke-width: 1.3;
+  opacity: 0.55;
+}
+
+.pf-weave-out {
+  stroke-width: 1.8;
+  opacity: 0.95;
+}
+
+.pf-weave-loose {
+  fill: var(--tone);
+  opacity: 0.5;
+}
+
+.pf-weave-end {
+  fill: var(--ink);
+  stroke: var(--tone);
+  stroke-width: 2;
+}
+
+.pf-weave-label {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  fill: var(--muted);
+}
+
+.pf-weave-knot {
+  fill: #eaf4ff;
+  filter: drop-shadow(0 0 10px #8cc4ff) drop-shadow(0 0 22px rgba(77, 159, 255, 0.6));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pf-weave-in,
+  .pf-weave-out {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: pf-draw 1.6s var(--ease-out) forwards;
+  }
+
+  .pf-weave-in {
+    animation-delay: calc(var(--i) * 70ms);
+  }
+
+  .pf-weave-out {
+    animation-delay: calc(0.9s + var(--i) * 70ms);
+  }
+
+  .pf-weave-end,
+  .pf-weave-label {
+    opacity: 0;
+    animation: pf-fade 0.6s ease forwards;
+    animation-delay: calc(1.5s + var(--i) * 70ms);
+  }
+
+  .pf-weave-halo {
+    animation: pf-breathe 4.5s ease-in-out infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+}
+
+@keyframes pf-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pf-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pf-breathe {
+  50% {
+    transform: scale(1.18);
+    opacity: 0.7;
+  }
+}
+
+/* ---- Shared tags ---- */
+.pf-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-tags li {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* ---- Case studies: one lead card, then open rows that alternate sides ---- */
+.pf-cases {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-case {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(28px, 5vw, 80px);
+  align-items: center;
+  padding: clamp(40px, 5vw, 72px) 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 96px;
+}
+
+/* A short line in the case's tone, where the row starts. */
+.pf-case::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: clamp(64px, 10vw, 140px);
+  height: 2px;
+  background: var(--tone);
+  box-shadow: 0 0 14px var(--tone);
+}
+
+.pf-case.is-flip {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+
+.pf-case.is-flip .pf-case-copy {
+  order: 2;
+}
+
+.pf-case.is-flip::before {
+  left: auto;
+  right: 0;
+}
+
+.pf-case-copy {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+
+.pf-case-tag {
+  color: var(--tone);
+}
+
+.pf-case h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(1.7rem, 3vw, 2.7rem);
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  max-width: 22ch;
+}
+
+.pf-case-body {
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 52ch;
+}
+
+.pf-case-copy .pf-tags {
+  margin-top: 6px;
+}
+
+.pf-case-proof {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.pf-case-art.case-art {
+  height: clamp(70px, 8vw, 110px);
+  max-height: none;
+  margin: 0 0 4px;
+}
+
+.pf-results-label {
+  color: var(--muted);
+}
+
+.pf-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px 40px;
+  margin: 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.pf-metrics dt {
+  font-family: var(--f-display);
+  font-weight: 650;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  letter-spacing: -0.045em;
+  line-height: 1;
+  color: var(--tone);
+  /* A figure never breaks inside itself; the next one wraps to a new line instead. */
+  white-space: nowrap;
+}
+
+.pf-metrics dd {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+/* The lead case: the one card on the page, larger type and art. */
+.pf-case.is-lead {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  margin-bottom: clamp(24px, 4vw, 48px);
+  padding: clamp(32px, 5vw, 72px);
+  border: 1px solid color-mix(in srgb, var(--tone) 28%, var(--line));
+  border-radius: var(--radius);
+  background:
+    radial-gradient(70% 90% at 100% 0%, color-mix(in srgb, var(--tone) 20%, transparent), transparent 65%),
+    radial-gradient(60% 70% at 0% 100%, rgba(139, 123, 255, 0.1), transparent 70%), var(--ink-2);
+}
+
+.pf-case.is-lead::before {
+  left: clamp(32px, 5vw, 72px);
+}
+
+.pf-case.is-lead h3 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+}
+
+.pf-case.is-lead .pf-case-art.case-art {
+  height: clamp(90px, 12vw, 170px);
+}
+
+.pf-case.is-lead .pf-metrics dt {
+  font-size: clamp(2.6rem, 4.6vw, 4.4rem);
+}
+
+.pf-case.is-lead + .pf-case {
+  border-top: 0;
+}
+
+.pf-case.is-lead + .pf-case::before {
+  display: none;
+}
+
+/* ---- Earlier systems: a lighter ledger, no numbers ---- */
+.pf-past {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.pf-past-item {
+  display: grid;
+  grid-template-columns: minmax(150px, 2fr) minmax(0, 6fr) minmax(0, 4fr);
+  gap: clamp(16px, 3vw, 48px);
+  align-items: start;
+  padding: clamp(24px, 3vw, 36px) 0;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 96px;
+  transition: background-color 0.3s;
+}
+
+.pf-past-sector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 0;
+  color: var(--tone);
+}
+
+.pf-past-knot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--tone);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--tone) 60%, transparent);
+}
+
+.pf-past-copy {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pf-past-copy h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.pf-past-copy p {
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 60ch;
+}
+
+.pf-past-item .pf-tags {
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+@media (hover: hover) {
+  .pf-past-item:hover .pf-past-knot {
+    background: var(--tone);
+  }
+}
+
+/* ---- Tablets and phones: one column ---- */
+@media (max-width: 899px) {
+  .pf-weave {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .pf-case,
+  .pf-case.is-flip,
+  .pf-case.is-lead {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .pf-case.is-flip .pf-case-copy {
+    order: 0;
+  }
+
+  .pf-case.is-flip::before {
+    left: 0;
+    right: auto;
+  }
+
+  .pf-past-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .pf-past-item .pf-tags {
+    justify-content: flex-start;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .pf-case.is-lead {
+    padding: 28px 20px;
+  }
+
+  .pf-case.is-lead::before {
+    left: 20px;
+  }
+
+  .pf-metrics dt,
+  .pf-case.is-lead .pf-metrics dt {
+    font-size: clamp(2rem, 10vw, 2.6rem);
+  }
+
+  /* Labels at the line ends would be too small to read on a phone. */
+  .pf-weave-label {
+    display: none;
+  }
+}

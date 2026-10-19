@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from 'react'
 import { AIDemo } from '@/components/AIDemo'
 import { Areas } from '@/components/Areas'
 import { Countries } from '@/components/Countries'
+import { CookieBanner } from '@/components/CookieBanner'
 import { Cursor } from '@/components/Cursor'
 import { Faq } from '@/components/Faq'
 import { Footer } from '@/components/Footer'
@@ -101,6 +102,8 @@ export default function App() {
       </main>
       <Footer />
       <StickyCall />
+      {/* Held back until the preloader has finished. */}
+      <CookieBanner ready={ready} />
     </>
   )
 }

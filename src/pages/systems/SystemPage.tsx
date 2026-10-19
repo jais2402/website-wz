@@ -1,9 +1,10 @@
 import { useGSAP } from '@gsap/react'
-import { useRef } from 'react'
+import { type CSSProperties, useRef } from 'react'
 import { CountUp, ModuleCard } from '@/components/Charts'
 import { SplitReveal } from '@/components/Reveal'
 import { type SystemPage as Page, type Voice, systemsSection as copy } from '@/content/pages'
 import { type Area, type Chart, areas, brand, ctas, sampleDataLabel, workSection } from '@/content/site'
+import { type SystemSlug, systemTools, toolsCopy } from '@/content/systemTools'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
 import { CtaStrip } from '@/components/CtaStrip'
 import { LoomContact } from '@/loom/sections'
@@ -105,6 +106,17 @@ function System({ page }: { page: Page }) {
 
       <PageSection title={copy.impactTitle} className="sy-impact">
         <div ref={impact} className="sy-impact-list">
+          {/* Column labels once, instead of on every row (rows keep their own labels on phones). */}
+          <div className="sy-impact-head mono" aria-hidden="true">
+            <span />
+            <span>
+              <i className="sy-dot" /> Before
+            </span>
+            <span />
+            <span>
+              <Check /> After
+            </span>
+          </div>
           {page.impact.map((r) => (
             <div key={r.before} className={`sy-impact-row ${voiceClass(r.who)}`} data-reveal>
               <Who who={r.who} />
@@ -130,7 +142,7 @@ function System({ page }: { page: Page }) {
           <div className="sy-proof glass-card" data-reveal>
             <b className="sy-proof-value">{page.proof.value}</b>
             <p className="sy-proof-label">{page.proof.label}</p>
-            <a className="sy-proof-link" href="/#work">
+            <a className="sy-proof-link" href={`/portfolio#${page.proof.caseId}`}>
               Read the case <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -140,22 +152,7 @@ function System({ page }: { page: Page }) {
       <CtaStrip {...ctas.system} />
 
       <PageSection title={copy.toolsTitle} className="sy-tools">
-        <dl className="sy-tool-rows">
-          {page.tools.map((g) => (
-            <div key={g.label} className="sy-tool-row" data-reveal>
-              <dt className="mono">{g.label}</dt>
-              <dd>
-                <ul className="chip-row">
-                  {g.items.map((t) => (
-                    <li key={t} className="chip">
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <ToolMap slug={page.slug as SystemSlug} />
       </PageSection>
 
       <section className="sy-close wrap">
@@ -240,7 +237,10 @@ function Dashboard({ area }: { area: Area }) {
 function CaseCard({ c }: { c: CaseStudy }) {
   return (
     <article className={`case-card tone-${c.tone}`}>
-      <span className="mono case-card-tag">{c.place ? `${c.sector} · ${c.place}` : c.sector}</span>
+      <span className="mono case-card-tag">
+        {c.sector}
+        {c.place && <span className="case-card-place">{c.place}</span>}
+      </span>
       <h3>{c.title}</h3>
       <p className="case-card-body">{c.body}</p>
       {c.metrics?.length ? (
@@ -265,6 +265,60 @@ function CaseCard({ c }: { c: CaseStudy }) {
 const voiceClass = (who: Voice) => `who-${who.split(' ')[0].toLowerCase()}`
 
 /** Role tag with a small avatar dot coloured by role (colour set by the `who-*` class on the parent). */
+const TONES = ['#4d9fff', '#8b7bff', '#ff7a59', '#8cc4ff', '#a7a7b8']
+
+/** Two-letter badge from the tool name (no logos: the site draws everything in code). */
+const monogram = (name: string) => {
+  const words = name
+    .replace(/[^A-Za-z0-9 ]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+  return (words.length > 1 ? words[0][0] + words[1][0] : name.slice(0, 2)).toUpperCase()
+}
+
+/**
+ * The tools a system connects to: a count on the left, then each group as a row of tiles
+ * (badge, name, what we connect it for). Hosting is the last group on every page.
+ */
+function ToolMap({ slug }: { slug: SystemSlug }) {
+  const groups = systemTools[slug]
+  const count = groups.reduce((n, g) => n + g.tools.length, 0)
+  return (
+    <div className="sy-toolmap">
+      <div className="sy-toolmap-hub" data-reveal>
+        <b className="sy-toolmap-count">{count}</b>
+        <p className="sy-toolmap-label">{toolsCopy.countLabel}</p>
+        <p className="sy-toolmap-note">{toolsCopy.note}</p>
+      </div>
+      <div className="sy-toolmap-groups">
+        {groups.map((g, gi) => (
+          <section
+            key={g.label}
+            className="sy-toolgroup"
+            style={{ '--tone': TONES[gi % TONES.length] } as CSSProperties}
+            data-reveal
+          >
+            <h3 className="mono sy-toolgroup-label">{g.label}</h3>
+            <ul className="sy-tooltiles">
+              {g.tools.map((t) => (
+                <li key={t.name} className="sy-tooltile">
+                  <span className="sy-toolbadge" aria-hidden="true">
+                    {monogram(t.name)}
+                  </span>
+                  <span className="sy-tooltext">
+                    <b>{t.name}</b>
+                    <span>{t.role}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function Who({ who }: { who: Voice }) {
   return (
     <span className="sy-who">

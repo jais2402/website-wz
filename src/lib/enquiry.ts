@@ -1,4 +1,5 @@
-import { brand } from '@/content/site'
+import { brand, marketingOptIn } from '@/content/site'
+import { track } from '@/lib/analytics'
 
 // Contact-page enquiry: validation, spam check and the (switchable) way it is sent. Pure apart from submitEnquiry.
 
@@ -11,6 +12,8 @@ export type Enquiry = {
   message: string
   /** Hidden honeypot field. Real people leave it empty. */
   website: string
+  /** The separate, optional, unticked "email me occasional updates" box. Not needed to send the enquiry. */
+  marketing: boolean
 }
 
 export type EnquiryErrors = Partial<Record<'name' | 'email' | 'phone' | 'message', string>>
@@ -55,6 +58,28 @@ export function validateEnquiry(e: Enquiry): EnquiryErrors {
 
 export const isSpam = (e: Enquiry) => e.website.trim().length > 0
 
+/**
+ * Records a sent enquiry as a GA4 'generate_lead' event (a no-op until the visitor accepts analytics). Sends only which
+ * form it was and the opt-in choice, never personal data. Call it after a successful submit (endpoint or mailto).
+ */
+export function trackLead(form: 'contact_page' | 'contact_block', e: Enquiry) {
+  if (!isSpam(e)) track('generate_lead', { form, marketing_opt_in: e.marketing === true })
+}
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+/** '20 Oct 2026, 14:32 IST'. India has no daylight saving, so IST is always UTC+5:30. Mirrored in api/enquiry.ts. */
+export function formatIst(date: Date): string {
+  const d = new Date(date.getTime() + 330 * 60_000)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())} IST`
+}
+
+/** The consent record in the enquiry email: the choice, and for a yes, when and to which exact wording. */
+export function marketingLine(marketing: boolean, at: Date, wording = marketingOptIn.label): string {
+  return marketing ? `Marketing emails: Yes (opted in on ${formatIst(at)}: '${wording}')` : 'Marketing emails: No'
+}
+
 /** The JSON body sent to an endpoint. Trimmed, honeypot removed. `source` says which form sent it. */
 export function enquiryPayload(e: Enquiry, source = 'wezigns.com/contact-us') {
   return {
@@ -64,11 +89,12 @@ export function enquiryPayload(e: Enquiry, source = 'wezigns.com/contact-us') {
     phone: e.phone.trim() || undefined,
     topics: e.topics,
     message: e.message.trim(),
+    marketing: e.marketing === true,
     source,
   }
 }
 
-export function enquiryMailto(e: Enquiry): string {
+export function enquiryMailto(e: Enquiry, now = new Date()): string {
   const p = enquiryPayload(e)
   const subject = `Enquiry: ${p.topics.length ? p.topics.join(', ') : 'General'}${p.company ? ` (${p.company})` : ''}`
   const lines = [
@@ -80,6 +106,8 @@ export function enquiryMailto(e: Enquiry): string {
     p.company ? `Company: ${p.company}` : '',
     `Email: ${p.email}`,
     p.phone ? `Phone: ${p.phone}` : '',
+    '',
+    marketingLine(p.marketing, now),
   ].filter((l, i, a) => l !== '' || a[i - 1] !== '')
   return `mailto:${brand.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`
 }

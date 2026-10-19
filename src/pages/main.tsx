@@ -4,6 +4,10 @@ import '@/index.css'
 import '@/loom/loom.css'
 import './pages.css'
 import { LiteProvider } from '@/components/LiteProvider'
+import { initAnalytics } from '@/lib/ga'
+
+// Consent-gated GA: no script or cookie until the visitor accepts; nothing at all without an ID.
+initAnalytics()
 import { loadPage } from './PageRouter'
 
 // One entry for the inner pages (about.html, ai.html, systems/*.html). Each HTML file names its page in

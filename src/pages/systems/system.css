@@ -255,17 +255,41 @@
 /* ---- What changes for you: before → thread → after ---- */
 .sy-impact-list {
   display: grid;
-  border-top: 1px solid var(--line);
+}
+
+.sy-impact-row,
+.sy-impact-head {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 0.9fr) 72px minmax(0, 1.1fr);
+  align-items: center;
+  column-gap: clamp(16px, 2vw, 28px);
 }
 
 .sy-impact-row {
   --draw: 1;
-  display: grid;
-  grid-template-columns: 130px minmax(0, 1fr) clamp(56px, 8vw, 120px) minmax(0, 1fr);
-  align-items: center;
-  gap: 20px;
-  padding: 26px 0;
+  padding: 20px 0;
   border-bottom: 1px solid var(--line);
+}
+
+.sy-impact-head {
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.sy-impact-head span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The column head carries the labels on wider screens. */
+@media (min-width: 641px) {
+  .sy-impact-row .sy-side {
+    display: none;
+  }
 }
 
 .sy-before,
@@ -281,7 +305,7 @@
 
 .sy-after {
   font-family: var(--f-display);
-  font-size: 1.2rem;
+  font-size: 1.12rem;
   font-weight: 500;
   letter-spacing: -0.02em;
   opacity: calc(0.3 + 0.7 * var(--draw));
@@ -389,28 +413,129 @@
 }
 
 /* ---- Tools we use ---- */
-.sy-tool-rows {
+/* Tool map: count on the left, groups of tiles on the right. */
+.sy-toolmap {
   display: grid;
-  margin: 0;
-  border-top: 1px solid var(--line);
+  grid-template-columns: minmax(220px, 3fr) minmax(0, 9fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: start;
 }
 
-.sy-tool-row {
+.sy-toolmap-hub {
+  position: sticky;
+  top: 120px;
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  align-items: center;
-  gap: 16px 24px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--line);
+  gap: 10px;
 }
 
-.sy-tool-row dt {
+.sy-toolmap-count {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(4rem, 8vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  background: linear-gradient(180deg, #fff, #8cc4ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sy-toolmap-label {
+  font-size: 1.05rem;
+}
+
+.sy-toolmap-note {
   color: var(--muted);
-  font-size: 0.72rem;
+  line-height: 1.5;
+  font-size: 0.92rem;
+  max-width: 30ch;
 }
 
-.sy-tool-row dd {
+.sy-toolmap-groups {
+  display: grid;
+  gap: clamp(26px, 3vw, 40px);
+}
+
+.sy-toolgroup {
+  display: grid;
+  gap: 14px;
+}
+
+/* Group label with a short thread in the group's colour. */
+.sy-toolgroup-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sy-toolgroup-label::before {
+  content: '';
+  width: 28px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--tone);
+  box-shadow: 0 0 10px var(--tone);
+}
+
+.sy-tooltiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+  list-style: none;
   margin: 0;
+  padding: 0;
+}
+
+.sy-tooltile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.sy-tooltile:hover {
+  border-color: color-mix(in srgb, var(--tone) 55%, transparent);
+  background: color-mix(in srgb, var(--tone) 8%, transparent);
+}
+
+.sy-toolbadge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tone) 35%, transparent);
+}
+
+.sy-tooltext {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sy-tooltext b {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.sy-tooltext span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.35;
 }
 
 /* ---- Close: case card + the other systems ---- */
@@ -494,12 +619,19 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .sy-impact-row {
+  .sy-impact-row,
+  .sy-impact-head {
     grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr);
+    row-gap: 10px;
   }
 
-  .sy-impact-row > .sy-who {
+  .sy-impact-row > .sy-who,
+  .sy-impact-head > span:first-child {
     grid-column: 1 / -1;
+  }
+
+  .sy-impact-head > span:first-child {
+    display: none;
   }
 }
 
@@ -526,13 +658,43 @@
     justify-items: start;
   }
 
-  .sy-tool-row {
+  .sy-toolmap {
     grid-template-columns: 1fr;
-    gap: 12px;
+  }
+
+  .sy-toolmap-hub {
+    position: static;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 18px;
+  }
+
+  .sy-toolmap-count {
+    grid-row: span 2;
+    font-size: 4.2rem;
   }
 }
 
 @media (max-width: 640px) {
+  /* Two compact tiles per row; the badge sits above the name. */
+  .sy-tooltiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .sy-tooltile {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .sy-toolbadge {
+    width: 30px;
+    height: 30px;
+    font-size: 0.64rem;
+  }
+
   .sy-modules {
     grid-template-columns: 1fr;
   }
@@ -546,6 +708,10 @@
   }
 
   /* Before above after, joined by a short vertical thread. */
+  .sy-impact-head {
+    display: none;
+  }
+
   .sy-impact-row {
     grid-template-columns: 1fr;
     gap: 14px;
@@ -703,8 +869,13 @@
   }
 
   .sy-impact-row > .sy-who,
-  .sy-thread {
+  .sy-thread,
+  .sy-impact-head {
     display: none;
+  }
+
+  .sy-impact-row .sy-side {
+    display: inline-flex;
   }
 
   .sy-before,
@@ -734,15 +905,54 @@
   }
 
   /* Tools */
-  .sy-tool-row {
-    grid-template-columns: 48mm minmax(0, 1fr);
-    gap: 4mm;
-    padding: 1.5mm 0;
+  .sy-toolmap {
+    display: block;
+  }
+
+  .sy-toolmap-hub {
+    display: none;
+  }
+
+  .sy-toolmap-groups {
+    gap: 2mm;
+  }
+
+  .sy-toolgroup {
+    grid-template-columns: 40mm minmax(0, 1fr);
+    gap: 3mm;
     break-inside: avoid;
   }
 
-  .sy-tool-row dt {
+  .sy-toolgroup-label {
     font-size: 7.5pt;
+  }
+
+  .sy-toolgroup-label::before,
+  .sy-toolbadge,
+  .sy-tooltext span {
+    display: none;
+  }
+
+  .sy-tooltiles {
+    display: block;
+  }
+
+  .sy-tooltile {
+    display: inline;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 9pt;
+  }
+
+  .sy-tooltile + .sy-tooltile::before {
+    content: ', ';
+  }
+
+  .sy-tooltext,
+  .sy-tooltext b {
+    display: inline;
+    font-weight: 400;
   }
 
   /* Contact details close the summary. */

@@ -1,7 +1,8 @@
 // @vitest-environment node
 // Underscore prefix: Vercel does not deploy this file as a function.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { enquiryEmail, escapeHtml, handleEnquiry, parseEnquiry } from './enquiry.ts'
+import { marketingOptIn } from '../src/content/site.ts'
+import { MARKETING_WORDING, enquiryEmail, escapeHtml, formatIst, handleEnquiry, parseEnquiry } from './enquiry.ts'
 
 const valid = {
   name: 'Asha Rao',
@@ -10,8 +11,11 @@ const valid = {
   phone: '+91 98400 12345',
   topics: ['A new system'],
   message: 'Our orders live in three spreadsheets.',
+  marketing: false,
   source: 'wezigns.com/contact-us',
 }
+// 20 Oct 2026, 09:02 UTC = 14:32 IST.
+const at = new Date('2026-10-20T09:02:00Z')
 const env = { RESEND_API_KEY: 're_test' }
 
 const post = (body: unknown, headers: Record<string, string> = {}) =>
@@ -34,6 +38,37 @@ describe('parseEnquiry (mirrors src/lib/enquiry.ts validateEnquiry)', () => {
     expect(parseEnquiry({ ...valid, phone: 'call me' }).ok).toBe(false)
     expect(parseEnquiry({ ...valid, phone: '' }).ok).toBe(true)
     expect(parseEnquiry(null).ok).toBe(false)
+  })
+
+  it('reads the marketing opt-in as a boolean that defaults to false', () => {
+    const { marketing: _omit, ...withoutMarketing } = valid
+    const value = (input: unknown) => {
+      const r = parseEnquiry(input)
+      return r.ok ? r.value.marketing : 'invalid'
+    }
+    expect(value(withoutMarketing)).toBe(false)
+    expect(value({ ...valid, marketing: true })).toBe(true)
+    expect(value({ ...valid, marketing: false })).toBe(false)
+    for (const odd of ['true', 'yes', 1, null, {}]) expect(value({ ...valid, marketing: odd })).toBe(false)
+  })
+})
+
+describe('marketing consent record', () => {
+  it('uses the same wording as the forms (src/content/site.ts)', () => {
+    expect(MARKETING_WORDING).toBe(marketingOptIn.label)
+  })
+
+  it('formats the time in IST', () => {
+    expect(formatIst(at)).toBe('20 Oct 2026, 14:32 IST')
+  })
+
+  it('states the choice in the email, with the time and wording for a yes', () => {
+    const no = enquiryEmail(valid, at)
+    expect(no.text).toContain('Marketing emails: No')
+    const yes = enquiryEmail({ ...valid, marketing: true }, at)
+    expect(yes.text).toContain(`Marketing emails: Yes (opted in on 20 Oct 2026, 14:32 IST: '${MARKETING_WORDING}')`)
+    expect(yes.html).toContain('Marketing emails')
+    expect(yes.html).toContain('opted in on 20 Oct 2026, 14:32 IST: &#39;Email me occasional updates')
   })
 })
 
@@ -93,6 +128,19 @@ describe('handleEnquiry', () => {
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer re_test')
     const body = JSON.parse(init.body as string)
     expect(body).toMatchObject({ from: 'Wezigns website <website@wezigns.com>', to: ['contact@wezigns.com'], reply_to: 'asha@example.com' })
+    expect(body.text).toContain('Marketing emails: No')
+  })
+
+  it('records an opt-in with the time the server received it', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(at)
+    try {
+      await handleEnquiry(post({ ...valid, marketing: true }), env)
+    } finally {
+      vi.useRealTimers()
+    }
+    const body = JSON.parse((fetchSpy.mock.calls[0][1] as RequestInit).body as string)
+    expect(body.text).toContain(`Marketing emails: Yes (opted in on 20 Oct 2026, 14:32 IST: '${MARKETING_WORDING}')`)
   })
 
   it('uses ENQUIRY_TO / ENQUIRY_FROM when set', async () => {

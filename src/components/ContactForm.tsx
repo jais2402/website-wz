@@ -1,9 +1,9 @@
 import { type FormEvent, useRef, useState } from 'react'
 import { enquiryTopics } from '@/content/site'
-import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, validateEnquiry } from '@/lib/enquiry'
-import { EnquiryError, EnquirySent, PrivacyNote, type SendStatus } from './EnquiryForm'
+import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, trackLead, validateEnquiry } from '@/lib/enquiry'
+import { EnquiryError, EnquirySent, MarketingOptIn, PrivacyNote, type SendStatus } from './EnquiryForm'
 
-const EMPTY: Enquiry = { name: '', email: '', company: '', phone: '', topics: [], message: '', website: '' }
+const EMPTY: Enquiry = { name: '', email: '', company: '', phone: '', topics: [], message: '', website: '', marketing: false }
 type Field = keyof EnquiryErrors
 
 /** Full enquiry form for the Contact page: inline validation, honeypot, and sending / success / error states. */
@@ -37,6 +37,7 @@ export function ContactForm() {
     }
     setStatus({ kind: 'sending' })
     const result = await submitEnquiry(data, undefined, { source: 'wezigns.com/contact-us' })
+    if (result.ok) trackLead('contact_page', data)
     setStatus(result.ok ? { kind: 'sent', via: result.via } : { kind: 'error', message: result.error })
   }
   const onSubmit = (e: FormEvent) => {
@@ -122,6 +123,8 @@ export function ContactForm() {
         <textarea {...fieldProps('message')} rows={5} required maxLength={LIMITS.message} value={data.message} onChange={(e) => set('message', e.target.value)} />
         {err('message') && <span className="cf-error" id="cf-message-error">{err('message')}</span>}
       </div>
+
+      <MarketingOptIn id="cf-marketing" checked={data.marketing} onChange={(v) => set('marketing', v)} />
 
       {/* Honeypot: hidden from people and screen readers; bots tend to fill every field. */}
       <div className="cf-hp" aria-hidden="true">

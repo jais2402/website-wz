@@ -23,7 +23,7 @@ export function AboutPage() {
             <a className="btn btn-lime btn-lg" href={p.cta.href}>
               {p.cta.label} <span aria-hidden="true">→</span>
             </a>
-            <a className="btn btn-ghost btn-lg" href="/#work">
+            <a className="btn btn-ghost btn-lg" href="/portfolio">
               See our work
             </a>
           </>
@@ -32,10 +32,12 @@ export function AboutPage() {
       />
 
       <PageSection title={p.whyTitle} className="ab-why">
-        <ul className="ab-why-grid">
+        {/* Three statements read as rows, each with a thread that lights up on hover, rather than three boxes. */}
+        <ul className="ab-why-list">
           {p.why.map((w) => (
-            <li className="ab-why-card" key={w.title} data-reveal>
+            <li className="ab-why-row" key={w.title} data-reveal>
               <h3>{w.title}</h3>
+              <span className="ab-why-thread" aria-hidden="true" />
               <p>{w.text}</p>
             </li>
           ))}

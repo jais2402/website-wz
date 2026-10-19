@@ -1,5 +1,6 @@
 import { ctas } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
+import { track } from '@/lib/analytics'
 import './ctaStrip.css'
 
 type Link = { label: string; href: string }
@@ -18,7 +19,11 @@ export function CtaStrip({ title, body, secondary }: { title: string; body?: str
           {body && <p className="cta-strip-body">{body}</p>}
         </div>
         <div className="cta-strip-actions">
-          <a className="btn btn-lime" href={primary.href}>
+          <a
+            className="btn btn-lime"
+            href={primary.href}
+            onClick={() => track('cta_click', { label: primary.label, location: 'cta_strip' })}
+          >
             {primary.label} <span aria-hidden="true">→</span>
           </a>
           {secondary && (

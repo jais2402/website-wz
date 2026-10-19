@@ -172,14 +172,3 @@
 .nav-sheet a[aria-current='page'] {
   color: #8cc4ff;
 }
-
-/* "All systems" heads the systems menu, above a hairline. */
-.nav-menu-all a {
-  color: #8cc4ff;
-}
-
-.nav-menu-all {
-  margin-bottom: 4px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--line);
-}

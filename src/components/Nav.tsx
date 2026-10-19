@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { brand, ctas, nav, navSystems, navSystemsAll } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
+import { track } from '@/lib/analytics'
 import { inSection, isCurrentPage } from '@/lib/navCurrent'
 import { Logo } from './Logo'
 import './nav.css'
@@ -29,8 +30,8 @@ export function Nav({
   const drop = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLAnchorElement>(null)
   const closeTimer = useRef(0)
-  // Opened by hover: the first click keeps it open instead of toggling it shut.
-  const byHover = useRef(false)
+  // Set when focus returns to the trigger after Escape, so focusing it doesn't reopen the menu.
+  const skipFocusOpen = useRef(false)
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 40)
@@ -41,13 +42,12 @@ export function Nav({
 
   // Systems menu: Escape closes it (focus back on the trigger), a click outside closes it.
   useEffect(() => {
-    if (!sysOpen) {
-      byHover.current = false
-      return
-    }
+    if (!sysOpen) return
     const key = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
       setSysOpen(false)
+      // Focus goes back to the trigger without reopening the menu.
+      skipFocusOpen.current = true
       trigger.current?.focus()
     }
     const down = (e: PointerEvent) => {
@@ -77,7 +77,6 @@ export function Nav({
     if (e.pointerType !== 'mouse') return
     window.clearTimeout(closeTimer.current)
     if (on) {
-      if (!sysOpen) byHover.current = true
       setSysOpen(true)
     } else closeTimer.current = window.setTimeout(() => setSysOpen(false), 160)
   }
@@ -93,7 +92,7 @@ export function Nav({
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setSysOpen(false)
       }}
     >
-      {/* Without JS this is a plain link to the systems overview. */}
+      {/* The trigger is a plain link to the systems overview (/our-services). */}
       <a
         ref={trigger}
         href={l.href}
@@ -101,10 +100,17 @@ export function Nav({
         aria-haspopup="true"
         aria-expanded={sysOpen}
         aria-controls="nav-systems"
-        onClick={(e) => {
+        // A click goes to the systems overview; hover, focus or ArrowDown opens the list of systems.
+        onClick={() => setSysOpen(false)}
+        onFocus={() => {
+          if (skipFocusOpen.current) skipFocusOpen.current = false
+          else setSysOpen(true)
+        }}
+        onKeyDown={(e) => {
+          if (e.key !== 'ArrowDown') return
           e.preventDefault()
-          if (byHover.current) byHover.current = false
-          else setSysOpen((o) => !o)
+          setSysOpen(true)
+          requestAnimationFrame(() => drop.current?.querySelector<HTMLAnchorElement>('.nav-menu-panel a')?.focus())
         }}
       >
         {l.label}
@@ -112,17 +118,6 @@ export function Nav({
       </a>
       <div className="nav-menu" id="nav-systems">
         <ul className="nav-menu-panel">
-          <li className="nav-menu-all">
-            <a
-              href={navSystemsAll.href}
-              onClick={() => setSysOpen(false)}
-              tabIndex={sysOpen ? undefined : -1}
-              aria-current={current(navSystemsAll.href)}
-            >
-              <span>{navSystemsAll.label}</span>
-              <span aria-hidden="true">→</span>
-            </a>
-          </li>
           {navSystems.map((s) => (
             <li key={s.href}>
               <a
@@ -141,6 +136,11 @@ export function Nav({
     </div>
   )
 
+  const ctaClick = (e: React.MouseEvent) => {
+    track('cta_click', { label: cta.label, location: 'nav' })
+    go(cta.href)(e)
+  }
+
   return (
     <header className={`nav${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
       <a href={logoHref} className="nav-logo" onClick={go(logoHref)} aria-label={`${brand.name} home`}>
@@ -157,7 +157,7 @@ export function Nav({
           ),
         )}
       </nav>
-      <a href={cta.href} className="btn btn-lime nav-cta" onClick={go(cta.href)}>
+      <a href={cta.href} className="btn btn-lime nav-cta" onClick={ctaClick}>
         {cta.label}
       </a>
       <button className="nav-burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
@@ -174,7 +174,7 @@ export function Nav({
                 onClick={go(navSystemsAll.href)}
                 aria-current={current(navSystemsAll.href)}
               >
-                {l.label} · {navSystemsAll.label} →
+                {l.label}
               </a>
               <ul className="nav-sheet-systems">
                 {navSystems.map((s) => (
@@ -193,7 +193,7 @@ export function Nav({
             </a>
           ),
         )}
-        <a href={cta.href} className="btn btn-lime" onClick={go(cta.href)}>
+        <a href={cta.href} className="btn btn-lime" onClick={ctaClick}>
           {cta.label}
         </a>
       </div>

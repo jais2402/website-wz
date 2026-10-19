@@ -18,7 +18,7 @@ export const nav = [
   { label: 'Systems', href: '/our-services' },
   { label: 'AI', href: '/ai' },
   { label: 'Technology', href: '/technology' },
-  { label: 'Work', href: '#work' },
+  { label: 'Work', href: '/portfolio' },
   { label: 'How pricing works', href: '#pricing' },
   { label: 'About', href: '/about-us' },
 ]
@@ -270,6 +270,7 @@ export const ai = {
 export const workSection = {
   title: 'Our Work',
   hint: 'Keep scrolling →',
+  all: { label: 'See all our work', href: '/portfolio' },
   next: { title: 'Your system could be next.', body: 'Tell us what is slowing your team down and we will map it with you.', cta: 'Tell us what is not working', href: '#contact' },
 }
 
@@ -490,7 +491,7 @@ export const contactPage = {
 }
 
 export const footer = [
-  { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '#work'], ['Questions', '#faq']] },
+  { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '/portfolio'], ['Questions', '#faq']] },
   {
     title: 'Systems',
     links: [
@@ -504,7 +505,7 @@ export const footer = [
     ],
   },
   { title: 'Capabilities', links: [['Custom software', '#build'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
-  { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
+  { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Case studies', '/portfolio'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
 // Footer bottom row, beside the copyright.
@@ -517,8 +518,15 @@ export const legalLinks = [
 
 // One line beside each enquiry form's submit button: the purpose, stated where the details are collected.
 export const privacyNotice = {
-  text: 'We use your details only to reply to your enquiry. See our',
+  text: "We'll use your details to reply to your enquiry by email or phone. See our",
   link: { label: 'privacy policy', href: '/privacy-policy' },
+}
+
+// Optional, unticked marketing opt-in on both enquiry forms. `label` is the exact consent wording: it is quoted in
+// the enquiry email as the record of consent, and api/enquiry.ts keeps a copy (api/_enquiry.test.ts checks they match).
+export const marketingOptIn = {
+  label: 'Email me occasional updates from Wezigns. You can unsubscribe at any time.',
+  hint: 'Optional. Your enquiry is sent either way.',
 }
 
 // Second page: the time-loom concept (loom.html).
@@ -574,7 +582,6 @@ export const loom = {
 // URL-encoded prompt. Gemini has no prompt URL, so its tile opens Google's AI Mode (Gemini-powered).
 export const aiSummary = {
   title: 'Executive AI Summary',
-  body: 'Ask your AI assistant for a short, independent summary of Wezigns.',
   prompt:
     'Give me an executive summary of Wezigns Software Private Limited (https://www.wezigns.com), a custom software and systems company in Chennai, India, founded in 2012. Cover: what they build (business systems for HR, CRM, operations, ecommerce, finance and industry, plus AI workflows and custom AI solutions), who they serve (SMEs and MSMEs in India and 10 other countries), how they work and price projects, and what a growing business should ask them before starting.',
   engines: [
@@ -625,6 +632,8 @@ export const technologyPage = {
 // Calls to action placed where a visitor is ready to act. `contact` is the shared primary action.
 export const ctas = {
   contact: { label: 'Tell us what is not working', href: '/contact-us' },
+  // Under the systems explorer tabs; changes with the selected system.
+  explorer: { title: 'Want this for your team?', body: 'We build it around how your team works, with one price agreed first.', explore: (short: string) => `Explore the ${short} system` },
   hero: { secondary: { label: 'See our work', href: '#work' } },
   aiDemo: { label: 'See how we use AI', href: '/ai' },
   integrations: { label: 'See our full stack', href: '/technology' },
@@ -647,6 +656,11 @@ export const ctas = {
   about: {
     title: 'Work with a team that has been building since 2012.',
     body: 'Tell us what is slowing your team down. We reply within one working day.',
-    secondary: { label: 'See our work', href: '/#work' },
+    secondary: { label: 'See our work', href: '/portfolio' },
+  },
+  portfolio: {
+    title: 'Your system could be next.',
+    body: 'Tell us what is slowing your team down. We map it with you, then agree one price and one timeline before we build.',
+    secondary: { label: 'How pricing works', href: '/#pricing' },
   },
 }
