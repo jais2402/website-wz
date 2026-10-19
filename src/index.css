@@ -2331,60 +2331,229 @@ main,
   max-width: 22ch;
 }
 
-/* Our Work: a row of case cards. Pinned horizontal scroll on desktop, swipe row on phones / reduced motion. */
+/* Our Work: five cases in one bento grid and a tile to /portfolio (Work.tsx). */
 .work {
-  padding: 0;
-  overflow: hidden;
-  /* clip, not just hidden: a hidden box can still be scrolled sideways (trackpad swipe, focus on an off-screen
-     card), which pushed the pinned row past the last card. */
-  overflow: clip;
   position: relative;
 }
 
-.work-row {
-  display: flex;
-  align-items: center;
-  gap: clamp(28px, 4vw, 64px);
-  height: 100vh;
-  height: 100svh;
-  padding: 0 var(--gutter);
+.wk-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: end;
+  gap: 18px 48px;
+  margin-bottom: clamp(32px, 4vw, 56px);
 }
 
-.work-intro {
-  flex: 0 0 min(30vw, 440px);
+.wk-head .lead {
+  max-width: 40ch;
+  justify-self: end;
+}
+
+.wk-bento {
   display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 18px;
 }
 
-.work-intro .lead {
-  max-width: 34ch;
+.wk-bento .case-card {
+  height: auto;
+  min-height: 0;
+  flex: none;
 }
 
-.work-intro .drag-hint {
+.wk-tile {
+  grid-column: span 4;
+}
+
+/* Lead case: two rows tall on the left; the next two stack beside it. */
+.wk-lead {
+  grid-column: 1 / span 7;
+  grid-row: span 2;
+}
+
+.wk-lead + .wk-tile,
+.wk-lead + .wk-tile + .wk-tile {
+  grid-column: span 5;
+}
+
+.wk-lead h3 {
+  font-size: clamp(1.9rem, 3vw, 2.8rem);
+  max-width: 18ch;
+}
+
+.wk-lead .case-card-body {
+  max-width: 46ch;
+}
+
+.wk-lead .case-art,
+.wk-tile:not(:has(.case-card-metrics)) .case-art {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: none;
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.wk-tile:not(:has(.case-card-metrics)) .case-art-chart {
+  display: flex;
+  min-height: 70px;
+}
+
+.wk-lead .case-art-chart {
+  display: flex;
+  min-height: 90px;
+}
+
+.wk-lead .case-card-metrics dt {
+  font-size: clamp(2.2rem, 3.6vw, 3.4rem);
+}
+
+/* The "see more" tile. */
+.wk-more {
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 260px;
+  color: inherit;
+  text-decoration: none;
+  background: radial-gradient(90% 80% at 0% 100%, rgba(37, 99, 235, 0.32), transparent 70%), var(--ink-3);
+  border-color: rgba(77, 159, 255, 0.35);
+}
+
+/* Deck of three mini windows filling the top of the tile. */
+.wk-stack {
+  position: relative;
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-height: 150px;
+  margin-bottom: 8px;
+}
+
+.wk-stack-win {
+  --tone: var(--lime);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  width: min(72%, 240px);
+  aspect-ratio: 4 / 3;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--tone) 35%, var(--line));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--tone) 14%, var(--ink-3)), var(--ink-3) 70%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  /* Back cards sit higher and smaller, tilted the other way. */
+  transform: translate(calc(-50% + (var(--k) - 1) * 18px), calc(-50% + (var(--k) - 1) * 16px))
+    rotate(calc((var(--k) - 1) * -5deg)) scale(calc(0.88 + var(--k) * 0.06));
+  transition: transform 0.6s var(--ease-out);
+}
+
+.wk-stack-win.tone-violet {
+  --tone: var(--violet);
+}
+
+.wk-stack-win.tone-coral {
+  --tone: var(--coral);
+}
+
+.wk-more:hover .wk-stack-win,
+.wk-more:focus-visible .wk-stack-win {
+  transform: translate(calc(-50% + (var(--k) - 1) * 46px), calc(-50% + (var(--k) - 1) * 10px))
+    rotate(calc((var(--k) - 1) * -9deg)) scale(calc(0.88 + var(--k) * 0.06));
+}
+
+.wk-stack-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.wk-stack-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.wk-stack-row {
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.wk-stack-row b {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 40%, transparent), var(--tone));
+}
+
+.wk-stack-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 46px;
+  margin-top: 6px;
+}
+
+.wk-stack-bars i {
+  flex: 1;
+  border-radius: 2px 2px 1px 1px;
+  background: linear-gradient(180deg, var(--tone), color-mix(in srgb, var(--tone) 20%, transparent));
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wk-stack-win {
+    transition: none;
+  }
+}
+
+.wk-more h3 {
+  font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+}
+
+.wk-more .btn {
   margin-top: 8px;
 }
 
-/* "See all our work →": the link to /portfolio under the intro. */
-.work-all {
-  justify-self: start;
-  color: #8cc4ff;
-  font-weight: 600;
-  border-bottom: 1px solid rgba(140, 196, 255, 0.35);
-  padding-bottom: 2px;
-  transition:
-    border-color 0.25s,
-    color 0.25s;
+@media (max-width: 1099px) {
+  .wk-bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wk-tile,
+  .wk-lead + .wk-tile,
+  .wk-lead + .wk-tile + .wk-tile {
+    grid-column: span 1;
+  }
+
+  .wk-lead,
+  .wk-more {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
 }
 
-.work-all:hover {
-  color: var(--text);
-  border-color: var(--text);
+@media (max-width: 899px) {
+  .wk-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wk-head .lead {
+    justify-self: start;
+  }
 }
 
-.work-cards {
-  display: flex;
-  gap: 18px;
-  flex-shrink: 0;
+@media (max-width: 640px) {
+  .wk-bento {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wk-lead .case-art-chart {
+    min-height: 64px;
+  }
 }
 
 .case-card {
@@ -2484,122 +2653,6 @@ main,
   color: var(--muted);
 }
 
-.case-card-next {
-  justify-content: flex-end;
-  align-items: flex-start;
-  background: radial-gradient(90% 80% at 0% 100%, rgba(37, 99, 235, 0.32), transparent 70%), var(--ink-3);
-  border-color: rgba(77, 159, 255, 0.35);
-}
-
-.case-card-next h3 {
-  font-size: clamp(1.8rem, 2.6vw, 2.6rem);
-}
-
-.case-card-next .btn {
-  margin-top: 8px;
-}
-
-.work-progress {
-  position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  bottom: clamp(28px, 5vh, 48px);
-  height: 2px;
-  background: var(--line);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.work-progress span {
-  display: block;
-  height: 100%;
-  background: var(--progress-gradient);
-  transform: scaleX(0);
-  transform-origin: left;
-}
-
-/* Reduced motion on desktop: a plain swipe row instead of the pin. */
-@media (min-width: 900px) and (prefers-reduced-motion: reduce) {
-  .work-row {
-    display: block;
-    height: auto;
-    padding: 120px 0;
-  }
-
-  .work-intro {
-    padding: 0 var(--gutter);
-    margin-bottom: 28px;
-  }
-
-  .work-hint {
-    display: none;
-  }
-
-  .work-cards {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding: 6px var(--gutter) 10px;
-  }
-
-  .case-card {
-    scroll-snap-align: start;
-  }
-
-  .work-progress {
-    display: none;
-  }
-}
-
-/* Phones: cards scroll up and down as a deck. Each one sticks under the nav, a little lower than the last,
-   and the next card slides up over it. */
-@media (max-width: 899px) {
-  /* clip, not hidden: hidden would make .work a scroll container and stop the cards sticking. */
-  .work {
-    overflow: clip;
-  }
-
-  .work-row {
-    display: block;
-    height: auto;
-    padding: clamp(90px, 14vw, 120px) var(--gutter);
-  }
-
-  .work-intro {
-    margin-bottom: 28px;
-  }
-
-  .work-hint {
-    display: none;
-  }
-
-  .work-cards {
-    display: grid;
-    gap: 16px;
-  }
-
-  .case-card {
-    position: sticky;
-    top: calc(84px + var(--i, 0) * 8px);
-    height: auto;
-    min-height: 380px;
-    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.45);
-  }
-
-  .case-card:hover {
-    transform: none;
-  }
-
-  .case-card-next {
-    min-height: 300px;
-    top: auto;
-    position: relative;
-  }
-
-  .work-progress {
-    display: none;
-  }
-}
-
 /* Process headline is short: let it set on one line instead of wrapping at 16ch. */
 .process-title {
   max-width: 24ch;
@@ -2651,6 +2704,17 @@ main,
 
 .pricing-cta {
   margin-top: 36px;
+}
+
+/* "See how pricing works →": the link to /pricing under the CTA. */
+.pricing-more {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.pricing-more a:hover {
+  color: var(--text);
 }
 
 .price-card {
@@ -4166,83 +4230,6 @@ main,
   }
 }
 
-/* Our Work thread: strung from the intro through a knot on every card, drawn in by the sideways scroll. */
-.work-row {
-  position: relative;
-}
-
-.work-thread {
-  position: absolute;
-  left: 0;
-  top: 0;
-  pointer-events: none;
-  overflow: visible;
-  z-index: 0;
-}
-
-.work-intro,
-.work-cards {
-  position: relative;
-  z-index: 1;
-}
-
-.work-thread path {
-  fill: none;
-  stroke-linecap: round;
-}
-
-.work-thread-base {
-  stroke: rgba(140, 196, 255, 0.14);
-  stroke-width: 1.2;
-  stroke-dasharray: 3 7;
-}
-
-.work-thread-live {
-  stroke: url(#work-thread-grad);
-  stroke-width: 2;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0.88;
-  filter: drop-shadow(0 0 6px rgba(77, 159, 255, 0.7));
-}
-
-.case-knot {
-  position: absolute;
-  z-index: 2; /* above the card's running outline */
-  top: -7px;
-  left: 50%;
-  width: 14px;
-  height: 14px;
-  margin-left: -7px;
-  border-radius: 50%;
-  background: var(--ink-3);
-  border: 1.5px solid rgba(140, 196, 255, 0.45);
-  transition:
-    background 0.4s,
-    box-shadow 0.4s,
-    border-color 0.4s;
-}
-
-.case-knot.is-lit {
-  background: #8cc4ff;
-  border-color: #fff;
-  box-shadow: 0 0 14px 4px rgba(77, 159, 255, 0.6);
-}
-
-.case-card-next .case-knot {
-  display: none;
-}
-
-/* Phones (vertical deck) and reduced motion: no thread; knots sit lit as a quiet accent. */
-@media (max-width: 899px), (prefers-reduced-motion: reduce) {
-  .work-thread {
-    display: none;
-  }
-
-  .case-knot {
-    display: none;
-  }
-}
-
 /* The woven tower is positioned against the headline block. */
 .proof-wrap {
   position: relative;
@@ -4377,29 +4364,6 @@ main,
 .case-art-chart i:last-child {
   opacity: 1;
   box-shadow: 0 0 10px color-mix(in srgb, var(--tone) 60%, transparent);
-}
-
-/* Desktop row of cards: the window grows into the free space and shows the chart. */
-@media (min-width: 900px) {
-  .work .case-card .case-art {
-    flex: 1 1 auto;
-    min-height: 0;
-    max-width: none;
-    grid-template-rows: auto auto minmax(0, 1fr);
-  }
-
-  .work .case-card .case-art-chart {
-    display: flex;
-  }
-
-  /* Cards with results: the figures fill the bottom, so the window keeps its natural height. */
-  .work .case-card:has(.case-card-metrics) .case-art {
-    flex: none;
-  }
-
-  .work .case-card:has(.case-card-metrics) .case-art-chart {
-    display: none;
-  }
 }
 
 .case-art-ok {

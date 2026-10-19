@@ -19,7 +19,7 @@ export const nav = [
   { label: 'AI', href: '/ai' },
   { label: 'Technology', href: '/technology' },
   { label: 'Work', href: '/portfolio' },
-  { label: 'How pricing works', href: '#pricing' },
+  { label: 'How pricing works', href: '/pricing' },
   { label: 'About', href: '/about-us' },
 ]
 
@@ -269,9 +269,14 @@ export const ai = {
 
 export const workSection = {
   title: 'Our Work',
-  hint: 'Keep scrolling →',
+  lead: 'Five of the systems we have built: what each one replaced and the numbers it moved.',
   all: { label: 'See all our work', href: '/portfolio' },
-  next: { title: 'Your system could be next.', body: 'Tell us what is slowing your team down and we will map it with you.', cta: 'Tell us what is not working', href: '#contact' },
+  // The bento grid on the home page: the first id is the large lead tile.
+  featured: ['safety-training', 'tourism', 'engineering-event', 'marketplace', 'car-rental'],
+  more: {
+    title: 'Over a hundred projects and counting.',
+    body: 'Every case study, plus the stores, portals and booking systems behind them.',
+  },
 }
 
 export const processSection = { kicker: 'How we build', title: 'Four stages. No surprises.' }
@@ -377,6 +382,134 @@ export const pastWork = [
   },
 ] as const
 
+// Sectors for the archive filter on /portfolio, in chip order ('Other' last).
+export const archiveSectors = [
+  'Health and wellness',
+  'Retail',
+  'Professional services',
+  'Technology',
+  'Recruitment',
+  'Education',
+  'Property',
+  'Events',
+  'Non-profit',
+  'Car rental',
+  'Sports',
+  'Other',
+] as const
+
+// Every project listed on the old wezigns.com/portfolio (100 items, in that page's order). The old item pages only
+// held template placeholder text, so all we have is each project's name, which that page already published.
+// `sector` is set only where the name itself says it; everything else is 'Other'. `system` points to the earlier
+// system above that the project is part of. Ids come from the old /portfolio-item-<slug> URLs.
+export const portfolioArchive: readonly {
+  id: string
+  name: string
+  sector: (typeof archiveSectors)[number]
+  system?: (typeof pastWork)[number]['id']
+}[] = [
+    { id: '3week', name: '3 Week Diet Formula', sector: 'Health and wellness' },
+    { id: 'adarsh', name: 'Adarsh', sector: 'Other' },
+    { id: 'alloperator', name: 'Alloperator', sector: 'Other' },
+    { id: 'apptrico', name: 'Furni', sector: 'Other' },
+    { id: 'astrology', name: 'Astrology', sector: 'Other' },
+    { id: 'awk', name: 'AWK', sector: 'Other' },
+    { id: 'born2b', name: 'Born2be', sector: 'Other' },
+    { id: 'wedding-chime', name: 'The Wedding Chime', sector: 'Events' },
+    { id: 'burkland', name: 'Burkland', sector: 'Other' },
+    { id: 'careers', name: 'Careers 24 x 7', sector: 'Recruitment', system: 'recruitment' },
+    { id: 'ckca-rental', name: 'CKCar Rental', sector: 'Car rental', system: 'car-rental' },
+    { id: 'cyberopsec', name: 'Cyberopsec', sector: 'Technology' },
+    { id: 'finelines', name: 'Finelines', sector: 'Other' },
+    { id: 'gps', name: 'GPS', sector: 'Other' },
+    { id: 'grace', name: 'Grace', sector: 'Other' },
+    { id: 'halal', name: 'Halal', sector: 'Other' },
+    { id: 'hw', name: 'HW', sector: 'Other' },
+    { id: 'imark', name: 'Imark', sector: 'Other' },
+    { id: 'intech2', name: 'Intech', sector: 'Other' },
+    { id: 'ipextras', name: 'Ipextras', sector: 'Other' },
+    { id: 'ish', name: 'Ish', sector: 'Other' },
+    { id: 'kinngs', name: 'Kinngs', sector: 'Other' },
+    { id: 'mailin-repair', name: 'Mailin Repair', sector: 'Other' },
+    { id: 'make-u-easy', name: 'Make U Easy', sector: 'Other' },
+    { id: 'michel-geiger-blog', name: 'Michel Geiger Blog', sector: 'Other' },
+    { id: 'qfp', name: 'QFP', sector: 'Other' },
+    { id: 'shoppersmark', name: 'Shoppersmark', sector: 'Retail' },
+    { id: 'stirling', name: 'Stirling', sector: 'Other' },
+    { id: 'summit-global-service', name: 'Summit Global Service', sector: 'Other' },
+    { id: 'tameera', name: 'Tameera', sector: 'Other' },
+    { id: 'tech-guy', name: 'Tec Guy', sector: 'Other' },
+    { id: 'datalogic-technologies', name: 'Datalogic Technologies', sector: 'Technology' },
+    { id: 'acreageindia', name: 'Acreage India', sector: 'Property' },
+    { id: 'campbell', name: 'Campbell', sector: 'Other' },
+    { id: 'dd', name: 'DD', sector: 'Other' },
+    { id: 'laforce', name: 'La Force Vitale', sector: 'Other' },
+    { id: 'super-scholars', name: 'Super Scholars', sector: 'Education', system: 'education' },
+    { id: 'oxbridge', name: 'Oxbridge', sector: 'Education', system: 'education' },
+    { id: 'pencamera', name: 'Pencamera', sector: 'Other' },
+    { id: 'prestige', name: 'Prestige', sector: 'Other' },
+    { id: 'naadodigal', name: 'Naadodigal', sector: 'Other' },
+    { id: 'elitecare', name: 'Elite Care Recruitments', sector: 'Recruitment', system: 'recruitment' },
+    { id: 'mattoconsulting', name: 'Matto Consulting', sector: 'Professional services' },
+    { id: 'mnco-india', name: 'MNCO India', sector: 'Other' },
+    { id: 'wedoms', name: 'Wedoms', sector: 'Other' },
+    { id: 'arabic-baptist-church-of-christ', name: 'Arabic Baptist Church of Christ', sector: 'Non-profit' },
+    { id: 'bambeeq', name: 'Bambeeq', sector: 'Other' },
+    { id: 'beer-fest', name: 'Beer Fest', sector: 'Events' },
+    { id: 'blue-root', name: 'Blue Root Acupuncture', sector: 'Health and wellness' },
+    { id: 'body-retreat', name: 'Body Retreat', sector: 'Health and wellness' },
+    { id: 'buysimple', name: 'Buysimple', sector: 'Retail' },
+    { id: 'chef', name: 'Chef', sector: 'Other' },
+    { id: 'cigar', name: 'Cigar', sector: 'Other' },
+    { id: 'dental', name: 'The DentalSite', sector: 'Health and wellness' },
+    { id: 'embedded', name: 'Embeddedoutlet', sector: 'Retail' },
+    { id: 'esl', name: 'ESL', sector: 'Other' },
+    { id: 'eyecamz', name: 'Eyecamz', sector: 'Other' },
+    { id: 'fotoshotz', name: 'Fotoshotz', sector: 'Other' },
+    { id: 'free-phone', name: 'Free Phone', sector: 'Other' },
+    { id: 'grace-legacy', name: 'Grace Legacy', sector: 'Other' },
+    { id: 'hoobbi', name: 'Hoobbi', sector: 'Other' },
+    { id: 'idd', name: 'IDD', sector: 'Other' },
+    { id: 'infoflo', name: 'Infoflo', sector: 'Other' },
+    { id: 'inscribe', name: 'Inscribe', sector: 'Other' },
+    { id: 'interface-planet', name: 'Interface Planet', sector: 'Other' },
+    { id: 'ipls', name: 'IPLS', sector: 'Other' },
+    { id: 'irena', name: 'Irena', sector: 'Other' },
+    { id: 'kudu-clothes', name: 'Kudu Clothes', sector: 'Retail', system: 'online-retail' },
+    { id: 'lap-law', name: 'Lap Law', sector: 'Professional services' },
+    { id: 'lionhead', name: 'Lionhead', sector: 'Other' },
+    { id: 'madrid', name: 'Madrid', sector: 'Other' },
+    { id: 'mygreen', name: 'Mygreen', sector: 'Other' },
+    { id: 'numisor', name: 'Numisor', sector: 'Other' },
+    { id: 'os-tickests', name: 'Os Tickests', sector: 'Other' },
+    { id: 'pfill', name: 'Pfill', sector: 'Other' },
+    { id: 'planetspace', name: 'Planetspace', sector: 'Other' },
+    { id: 'pro-hobby', name: 'Pro Hobby', sector: 'Other' },
+    { id: 'rcons', name: 'Rcons', sector: 'Other' },
+    { id: 'skyscape', name: 'Skyscape', sector: 'Other' },
+    { id: 'software-phd', name: 'Software PHD', sector: 'Technology' },
+    { id: 'spectral', name: 'Spectral', sector: 'Other' },
+    { id: 'treesandbees', name: 'Trees and Bees', sector: 'Other' },
+    { id: 'truepay', name: 'Truepay', sector: 'Other' },
+    { id: 'unilink', name: 'Unilink', sector: 'Other' },
+    { id: 'vcare', name: 'Vcare', sector: 'Other' },
+    { id: 'wezads', name: 'Wezads', sector: 'Other' },
+    { id: 'world-shine', name: 'World Shine', sector: 'Other' },
+    { id: 'callrehabcenters', name: 'Callrehabcenters.com', sector: 'Health and wellness' },
+    { id: 'cidersys', name: 'Cidersys.com', sector: 'Other' },
+    { id: 'debut-directors', name: 'Debut Directors', sector: 'Other' },
+    { id: 'dobebe', name: 'Dobebe.com', sector: 'Other' },
+    { id: 'ekubus', name: 'Ekubus.com', sector: 'Other' },
+    { id: 'gracecapital', name: 'Grace Legacy Capital', sector: 'Professional services' },
+    { id: 'kelmesskelbimai', name: 'Kelmesskelbimai.lt', sector: 'Other' },
+    { id: 'kindergiving', name: 'Kindergiving', sector: 'Non-profit', system: 'fundraising' },
+    { id: 'linetpixels', name: 'Linetpixels', sector: 'Other' },
+    { id: 'maytek', name: 'Maytek.com', sector: 'Other' },
+    { id: 'rajkumaran-builders', name: 'Rajkumaran Builders', sector: 'Property' },
+    { id: 'theamigotowel', name: 'The Amigo', sector: 'Other' },
+    { id: 'varrun-sports', name: 'Varrun Sports', sector: 'Sports' },
+]
+
 export const process = [
   { title: 'Understand', body: 'Map the people, workflows, systems and constraints.' },
   { title: 'Shape', body: 'Define scope, priorities, technology, price and timeline.' },
@@ -390,6 +523,8 @@ export const pricing = {
   title: ['Priced on outcomes,', 'not hours.'],
   body: 'You get one price and one timeline, agreed before any building starts.',
   cta: { label: 'Get a price for your system', href: '#contact' },
+  // Under the CTA: the full page about pricing.
+  more: { label: 'See how pricing works', href: '/pricing' },
   sets: [
     { name: 'Scope', text: 'What the system has to do, and for whom.' },
     { name: 'Integrations', text: 'The tools, portals and databases it has to talk to.' },
@@ -491,7 +626,7 @@ export const contactPage = {
 }
 
 export const footer = [
-  { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '/portfolio'], ['Questions', '#faq']] },
+  { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '/portfolio'], ['Pricing', '/pricing'], ['Questions', '#faq']] },
   {
     title: 'Systems',
     links: [
@@ -641,7 +776,7 @@ export const ctas = {
   system: {
     title: 'Want this for your team?',
     body: 'We map how your team works today, then give you one price and one timeline before anything is built.',
-    secondary: { label: 'How pricing works', href: '/#pricing' },
+    secondary: { label: 'How pricing works', href: '/pricing' },
   },
   ai: {
     title: 'Which job would you hand to AI first?',
@@ -661,6 +796,11 @@ export const ctas = {
   portfolio: {
     title: 'Your system could be next.',
     body: 'Tell us what is slowing your team down. We map it with you, then agree one price and one timeline before we build.',
-    secondary: { label: 'How pricing works', href: '/#pricing' },
+    secondary: { label: 'How pricing works', href: '/pricing' },
+  },
+  pricing: {
+    title: 'Want a price for your system?',
+    body: 'Tell us what is slowing your team down. We map it with you, then give you one price and one timeline before we build.',
+    secondary: { label: 'See our work', href: '/portfolio' },
   },
 }

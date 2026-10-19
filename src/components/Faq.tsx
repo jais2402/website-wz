@@ -2,13 +2,16 @@ import { useState } from 'react'
 import { brand, ctas, faq } from '@/content/site'
 import { SplitReveal } from './Reveal'
 
-export function Faq() {
+type Item = { q: string; a: string }
+
+/** Questions as an accordion beside a call/email box. Other pages pass their own subset and heading (e.g. /pricing). */
+export function Faq({ items = faq, title = 'Straight answers.' }: { items?: readonly Item[]; title?: string }) {
   const [open, setOpen] = useState(0)
   return (
     <section id="faq" className="panel faq">
       <div className="wrap faq-grid">
         <div>
-          <SplitReveal as="h2" className="display" text="Straight answers." />
+          <SplitReveal as="h2" className="display" text={title} />
           <div className="faq-ask">
             <p className="faq-ask-title">{ctas.faq.title}</p>
             <p className="faq-ask-body">{ctas.faq.body}</p>
@@ -23,7 +26,7 @@ export function Faq() {
           </div>
         </div>
         <div className="faq-list">
-          {faq.map((f, i) => {
+          {items.map((f, i) => {
             const isOpen = open === i
             return (
               <div className={`faq-item${isOpen ? ' is-open' : ''}`} key={f.q}>

@@ -10,6 +10,7 @@ import {
   aiPage,
   notFoundPage,
   portfolioPage,
+  pricingPage,
   servicesPage,
   systemPages,
   systemsSection,
@@ -32,6 +33,7 @@ import {
   navSystems,
   navSystemsAll,
   pastWork,
+  portfolioArchive,
   pricing,
   principles,
   process,
@@ -56,6 +58,7 @@ export type SnapshotPage =
   | 'technology'
   | 'about'
   | 'portfolio'
+  | 'pricing'
   | 'contact'
   | 'notFound'
   | `system:${string}`
@@ -262,13 +265,17 @@ function home(): string {
     'ai',
   )
 
-  const next = workSection.next
+  const featured = workSection.featured
+    .map((id) => cases.find((c) => c.id === id))
+    .filter((c): c is Case => Boolean(c))
   const workHtml = section(
     h2(workSection.title) +
-      p(next.body) +
-      tag('p', a(workSection.all.href, workSection.all.label)) +
-      cases.map(caseCard).join('') +
-      tag('article', h3(next.title) + p(next.body) + tag('p', a(next.href, next.cta))),
+      p(workSection.lead) +
+      featured.map(caseCard).join('') +
+      tag(
+        'article',
+        h3(workSection.more.title) + p(workSection.more.body) + tag('p', a(workSection.all.href, workSection.all.label)),
+      ),
     'work',
   )
 
@@ -286,6 +293,7 @@ function home(): string {
     h2(line(pricing.title)) +
       p(pricing.body) +
       tag('p', a(pricing.cta.href, pricing.cta.label)) +
+      tag('p', a(pricing.more.href, pricing.more.label)) +
       p('Your price: agreed before build') +
       p('What sets it') +
       ulHtml(pricing.sets.map((s) => `${tag('strong', t(s.name))} ${t(s.text)}`)) +
@@ -534,7 +542,59 @@ function portfolioPageHtml(): string {
     hero(x.kicker, line(x.title), x.lead, [ctas.contact, x.systemsLink]) +
       section(p(x.featuredKicker) + h2(x.featuredTitle) + p(x.featuredIntro) + work.map(caseCard).join('')) +
       section(p(x.pastKicker) + h2(x.pastTitle) + p(x.pastIntro) + pastWork.map(caseCard).join('')) +
+      section(
+        p(x.archiveKicker) +
+          h2(x.archiveTitle) +
+          p(x.archiveIntro) +
+          ulHtml(
+            portfolioArchive.map(
+              (item) =>
+                `<span id="${t(item.id)}">${t(item.name)}</span>` +
+                (item.sector === 'Other' ? '' : `, ${t(item.sector)}`) +
+                (item.system ? ` ${a(`#${item.system}`, x.systemLink)}` : ''),
+            ),
+          ),
+        'archive',
+      ) +
       ctaStrip(ctas.portfolio) +
+      contactBlock(),
+  )
+}
+
+function pricingPageHtml(): string {
+  const x = pricingPage
+  const stage = (i: number) => h3(process[i].title) + p(process[i].body) + p(x.stageNotes[i])
+  const questions = x.faq.flatMap((q) => faq.filter((f) => f.q === q))
+  return page(
+    hero(x.kicker, line(x.title), x.lead, [ctas.contact, x.stagesLink]) +
+      section(
+        p(x.setsKicker) +
+          h2(x.setsTitle) +
+          p(x.setsIntro) +
+          p(x.setsLabel) +
+          pricing.sets.map((s) => tag('article', h3(s.name) + p(s.text) + p(x.setsDetail[s.name] ?? ''))).join('') +
+          p(x.doesntLabel) +
+          pricing.doesnt.map((d, i) => tag('article', h3(d) + p(x.doesntDetail[i] ?? ''))).join(''),
+      ) +
+      section(
+        p(x.stagesKicker) +
+          h2(x.stagesTitle) +
+          p(x.stagesIntro) +
+          ulHtml(
+            [...[0, 1].map(stage), h3(x.gate.label) + p(x.gate.text), ...process.slice(2).map((_, i) => stage(i + 2))],
+            true,
+          ),
+        'agreed',
+      ) +
+      section(
+        p(x.afterKicker) +
+          h2(x.afterTitle) +
+          p(x.afterIntro) +
+          tag('dl', x.after.map((i) => tag('dt', t(i.name)) + tag('dd', t(i.text))).join('')) +
+          p(x.afterNote),
+      ) +
+      section(h2(x.faqTitle) + questions.map((f) => h3(f.q) + p(f.a)).join(''), 'faq') +
+      ctaStrip(ctas.pricing) +
       contactBlock(),
   )
 }
@@ -605,6 +665,8 @@ export function snapshot(id: string): string | null {
       return aboutPageHtml()
     case 'portfolio':
       return portfolioPageHtml()
+    case 'pricing':
+      return pricingPageHtml()
     case 'contact':
       return contactPageHtml()
     case 'notFound':
@@ -623,6 +685,7 @@ export const snapshotPages: SnapshotPage[] = [
   'technology',
   'about',
   'portfolio',
+  'pricing',
   'contact',
   ...legalPages.map((l) => `legal:${l.key}` as const),
   'notFound',
@@ -636,6 +699,7 @@ const FILES: Record<string, SnapshotPage> = {
   'ai.html': 'ai',
   'technology.html': 'technology',
   'portfolio.html': 'portfolio',
+  'pricing.html': 'pricing',
   '404.html': 'notFound',
   'privacy-policy.html': 'legal:privacy',
   'terms-and-conditions.html': 'legal:terms',

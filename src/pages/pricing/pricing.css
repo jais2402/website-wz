@@ -1,0 +1,521 @@
+/* ==========================================================================
+   How pricing works (/pricing, PricingPage.tsx). Classes prefixed `pr-`.
+   The ticket in the hero reuses the home pricing card's head, stamp and total (.price-card-head, .price-stamp,
+   .price-total in index.css). Tones: lime (accent blue), violet, coral, set as --tone by .tone-*.
+   ========================================================================== */
+.pr .tone-lime {
+  --tone: var(--lime);
+}
+
+.pr .tone-violet {
+  --tone: var(--violet);
+}
+
+.pr .tone-coral {
+  --tone: var(--coral);
+}
+
+.pr-group {
+  color: var(--muted);
+  font-size: 0.66rem;
+  margin-bottom: 14px;
+}
+
+/* ---- Hero visual: three threads tied into one price, two cut short ---- */
+.pr-tie {
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+}
+
+.pr-tie-field {
+  position: relative;
+  aspect-ratio: 4 / 3;
+}
+
+.pr-tie-field svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.pr-tie-field path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.pr-tie-set {
+  stroke: var(--tone);
+  stroke-width: 2;
+  opacity: 0.9;
+}
+
+.pr-tie-never path {
+  stroke: var(--coral);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 5;
+  opacity: 0.55;
+}
+
+.pr-tie-never .pr-tie-cut {
+  stroke-dasharray: none;
+  stroke-width: 2;
+  opacity: 0.9;
+}
+
+.pr-tie-out {
+  stroke-width: 3;
+}
+
+.pr-tie-knot {
+  fill: #eaf4ff;
+  filter: drop-shadow(0 0 10px #8cc4ff) drop-shadow(0 0 22px rgba(77, 159, 255, 0.6));
+}
+
+/* Labels at the thread ends, centred on their point. Opaque so the threads start behind them. */
+.pr-tie-chip {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  max-width: 30%;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--tone, var(--line-2));
+  background: var(--ink-2);
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.pr-tie-chip.is-never {
+  max-width: 28%;
+  border-style: dashed;
+  border-color: rgba(255, 122, 89, 0.5);
+  color: var(--muted);
+}
+
+.pr-tie-chip s {
+  text-decoration-color: var(--coral);
+}
+
+/* The single line from the knot ends on the ticket's top edge. */
+.pr-ticket {
+  position: relative;
+  padding: clamp(20px, 2.6vw, 30px);
+  border-color: rgba(140, 196, 255, 0.35);
+}
+
+.pr-ticket .price-card-head {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+}
+
+/* The head already has the dashed rule. */
+.pr-ticket .price-total {
+  padding-top: 0;
+  border-top: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pr-tie-set,
+  .pr-tie-out {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: pr-draw 1.4s var(--ease-out) forwards;
+  }
+
+  .pr-tie-set {
+    animation-delay: calc(0.2s + var(--i) * 0.12s);
+  }
+
+  .pr-tie-out {
+    animation-delay: 1.2s;
+  }
+
+  .pr-tie-never {
+    opacity: 0;
+    animation: pr-fade 0.8s ease forwards;
+    animation-delay: calc(0.7s + var(--i) * 0.12s);
+  }
+
+  .pr-tie-knot {
+    opacity: 0;
+    animation: pr-fade 0.5s ease 1.1s forwards;
+  }
+
+  .pr-tie-halo {
+    animation: pr-breathe 4.5s ease-in-out infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+
+  .pr-ticket .price-stamp {
+    opacity: 0;
+    animation: pr-stamp 0.5s var(--ease-out) 1.9s forwards;
+  }
+}
+
+@keyframes pr-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pr-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pr-breathe {
+  50% {
+    transform: scale(1.18);
+    opacity: 0.7;
+  }
+}
+
+@keyframes pr-stamp {
+  from {
+    opacity: 0;
+    transform: rotate(-3deg) scale(1.4);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(-3deg) scale(1);
+  }
+}
+
+/* ---- What sets the price: open rows on the left, a dashed "never" column on the right ---- */
+.pr-sets-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+}
+
+.pr-sets-list {
+  border-top: 1px solid var(--line);
+}
+
+.pr-set {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 12px 32px;
+  padding: clamp(22px, 3vw, 34px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.pr-set h3 {
+  font-family: var(--f-display);
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.pr-set-text {
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.pr-set-detail {
+  margin-top: 8px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.pr-never {
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px dashed rgba(255, 122, 89, 0.4);
+  border-radius: var(--radius);
+}
+
+.pr-never-list {
+  display: grid;
+  gap: 22px;
+}
+
+.pr-never-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.pr-cut {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 122, 89, 0.16);
+  color: var(--coral);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pr-never-item h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.pr-never-item s {
+  text-decoration-color: var(--coral);
+}
+
+.pr-never-item p {
+  margin-top: 6px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ---- How a price is agreed: one thread through the stages, with the price agreed between Shape and Build ---- */
+.pr-stages {
+  --fill: 1;
+  position: relative;
+}
+
+.pr-stages ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 1.1fr) repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.pr-thread {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 9px;
+  height: 2px;
+  background: var(--line);
+}
+
+.pr-thread-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--loom-gradient);
+  box-shadow: 0 0 10px rgba(140, 196, 255, 0.5);
+  transform-origin: left;
+  transform: scaleX(var(--fill));
+}
+
+.pr-stage {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.pr-stage-knot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ink-2);
+  border: 2px solid var(--line-2);
+  margin-bottom: 10px;
+}
+
+.pr-stage h3 {
+  font-family: var(--f-display);
+  font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.pr-stage p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.pr-stage .pr-stage-note {
+  padding-top: 10px;
+  border-top: 1px dashed var(--line-2);
+  color: var(--text);
+}
+
+/* The gate: where the price and timeline are agreed. */
+.pr-gate {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 44px 18px 20px;
+  margin-top: -14px;
+  border: 1px solid rgba(140, 196, 255, 0.4);
+  border-radius: 20px;
+  background: rgba(77, 159, 255, 0.07);
+}
+
+.pr-gate-knot {
+  position: absolute;
+  left: 50%;
+  top: 9px;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  border-radius: 50%;
+  background: #8cc4ff;
+  box-shadow: 0 0 22px rgba(140, 196, 255, 0.85);
+}
+
+.pr-gate-label {
+  color: #8cc4ff;
+  font-size: 0.7rem;
+}
+
+.pr-gate-text {
+  font-family: var(--f-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+/* ---- After launch: a ledger card and a note ---- */
+.pr-after-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: end;
+}
+
+.pr-ledger {
+  padding: clamp(8px, 1.5vw, 14px) clamp(22px, 3vw, 36px);
+}
+
+.pr-ledger-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: 8px 28px;
+  padding: 20px 0;
+  border-bottom: 1px dashed var(--line-2);
+}
+
+.pr-ledger-row:last-child {
+  border-bottom: 0;
+}
+
+.pr-ledger dt {
+  font-family: var(--f-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.pr-ledger dd {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.pr-after-note {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
+  line-height: 1.25;
+  color: #8cc4ff;
+  max-width: 24ch;
+}
+
+/* ---- Cost questions: the home FAQ, on the page background ---- */
+.pr .faq {
+  background: transparent;
+  padding: clamp(64px, 9vw, 130px) 0;
+}
+
+/* ---- Tablet and phone ---- */
+@media (max-width: 1099px) {
+  .pr-stages ol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Gate spans the row between Shape and Build. */
+  .pr-gate {
+    grid-column: 1 / -1;
+    margin-top: 0;
+    padding: 20px 20px 20px 62px;
+  }
+
+  .pr-gate-knot {
+    left: 20px;
+    top: 20px;
+    margin-left: 0;
+  }
+
+  /* One thread down the left instead of across. */
+  .pr-thread {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .pr-tie {
+    margin: 0 auto;
+  }
+
+  .pr-sets-grid,
+  .pr-after-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .pr-set,
+  .pr-ledger-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pr-stages ol {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding-left: 34px;
+  }
+
+  .pr-thread {
+    display: block;
+    left: 9px;
+    right: auto;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    height: auto;
+  }
+
+  .pr-thread-fill {
+    transform-origin: top;
+    transform: scaleY(var(--fill));
+    background: linear-gradient(180deg, #8b7bff, #ff47c7, #2fd0ff, #ff7a59);
+  }
+
+  .pr-stage-knot {
+    position: absolute;
+    left: -34px;
+    top: 4px;
+    margin: 0;
+  }
+
+  .pr-gate {
+    margin-left: -34px;
+    padding-left: 54px;
+  }
+
+  /* Centred on the thread (10px in). */
+  .pr-gate-knot {
+    left: -2px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .pr-tie-chip {
+    padding: 6px 8px;
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+}

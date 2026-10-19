@@ -6,12 +6,14 @@ import { ctas, pastWork, work } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
+import { PortfolioArchive } from './PortfolioArchive'
 import { PortfolioWeave } from './PortfolioWeave'
 import './portfolio.css'
 
 /**
  * /portfolio: the four case studies with results (a lead case, then alternating rows), then the earlier systems as
- * a lighter list with no numbers. Each case has its id as an anchor, so other pages can link to /portfolio#<id>.
+ * a lighter list with no numbers, then every project from the old portfolio by name, with a sector filter. Each case
+ * (and each archive project) has its id as an anchor, so other pages can link to /portfolio#<id>.
  */
 export function PortfolioPage() {
   // A deep link (/portfolio#marketplace) lands on the snapshot before React replaces it: scroll again once rendered.
@@ -98,6 +100,16 @@ export function PortfolioPage() {
             </li>
           ))}
         </ul>
+      </PageSection>
+
+      <PageSection
+        id="archive"
+        kicker={p.archiveKicker}
+        title={p.archiveTitle}
+        intro={p.archiveIntro}
+        className="pf-full"
+      >
+        <PortfolioArchive />
       </PageSection>
 
       <CtaStrip {...ctas.portfolio} />

@@ -6,6 +6,7 @@ import { gsap, scrollToTarget } from '@/hooks/motion'
 /**
  * How pricing works: a big statement on the left, an "agreement" card on the right listing what sets the
  * price (and what doesn't), and a thread showing where the price comes from (Understand → Shape → price).
+ * A link under the CTA leads to the full page, /pricing.
  */
 export function Pricing() {
   const root = useRef<HTMLElement>(null)
@@ -70,6 +71,11 @@ export function Pricing() {
             >
               {pricing.cta.label} <span aria-hidden="true">→</span>
             </a>
+            <p className="pricing-more">
+              <a className="link-btn" href={pricing.more.href}>
+                {pricing.more.label} <span aria-hidden="true">→</span>
+              </a>
+            </p>
           </div>
 
           <div className="glass-card price-card">

@@ -119,8 +119,43 @@
       "permanent": true
     },
     {
+      "source": "/portfolio-item-careers",
+      "destination": "/portfolio#recruitment",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-elitecare",
+      "destination": "/portfolio#recruitment",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-CKCa-rental",
+      "destination": "/portfolio#car-rental",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-Super-Scholars",
+      "destination": "/portfolio#education",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-oxbridge",
+      "destination": "/portfolio#education",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-kudu-clothes",
+      "destination": "/portfolio#online-retail",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-kindergiving",
+      "destination": "/portfolio#fundraising",
+      "statusCode": 301
+    },
+    {
       "source": "/portfolio-item-:slug",
-      "destination": "/portfolio",
+      "destination": "/portfolio#:slug",
       "statusCode": 301
     },
     {

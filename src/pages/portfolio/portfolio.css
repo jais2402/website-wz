@@ -353,6 +353,101 @@
   }
 }
 
+/* ---- The full portfolio: sector chips over a name index ---- */
+.pf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.pf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.pf-chip-count {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  opacity: 0.75;
+}
+
+.pf-chip[aria-pressed='true'] {
+  border-color: var(--lime);
+  background: color-mix(in srgb, var(--lime) 16%, transparent);
+  color: var(--text);
+}
+
+@media (hover: hover) {
+  .pf-chip:hover {
+    border-color: color-mix(in srgb, var(--lime) 60%, var(--line-2));
+    color: var(--text);
+  }
+}
+
+.pf-archive-status {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.pf-archive-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-archive-item {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--ink-2);
+  scroll-margin-top: 96px;
+}
+
+.pf-archive-name {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.pf-archive-sector {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.pf-archive-link {
+  justify-self: start;
+  color: var(--lime);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ---- Tablets and phones: one column ---- */
 @media (max-width: 899px) {
   .pf-weave {
@@ -388,6 +483,14 @@
 }
 
 @media (max-width: 480px) {
+  .pf-archive-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pf-archive-item {
+    padding: 14px;
+  }
+
   .pf-case.is-lead {
     padding: 28px 20px;
   }

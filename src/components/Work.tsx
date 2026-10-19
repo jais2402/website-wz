@@ -1,12 +1,9 @@
-import { useGSAP } from '@gsap/react'
-import { type CSSProperties, useLayoutEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { pastWork, work, workSection } from '@/content/site'
-import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
-import { threadPath } from '@/lib/thread'
 import { CaseArt } from './CaseArt'
 import { SplitReveal } from './Reveal'
 
-type Card = {
+type Case = {
   id: string
   sector: string
   place?: string
@@ -17,121 +14,25 @@ type Card = {
   tone: string
 }
 
-const cards: Card[] = [...work, ...pastWork]
-
-/** Right edge of the card row inside `.work-row`, plus the row's end padding. */
-function cardsEnd(row: HTMLElement) {
-  const box = row.querySelector<HTMLElement>('.work-cards')
-  if (!box) return row.clientWidth
-  const pad = parseFloat(getComputedStyle(row).paddingRight) || 0
-  return box.offsetLeft + box.offsetWidth + pad
-}
+const all: Case[] = [...work, ...pastWork]
+const featured = workSection.featured.map((id) => all.find((c) => c.id === id)).filter((c): c is Case => Boolean(c))
 
 /**
- * Case studies as a row of cards. Desktop: the section pins and scrolling moves the row sideways (like Services),
- * with a progress line. Phones: a vertical deck where each card sticks and the next slides over it.
- * Reduced motion on desktop: a swipeable row.
+ * Our Work on the home page: five cases in one bento grid (a large lead tile, four smaller ones) and a tile that
+ * leads to /portfolio for the rest. No pin or sideways scroll; on phones the tiles stack.
  */
 export function Work() {
-  const root = useRef<HTMLElement>(null)
-  const row = useRef<HTMLDivElement>(null)
-  const bar = useRef<HTMLSpanElement>(null)
-  const thread = useRef<SVGPathElement>(null)
-  const [svg, setSvg] = useState({ d: '', w: 0, h: 0 })
-
-  // The thread: a loose end beside the intro, strung through a knot on top of every card. Measured from the
-  // layout (offsets ignore the scroll transform), again whenever the row resizes.
-  useLayoutEffect(() => {
-    const el = row.current
-    if (!el) return
-    const measure = () => {
-      const hint = el.querySelector<HTMLElement>('.work-hint')
-      const cardsBox = el.querySelector<HTMLElement>('.work-cards')
-      const cards = Array.from(el.querySelectorAll<HTMLElement>('.case-card'))
-      // The hint is hidden on phones (no thread there) and then has no offsetParent: skip measuring.
-      const intro = hint?.offsetParent as HTMLElement | null
-      if (!hint || !intro || !cardsBox || !cards.length) return
-      const start = {
-        x: intro.offsetLeft + hint.offsetLeft + hint.offsetWidth + 18,
-        y: intro.offsetTop + hint.offsetTop + hint.offsetHeight / 2,
-      }
-      const knots = cards.map((c) => ({
-        x: cardsBox.offsetLeft + c.offsetLeft + c.offsetWidth / 2,
-        y: cardsBox.offsetTop + c.offsetTop,
-      }))
-      // Negative sag: the thread arcs up between cards, in the open space above them.
-      setSvg({ d: threadPath(start, knots, -42), w: cardsEnd(el), h: el.offsetHeight })
-    }
-    measure()
-    const ro = new ResizeObserver(measure)
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [])
-
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia()
-      mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
-        // Scroll exactly to the last card. Measured from the cards, not scrollWidth, which the thread SVG also widens.
-        const distance = () => Math.max(0, cardsEnd(row.current!) - row.current!.clientWidth)
-        // The row is set straight from scroll progress and the live distance on every update: no scrub lag (Lenis
-        // already smooths the scroll), so the cards are always exactly where the scroll says. With a lagging
-        // tween, a fast scroll let the section unpin while the cards were still sliding.
-        const place = (p: number) => gsap.set(row.current, { x: -Math.min(1, Math.max(0, p)) * distance() })
-        ScrollTrigger.create({
-          trigger: root.current,
-          start: 'top top',
-          end: () => `+=${distance()}`,
-          pin: true,
-          invalidateOnRefresh: true,
-          onRefresh: (st) => place(st.progress),
-          onUpdate: (st) => {
-            place(st.progress)
-            if (bar.current) bar.current.style.transform = `scaleX(${st.progress})`
-            // The thread draws itself as the row moves; each card's knot lights as the thread reaches it.
-            if (thread.current) thread.current.style.strokeDashoffset = String(1 - (0.12 + st.progress * 0.88))
-            const knots = root.current?.querySelectorAll('.case-knot') ?? []
-            knots.forEach((k, i) =>
-              k.classList.toggle('is-lit', st.progress >= i / Math.max(1, knots.length - 1) - 0.02),
-            )
-          },
-        })
-      })
-      return () => mm.revert()
-    },
-    { scope: root },
-  )
-
-  const next = workSection.next
   return (
-    <section id="work" ref={root} className="panel work">
-      <div className="work-row" ref={row}>
-        <svg className="work-thread" width={svg.w} height={svg.h} viewBox={`0 0 ${svg.w} ${svg.h}`} aria-hidden="true">
-          <defs>
-            <linearGradient id="work-thread-grad" x1="0" x2="1">
-              <stop offset="0" stopColor="#8b7bff" />
-              <stop offset="0.5" stopColor="#4d9fff" />
-              <stop offset="1" stopColor="#8cc4ff" />
-            </linearGradient>
-          </defs>
-          <path className="work-thread-base" d={svg.d} />
-          <path ref={thread} className="work-thread-live" d={svg.d} pathLength={1} />
-        </svg>
-        <div className="work-intro">
+    <section id="work" className="panel work">
+      <div className="wrap">
+        <header className="wk-head">
           <SplitReveal as="h2" className="display" text={workSection.title} />
-          <p className="lead">{next.body}</p>
-          <a className="work-all" href={workSection.all.href}>
-            {workSection.all.label} <span aria-hidden="true">→</span>
-          </a>
-          <span className="drag-hint mono work-hint" aria-hidden="true">
-            {workSection.hint}
-          </span>
-        </div>
+          <p className="lead">{workSection.lead}</p>
+        </header>
 
-        <div className="work-cards">
-          {cards.map((c, i) => (
-            <article key={c.id} id={c.id} className={`case-card tone-${c.tone}`} style={{ '--i': i } as CSSProperties}>
-              <span className="case-knot" aria-hidden="true" />
+        <div className="wk-bento">
+          {featured.map((c, i) => (
+            <article key={c.id} className={`case-card wk-tile tone-${c.tone}${i === 0 ? ' wk-lead' : ''}`} data-reveal>
               <span className="mono case-card-tag">
                 {c.sector}
                 {c.place && <span className="case-card-place">{c.place}</span>}
@@ -152,25 +53,45 @@ export function Work() {
             </article>
           ))}
 
-          <article className="case-card case-card-next">
-            <h3>{next.title}</h3>
-            <p className="case-card-body">{next.body}</p>
-            <a
-              className="btn btn-lime"
-              href={next.href}
-              onClick={(e) => {
-                e.preventDefault()
-                scrollToTarget(next.href)
-              }}
-            >
-              {next.cta} <span aria-hidden="true">→</span>
-            </a>
-          </article>
+          <a className="case-card wk-tile wk-more" href={workSection.all.href}>
+            <MoreStack />
+            <h3>{workSection.more.title}</h3>
+            <p className="case-card-body">{workSection.more.body}</p>
+            <span className="btn btn-lime">
+              {workSection.all.label} <span aria-hidden="true">→</span>
+            </span>
+          </a>
         </div>
       </div>
-      <div className="work-progress" aria-hidden="true">
-        <span ref={bar} />
-      </div>
     </section>
+  )
+}
+
+const STACK = ['coral', 'violet', 'lime'] as const
+
+/** "More behind this": three mini system windows stacked like a deck, in the case colours; they fan out on hover. */
+function MoreStack() {
+  return (
+    <div className="wk-stack" aria-hidden="true">
+      {STACK.map((tone, k) => (
+        <div key={tone} className={`wk-stack-win tone-${tone}`} style={{ '--k': k } as CSSProperties}>
+          <span className="wk-stack-dots">
+            <i />
+            <i />
+            <i />
+          </span>
+          {[82, 58, 70].map((w, r) => (
+            <span key={r} className="wk-stack-row">
+              <b style={{ width: `${w - k * 6}%` }} />
+            </span>
+          ))}
+          <span className="wk-stack-bars">
+            {[40, 55, 48, 66, 60, 78, 90].map((h, b) => (
+              <i key={b} style={{ height: `${h}%` }} />
+            ))}
+          </span>
+        </div>
+      ))}
+    </div>
   )
 }

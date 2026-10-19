@@ -138,6 +138,7 @@ describe('pageForFile', () => {
     expect(pageForFile(pages, 'privacy-policy.html')?.id).toBe('privacy')
     expect(pageForFile(pages, 'sitemap.html')).toBeUndefined()
     expect(pageForFile(pages, 'portfolio.html')?.id).toBe('portfolio')
+    expect(pageForFile(pages, 'pricing.html')?.id).toBe('pricing')
     expect(pageForFile(pages, 'nope.html')).toBeUndefined()
   })
 })
@@ -279,11 +280,36 @@ describe('portfolio', () => {
   })
 })
 
+describe('pricing', () => {
+  const url = 'https://www.wezigns.com/pricing'
+
+  it('is an indexable WebPage at /pricing with a Home › How pricing works breadcrumb and a canonical', () => {
+    const p = page('pricing')
+    expect(p).toMatchObject({ file: 'pricing.html', path: '/pricing', schema: 'WebPage', indexable: true })
+    expect(p.breadcrumb.map((c) => c.name)).toEqual(['Home', 'How pricing works'])
+    const crumbs = graphOf('pricing').find((n) => typeIn(n, 'BreadcrumbList'))!.itemListElement as { item: string }[]
+    expect(crumbs.map((c) => c.item)).toEqual(['https://www.wezigns.com/', url])
+    expect(headTags(p, site, seoData)).toContain(`<link rel="canonical" href="${url}" />`)
+    const html = htmlFiles['../../pricing.html'] ?? ''
+    expect(html).toContain('<body data-page="pricing">')
+    expect(html).toMatch(/<link rel="preload" href="\/fonts\/[^"]+\.woff2" as="font"/)
+  })
+
+  it('is the last page, so the social cards before it keep their seeds', () => {
+    expect(pages.at(-1)!.id).toBe('pricing')
+  })
+
+  it('is in llms.txt', () => {
+    expect(llmsTxt(pages, site, seoData)).toContain(`](${url}):`)
+  })
+})
+
 describe('sitemapXml', () => {
   it('lists only indexable pages with absolute www URLs and lastmod', () => {
     const xml = sitemapXml(pages, site, '2026-10-19')
-    expect(xml.match(/<url>/g)).toHaveLength(16)
+    expect(xml.match(/<url>/g)).toHaveLength(17)
     expect(xml).toContain('<loc>https://www.wezigns.com/portfolio</loc>')
+    expect(xml).toContain('<loc>https://www.wezigns.com/pricing</loc>')
     for (const path of ['/privacy-policy', '/terms-and-conditions', '/cookie-policy'])
       expect(xml).toContain(`<loc>https://www.wezigns.com${path}</loc>`)
     expect(xml).toContain('<loc>https://www.wezigns.com/</loc>')

@@ -328,7 +328,7 @@ export const servicesPage = {
 export const portfolioPage = {
   kicker: 'Our work',
   title: ['Systems we have built', 'for growing', 'businesses.'],
-  lead: 'Training platforms, event dashboards, marketplaces, stores and portals that replaced spreadsheets, email threads and manual work. Client names stay private.',
+  lead: 'Training platforms, event dashboards, marketplaces, stores and portals that replaced spreadsheets, email threads and manual work. Case studies name the sector, not the client.',
   systemsLink: { label: 'See the systems we build', href: '/our-services' },
   featuredKicker: 'Case studies',
   featuredTitle: 'What changed for our clients.',
@@ -337,4 +337,74 @@ export const portfolioPage = {
   pastKicker: 'Earlier systems',
   pastTitle: 'More systems from our portfolio.',
   pastIntro: 'Built for clients over the years. We did not publish results for these, so we only describe what each system does.',
+  // The full project list from the old portfolio (`portfolioArchive` in site.ts), with a sector filter.
+  archiveKicker: 'The full portfolio',
+  archiveTitle: 'Every project, by name.',
+  archiveIntro:
+    'Websites, stores and portals from our earlier portfolio, listed under the names they were published with. Pick a sector to narrow the list.',
+  filterLabel: 'Filter projects by sector',
+  allLabel: 'All',
+  // {n} is the number of projects shown, {total} the whole list.
+  shownLabel: 'Showing {n} of {total} projects',
+  systemLink: 'See the system',
+}
+
+// How pricing works (pricing.html, /pricing). Built only from what the site already says: priced on outcomes, not
+// hours; one price and one timeline agreed in the Shape stage, before building starts; cost set by scope,
+// integrations and process change, never by hours or the technology chosen. No price figures, ranges or packages.
+// The setters and the stages reuse `pricing` and `process` in site.ts; the questions are picked from `faq` there.
+export const pricingPage = {
+  kicker: 'How pricing works',
+  title: ['One price.', 'One timeline.', 'Agreed first.'],
+  lead: 'We price the system you need, not the hours it takes. You get one price and one timeline in writing at the end of the Shape stage, before any building starts.',
+  stagesLink: { label: 'See how a price is agreed', href: '#agreed' },
+  // Hero visual: the three setters tie into one price; the two that never count are cut loose.
+  ticket: {
+    head: 'Your price',
+    stamp: 'Agreed before build',
+    priceLabel: 'Price',
+    price: 'One number',
+    timelineLabel: 'Timeline',
+    timeline: 'One date',
+  },
+  setsKicker: 'What sets the price',
+  setsTitle: 'Three things set the price. Two never do.',
+  setsIntro: 'The price follows what the system has to do for your business. That is why we map it with you before we name a number.',
+  setsLabel: 'What sets it',
+  // Same order and names as `pricing.sets`; `detail` says where each one comes from.
+  setsDetail: {
+    Scope: 'Which teams use it, and which jobs it takes off their hands.',
+    Integrations: 'Accounting and CRM tools, payment gateways, government portals and the legacy database nobody wants to touch.',
+    'Process change': 'Mapped with your team in the Understand stage, before anything is priced.',
+  } as Record<string, string>,
+  doesntLabel: 'What never does',
+  // Same order as `pricing.doesnt`.
+  doesntDetail: [
+    'You pay for a system that does the job, not for the time it took.',
+    'We choose the stack around what the system has to do, and explain why.',
+  ],
+  stagesKicker: 'How a price is agreed',
+  stagesTitle: 'The price is fixed before the first line of code.',
+  stagesIntro: 'Four stages, from the first workshop to years after launch. The price and timeline are agreed between Shape and Build.',
+  // One line per stage in `process`, saying what that stage means for the price.
+  stageNotes: [
+    'What we learn here sets the scope.',
+    'You get one price and one timeline, in writing.',
+    'Building starts only once the price is agreed.',
+    'Hosting, support and changes, from the same team.',
+  ],
+  gate: { label: 'Price agreed', text: 'One price and one timeline, before building starts.' },
+  afterKicker: 'After launch',
+  afterTitle: 'Launch is not where we stop.',
+  afterIntro: 'We design, build, host and maintain custom software, from the first workshop to years after launch. You talk to the team that built it.',
+  after: [
+    { name: 'Hosting', text: 'Cloud hosting for the system we built, set up and run by us.' },
+    { name: 'Monitoring and security', text: 'Watched after launch. Security is built into the first version, then reviewed and maintained.' },
+    { name: 'Support and maintenance', text: 'Kept up to date and working as your business runs on it.' },
+    { name: 'Changes', text: 'Improved after launch, and extended without a rewrite when you are ready for the next part.' },
+  ],
+  afterNote: 'Tell us what you need after launch when we shape the system, so it is part of the plan from the start.',
+  faqTitle: 'Questions about cost.',
+  // Picked from `faq` in site.ts (checked in snapshot.test.ts), in this order.
+  faq: ['How much does it cost?', 'Do you work with small businesses?', 'Can you take over software another company built?'],
 }

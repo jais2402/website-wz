@@ -4,12 +4,13 @@ import {
   aiPage,
   notFoundPage,
   portfolioPage,
+  pricingPage,
   servicesPage,
   systemPages,
   systemsSection,
 } from '@/content/pages'
 import { legalPages } from '@/content/sitemap'
-import { brand, faq, loom, pastWork, stats, work } from '@/content/site'
+import { brand, faq, loom, pastWork, portfolioArchive, pricing, process, stats, work } from '@/content/site'
 import { legalAnchor } from './legal'
 import { escapeHtml, pageForFile, snapshot, snapshotPages } from './snapshot'
 
@@ -29,6 +30,7 @@ const PAGES = [
   '/ai',
   '/technology',
   '/portfolio',
+  '/pricing',
   '/about-us',
   '/contact-us',
   '/privacy-policy',
@@ -134,9 +136,39 @@ describe('snapshot', () => {
   })
 
   it('in-page anchors point back to the home page from other pages', () => {
-    expect(hrefs(html('home'))).toContain('#pricing')
-    expect(hrefs(html('about'))).toContain('/#pricing')
-    expect(hrefs(html('about'))).not.toContain('#pricing')
+    expect(hrefs(html('home'))).toContain('#process')
+    expect(hrefs(html('about'))).toContain('/#process')
+    expect(hrefs(html('about'))).not.toContain('#process')
+  })
+
+  it('pricing is its own page: nothing links to the old home-page anchor, and the home section links to it', () => {
+    for (const id of snapshotPages) {
+      expect(hrefs(html(id)), id).not.toContain('/#pricing')
+      expect(hrefs(html(id)), id).not.toContain('#pricing')
+    }
+    expect(hrefs(html('home'))).toContain(pricing.more.href)
+  })
+
+  it('pricing: one H1, the setters, every stage with its price note, the cost questions and no price figures', () => {
+    const s = html('pricing')
+    expect(h1Text(s)).toBe(pricingPage.title.join(' '))
+    for (const h of [pricingPage.setsTitle, pricingPage.stagesTitle, pricingPage.afterTitle, pricingPage.faqTitle])
+      expect(s).toContain(`<h2>${escapeHtml(h)}</h2>`)
+    for (const x of pricing.sets) expect(s).toContain(`<h3>${escapeHtml(x.name)}</h3>`)
+    for (const x of pricing.doesnt) expect(s).toContain(`<h3>${escapeHtml(x)}</h3>`)
+    expect(pricingPage.stageNotes).toHaveLength(process.length)
+    for (const [i, x] of process.entries()) {
+      expect(s).toContain(`<h3>${escapeHtml(x.title)}</h3>`)
+      expect(s).toContain(`<p>${escapeHtml(pricingPage.stageNotes[i])}</p>`)
+    }
+    expect(s).toContain(`<section id="agreed">`)
+    for (const q of pricingPage.faq) {
+      const f = faq.find((x) => x.q === q)
+      expect(f, q).toBeDefined()
+      expect(s).toContain(`<h3>${escapeHtml(q)}</h3><p>${escapeHtml(f!.a)}</p>`)
+    }
+    // No prices, ranges or currency anywhere in the page copy.
+    expect(JSON.stringify(pricingPage)).not.toMatch(/[₹$€£]|\d/)
   })
 
   it('portfolio: one H1, every case with its sector, tags and metrics, and no numbers on earlier systems', () => {
@@ -154,6 +186,13 @@ describe('snapshot', () => {
       for (const m of c.metrics) expect(s).toContain(`<dt>${escapeHtml(m.value)}</dt><dd>${escapeHtml(m.label)}</dd>`)
     expect(count(s, /<dl>/g)).toBe(work.length)
     expect(hrefs(s)).toContain('/our-services')
+  })
+
+  it('portfolio: every project from the old portfolio by name, with links to the system it is part of', () => {
+    const s = html('portfolio')
+    expect(s).toContain(`<h2>${escapeHtml(portfolioPage.archiveTitle)}</h2>`)
+    for (const item of portfolioArchive) expect(s).toContain(`<span id="${item.id}">${escapeHtml(item.name)}</span>`)
+    for (const item of portfolioArchive.filter((i) => i.system)) expect(hrefs(s)).toContain(`#${item.system}`)
   })
 
   it('home and system pages link to the portfolio', () => {
@@ -188,6 +227,7 @@ describe('pageForFile', () => {
     expect(pageForFile('ai.html')).toBe('ai')
     expect(pageForFile('technology.html')).toBe('technology')
     expect(pageForFile('portfolio.html')).toBe('portfolio')
+    expect(pageForFile('pricing.html')).toBe('pricing')
     expect(pageForFile('404.html')).toBe('notFound')
     expect(pageForFile('systems/people.html')).toBe('system:people')
     expect(pageForFile('systems\\finance.html')).toBe('system:finance')

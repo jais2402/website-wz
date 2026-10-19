@@ -76,6 +76,7 @@ export type PageId =
   | 'terms'
   | 'cookies'
   | 'portfolio'
+  | 'pricing'
 
 /** JSON-LD type of the page itself. `Service` pages get a WebPage node plus Service nodes. */
 export type PageSchema = 'WebPage' | 'CollectionPage' | 'AboutPage' | 'ContactPage' | 'Service'
@@ -337,6 +338,20 @@ export const pages: SeoPage[] = [
     schema: 'CollectionPage',
     indexable: true,
     llms: { section: 'Company', label: 'Our work (case studies)' },
+  },
+  // Last, so every card above keeps its seed.
+  {
+    id: 'pricing',
+    file: 'pricing.html',
+    path: '/pricing',
+    title: 'How Our Pricing Works: One Price, Agreed First | Wezigns',
+    description:
+      'How Wezigns prices custom software: on outcomes, not hours. Scope, integrations and process change set one price and one timeline, agreed before we build.',
+    card: { kicker: 'How pricing works', title: 'One price and one timeline, agreed before we build.' },
+    breadcrumb: [HOME, { name: 'How pricing works', path: '/pricing' }],
+    schema: 'WebPage',
+    indexable: true,
+    llms: { section: 'Company', label: 'How pricing works' },
   },
 ]
 
