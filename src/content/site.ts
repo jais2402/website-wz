@@ -513,7 +513,7 @@ export const legalLinks = [
   { label: 'Privacy policy', href: '/privacy-policy' },
   { label: 'Terms and conditions', href: '/terms-and-conditions' },
   { label: 'Cookie policy', href: '/cookie-policy' },
-  { label: 'Sitemap', href: '/sitemap' },
+  { label: 'Sitemap', href: '/sitemap.xml' },
 ]
 
 // One line beside each enquiry form's submit button: the purpose, stated where the details are collected.

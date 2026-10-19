@@ -4413,8 +4413,7 @@ main,
   .aip-way-visual,
   .aip-tool,
   .tech-group,
-  .pf-case.is-lead,
-  .sy-bubble blockquote
+  .pf-case.is-lead
 ) {
   position: relative;
 }
@@ -4447,8 +4446,7 @@ main,
   .aip-way-visual,
   .aip-tool,
   .tech-group,
-  .pf-case.is-lead,
-  .sy-bubble blockquote
+  .pf-case.is-lead
 )::after {
   content: '';
   position: absolute;
@@ -4538,8 +4536,7 @@ main,
     .aip-way-visual,
     .aip-tool,
     .tech-group,
-    .pf-case.is-lead,
-    .sy-bubble blockquote
+    .pf-case.is-lead
   )::after {
     animation: none;
     --wz-run: 120deg;

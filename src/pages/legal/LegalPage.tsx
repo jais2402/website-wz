@@ -22,19 +22,17 @@ function Text({ text }: { text: string }) {
   )
 }
 
-/** Opening block shared with the sitemap: label, title, lead and the thread mark. */
+/** Opening block of the legal pages: label, title, lead and the thread mark. */
 export function LegalHero({
   kicker,
   title,
   lead,
   meta,
-  mark = 'shield',
 }: {
   kicker: string
   title: string
   lead: string
   meta?: ReactNode
-  mark?: 'shield' | 'map'
 }) {
   return (
     <section className="lg-hero wrap">
@@ -44,7 +42,7 @@ export function LegalHero({
         <p className="lead lg-lead">{lead}</p>
         {meta}
       </div>
-      <LegalMark variant={mark} />
+      <LegalMark />
     </section>
   )
 }

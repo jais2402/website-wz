@@ -8,7 +8,7 @@ import {
   systemPages,
   systemsSection,
 } from '@/content/pages'
-import { legalPages, sitemapPage } from '@/content/sitemap'
+import { legalPages } from '@/content/sitemap'
 import { brand, faq, loom, pastWork, stats, work } from '@/content/site'
 import { legalAnchor } from './legal'
 import { escapeHtml, pageForFile, snapshot, snapshotPages } from './snapshot'
@@ -34,7 +34,8 @@ const PAGES = [
   '/privacy-policy',
   '/terms-and-conditions',
   '/cookie-policy',
-  '/sitemap',
+  // The sitemap is XML only, linked from the footer's legal row.
+  '/sitemap.xml',
 ]
 
 describe('snapshot', () => {
@@ -127,14 +128,9 @@ describe('snapshot', () => {
     },
   )
 
-  it('sitemap lists every group and link with its blurb', () => {
-    const s = html('sitemap')
-    expect(h1Text(s)).toBe(sitemapPage.title.join(' '))
-    for (const g of sitemapPage.groups) {
-      expect(s).toContain(`<h2>${escapeHtml(g.title)}</h2>`)
-      for (const l of g.links)
-        expect(s).toContain(`<li>${`<a href="${l.href}">${escapeHtml(l.label)}</a>`} ${escapeHtml(l.text)}</li>`)
-    }
+  it('links the XML sitemap, never an HTML /sitemap page', () => {
+    expect(snapshot('sitemap')).toBeNull()
+    for (const id of snapshotPages) expect(hrefs(html(id)), id).not.toContain('/sitemap')
   })
 
   it('in-page anchors point back to the home page from other pages', () => {
@@ -198,7 +194,7 @@ describe('pageForFile', () => {
     expect(pageForFile('privacy-policy.html')).toBe('legal:privacy')
     expect(pageForFile('terms-and-conditions.html')).toBe('legal:terms')
     expect(pageForFile('cookie-policy.html')).toBe('legal:cookies')
-    expect(pageForFile('sitemap.html')).toBe('sitemap')
+    expect(pageForFile('sitemap.html')).toBeNull()
   })
 
   it('leaves the internal loom page and unknown files alone', () => {

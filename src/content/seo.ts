@@ -75,7 +75,6 @@ export type PageId =
   | 'privacy'
   | 'terms'
   | 'cookies'
-  | 'sitemap'
   | 'portfolio'
 
 /** JSON-LD type of the page itself. `Service` pages get a WebPage node plus Service nodes. */
@@ -285,7 +284,7 @@ export const pages: SeoPage[] = [
     schema: 'WebPage',
     indexable: false,
   },
-  // Legal pages and the HTML sitemap: last, so the social cards of the pages above keep their seeds.
+  // Legal pages: last, so the social cards of the pages above keep their seeds.
   {
     id: 'privacy',
     file: 'privacy-policy.html',
@@ -324,19 +323,6 @@ export const pages: SeoPage[] = [
     schema: 'WebPage',
     indexable: true,
     llms: { section: 'Legal', label: 'Cookie policy' },
-  },
-  {
-    id: 'sitemap',
-    file: 'sitemap.html',
-    path: '/sitemap',
-    title: 'Sitemap: Every Page on the Wezigns Website',
-    description:
-      'Every page on the Wezigns website in one list: the six business systems we build, AI, technology, about us, contact, home page sections and legal pages.',
-    card: { kicker: 'Sitemap', title: 'Every page, in one place.' },
-    breadcrumb: [HOME, { name: 'Sitemap', path: '/sitemap' }],
-    schema: 'CollectionPage',
-    indexable: true,
-    llms: { section: 'Legal', label: 'Sitemap (every page)' },
   },
   // Added after the legal pages so the social cards above keep their seeds.
   {

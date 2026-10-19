@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Legal pages (privacy, terms, cookies) and the HTML sitemap. Quiet and readable: a compact hero with a small
+   Legal pages (privacy, terms, cookies). Quiet and readable: a compact hero with a small
    thread mark, a sticky contents list on desktop and prose at a comfortable measure.
    ========================================================================== */
 
@@ -220,58 +220,6 @@
   color: #ffb39e;
 }
 
-/* Sitemap */
-.lg-map {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(40px, 5vw, 72px) clamp(32px, 5vw, 80px);
-  padding-top: clamp(24px, 3vw, 40px);
-  padding-bottom: clamp(72px, 9vw, 130px);
-}
-
-.lg-map-group {
-  min-width: 0;
-}
-
-.lg-map-title {
-  margin: 0 0 8px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line-2);
-  font-family: var(--f-display);
-  font-size: clamp(1.3rem, 2vw, 1.6rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.lg-map ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.lg-map-link {
-  display: grid;
-  gap: 4px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.lg-map-label {
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.lg-map-text {
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-
-.lg-map-link:hover .lg-map-label,
-.lg-map-link:focus-visible .lg-map-label {
-  color: var(--lime);
-}
-
 /* Tablets and phones: contents become a plain list above the text */
 @media (max-width: 899px) {
   .lg-body {
@@ -286,10 +234,6 @@
     border: 1px solid var(--line);
     border-radius: 20px;
     background: var(--ink-2);
-  }
-
-  .lg-map {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -389,19 +333,5 @@
     background: none;
     color: inherit;
     outline: 1px solid #c0573c;
-  }
-
-  .lg-map {
-    display: block;
-    padding: 0;
-  }
-
-  .lg-map-group {
-    break-inside: avoid;
-    margin-bottom: 6mm;
-  }
-
-  .lg-map-link {
-    padding: 2mm 0;
   }
 }

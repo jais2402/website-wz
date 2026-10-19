@@ -26,9 +26,11 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   Address, phone and email cards, the enquiry form (`ContactForm`, sending switchable in `lib/enquiry.ts`), and the
   loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`, SVG art in lite mode).
 - `about-us.html`, `our-services.html` (systems overview), `ai.html`, `technology.html`, `privacy-policy.html`,
-  `terms-and-conditions.html`, `cookie-policy.html`, `sitemap.html` (legal copy in `src/content/legal.ts`, drafts for
+  `terms-and-conditions.html`, `cookie-policy.html` (legal copy in `src/content/legal.ts`, drafts for
   legal review, see `docs/legal/research.md`; GA4 loads only after the cookie banner's Accept, see `docs/analytics.md`), `portfolio.html` (`/portfolio`, all case studies + earlier systems), `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
-  `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). Shared shell, hero, section
+  `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). There is no HTML sitemap:
+  `/sitemap.xml` (and `llms.txt`) are generated at build by `scripts/vite-seo.ts` from `src/content/seo.ts`; the
+  footer's "Sitemap" link points to it and `/sitemap` redirects there (`vercel.json`). Shared shell, hero, section
   and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
   Every hero has a visual: a 3D loom variant (`pages/HeroLoom.tsx` → `LoomScene variant`: `classic` for contact,
   `spindle` (diagonal, blue, orbit rings) for About, `frayed` (broken, coral) for 404), the live dashboard (systems), the

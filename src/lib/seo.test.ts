@@ -1,6 +1,5 @@
 import { brand, countries, faq, pastWork, work } from '@/content/site'
 import { pages, seoData, site } from '@/content/seo'
-import { sitemapPage } from '@/content/sitemap'
 import {
   absoluteUrl,
   applyHead,
@@ -101,16 +100,11 @@ describe('page data', () => {
   })
 })
 
-describe('legal pages and the HTML sitemap', () => {
-  const ids = ['privacy', 'terms', 'cookies', 'sitemap']
+describe('legal pages', () => {
+  const ids = ['privacy', 'terms', 'cookies']
 
   it('are indexable, with the agreed URLs, a two-step breadcrumb and a page type', () => {
-    expect(ids.map((id) => page(id).path)).toEqual([
-      '/privacy-policy',
-      '/terms-and-conditions',
-      '/cookie-policy',
-      '/sitemap',
-    ])
+    expect(ids.map((id) => page(id).path)).toEqual(['/privacy-policy', '/terms-and-conditions', '/cookie-policy'])
     for (const id of ids) {
       const p = page(id)
       expect(p.indexable, id).toBe(true)
@@ -118,11 +112,10 @@ describe('legal pages and the HTML sitemap', () => {
       expect(p.llms?.section, id).toBe('Legal')
     }
     expect(graphOf('privacy').some((n) => typeIn(n, 'WebPage'))).toBe(true)
-    expect(graphOf('sitemap').some((n) => typeIn(n, 'CollectionPage'))).toBe(true)
   })
 
   it('name their page in data-page, preload the self-hosted fonts and load no Google Fonts', () => {
-    const dataPage = { privacy: 'legal:privacy', terms: 'legal:terms', cookies: 'legal:cookies', sitemap: 'sitemap' }
+    const dataPage = { privacy: 'legal:privacy', terms: 'legal:terms', cookies: 'legal:cookies' }
     for (const [id, value] of Object.entries(dataPage)) {
       const html = htmlFiles[`../../${page(id).file}`] ?? ''
       expect(html, id).toContain(`<body data-page="${value}">`)
@@ -131,10 +124,9 @@ describe('legal pages and the HTML sitemap', () => {
     for (const [file, html] of Object.entries(htmlFiles)) expect(html, file).not.toContain('fonts.googleapis.com')
   })
 
-  it('the HTML sitemap lists every indexable page', () => {
-    const hrefs = sitemapPage.groups.flatMap((g) => g.links.map((l) => l.href))
-    for (const p of pages.filter((p) => p.indexable)) expect(hrefs, p.id).toContain(p.path)
-    expect(new Set(hrefs).size).toBe(hrefs.length)
+  it('there is no HTML sitemap page: the sitemap is XML only', () => {
+    expect(pages.some((p) => p.path === '/sitemap' || p.file === 'sitemap.html')).toBe(false)
+    expect(htmlFiles['../../sitemap.html']).toBeUndefined()
   })
 })
 
@@ -144,7 +136,7 @@ describe('pageForFile', () => {
     expect(pageForFile(pages, 'index.html')?.id).toBe('home')
     expect(pageForFile(pages, 'systems\\finance.html')?.id).toBe('finance')
     expect(pageForFile(pages, 'privacy-policy.html')?.id).toBe('privacy')
-    expect(pageForFile(pages, 'sitemap.html')?.id).toBe('sitemap')
+    expect(pageForFile(pages, 'sitemap.html')).toBeUndefined()
     expect(pageForFile(pages, 'portfolio.html')?.id).toBe('portfolio')
     expect(pageForFile(pages, 'nope.html')).toBeUndefined()
   })
@@ -290,12 +282,13 @@ describe('portfolio', () => {
 describe('sitemapXml', () => {
   it('lists only indexable pages with absolute www URLs and lastmod', () => {
     const xml = sitemapXml(pages, site, '2026-10-19')
-    expect(xml.match(/<url>/g)).toHaveLength(17)
+    expect(xml.match(/<url>/g)).toHaveLength(16)
     expect(xml).toContain('<loc>https://www.wezigns.com/portfolio</loc>')
-    for (const path of ['/privacy-policy', '/terms-and-conditions', '/cookie-policy', '/sitemap'])
+    for (const path of ['/privacy-policy', '/terms-and-conditions', '/cookie-policy'])
       expect(xml).toContain(`<loc>https://www.wezigns.com${path}</loc>`)
     expect(xml).toContain('<loc>https://www.wezigns.com/</loc>')
     expect(xml).toContain('<loc>https://www.wezigns.com/systems/industry</loc>')
+    expect(xml).not.toContain('/sitemap<')
     expect(xml).not.toContain('/404')
     expect(xml).not.toContain('/loom')
     expect(xml).toContain('<lastmod>2026-10-19</lastmod>')

@@ -14,7 +14,7 @@ import {
   systemPages,
   systemsSection,
 } from '../content/pages.ts'
-import { type LegalKey, legalCopy, legalPages, sitemapPage } from '../content/sitemap.ts'
+import { type LegalKey, legalCopy, legalPages } from '../content/sitemap.ts'
 import {
   ai,
   areas,
@@ -58,7 +58,6 @@ export type SnapshotPage =
   | 'portfolio'
   | 'contact'
   | 'notFound'
-  | 'sitemap'
   | `system:${string}`
   | `legal:${LegalKey}`
 
@@ -591,17 +590,6 @@ function legalPageHtml(key: string): string | null {
   )
 }
 
-function sitemapPageHtml(): string {
-  const x = sitemapPage
-  return page(
-    section(p(x.kicker) + h1(line(x.title)) + p(x.lead)) +
-      x.groups
-        .map((g) => section(h2(g.title) + ulHtml(g.links.map((l) => `${a(l.href, l.label)} ${t(l.text)}`))))
-        .join('') +
-      contactBlock(),
-  )
-}
-
 /** The snapshot for a page id, or null for an unknown page (the plugin then leaves #root empty). */
 export function snapshot(id: string): string | null {
   switch (id) {
@@ -621,14 +609,12 @@ export function snapshot(id: string): string | null {
       return contactPageHtml()
     case 'notFound':
       return notFoundPageHtml()
-    case 'sitemap':
-      return sitemapPageHtml()
   }
   if (id.startsWith('legal:')) return legalPageHtml(id.slice('legal:'.length))
   return id.startsWith('system:') ? systemPageHtml(id.slice('system:'.length)) : null
 }
 
-/** Every page id with a snapshot, in sitemap order. */
+/** Every page id with a snapshot, in page order. */
 export const snapshotPages: SnapshotPage[] = [
   'home',
   'services',
@@ -639,7 +625,6 @@ export const snapshotPages: SnapshotPage[] = [
   'portfolio',
   'contact',
   ...legalPages.map((l) => `legal:${l.key}` as const),
-  'sitemap',
   'notFound',
 ]
 
@@ -655,7 +640,6 @@ const FILES: Record<string, SnapshotPage> = {
   'privacy-policy.html': 'legal:privacy',
   'terms-and-conditions.html': 'legal:terms',
   'cookie-policy.html': 'legal:cookies',
-  'sitemap.html': 'sitemap',
 }
 
 /**
