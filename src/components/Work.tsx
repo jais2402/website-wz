@@ -1,7 +1,7 @@
 import { useGSAP } from '@gsap/react'
 import { type CSSProperties, useLayoutEffect, useRef, useState } from 'react'
 import { pastWork, work, workSection } from '@/content/site'
-import { gsap, scrollToTarget } from '@/hooks/motion'
+import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { threadPath } from '@/lib/thread'
 import { CaseArt } from './CaseArt'
 import { SplitReveal } from './Reveal'
@@ -74,25 +74,25 @@ export function Work() {
       mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
         // Scroll exactly to the last card. Measured from the cards, not scrollWidth, which the thread SVG also widens.
         const distance = () => Math.max(0, cardsEnd(row.current!) - row.current!.clientWidth)
-        gsap.to(row.current, {
-          x: () => -distance(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: root.current,
-            start: 'top top',
-            end: () => `+=${distance()}`,
-            pin: true,
-            scrub: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (st) => {
-              if (bar.current) bar.current.style.transform = `scaleX(${st.progress})`
-              // The thread draws itself as the row moves; each card's knot lights as the thread reaches it.
-              if (thread.current) thread.current.style.strokeDashoffset = String(1 - (0.12 + st.progress * 0.88))
-              const knots = root.current?.querySelectorAll('.case-knot') ?? []
-              knots.forEach((k, i) =>
-                k.classList.toggle('is-lit', st.progress >= i / Math.max(1, knots.length - 1) - 0.02),
-              )
-            },
+        // The row is placed from the live distance on every update (not a tween measured at refresh), so it
+        // can never travel past the last card even if the pin's length goes stale.
+        const moveX = gsap.quickTo(row.current, 'x', { duration: 0.5, ease: 'power3.out' })
+        ScrollTrigger.create({
+          trigger: root.current,
+          start: 'top top',
+          end: () => `+=${distance()}`,
+          pin: true,
+          invalidateOnRefresh: true,
+          onRefresh: (st) => gsap.set(row.current, { x: -st.progress * distance() }),
+          onUpdate: (st) => {
+            moveX(-Math.min(1, st.progress) * distance())
+            if (bar.current) bar.current.style.transform = `scaleX(${st.progress})`
+            // The thread draws itself as the row moves; each card's knot lights as the thread reaches it.
+            if (thread.current) thread.current.style.strokeDashoffset = String(1 - (0.12 + st.progress * 0.88))
+            const knots = root.current?.querySelectorAll('.case-knot') ?? []
+            knots.forEach((k, i) =>
+              k.classList.toggle('is-lit', st.progress >= i / Math.max(1, knots.length - 1) - 0.02),
+            )
           },
         })
       })
