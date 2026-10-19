@@ -10,7 +10,7 @@ const valid = {
   phone: '+91 98400 12345',
   topics: ['A new system'],
   message: 'Our orders live in three spreadsheets.',
-  source: 'wezigns.com/contact',
+  source: 'wezigns.com/contact-us',
 }
 const env = { RESEND_API_KEY: 're_test' }
 

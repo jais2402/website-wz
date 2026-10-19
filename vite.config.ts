@@ -11,8 +11,9 @@ const page = (path: string) => fileURLToPath(new URL(`./${path}`, import.meta.ur
 const SYSTEMS = ['people', 'revenue', 'operations', 'ecommerce', 'finance', 'industry']
 const INPUTS = {
   main: page('index.html'),
-  contact: page('contact.html'),
-  about: page('about.html'),
+  contact: page('contact-us.html'),
+  about: page('about-us.html'),
+  services: page('our-services.html'),
   ai: page('ai.html'),
   technology: page('technology.html'),
   notFound: page('404.html'),
@@ -30,7 +31,7 @@ export default defineConfig({
   plugins: [
     react(),
     {
-      // Clean URLs in dev and preview, matching Vercel's cleanUrls: /contact → /contact.html,
+      // Clean URLs in dev and preview, matching Vercel's cleanUrls: /contact-us → /contact-us.html,
       // /systems/people → /systems/people.html. Only rewrites when that .html page exists.
       name: 'clean-urls',
       configureServer(server) {

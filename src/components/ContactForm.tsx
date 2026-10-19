@@ -36,7 +36,7 @@ export function ContactForm() {
       return
     }
     setStatus({ kind: 'sending' })
-    const result = await submitEnquiry(data, undefined, { source: 'wezigns.com/contact' })
+    const result = await submitEnquiry(data, undefined, { source: 'wezigns.com/contact-us' })
     setStatus(result.ok ? { kind: 'sent', via: result.via } : { kind: 'error', message: result.error })
   }
   const onSubmit = (e: FormEvent) => {

@@ -15,15 +15,18 @@ export const brand = {
 
 // Header: every page is one click away. Questions (#faq) stays in the footer and on the home page.
 export const nav = [
-  { label: 'Systems', href: '/systems/people' },
+  { label: 'Systems', href: '/our-services' },
   { label: 'AI', href: '/ai' },
   { label: 'Technology', href: '/technology' },
   { label: 'Work', href: '#work' },
   { label: 'How pricing works', href: '#pricing' },
-  { label: 'About', href: '/about' },
+  { label: 'About', href: '/about-us' },
 ]
 
-// The "Systems" nav item opens this menu. Order matches `areas` and the /systems/* pages.
+// The "Systems" nav item opens this menu (headed by a link to the overview at /our-services, the old site's URL).
+// Order matches `areas` and the /systems/* pages.
+export const navSystemsAll = { label: 'All systems', href: '/our-services' }
+
 export const navSystems = [
   { label: 'People & workforce', short: 'HR', href: '/systems/people' },
   { label: 'Revenue & customers', short: 'CRM', href: '/systems/revenue' },
@@ -477,7 +480,7 @@ export const reach = {
   ],
 }
 
-// Contact page (/contact)
+// Contact page (/contact-us)
 export const contactPage = {
   kicker: 'Contact',
   title: 'Tell us what is not working.',
@@ -491,6 +494,7 @@ export const footer = [
   {
     title: 'Systems',
     links: [
+      ['All systems', '/our-services'],
       ['People & workforce', '/systems/people'],
       ['Revenue & customers', '/systems/revenue'],
       ['Operations & supply chain', '/systems/operations'],
@@ -500,7 +504,7 @@ export const footer = [
     ],
   },
   { title: 'Capabilities', links: [['Custom software', '#build'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
-  { title: 'Company', links: [['About', '/about'], ['Contact', '/contact'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
+  { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Case studies', '#work'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
 // Second page: the time-loom concept (loom.html).
@@ -606,7 +610,7 @@ export const technologyPage = {
 
 // Calls to action placed where a visitor is ready to act. `contact` is the shared primary action.
 export const ctas = {
-  contact: { label: 'Tell us what is not working', href: '/contact' },
+  contact: { label: 'Tell us what is not working', href: '/contact-us' },
   hero: { secondary: { label: 'See our work', href: '#work' } },
   aiDemo: { label: 'See how we use AI', href: '/ai' },
   integrations: { label: 'See our full stack', href: '/technology' },

@@ -233,7 +233,7 @@ export const systemsSection = {
   impactTitle: 'What changes for you',
   toolsTitle: 'Tools we use',
   moreTitle: 'Other systems we build',
-  cta: { label: 'Tell us what is not working', href: '/contact' },
+  cta: { label: 'Tell us what is not working', href: '/contact-us' },
 }
 
 export const aboutPage = {
@@ -255,7 +255,7 @@ export const aboutPage = {
   ],
   numbersTitle: 'In numbers',
   processTitle: 'How we work',
-  cta: { label: 'Tell us what is not working', href: '/contact' },
+  cta: { label: 'Tell us what is not working', href: '/contact-us' },
 }
 
 export const aiPage = {
@@ -310,7 +310,7 @@ export const aiPage = {
     { title: 'Your data stays put.', text: 'It works from your own records, inside your own systems.' },
     { title: 'Everything is logged.', text: 'You can see what the AI did, when, and why.' },
   ],
-  cta: { label: 'Tell us what is not working', href: '/contact' },
+  cta: { label: 'Tell us what is not working', href: '/contact-us' },
 }
 
 // 404 page (404.html): Vercel serves it for any unknown URL.
@@ -321,11 +321,26 @@ export const notFoundPage = {
   home: { label: 'Back to the home page', href: '/' },
   linksTitle: 'Or go straight to',
   links: [
-    { label: 'Systems we build', text: 'HR, CRM, operations, ecommerce, finance and industry', href: '/systems/people' },
+    { label: 'Systems we build', text: 'HR, CRM, operations, ecommerce, finance and industry', href: '/our-services' },
     { label: 'AI', text: 'AI inside your systems and custom AI solutions', href: '/ai' },
     { label: 'Technology', text: 'The stack behind the systems we build', href: '/technology' },
     { label: 'Our work', text: 'Case studies from 11 countries', href: '/#work' },
-    { label: 'About', text: 'Chennai, since 2012', href: '/about' },
-    { label: 'Contact', text: 'Phone, email, address and the enquiry form', href: '/contact' },
+    { label: 'About', text: 'Chennai, since 2012', href: '/about-us' },
+    { label: 'Contact', text: 'Phone, email, address and the enquiry form', href: '/contact-us' },
   ],
+}
+
+// Systems / custom software overview (our-services.html, the old site's /our-services URL). The system list itself
+// comes from `systemPages`, so each card matches its page.
+export const servicesPage = {
+  kicker: 'Custom software',
+  title: ['Custom software', 'for every part of', 'your business.'],
+  lead: 'Six kinds of business system, built around how your team works and connected to the tools you already pay for. Start with the part that hurts most; we build it, connect it and keep it running.',
+  systemsTitle: 'The systems we build',
+  systemsIntro: 'Each one is built for you from the modules you need. Start with one and add the next when you are ready, without a rewrite.',
+  explore: 'Explore',
+  modulesLabel: 'Modules',
+  servicesTitle: 'What we do for every system',
+  servicesIntro: 'The same three jobs, whichever system you start with.',
+  workLink: { label: 'See systems we have built', href: '/#work' },
 }

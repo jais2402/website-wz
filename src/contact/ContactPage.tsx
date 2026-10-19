@@ -12,7 +12,7 @@ import { ContactLoom } from './ContactLoom'
 // Links back to the home page sections from this page.
 const homeNav = nav.map((l) => ({ ...l, href: l.href.startsWith('#') ? `/${l.href}` : l.href }))
 
-/** /contact: every way to reach Wezigns plus the enquiry form, with the loom beside the headline (SVG in lite mode). */
+/** /contact-us: every way to reach Wezigns plus the enquiry form, with the loom beside the headline (SVG in lite mode). */
 export function ContactPage() {
   const reducedMotion = usePrefersReducedMotion()
   useSmoothScroll(!reducedMotion)

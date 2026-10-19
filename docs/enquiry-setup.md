@@ -1,6 +1,6 @@
 # Turning on the enquiry email
 
-The forms on the site (the /contact page and the short form in the contact block on every page) send to
+The forms on the site (the /contact-us page and the short form in the contact block on every page) send to
 `/api/enquiry`, a small Vercel function that emails each enquiry to Wezigns through Resend. Until the three steps
 below are done, the forms still work: they open the visitor's email app with the message filled in, as before.
 

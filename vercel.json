@@ -39,13 +39,18 @@
   "cleanUrls": true,
   "redirects": [
     {
-      "source": "/contact-us",
-      "destination": "/contact",
+      "source": "/contact",
+      "destination": "/contact-us",
       "permanent": true
     },
     {
-      "source": "/our-services",
-      "destination": "/#build",
+      "source": "/about",
+      "destination": "/about-us",
+      "permanent": true
+    },
+    {
+      "source": "/systems",
+      "destination": "/our-services",
       "permanent": true
     },
     {
@@ -56,11 +61,6 @@
     {
       "source": "/portfolio-item-:slug",
       "destination": "/#work",
-      "permanent": true
-    },
-    {
-      "source": "/about-us",
-      "destination": "/about",
       "permanent": true
     },
     {

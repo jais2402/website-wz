@@ -56,7 +56,7 @@ export function validateEnquiry(e: Enquiry): EnquiryErrors {
 export const isSpam = (e: Enquiry) => e.website.trim().length > 0
 
 /** The JSON body sent to an endpoint. Trimmed, honeypot removed. `source` says which form sent it. */
-export function enquiryPayload(e: Enquiry, source = 'wezigns.com/contact') {
+export function enquiryPayload(e: Enquiry, source = 'wezigns.com/contact-us') {
   return {
     name: e.name.trim(),
     email: e.email.trim(),

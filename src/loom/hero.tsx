@@ -1,5 +1,5 @@
 import { useGSAP } from '@gsap/react'
-import { type CSSProperties, lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
 import { LoomLiteArt } from '@/components/LiteArt'
 import { ctas, loom, navSystems } from '@/content/site'
@@ -149,6 +149,38 @@ const HEAP = [
  */
 export function Weave() {
   const root = useRef<HTMLElement>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
+  // Where each list item's centre sits in the SVG's 0..400 viewBox, so every thread ends exactly on its row.
+  const even = (n: number, a: number, b: number) =>
+    Array.from({ length: n }, (_, i) => a + (i * (b - a)) / Math.max(1, n - 1))
+  const [ends, setEnds] = useState(() => ({
+    in: even(loom.threadsIn.length, 25, 375),
+    out: even(loom.threadsOut.length, 40, 360),
+  }))
+
+  useLayoutEffect(() => {
+    const svg = svgRef.current
+    const grid = svg?.parentElement
+    if (!svg || !grid) return
+    const measure = () => {
+      const box = svg.getBoundingClientRect()
+      if (!box.height) return
+      const centres = (sel: string) =>
+        Array.from(grid.querySelectorAll<HTMLElement>(sel)).map((li) => {
+          // Desktop only (the SVG is hidden on phones), where the rows carry no transforms that move their centres.
+          const r = li.getBoundingClientRect()
+          const y = r.top + r.height / 2 - box.top
+          return Math.min(400, Math.max(0, (y / box.height) * 400))
+        })
+      const ins = centres('.weave-in > li')
+      const outs = centres('.weave-out > li')
+      if (ins.length && outs.length) setEnds({ in: ins, out: outs })
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(grid)
+    return () => ro.disconnect()
+  }, [])
 
   useGSAP(
     () => {
@@ -213,9 +245,9 @@ export function Weave() {
             })}
           </ul>
           <span className="weave-knot-m" aria-hidden="true" />
-          <svg className="weave-svg" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
+          <svg ref={svgRef} className="weave-svg" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
             {loom.threadsIn.map((_, i) => {
-              const y = 25 + i * (350 / (loom.threadsIn.length - 1))
+              const y = ends.in[i] ?? 200
               return (
                 <path
                   key={`i${i}`}
@@ -226,7 +258,7 @@ export function Weave() {
               )
             })}
             {loom.threadsOut.map((_, i) => {
-              const y = 40 + i * (320 / (loom.threadsOut.length - 1))
+              const y = ends.out[i] ?? 200
               return (
                 <path
                   key={`o${i}`}

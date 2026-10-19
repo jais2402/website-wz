@@ -9,7 +9,7 @@ export function cleanPath(pathname: string): string {
   return p || '/'
 }
 
-/** True when `href` (a page link such as "/about") is the current page. In-page anchors are never current. */
+/** True when `href` (a page link such as "/about-us") is the current page. In-page anchors are never current. */
 export function isCurrentPage(pathname: string, href: string): boolean {
   if (!href.startsWith('/')) return false
   return cleanPath(pathname) === cleanPath(href.split(/[?#]/)[0])

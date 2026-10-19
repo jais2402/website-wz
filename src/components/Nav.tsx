@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { brand, ctas, nav, navSystems } from '@/content/site'
+import { brand, ctas, nav, navSystems, navSystemsAll } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
 import { inSection, isCurrentPage } from '@/lib/navCurrent'
 import { Logo } from './Logo'
@@ -7,8 +7,8 @@ import './nav.css'
 
 type NavItem = { label: string; href: string }
 
-// The "Systems" item (its href is the first system page) opens the systems menu.
-const isSystems = (l: NavItem) => l.href.startsWith('/systems/')
+// The "Systems" item (it links to the systems overview) opens the systems menu.
+const isSystems = (l: NavItem) => l.href === navSystemsAll.href
 
 // The page being viewed, for aria-current. Read once: every page is a full load.
 const here = typeof window === 'undefined' ? '/' : window.location.pathname
@@ -93,11 +93,11 @@ export function Nav({
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setSysOpen(false)
       }}
     >
-      {/* Without JS this is a plain link to the first system page. */}
+      {/* Without JS this is a plain link to the systems overview. */}
       <a
         ref={trigger}
         href={l.href}
-        className={`nav-drop-trigger${inSection(here, '/systems/') ? ' is-current' : ''}`}
+        className={`nav-drop-trigger${inSection(here, '/systems/') || isCurrentPage(here, navSystemsAll.href) ? ' is-current' : ''}`}
         aria-haspopup="true"
         aria-expanded={sysOpen}
         aria-controls="nav-systems"
@@ -112,6 +112,17 @@ export function Nav({
       </a>
       <div className="nav-menu" id="nav-systems">
         <ul className="nav-menu-panel">
+          <li className="nav-menu-all">
+            <a
+              href={navSystemsAll.href}
+              onClick={() => setSysOpen(false)}
+              tabIndex={sysOpen ? undefined : -1}
+              aria-current={current(navSystemsAll.href)}
+            >
+              <span>{navSystemsAll.label}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </li>
           {navSystems.map((s) => (
             <li key={s.href}>
               <a
@@ -157,7 +168,14 @@ export function Nav({
         {items.map((l) =>
           isSystems(l) ? (
             <div key={l.href} className="nav-sheet-group">
-              <span className="mono nav-sheet-label">{l.label}</span>
+              <a
+                className="mono nav-sheet-label"
+                href={navSystemsAll.href}
+                onClick={go(navSystemsAll.href)}
+                aria-current={current(navSystemsAll.href)}
+              >
+                {l.label} · {navSystemsAll.label} →
+              </a>
               <ul className="nav-sheet-systems">
                 {navSystems.map((s) => (
                   <li key={s.href}>

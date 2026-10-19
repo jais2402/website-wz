@@ -1,0 +1,335 @@
+/* Systems / custom software overview (/our-services). Classes prefixed `sv-`, hero visual `so-`. */
+
+/* ---- Hero visual: six systems orbiting a core ---- */
+.so {
+  --r: clamp(120px, 15vw, 200px);
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 520px;
+  margin-left: auto;
+  perspective: 1200px;
+  display: grid;
+  place-items: center;
+}
+
+.so::before {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(77, 159, 255, 0.2), rgba(139, 123, 255, 0.07) 48%, transparent 70%);
+  filter: blur(8px);
+}
+
+.so-tilt {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  transform: rotateX(66deg);
+}
+
+.so-spin {
+  position: relative;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  animation: soSpin 40s linear infinite;
+}
+
+.so-ring {
+  position: absolute;
+  left: calc(-1 * var(--r));
+  top: calc(-1 * var(--r));
+  width: calc(2 * var(--r));
+  height: calc(2 * var(--r));
+  border-radius: 50%;
+  border: 1px solid rgba(140, 196, 255, 0.4);
+  box-shadow:
+    0 0 24px rgba(77, 159, 255, 0.25),
+    inset 0 0 24px rgba(77, 159, 255, 0.15);
+}
+
+.so-ring.is-inner {
+  --k: 0.55;
+  left: calc(-1 * var(--r) * var(--k));
+  top: calc(-1 * var(--r) * var(--k));
+  width: calc(2 * var(--r) * var(--k));
+  height: calc(2 * var(--r) * var(--k));
+  border-style: dashed;
+  border-color: rgba(139, 123, 255, 0.35);
+}
+
+/* One arm per system: turned to its angle, then pushed out to the ring. */
+.so-arm {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-style: preserve-3d;
+  transform: rotateZ(var(--a));
+}
+
+.so-thread {
+  position: absolute;
+  left: 0;
+  top: -0.5px;
+  width: var(--r);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 248, 236, 0.7), rgba(77, 159, 255, 0.5));
+  box-shadow: 0 0 6px rgba(77, 159, 255, 0.6);
+}
+
+.so-node {
+  position: absolute;
+  left: var(--r);
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+
+.so-node::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #8cc4ff;
+  box-shadow: 0 0 16px 4px rgba(77, 159, 255, 0.65);
+}
+
+/* Undo the arm's angle, the ring's spin and the tilt (so the label always faces the viewer), then lift it just
+   above its node. The offset must come last in the transform so it happens in screen space. */
+.so-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(140, 196, 255, 0.45);
+  background: rgba(7, 7, 12, 0.85);
+  color: #cfe3ff;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  transform-origin: 0 0;
+  animation: soFace 40s linear infinite;
+}
+
+.so-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 26px 10px rgba(255, 248, 236, 0.85),
+    0 0 70px 26px rgba(140, 196, 255, 0.45);
+  animation: soPulse 3s ease-in-out infinite;
+}
+
+@keyframes soSpin {
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+@keyframes soFace {
+  from {
+    transform: rotateZ(calc(-1 * var(--a))) rotateZ(0deg) rotateX(-66deg) translate(-50%, -150%);
+  }
+  to {
+    transform: rotateZ(calc(-1 * var(--a))) rotateZ(-360deg) rotateX(-66deg) translate(-50%, -150%);
+  }
+}
+
+@keyframes soPulse {
+  50% {
+    scale: 1.15;
+  }
+}
+
+/* ---- The six systems ---- */
+.sv-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: radial-gradient(70% 60% at 100% 0%, rgba(77, 159, 255, 0.12), transparent 70%), var(--ink-3);
+  transition:
+    border-color 0.3s,
+    transform 0.45s var(--ease-out);
+}
+
+.sv-card:hover,
+.sv-card:focus-visible {
+  border-color: rgba(77, 159, 255, 0.5);
+  transform: translateY(-4px);
+}
+
+.sv-short {
+  color: #8cc4ff;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.sv-card h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.sv-promise {
+  font-family: var(--f-serif, 'Instrument Serif', serif);
+  font-style: italic;
+  font-size: 1.2rem;
+  color: #8cc4ff;
+}
+
+.sv-intro {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.sv-mod-label {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+}
+
+.sv-mods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sv-mods li {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  font-size: 0.78rem;
+  color: var(--text);
+}
+
+.sv-explore {
+  margin-top: auto;
+  padding-top: 14px;
+  font-weight: 500;
+  color: #8cc4ff;
+}
+
+.sv-explore span {
+  display: inline-block;
+  transition: translate 0.3s var(--ease-out);
+}
+
+.sv-card:hover .sv-explore span {
+  translate: 4px 0;
+}
+
+/* ---- What we do for every system ---- */
+.sv-jobs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sv-job {
+  --tone: var(--lime);
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: clamp(22px, 2.6vw, 32px);
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--tone);
+  background: var(--ink-3);
+}
+
+.sv-job.tone-violet {
+  --tone: var(--violet);
+}
+
+.sv-job.tone-coral {
+  --tone: var(--coral);
+}
+
+.sv-job-kicker {
+  color: var(--tone);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.sv-job h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.sv-job ul {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.sv-job li::before {
+  content: '—';
+  margin-right: 8px;
+  color: var(--tone);
+}
+
+@media (max-width: 899px) {
+  .so {
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .sv-grid,
+  .sv-jobs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .so-spin,
+  .so-label,
+  .so-core {
+    animation: none;
+  }
+
+  .so-label {
+    transform: rotateZ(calc(-1 * var(--a))) rotateX(-66deg) translate(-50%, -150%);
+  }
+
+  .sv-card,
+  .sv-explore span {
+    transition: none;
+  }
+}
+
+@media print {
+  .so {
+    display: none;
+  }
+}
