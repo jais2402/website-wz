@@ -27,10 +27,10 @@
   --cream-2: #e8e4d8;
   --cream-ink: #14141a;
 
-  /* One sans family: Satoshi for display, body and (italic) emphasis; Inter only fills glyphs Satoshi lacks. */
+  /* Satoshi for display and body (Inter only fills glyphs Satoshi lacks); Instrument Serif italic for accent words. */
   --f-display: 'Satoshi', 'Inter', system-ui, sans-serif;
   --f-body: 'Satoshi', 'Inter', system-ui, sans-serif;
-  --f-serif: var(--f-display);
+  --f-serif: 'Instrument Serif', Georgia, serif;
   --f-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   --gutter: clamp(16px, 4vw, 56px);
@@ -145,11 +145,11 @@ main,
 }
 
 .serif {
-  /* Emphasis is the italic of the same family, not a second typeface. */
-  font-family: var(--f-display);
+  /* Accent words: Instrument Serif italic in the accent blue (client choice). */
+  font-family: var(--f-serif);
   font-style: italic;
-  font-weight: 500;
-  letter-spacing: -0.03em;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   color: var(--lime);
 }
 
@@ -808,10 +808,11 @@ main,
 
 .story-title {
   font-family: var(--f-display);
-  font-size: clamp(4rem, 10vw, 9.5rem);
+  /* Sized for Satoshi so the longest word ("Simplify.") stays inside the card with room to spare. */
+  font-size: clamp(3.4rem, 8vw, 7.6rem);
   font-weight: 650;
-  letter-spacing: -0.06em;
-  line-height: 0.9;
+  letter-spacing: -0.05em;
+  line-height: 0.92;
   margin: 16px 0 24px;
 }
 
