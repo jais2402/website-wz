@@ -74,18 +74,19 @@ export function Work() {
       mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
         // Scroll exactly to the last card. Measured from the cards, not scrollWidth, which the thread SVG also widens.
         const distance = () => Math.max(0, cardsEnd(row.current!) - row.current!.clientWidth)
-        // The row is placed from the live distance on every update (not a tween measured at refresh), so it
-        // can never travel past the last card even if the pin's length goes stale.
-        const moveX = gsap.quickTo(row.current, 'x', { duration: 0.5, ease: 'power3.out' })
+        // The row is set straight from scroll progress and the live distance on every update: no scrub lag (Lenis
+        // already smooths the scroll), so the cards are always exactly where the scroll says. With a lagging
+        // tween, a fast scroll let the section unpin while the cards were still sliding.
+        const place = (p: number) => gsap.set(row.current, { x: -Math.min(1, Math.max(0, p)) * distance() })
         ScrollTrigger.create({
           trigger: root.current,
           start: 'top top',
           end: () => `+=${distance()}`,
           pin: true,
           invalidateOnRefresh: true,
-          onRefresh: (st) => gsap.set(row.current, { x: -st.progress * distance() }),
+          onRefresh: (st) => place(st.progress),
           onUpdate: (st) => {
-            moveX(-Math.min(1, st.progress) * distance())
+            place(st.progress)
             if (bar.current) bar.current.style.transform = `scaleX(${st.progress})`
             // The thread draws itself as the row moves; each card's knot lights as the thread reaches it.
             if (thread.current) thread.current.style.strokeDashoffset = String(1 - (0.12 + st.progress * 0.88))

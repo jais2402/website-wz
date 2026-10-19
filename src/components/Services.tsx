@@ -41,7 +41,8 @@ export function Services() {
             start: 'top top',
             end: () => `+=${distance()}`,
             pin: true,
-            scrub: 1,
+            // No extra lag on top of Lenis: a lagging scrub let the section unpin with the cards still sliding.
+            scrub: true,
             invalidateOnRefresh: true,
           },
         })
