@@ -5,6 +5,29 @@ import { useEffect, useState } from 'react'
 
 gsap.registerPlugin(ScrollTrigger)
 
+/**
+ * ScrollTrigger measures pin positions on load and on window resize only. When the page height changes later
+ * (a lazy section mounts, fonts swap, a card grows), every pin below starts and ends at the wrong scroll offset:
+ * Our Work then unpinned early with its cards still moving. Re-measure whenever the document height changes.
+ */
+function watchPageHeight() {
+  if (typeof window === 'undefined' || typeof ResizeObserver === 'undefined') return
+  let measured = 0
+  let timer = 0
+  ScrollTrigger.addEventListener('refresh', () => {
+    measured = document.documentElement.scrollHeight
+  })
+  const check = () => {
+    window.clearTimeout(timer)
+    timer = window.setTimeout(() => {
+      if (Math.abs(document.documentElement.scrollHeight - measured) > 2) ScrollTrigger.refresh()
+    }, 200)
+  }
+  new ResizeObserver(check).observe(document.body)
+  document.fonts?.ready.then(check)
+}
+watchPageHeight()
+
 export { gsap, ScrollTrigger }
 
 export function usePrefersReducedMotion() {
