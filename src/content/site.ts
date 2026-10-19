@@ -633,7 +633,7 @@ export const technologyPage = {
 export const ctas = {
   contact: { label: 'Tell us what is not working', href: '/contact-us' },
   // Under the systems explorer tabs; changes with the selected system.
-  explorer: { title: 'Want this for your team?', body: 'We build it around how your team works, with one price agreed first.', explore: (short: string) => `Explore the ${short} system` },
+  explorer: { title: 'Want this for your team?', body: 'We build it around how your team works, with one price agreed first.', explore: 'Explore systems' },
   hero: { secondary: { label: 'See our work', href: '#work' } },
   aiDemo: { label: 'See how we use AI', href: '/ai' },
   integrations: { label: 'See our full stack', href: '/technology' },

@@ -1,6 +1,6 @@
 import { useGSAP } from '@gsap/react'
 import { type CSSProperties, useRef, useState } from 'react'
-import { areas, ctas, navSystems, sampleDataLabel } from '@/content/site'
+import { areas, ctas, navSystemsAll, sampleDataLabel } from '@/content/site'
 import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { track } from '@/lib/analytics'
 import { activeIndex, tabFill } from '@/lib/charts'
@@ -58,7 +58,9 @@ export function Areas() {
           pin: true,
           onUpdate: (st) => {
             setActive(activeIndex(st.progress, areas.length))
-            tabs.current.forEach((t, i) => t?.style.setProperty('--fill', String(tabFill(st.progress, areas.length, i))))
+            tabs.current.forEach((t, i) =>
+              t?.style.setProperty('--fill', String(tabFill(st.progress, areas.length, i))),
+            )
           },
         })
         root.current?.classList.add('is-pinned')
@@ -77,14 +79,24 @@ export function Areas() {
     () => {
       gsap
         .timeline()
-        .fromTo('.screen-sweep', { yPercent: -100, opacity: 1 }, { yPercent: 100, opacity: 0.2, duration: 0.9, ease: 'power2.inOut' }, 0)
+        .fromTo(
+          '.screen-sweep',
+          { yPercent: -100, opacity: 1 },
+          { yPercent: 100, opacity: 0.2, duration: 0.9, ease: 'power2.inOut' },
+          0,
+        )
         .fromTo(
           '.mod',
           { y: 28, opacity: 0, rotateX: -14, filter: 'blur(6px)' },
           { y: 0, opacity: 1, rotateX: 0, filter: 'blur(0px)', duration: 0.8, ease: 'expo.out', stagger: 0.06 },
           0.12,
         )
-        .fromTo('.screen-kpi', { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.05 }, 0.05)
+        .fromTo(
+          '.screen-kpi',
+          { y: 12, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.05 },
+          0.05,
+        )
     },
     { scope: screen, dependencies: [active] },
   )
@@ -152,7 +164,13 @@ export function Areas() {
                   <div className="screen-kpi" key={k.label}>
                     <span className="mono">{k.label}</span>
                     <b>
-                      <CountUp value={k.value} prefix={k.prefix} suffix={k.suffix} decimals={k.decimals} delay={i * 80} />
+                      <CountUp
+                        value={k.value}
+                        prefix={k.prefix}
+                        suffix={k.suffix}
+                        decimals={k.decimals}
+                        delay={i * 80}
+                      />
                     </b>
                   </div>
                 ))}
@@ -190,13 +208,16 @@ export function Areas() {
             <div className="areas-cta-actions">
               <a
                 className="btn btn-lime"
-                href={ctas.contact.href}
-                onClick={() => track('cta_click', { label: ctas.contact.label, location: 'systems_explorer', system: SLUGS[active] })}
+                href={navSystemsAll.href}
+                onClick={() =>
+                  track('cta_click', {
+                    label: ctas.explorer.explore,
+                    location: 'systems_explorer',
+                    system: SLUGS[active],
+                  })
+                }
               >
-                {ctas.contact.label} <span aria-hidden="true">→</span>
-              </a>
-              <a className="btn btn-ghost" href={`/systems/${SLUGS[active]}`}>
-                {ctas.explorer.explore(navSystems[active]?.short ?? area.title)} <span aria-hidden="true">→</span>
+                {ctas.explorer.explore} <span aria-hidden="true">→</span>
               </a>
             </div>
           </div>
