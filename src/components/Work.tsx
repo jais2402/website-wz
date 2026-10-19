@@ -39,8 +39,9 @@ export function Work() {
       const hint = el.querySelector<HTMLElement>('.work-hint')
       const cardsBox = el.querySelector<HTMLElement>('.work-cards')
       const cards = Array.from(el.querySelectorAll<HTMLElement>('.case-card'))
-      if (!hint || !cardsBox || !cards.length) return
-      const intro = hint.offsetParent as HTMLElement
+      // The hint is hidden on phones (no thread there) and then has no offsetParent: skip measuring.
+      const intro = hint?.offsetParent as HTMLElement | null
+      if (!hint || !intro || !cardsBox || !cards.length) return
       const start = {
         x: intro.offsetLeft + hint.offsetLeft + hint.offsetWidth + 18,
         y: intro.offsetTop + hint.offsetTop + hint.offsetHeight / 2,

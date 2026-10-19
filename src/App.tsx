@@ -12,6 +12,7 @@ import { Preloader } from '@/components/Preloader'
 import { Pricing } from '@/components/Pricing'
 import { Process } from '@/components/Process'
 import { Proof } from '@/components/Proof'
+import { SectionBoundary } from '@/components/SectionBoundary'
 import { Services } from '@/components/Services'
 import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
@@ -52,21 +53,51 @@ export default function App() {
       <Nav />
       {!lite && <GuideLight active={ready} />}
       <main>
-        <LoomHero reducedMotion={reducedMotion} introReady={ready} />
-        <Weave />
-        <Story />
-        <Proof />
-        <Services />
-        <Areas />
-        <BeforeAfter />
-        <AIDemo />
-        <Work />
-        <Process />
-        <Pricing />
-        <Integrations />
-        <Countries />
-        <Faq />
-        <LoomContact />
+        <SectionBoundary name="LoomHero">
+          <LoomHero reducedMotion={reducedMotion} introReady={ready} />
+        </SectionBoundary>
+        <SectionBoundary name="Weave">
+          <Weave />
+        </SectionBoundary>
+        <SectionBoundary name="Story">
+          <Story />
+        </SectionBoundary>
+        <SectionBoundary name="Proof">
+          <Proof />
+        </SectionBoundary>
+        <SectionBoundary name="Services">
+          <Services />
+        </SectionBoundary>
+        <SectionBoundary name="Areas">
+          <Areas />
+        </SectionBoundary>
+        <SectionBoundary name="BeforeAfter">
+          <BeforeAfter />
+        </SectionBoundary>
+        <SectionBoundary name="AIDemo">
+          <AIDemo />
+        </SectionBoundary>
+        <SectionBoundary name="Work">
+          <Work />
+        </SectionBoundary>
+        <SectionBoundary name="Process">
+          <Process />
+        </SectionBoundary>
+        <SectionBoundary name="Pricing">
+          <Pricing />
+        </SectionBoundary>
+        <SectionBoundary name="Integrations">
+          <Integrations />
+        </SectionBoundary>
+        <SectionBoundary name="Countries">
+          <Countries />
+        </SectionBoundary>
+        <SectionBoundary name="Faq">
+          <Faq />
+        </SectionBoundary>
+        <SectionBoundary name="LoomContact">
+          <LoomContact />
+        </SectionBoundary>
       </main>
       <Footer />
       <StickyCall />
