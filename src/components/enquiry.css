@@ -196,3 +196,9 @@
     transition: none;
   }
 }
+
+/* Space between email and phone in the "or reach us" line (no separator character). */
+.ef-sep {
+  display: inline-block;
+  width: 14px;
+}

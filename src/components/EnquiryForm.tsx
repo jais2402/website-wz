@@ -12,7 +12,17 @@ export type SendStatus =
 const firstName = (name: string) => name.trim().split(/\s+/)[0] || 'there'
 
 /** Success panel shared by both enquiry forms. Takes focus so keyboard and screen-reader users land on it. */
-export function EnquirySent({ name, via, onReset, heading: Heading = 'h3' }: { name: string; via: 'endpoint' | 'mailto'; onReset: () => void; heading?: 'h2' | 'h3' }) {
+export function EnquirySent({
+  name,
+  via,
+  onReset,
+  heading: Heading = 'h3',
+}: {
+  name: string
+  via: 'endpoint' | 'mailto'
+  onReset: () => void
+  heading?: 'h2' | 'h3'
+}) {
   const ref = useRef<HTMLHeadingElement>(null)
   useEffect(() => ref.current?.focus(), [])
   return (
@@ -27,8 +37,9 @@ export function EnquirySent({ name, via, onReset, heading: Heading = 'h3' }: { n
         <p>Your message is with us. We reply within one working day.</p>
       ) : (
         <p>
-          Your email app should have opened with your message ready. Press send there and we reply within one working day. If nothing opened, write to{' '}
-          <a href={`mailto:${brand.email}`}>{brand.email}</a> or call <a href={brand.phoneHref}>{brand.phone}</a>.
+          Your email app should have opened with your message ready. Press send there and we reply within one working
+          day. If nothing opened, write to <a href={`mailto:${brand.email}`}>{brand.email}</a> or call{' '}
+          <a href={brand.phoneHref}>{brand.phone}</a>.
         </p>
       )}
       <button type="button" className="btn btn-ghost" onClick={onReset}>
@@ -49,7 +60,9 @@ export function EnquiryError({ status, onRetry }: { status: SendStatus; onRetry:
             <button type="button" className="ef-retry" onClick={onRetry}>
               Try again
             </button>{' '}
-            or reach us directly: <a href={`mailto:${brand.email}`}>{brand.email}</a> · <a href={brand.phoneHref}>{brand.phone}</a>
+            or reach us directly: <a href={`mailto:${brand.email}`}>{brand.email}</a>
+            <span className="ef-sep" aria-hidden="true" />
+            <a href={brand.phoneHref}>{brand.phone}</a>
           </p>
         </>
       )}
@@ -70,10 +83,25 @@ export function PrivacyNote() {
  * The optional, unticked marketing opt-in shared by both forms. Its own labelled checkbox, separate from sending the
  * enquiry: leaving it unticked changes nothing about the enquiry.
  */
-export function MarketingOptIn({ id, checked, onChange }: { id: string; checked: boolean; onChange: (checked: boolean) => void }) {
+export function MarketingOptIn({
+  id,
+  checked,
+  onChange,
+}: {
+  id: string
+  checked: boolean
+  onChange: (checked: boolean) => void
+}) {
   return (
     <div className="ef-optin">
-      <input type="checkbox" id={id} name="marketing" checked={checked} onChange={(e) => onChange(e.target.checked)} aria-describedby={`${id}-hint`} />
+      <input
+        type="checkbox"
+        id={id}
+        name="marketing"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        aria-describedby={`${id}-hint`}
+      />
       <label htmlFor={id}>
         {marketingOptIn.label}
         <span className="ef-optin-hint" id={`${id}-hint`}>
@@ -84,7 +112,16 @@ export function MarketingOptIn({ id, checked, onChange }: { id: string; checked:
   )
 }
 
-const EMPTY: Enquiry = { name: '', email: '', company: '', phone: '', topics: [], message: '', website: '', marketing: false }
+const EMPTY: Enquiry = {
+  name: '',
+  email: '',
+  company: '',
+  phone: '',
+  topics: [],
+  message: '',
+  website: '',
+  marketing: false,
+}
 type Field = 'name' | 'email' | 'message'
 const FIELDS: Field[] = ['name', 'email', 'message']
 
@@ -102,7 +139,8 @@ export function EnquiryForm() {
     setData(next)
     if (k in touched) setErrors(validateEnquiry(next))
   }
-  const toggle = (t: string) => set('topics', data.topics.includes(t) ? data.topics.filter((x) => x !== t) : [...data.topics, t])
+  const toggle = (t: string) =>
+    set('topics', data.topics.includes(t) ? data.topics.filter((x) => x !== t) : [...data.topics, t])
 
   const send = async () => {
     const found = validateEnquiry(data)
@@ -164,7 +202,13 @@ export function EnquiryForm() {
         <legend className="mono">I need help with</legend>
         <div className="chip-row">
           {enquiryTopics.map((t) => (
-            <button type="button" key={t} className={`chip chip-btn${data.topics.includes(t) ? ' is-on' : ''}`} aria-pressed={data.topics.includes(t)} onClick={() => toggle(t)}>
+            <button
+              type="button"
+              key={t}
+              className={`chip chip-btn${data.topics.includes(t) ? ' is-on' : ''}`}
+              aria-pressed={data.topics.includes(t)}
+              onClick={() => toggle(t)}
+            >
               {t}
             </button>
           ))}
@@ -174,14 +218,29 @@ export function EnquiryForm() {
         <div className="ef-field">
           <label className="field" htmlFor={id('name')}>
             <span className="mono">Your name</span>
-            <input {...fieldProps('name')} autoComplete="name" required maxLength={LIMITS.name} value={data.name} onChange={(e) => set('name', e.target.value)} />
+            <input
+              {...fieldProps('name')}
+              autoComplete="name"
+              required
+              maxLength={LIMITS.name}
+              value={data.name}
+              onChange={(e) => set('name', e.target.value)}
+            />
           </label>
           {error('name')}
         </div>
         <div className="ef-field">
           <label className="field" htmlFor={id('email')}>
             <span className="mono">Email</span>
-            <input {...fieldProps('email')} type="email" autoComplete="email" required maxLength={LIMITS.email} value={data.email} onChange={(e) => set('email', e.target.value)} />
+            <input
+              {...fieldProps('email')}
+              type="email"
+              autoComplete="email"
+              required
+              maxLength={LIMITS.email}
+              value={data.email}
+              onChange={(e) => set('email', e.target.value)}
+            />
           </label>
           {error('email')}
         </div>
@@ -189,7 +248,14 @@ export function EnquiryForm() {
       <div className="ef-field">
         <label className="field" htmlFor={id('message')}>
           <span className="mono">What is slowing your team down?</span>
-          <textarea {...fieldProps('message')} rows={3} required maxLength={LIMITS.message} value={data.message} onChange={(e) => set('message', e.target.value)} />
+          <textarea
+            {...fieldProps('message')}
+            rows={3}
+            required
+            maxLength={LIMITS.message}
+            value={data.message}
+            onChange={(e) => set('message', e.target.value)}
+          />
         </label>
         {error('message')}
       </div>
@@ -198,7 +264,14 @@ export function EnquiryForm() {
       {/* Honeypot: hidden from people and screen readers; bots tend to fill every field. */}
       <div className="ef-hp" aria-hidden="true">
         <label htmlFor={id('website')}>Website</label>
-        <input id={id('website')} name="website" tabIndex={-1} autoComplete="off" value={data.website} onChange={(e) => set('website', e.target.value)} />
+        <input
+          id={id('website')}
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          value={data.website}
+          onChange={(e) => set('website', e.target.value)}
+        />
       </div>
 
       <div className="composer-foot">
@@ -206,7 +279,9 @@ export function EnquiryForm() {
           {sending ? 'Sending…' : 'Start the conversation'} <span aria-hidden="true">→</span>
         </button>
         <span className="mono composer-alt">
-          or <a href={`mailto:${brand.email}`}>{brand.email}</a> · <a href={brand.phoneHref}>{brand.phone}</a>
+          or <a href={`mailto:${brand.email}`}>{brand.email}</a>
+          <span className="ef-sep" aria-hidden="true" />
+          <a href={brand.phoneHref}>{brand.phone}</a>
         </span>
         <PrivacyNote />
       </div>

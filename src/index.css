@@ -4364,3 +4364,124 @@ main,
   }
 
 }
+
+/* ==========================================================================
+   Running outline on every card: a short light in the progress-line colours (#c6ff3d → #8b7bff) travels
+   round the card's border. Drawn on ::after with a mask, so the card's own background and backdrop-filter stay.
+   ========================================================================== */
+@property --wz-run {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+:where(
+    .glass-card,
+    .case-card,
+    .loom-card,
+    .sv-card,
+    .svc-card,
+    .nf-card,
+    .ai-card,
+    .aip-inside-card,
+    .aip-doc-card,
+    .sy-more-card,
+    .sy-module,
+    .sy-tooltile,
+    .price-card,
+    .cta-strip-card,
+    .contact-card,
+    .areas-cta,
+    .faq-ask
+  ) {
+  position: relative;
+}
+
+:is(
+    .glass-card,
+    .case-card,
+    .loom-card,
+    .sv-card,
+    .svc-card,
+    .nf-card,
+    .ai-card,
+    .aip-inside-card,
+    .aip-doc-card,
+    .sy-more-card,
+    .sy-module,
+    .sy-tooltile,
+    .price-card,
+    .cta-strip-card,
+    .contact-card,
+    .areas-cta,
+    .faq-ask
+  )::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--wz-run),
+    transparent 0deg,
+    transparent 230deg,
+    rgba(198, 255, 61, 0.9) 290deg,
+    rgba(139, 123, 255, 0.95) 345deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  pointer-events: none;
+  animation: wzRun 7s linear infinite;
+}
+
+/* Offset neighbours so the lights don't all move in step. */
+:is(.glass-card, .case-card, .loom-card, .sv-card, .svc-card, .ai-card, .sy-module, .sy-tooltile, .price-card):nth-child(3n + 2)::after {
+  animation-delay: -2.4s;
+}
+
+:is(.glass-card, .case-card, .loom-card, .sv-card, .svc-card, .ai-card, .sy-module, .sy-tooltile, .price-card):nth-child(3n)::after {
+  animation-delay: -4.8s;
+}
+
+@keyframes wzRun {
+  to {
+    --wz-run: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+      .glass-card,
+      .case-card,
+      .loom-card,
+      .sv-card,
+      .svc-card,
+      .nf-card,
+      .ai-card,
+      .aip-inside-card,
+      .aip-doc-card,
+      .sy-more-card,
+      .sy-module,
+      .sy-tooltile,
+      .price-card,
+      .cta-strip-card,
+      .contact-card,
+      .areas-cta,
+      .faq-ask
+    )::after {
+    animation: none;
+    --wz-run: 120deg;
+  }
+}
+
+@media print {
+  :is(.glass-card, .case-card, .sy-module, .sy-tooltile, .sy-more-card)::after {
+    display: none;
+  }
+}
