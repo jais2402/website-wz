@@ -6,6 +6,9 @@ uniform float uTime;
 uniform float uOrder;     // 0 = natural chaos, 1 = scrolled: chaos calmed down
 uniform vec2 uPointer;    // pointer in world units on the z=0 plane
 uniform float uPointerStrength;
+uniform vec2 uRange;      // which slice of the palette this loom uses (start, width)
+uniform vec3 uWoven;      // colour of the threads once they are ordered
+uniform float uFray;      // 0 = threads order after the loom, 1 = they stay frayed (the 404 loom)
 
 const float X0 = -15.0;
 const float X1 = 18.0;
@@ -41,7 +44,7 @@ vec3 palette(float h) {
 
 vec3 strandPos(float t, vec4 seed, float time) {
   float x = mix(X0, X1, t);
-  float env = chaosEnvelope(x) * (1.0 - uOrder * 0.75);
+  float env = max(chaosEnvelope(x), uFray * 0.8) * (1.0 - uOrder * 0.75);
 
   // Ordered position inside the bundle (uniform over a disc).
   float ang = seed.x * 6.2831853;
@@ -81,10 +84,10 @@ varying float vAlpha;
 void main() {
   vec3 p = strandPos(aT, aSeed, uTime);
   float x = p.x;
-  float env = chaosEnvelope(x);
+  float env = max(chaosEnvelope(x), uFray * 0.8);
 
-  vec3 base = palette(aSeed.z);
-  vec3 woven = mix(vec3(0.95, 0.78, 0.5), base, 0.25);       // warm gold once ordered
+  vec3 base = palette(uRange.x + aSeed.z * uRange.y);
+  vec3 woven = mix(uWoven, base, 0.25);                        // the loom's woven colour once ordered
   vec3 col = mix(woven, base, smoothstep(0.0, 0.25, env));
   float hot = exp(-pow((x - MOUTH) / 1.6, 2.0));               // white-hot at the mouth
   vColor = mix(col, vec3(1.0, 0.95, 0.88), hot * 0.6);
@@ -117,10 +120,10 @@ varying float vAlpha;
 void main() {
   float t = fract(aPhase + uTime * aSpeed);
   vec3 p = strandPos(t, aSeed, uTime);
-  float env = chaosEnvelope(p.x);
+  float env = max(chaosEnvelope(p.x), uFray * 0.8);
   float hot = exp(-pow((p.x - MOUTH) / 1.4, 2.0));
 
-  vColor = mix(mix(vec3(1.0, 0.85, 0.55), palette(aSeed.z), env), vec3(1.0), hot);
+  vColor = mix(mix(uWoven * 1.05, palette(uRange.x + aSeed.z * uRange.y), env), vec3(1.0), hot);
   vAlpha = smoothstep(0.0, 0.06, t) * (1.0 - smoothstep(0.9, 1.0, t)) * (mix(0.18, 0.7, env) + hot * 0.5);
 
   vec4 mv = modelViewMatrix * vec4(p, 1.0);

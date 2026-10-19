@@ -8,8 +8,7 @@
   z-index: 1;
   background:
     radial-gradient(45% 40% at 85% 0%, rgba(77, 159, 255, 0.12), transparent 70%),
-    radial-gradient(40% 40% at 0% 30%, rgba(139, 123, 255, 0.08), transparent 70%),
-    var(--ink);
+    radial-gradient(40% 40% at 0% 30%, rgba(139, 123, 255, 0.08), transparent 70%), var(--ink);
   overflow-x: clip;
 }
 
@@ -87,4 +86,14 @@
   .pg-title {
     font-size: clamp(2rem, 10vw, 2.6rem);
   }
+}
+
+/* The landing page's contact block, on an inner page: no panel edge. Its glows sit fully inside the section and
+   the page background shows through, so no seam appears where the block starts. */
+.pg .loom-contact {
+  background:
+    radial-gradient(50% 60% at 20% 100%, rgba(139, 123, 255, 0.2), transparent 70%),
+    radial-gradient(40% 40% at 85% 55%, rgba(140, 196, 255, 0.08), transparent 70%), transparent;
+  border-top: 0;
+  box-shadow: none;
 }

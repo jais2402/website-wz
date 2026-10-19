@@ -10,6 +10,58 @@ import { loomStore } from './store'
 
 type Quality = { strands: number; points: number; particles: number }
 
+/**
+ * Looms share one visual language but each page gets its own:
+ * - classic: the home / contact loom, multicolour threads woven into gold.
+ * - spindle: About. Rising on a diagonal, cool blue-violet threads winding up into a pale-blue weave, orbit rings.
+ * - frayed: 404. Tilted and broken, warm coral-red threads that never come together, rings knocked out of line.
+ */
+export type LoomVariant = 'classic' | 'spindle' | 'frayed'
+
+type VariantConfig = {
+  range: [number, number]
+  woven: [number, number, number]
+  fray: number
+  rotation: [number, number, number]
+  lamp: [number, number, number]
+  mouthGlow: string
+  haloGlow: string
+  light: string
+}
+
+const VARIANTS: Record<LoomVariant, VariantConfig> = {
+  classic: {
+    range: [0, 1],
+    woven: [0.95, 0.78, 0.5],
+    fray: 0,
+    rotation: [0, 0, 0],
+    lamp: [4, 3.6, 3],
+    mouthGlow: '#fff1dc',
+    haloGlow: '#7f6cff',
+    light: '#fff2df',
+  },
+  spindle: {
+    range: [0, 0.42],
+    woven: [0.62, 0.8, 1],
+    fray: 0,
+    rotation: [0, 0, 0.62],
+    lamp: [2.2, 3.2, 4.6],
+    mouthGlow: '#e4f1ff',
+    haloGlow: '#4d9fff',
+    light: '#dcecff',
+  },
+  frayed: {
+    range: [0.42, 0.44],
+    woven: [1, 0.55, 0.42],
+    fray: 1,
+    rotation: [0.18, 0.1, -0.22],
+    lamp: [4.4, 1.8, 1.2],
+    mouthGlow: '#ffe1d4',
+    haloGlow: '#ff7a59',
+    light: '#ffd9c8',
+  },
+}
+
 /** Shared uniforms are written every frame through each material's own uniforms (see CLAUDE.md, rule 4). */
 function writeCommon(u: Record<string, THREE.IUniform>, time: number, pointer: THREE.Vector2, strength: number) {
   u.uTime.value = time
@@ -18,18 +70,31 @@ function writeCommon(u: Record<string, THREE.IUniform>, time: number, pointer: T
   u.uPointerStrength.value = strength
 }
 
-function makeCommonUniforms() {
+function makeCommonUniforms(v: VariantConfig) {
   return {
     uTime: { value: 0 },
     uOrder: { value: 0 },
     uPointer: { value: new THREE.Vector2(99, 99) },
     uPointerStrength: { value: 0 },
+    uRange: { value: new THREE.Vector2(...v.range) },
+    uWoven: { value: new THREE.Color(...v.woven) },
+    uFray: { value: v.fray },
   }
 }
 
 export type LoomView = 'hero' | 'contact'
 
-function Threads({ quality, reducedMotion, view }: { quality: Quality; reducedMotion: boolean; view: LoomView }) {
+function Threads({
+  quality,
+  reducedMotion,
+  view,
+  v,
+}: {
+  quality: Quality
+  reducedMotion: boolean
+  view: LoomView
+  v: VariantConfig
+}) {
   const strandMat = useRef<THREE.ShaderMaterial>(null)
   const particleMat = useRef<THREE.ShaderMaterial>(null)
   const pointer = useRef(new THREE.Vector2(99, 99))
@@ -54,10 +119,10 @@ function Threads({ quality, reducedMotion, view }: { quality: Quality; reducedMo
     return { strandGeo, particleGeo }
   }, [quality])
 
-  const strandUniforms = useMemo(() => makeCommonUniforms(), [])
+  const strandUniforms = useMemo(() => makeCommonUniforms(v), [v])
   const particleUniforms = useMemo(
-    () => ({ ...makeCommonUniforms(), uPixelRatio: { value: Math.min(gl.getPixelRatio(), 2) } }),
-    [gl],
+    () => ({ ...makeCommonUniforms(v), uPixelRatio: { value: Math.min(gl.getPixelRatio(), 2) } }),
+    [gl, v],
   )
 
   useFrame((state, delta) => {
@@ -73,8 +138,12 @@ function Threads({ quality, reducedMotion, view }: { quality: Quality; reducedMo
     pointer.current.y = damp(pointer.current.y, (state.pointer.y * viewport.height) / 2, 6, dt)
     // The contact canvas sits under the page copy and gets no pointer events, so no thread parting there.
     const strength = reducedMotion || view === 'contact' ? 0 : 1
-    if (strandMat.current) writeCommon(strandMat.current.uniforms, time, pointer.current, strength)
-    if (particleMat.current) writeCommon(particleMat.current.uniforms, time, pointer.current, strength)
+    // Through the live materials (CLAUDE.md rule 4), including the variant's fray amount.
+    for (const m of [strandMat.current, particleMat.current]) {
+      if (!m) continue
+      writeCommon(m.uniforms, time, pointer.current, strength)
+      m.uniforms.uFray.value = v.fray
+    }
   })
 
   return (
@@ -142,7 +211,8 @@ function buildStruts(): THREE.BufferGeometry {
   return g
 }
 
-function Loom({ reducedMotion }: { reducedMotion: boolean }) {
+function Loom({ reducedMotion, variant, v }: { reducedMotion: boolean; variant: LoomVariant; v: VariantConfig }) {
+  const frayed = variant === 'frayed'
   const cage = useRef<THREE.Group>(null)
   const dish = useRef<THREE.Group>(null)
   const struts = useMemo(() => buildStruts(), [])
@@ -150,7 +220,7 @@ function Loom({ reducedMotion }: { reducedMotion: boolean }) {
   useFrame((_, delta) => {
     if (reducedMotion) return
     if (cage.current) cage.current.rotation.x += delta * 0.18
-    if (dish.current) dish.current.rotation.x -= delta * 0.35
+    if (dish.current) dish.current.rotation.x -= delta * (frayed ? 0.06 : 0.35)
   })
 
   const metal = <meshStandardMaterial color="#2b3042" metalness={0.9} roughness={0.32} emissive="#0c0f1a" />
@@ -158,28 +228,48 @@ function Loom({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <group>
       <group ref={cage}>
-        {RINGS.map((r) => (
-          <mesh key={r.x} position={[r.x, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+        {RINGS.map((r, i) => (
+          // The frayed loom's rings are knocked out of line; the others sit true.
+          <mesh
+            key={r.x}
+            position={frayed ? [r.x + i * 0.12, Math.sin(i * 1.7) * 0.32, Math.cos(i * 2.3) * 0.28] : [r.x, 0, 0]}
+            rotation={frayed ? [i % 2 ? 0.32 : -0.26, Math.PI / 2 + Math.sin(i) * 0.38, 0] : [0, Math.PI / 2, 0]}
+          >
             <torusGeometry args={[r.r, r.tube, 12, 96]} />
             {metal}
           </mesh>
         ))}
-        <lineSegments geometry={struts}>
-          <lineBasicMaterial color="#b9c0dc" transparent opacity={0.7} />
-        </lineSegments>
+        {/* The broken loom has lost its cage struts. */}
+        {!frayed && (
+          <lineSegments geometry={struts}>
+            <lineBasicMaterial color={variant === 'spindle' ? '#b8d4ff' : '#b9c0dc'} transparent opacity={0.7} />
+          </lineSegments>
+        )}
+        {/* The spindle carries two glowing orbit rings round its waist. */}
+        {variant === 'spindle' &&
+          [0, 1].map((k) => (
+            <mesh key={k} position={[2.3, 0, 0]} rotation={[k ? 0.9 : -0.9, Math.PI / 2, 0.4]}>
+              <torusGeometry args={[1.9 + k * 0.35, 0.012, 8, 128]} />
+              <meshBasicMaterial color={[1.2, 1.9, 3]} toneMapped={false} />
+            </mesh>
+          ))}
         {/* Lamps around the mouth: bright enough to bloom. */}
         {Array.from({ length: 16 }, (_, i) => {
           const a = (i / 16) * Math.PI * 2
           return (
             <mesh key={i} position={[-0.02, Math.cos(a) * 1.38, Math.sin(a) * 1.38]} rotation={[a, 0, 0]}>
               <boxGeometry args={[0.06, 0.16, 0.05]} />
-              <meshBasicMaterial color={[4, 3.6, 3]} toneMapped={false} />
+              <meshBasicMaterial color={frayed && i % 3 === 0 ? [0.4, 0.2, 0.15] : v.lamp} toneMapped={false} />
             </mesh>
           )
         })}
       </group>
 
-      <group ref={dish} position={[DISH.x, 0, 0]}>
+      <group
+        ref={dish}
+        position={[DISH.x, frayed ? -0.6 : 0, frayed ? 0.4 : 0]}
+        rotation={frayed ? [0.5, 0.3, 0.35] : [0, 0, 0]}
+      >
         <mesh rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[DISH.r, DISH.r, 0.06, 64, 1, true]} />
           {metal}
@@ -190,7 +280,10 @@ function Loom({ reducedMotion }: { reducedMotion: boolean }) {
         </mesh>
         <mesh rotation={[0, Math.PI / 2, 0]}>
           <torusGeometry args={[DISH.r * 0.55, 0.02, 8, 64]} />
-          <meshBasicMaterial color={[1.6, 1.3, 0.9]} toneMapped={false} />
+          <meshBasicMaterial
+            color={frayed ? [0.9, 0.4, 0.3] : variant === 'spindle' ? [1, 1.4, 2] : [1.6, 1.3, 0.9]}
+            toneMapped={false}
+          />
         </mesh>
         {/* Hub collar the woven timeline exits through. */}
         <mesh rotation={[0, 0, Math.PI / 2]}>
@@ -240,8 +333,9 @@ function Glow({
 }
 
 /** Contact page: a slow three-quarter orbit round the loom, with gentle parallax from the mouse anywhere on the page. */
-function ContactRig({ reducedMotion }: { reducedMotion: boolean }) {
+function ContactRig({ reducedMotion, variant }: { reducedMotion: boolean; variant: LoomVariant }) {
   const look = useRef(new THREE.Vector3())
+  const placed = useRef(false)
   const mouse = useRef({ x: 0, y: 0 })
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
@@ -257,14 +351,23 @@ function ContactRig({ reducedMotion }: { reducedMotion: boolean }) {
     const narrow = size.width < 640
     // Inner-page hero card (640–800px canvas): a little closer and centred on the loom.
     const card = !narrow && size.width < 800
-    const tx = -1.6 + sway * 0.9 + mouse.current.x * 0.7
-    const ty = 2.2 + mouse.current.y * 0.5
+    const spindle = variant === 'spindle'
+    // The spindle rises at about 35°, so the camera centres on the middle of its tilted axis.
+    const tx = (spindle ? -0.6 : -1.6) + sway * 0.9 + mouse.current.x * 0.7
+    const ty = (spindle ? 2.8 : 2.2) + mouse.current.y * 0.5
     const tz = narrow ? 12.5 : card ? 9.5 : 11
-    camera.position.x = damp(camera.position.x, tx, 2, dt)
-    camera.position.y = damp(camera.position.y, ty, 2, dt)
-    camera.position.z = damp(camera.position.z, tz, 2, dt)
     // Wide frames aim left of the loom so it rides to the right, clear of the headline.
-    look.current.set(narrow || card ? 2.4 : 0.8, narrow || card ? 0 : -0.5, 0)
+    if (spindle) look.current.set(2.2, 1.5, 0)
+    else look.current.set(narrow || card ? 2.4 : 0.8, narrow || card ? 0 : -0.5, 0)
+    // Start in place (no fly-in: the first frame's delta is 0, so set it directly), then ease with the sway and mouse.
+    if (!placed.current) {
+      camera.position.set(tx, ty, tz)
+      placed.current = true
+    } else {
+      camera.position.x = damp(camera.position.x, tx, 2, dt)
+      camera.position.y = damp(camera.position.y, ty, 2, dt)
+      camera.position.z = damp(camera.position.z, tz, 2, dt)
+    }
     camera.lookAt(look.current)
   })
   return null
@@ -301,9 +404,16 @@ function CameraRig() {
   return null
 }
 
-type SceneProps = { reducedMotion: boolean; active: boolean; onReady?: () => void; view?: LoomView }
+type SceneProps = {
+  reducedMotion: boolean
+  active: boolean
+  onReady?: () => void
+  view?: LoomView
+  variant?: LoomVariant
+}
 
-export function LoomScene({ reducedMotion, active, onReady, view = 'hero' }: SceneProps) {
+export function LoomScene({ reducedMotion, active, onReady, view = 'hero', variant = 'classic' }: SceneProps) {
+  const v = VARIANTS[variant]
   const quality = useMemo<Quality>(() => {
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
     return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 1000, points: 150, particles: 7500 }
@@ -320,17 +430,19 @@ export function LoomScene({ reducedMotion, active, onReady, view = 'hero' }: Sce
       {/* Contact page: match the page ink so the masked edges melt into it. */}
       <color attach="background" args={[view === 'contact' ? '#07070c' : '#04050c']} />
       <ambientLight intensity={0.25} />
-      <pointLight position={[-0.6, 0, 0]} color="#fff2df" intensity={60} distance={9} />
+      <pointLight position={[-0.6, 0, 0]} color={v.light} intensity={60} distance={9} />
       <pointLight position={[6, 3, 4]} color="#6f7dff" intensity={25} distance={20} />
       <pointLight position={[3, -3, -3]} color="#c6ff3d" intensity={6} distance={12} />
 
       <Glow position={[-14, 0, -12]} scale={40} color="#1a2350" opacity={0.6} />
-      <Glow position={[-0.25, 0, 0]} scale={2.8} color="#fff1dc" opacity={0.9} />
-      <Glow position={[-0.4, 0, 0]} scale={9} color="#7f6cff" opacity={0.22} />
-
-      <Threads quality={quality} reducedMotion={reducedMotion} view={view} />
-      <Loom reducedMotion={reducedMotion} />
-      {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} /> : <CameraRig />}
+      {/* Everything that belongs to the loom turns with it (the spindle stands upright, the frayed loom tilts). */}
+      <group rotation={v.rotation}>
+        <Glow position={[-0.25, 0, 0]} scale={2.8} color={v.mouthGlow} opacity={0.9} />
+        <Glow position={[-0.4, 0, 0]} scale={9} color={v.haloGlow} opacity={0.22} />
+        <Threads quality={quality} reducedMotion={reducedMotion} view={view} v={v} />
+        <Loom reducedMotion={reducedMotion} variant={variant} v={v} />
+      </group>
+      {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} variant={variant} /> : <CameraRig />}
 
       <EffectComposer multisampling={0}>
         <Bloom mipmapBlur intensity={0.85} luminanceThreshold={0.28} luminanceSmoothing={0.4} radius={0.7} />

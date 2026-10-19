@@ -2,16 +2,18 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { LoomLiteArt } from '@/components/LiteArt'
 import { useFpsWatchdog, useLite } from '@/hooks/useLite'
 import { usePrefersReducedMotion } from '@/hooks/motion'
+import type { LoomVariant } from '@/loom/LoomScene'
 import { loomStore } from '@/loom/store'
 import './heroLoom.css'
 
 const LoomScene = lazy(() => import('@/loom/LoomScene').then((m) => ({ default: m.LoomScene })))
 
 /**
- * The 3D loom from the home hero, as the visual beside an inner page's headline (PageHero `visual`).
+ * A loom beside an inner page's headline (PageHero `visual`): same language as the home hero, its own shape per
+ * page (`variant`, see LoomScene).
  * Static SVG art in lite mode; the WebGL loop pauses once the hero scrolls away.
  */
-export function HeroLoom() {
+export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
   const reducedMotion = usePrefersReducedMotion()
   const { lite, fallBack } = useLite()
   const root = useRef<HTMLDivElement>(null)
@@ -22,8 +24,8 @@ export function HeroLoom() {
   // Threads come in half-calmed: tangled on the way in, ordered once they pass through the loom.
   useEffect(() => {
     loomStore.progress = 0
-    loomStore.order = 0.45
-  }, [])
+    loomStore.order = variant === 'frayed' ? 0 : 0.45
+  }, [variant])
 
   useEffect(() => {
     const io = new IntersectionObserver(([e]) => setActive(e.isIntersecting))
@@ -40,12 +42,18 @@ export function HeroLoom() {
   }, [ready, fallBack])
 
   return (
-    <div ref={root} className={`hero-loom${ready || lite ? ' is-ready' : ''}`} aria-hidden="true">
+    <div ref={root} className={`hero-loom is-${variant}${ready || lite ? ' is-ready' : ''}`} aria-hidden="true">
       {lite ? (
         <LoomLiteArt />
       ) : (
         <Suspense fallback={null}>
-          <LoomScene view="contact" reducedMotion={reducedMotion} active={active} onReady={() => setReady(true)} />
+          <LoomScene
+            view="contact"
+            variant={variant}
+            reducedMotion={reducedMotion}
+            active={active}
+            onReady={() => setReady(true)}
+          />
         </Suspense>
       )}
     </div>

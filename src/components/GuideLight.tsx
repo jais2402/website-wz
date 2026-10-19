@@ -11,24 +11,30 @@ type Anchor = { span: () => Span | null; pos: () => Point | null }
 const rect = (sel: string) => document.querySelector(sel)?.getBoundingClientRect() ?? null
 
 /** A pinned section: the light rests on it from the moment it pins until it unpins. */
-const pinned = (sel: string): Anchor['span'] => () => {
-  const r = rect(sel)
-  return r ? { a: r.top + scrollY, b: r.bottom + scrollY - innerHeight } : null
-}
+const pinned =
+  (sel: string): Anchor['span'] =>
+  () => {
+    const r = rect(sel)
+    return r ? { a: r.top + scrollY, b: r.bottom + scrollY - innerHeight } : null
+  }
 
 /** A single point: the light rests on it when it crosses the middle of the screen. */
-const point = (pos: () => Point | null): Anchor['span'] => () => {
-  const p = pos()
-  return p ? { a: p.y + scrollY - innerHeight / 2, b: p.y + scrollY - innerHeight / 2 } : null
-}
+const point =
+  (pos: () => Point | null): Anchor['span'] =>
+  () => {
+    const p = pos()
+    return p ? { a: p.y + scrollY - innerHeight / 2, b: p.y + scrollY - innerHeight / 2 } : null
+  }
 
 const knot = () => {
   const r = rect('.weave-knot')
   return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null
 }
 
-// The empty space to the right of the proof headline.
+// The top of the woven tower beside the proof headline (falls back to the empty space right of the headline).
 const proofSpot = () => {
+  const top = rect('.proof-tower-top')
+  if (top && top.width + top.height > 0) return { x: top.left + top.width / 2, y: top.top + top.height / 2 }
   const t = rect('.proof-title')
   const w = document.querySelector('.proof-title')?.parentElement?.getBoundingClientRect()
   return t && w ? { x: w.left + w.width * 0.8, y: t.top + t.height * 0.5 } : null

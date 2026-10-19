@@ -23,7 +23,7 @@ export function NotFoundPage() {
             </a>
           </>
         }
-        visual={<HeroLoom />}
+        visual={<HeroLoom variant="frayed" />}
       />
 
       <PageSection title={p.linksTitle} className="nf-links">

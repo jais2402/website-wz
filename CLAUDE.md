@@ -27,7 +27,8 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
 - `about.html`, `ai.html`, `technology.html`, `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
   `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). Shared shell, hero, section
   and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
-  Every hero has a visual: the 3D loom (`pages/HeroLoom.tsx`, About and 404), the live dashboard (systems), the
+  Every hero has a visual: a 3D loom variant (`pages/HeroLoom.tsx` → `LoomScene variant`: `classic` for contact,
+  `spindle` (diagonal, blue, orbit rings) for About, `frayed` (broken, coral) for 404), the live dashboard (systems), the
   animated SVG (AI), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`). System pages print as
   a one-page summary (`src/pages/print.css` + print rules in `system.css`).
 - `api/enquiry.ts`: Vercel Function that emails enquiries through Resend (`RESEND_API_KEY`, see
@@ -79,7 +80,8 @@ src/
                          story, kept for reference and not rendered
   components/          ← one file per page section, in page order in App.tsx
   components/GuideLight.tsx ← the loom's white glow travelling with scroll: loom mouth → weave knot → story shape
-                         centre → beside the proof headline. Anchor maths in lib/guide.ts; the 3D scenes publish
+                         centre → top of the woven tower beside the proof headline (`ProofTower.tsx`, CSS 3D, builds
+                         on scroll). Our Work has a thread strung through a knot on every card (`lib/thread.ts`). Anchor maths in lib/guide.ts; the 3D scenes publish
                          screen positions (loomStore.mouth, sceneStore.core). Desktop only, off in lite mode.
   hooks/motion.ts      ← GSAP/ScrollTrigger registration, Lenis, scrollToTarget(), reduced-motion
   hooks/useCountUp.ts  ← count-up numbers (instant under reduced motion)

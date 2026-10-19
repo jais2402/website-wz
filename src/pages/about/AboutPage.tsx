@@ -28,7 +28,7 @@ export function AboutPage() {
             </a>
           </>
         }
-        visual={<HeroLoom />}
+        visual={<HeroLoom variant="spindle" />}
       />
 
       <PageSection title={p.whyTitle} className="ab-why">

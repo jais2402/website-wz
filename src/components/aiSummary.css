@@ -1,92 +1,89 @@
-/* Executive AI Summary (footer row) */
+/* Executive AI Summary (footer row): one slim line, bare icons, the engine name on hover / focus. */
 .ai-summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 28px 48px;
-  margin-top: 56px;
-  padding-top: 40px;
+  gap: 14px 32px;
+  margin-top: 40px;
+  padding-top: 22px;
   border-top: 1px dashed var(--line-2);
+}
+
+.ai-summary-copy {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 14px;
 }
 
 .ai-summary-copy h2 {
   font-family: var(--f-display);
-  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+  font-size: 1.05rem;
   font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
 .ai-summary-copy p {
-  margin-top: 8px;
   color: var(--muted);
-  max-width: 40ch;
-  line-height: 1.5;
+  font-size: 0.88rem;
 }
 
 .ai-summary-tiles {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 128px));
-  gap: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .ai-tile {
   position: relative;
   display: grid;
   place-items: center;
-  aspect-ratio: 1;
-  background: var(--ink-3);
-  border: 1px solid var(--line);
-  border-radius: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  opacity: 0.72;
+  filter: saturate(0.85);
   transition:
-    transform 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+    opacity 0.25s ease,
+    filter 0.25s ease,
+    transform 0.25s var(--ease-out);
 }
 
 .ai-tile svg {
-  width: 44%;
-  height: 44%;
+  width: 26px;
+  height: 26px;
 }
 
 .ai-tile:hover,
 .ai-tile:focus-visible {
-  transform: translateY(-3px);
-  border-color: rgba(77, 159, 255, 0.5);
-  box-shadow:
-    0 0 0 1px rgba(77, 159, 255, 0.18),
-    0 12px 30px -12px rgba(77, 159, 255, 0.45);
+  opacity: 1;
+  filter: saturate(1.1) drop-shadow(0 0 10px rgba(140, 196, 255, 0.35));
+  transform: translateY(-2px);
 }
 
 .ai-tile:focus-visible {
   outline: 2px solid var(--lime);
-  outline-offset: 3px;
-  border-radius: 16px;
+  outline-offset: 2px;
 }
 
-/* Engine name above the tile on hover / focus */
+/* Engine name above the icon on hover / focus */
 .ai-tile-tip {
   position: absolute;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 6px);
   left: 50%;
   transform: translate(-50%, 4px);
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 5px 9px;
+  border-radius: 7px;
   background: var(--text);
   color: var(--ink);
-  font-size: 0.68rem;
+  font-size: 0.64rem;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   transition:
     opacity 0.2s ease,
     transform 0.2s ease;
-}
-
-/* keep the edge tips inside the page on narrow screens */
-.ai-summary-tiles li:first-child .ai-tile-tip {
-  left: 0;
-  transform: translate(0, 4px);
 }
 
 .ai-summary-tiles li:last-child .ai-tile-tip {
@@ -101,26 +98,23 @@
   transform: translate(-50%, 0);
 }
 
-.ai-summary-tiles li:first-child .ai-tile:is(:hover, :focus-visible) .ai-tile-tip,
 .ai-summary-tiles li:last-child .ai-tile:is(:hover, :focus-visible) .ai-tile-tip {
   transform: none;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 640px) {
   .ai-summary {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
-  /* five across, shrinking to fit (about 60px each at 375px) */
-  .ai-summary-tiles {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 8px;
-    max-width: 560px;
+  .ai-summary-tiles li:first-child .ai-tile-tip {
+    left: 0;
+    transform: translate(0, 4px);
   }
 
-  .ai-tile {
-    border-radius: 14px;
+  .ai-summary-tiles li:first-child .ai-tile:is(:hover, :focus-visible) .ai-tile-tip {
+    transform: none;
   }
 }
 

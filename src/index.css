@@ -4062,3 +4062,84 @@ main,
 .faq-ask-actions .btn {
   overflow-wrap: anywhere;
 }
+
+/* Our Work thread: strung from the intro through a knot on every card, drawn in by the sideways scroll. */
+.work-row {
+  position: relative;
+}
+
+.work-thread {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 0;
+}
+
+.work-intro,
+.work-cards {
+  position: relative;
+  z-index: 1;
+}
+
+.work-thread path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.work-thread-base {
+  stroke: rgba(140, 196, 255, 0.14);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 7;
+}
+
+.work-thread-live {
+  stroke: url(#work-thread-grad);
+  stroke-width: 2;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0.88;
+  filter: drop-shadow(0 0 6px rgba(77, 159, 255, 0.7));
+}
+
+.case-knot {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  border: 1.5px solid rgba(140, 196, 255, 0.45);
+  transition:
+    background 0.4s,
+    box-shadow 0.4s,
+    border-color 0.4s;
+}
+
+.case-knot.is-lit {
+  background: #8cc4ff;
+  border-color: #fff;
+  box-shadow: 0 0 14px 4px rgba(77, 159, 255, 0.6);
+}
+
+.case-card-next .case-knot {
+  display: none;
+}
+
+/* Phones (vertical deck) and reduced motion: no thread; knots sit lit as a quiet accent. */
+@media (max-width: 899px), (prefers-reduced-motion: reduce) {
+  .work-thread {
+    display: none;
+  }
+
+  .case-knot {
+    display: none;
+  }
+}
+
+/* The woven tower is positioned against the headline block. */
+.proof-wrap {
+  position: relative;
+}

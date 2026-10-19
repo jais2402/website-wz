@@ -2,6 +2,7 @@ import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
 import { stats, tools } from '@/content/site'
 import { gsap } from '@/hooks/motion'
+import { ProofTower } from './ProofTower'
 import { SplitReveal } from './Reveal'
 
 export function Marquee({ items, reverse = false }: { items: readonly string[]; reverse?: boolean }) {
@@ -12,7 +13,9 @@ export function Marquee({ items, reverse = false }: { items: readonly string[]; 
       <div className="marquee-track">
         {doubled.map((t, i) => (
           <span className="marquee-item" key={i} aria-hidden={i >= items.length}>
-            <i className="marquee-star" aria-hidden="true">✦</i>
+            <i className="marquee-star" aria-hidden="true">
+              ✦
+            </i>
             {t}
           </span>
         ))}
@@ -53,8 +56,13 @@ export function Proof() {
         <Marquee items={[...tools].reverse()} reverse />
       </div>
 
-      <div className="wrap">
-        <SplitReveal as="h2" className="display proof-title" text="Twelve years of building software for growing businesses." />
+      <div className="wrap proof-wrap">
+        <SplitReveal
+          as="h2"
+          className="display proof-title"
+          text="Twelve years of building software for growing businesses."
+        />
+        <ProofTower />
         <div className="stats">
           {stats.map((s) => (
             <div className="stat" key={s.label}>
