@@ -13,13 +13,14 @@ export const brand = {
   url: 'https://www.wezigns.com',
 }
 
+// Header: every page is one click away. Questions (#faq) stays in the footer and on the home page.
 export const nav = [
   { label: 'Systems', href: '/systems/people' },
-  { label: 'Work', href: '#work' },
   { label: 'AI', href: '/ai' },
+  { label: 'Technology', href: '/technology' },
+  { label: 'Work', href: '#work' },
   { label: 'How pricing works', href: '#pricing' },
   { label: 'About', href: '/about' },
-  { label: 'Questions', href: '#faq' },
 ]
 
 // The "Systems" nav item opens this menu. Order matches `areas` and the /systems/* pages.
@@ -601,4 +602,33 @@ export const technologyPage = {
     { title: 'The right model for the job', text: 'Hosted models such as OpenAI, Claude or Gemini, or open-source models where data must stay in your own cloud.' },
     { title: 'People approve, everything is logged', text: 'Key decisions wait for a person. Every AI action is recorded.' },
   ],
+}
+
+// Calls to action placed where a visitor is ready to act. `contact` is the shared primary action.
+export const ctas = {
+  contact: { label: 'Tell us what is not working', href: '/contact' },
+  hero: { secondary: { label: 'See our work', href: '#work' } },
+  aiDemo: { label: 'See how we use AI', href: '/ai' },
+  integrations: { label: 'See our full stack', href: '/technology' },
+  faq: { title: 'Still have a question?', body: 'Call or email us. We reply within one working day.', call: 'Call' },
+  system: {
+    title: 'Want this for your team?',
+    body: 'We map how your team works today, then give you one price and one timeline before anything is built.',
+    secondary: { label: 'How pricing works', href: '/#pricing' },
+  },
+  ai: {
+    title: 'Which job would you hand to AI first?',
+    body: 'Tell us the task. We test AI on your own past cases before anyone relies on it.',
+    secondary: { label: 'See our AI stack', href: '/technology' },
+  },
+  technology: {
+    title: 'Not sure which stack fits?',
+    body: 'Tell us what the system has to do. We choose the stack around it and explain why.',
+    secondary: { label: 'Explore the systems', href: '/systems/people' },
+  },
+  about: {
+    title: 'Work with a team that has been building since 2012.',
+    body: 'Tell us what is slowing your team down. We reply within one working day.',
+    secondary: { label: 'See our work', href: '/#work' },
+  },
 }

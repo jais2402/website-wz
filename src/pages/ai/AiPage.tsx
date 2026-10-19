@@ -2,6 +2,8 @@ import { useGSAP } from '@gsap/react'
 import { type MouseEvent, type ReactNode, useRef } from 'react'
 import { aiPage } from '@/content/pages'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
+import { CtaStrip } from '@/components/CtaStrip'
+import { ctas } from '@/content/site'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
 import './ai.css'
@@ -37,6 +39,7 @@ export function AiPage() {
       <Ways />
       <Inside />
       <Solutions />
+      <CtaStrip {...ctas.ai} />
       <How />
       <LoomContact />
     </PageShell>

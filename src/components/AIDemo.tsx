@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ai } from '@/content/site'
+import { ai, ctas } from '@/content/site'
 import { SplitReveal } from './Reveal'
 
 const SUGGESTION =
@@ -25,12 +25,15 @@ export function AIDemo() {
 
   // Start typing once the demo scrolls into view.
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        setRun((r) => (r === 'idle' ? 'running' : r))
-        io.disconnect()
-      }
-    }, { threshold: 0.4 })
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setRun((r) => (r === 'idle' ? 'running' : r))
+          io.disconnect()
+        }
+      },
+      { threshold: 0.4 },
+    )
     if (root.current) io.observe(root.current)
     return () => io.disconnect()
   }, [])
@@ -59,6 +62,9 @@ export function AIDemo() {
               </li>
             ))}
           </ul>
+          <a className="btn btn-ink section-link" href={ctas.aiDemo.href}>
+            {ctas.aiDemo.label} <span aria-hidden="true">→</span>
+          </a>
         </div>
 
         <div className="ai-app" ref={root}>

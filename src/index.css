@@ -4022,3 +4022,43 @@ main,
     text-align: center;
   }
 }
+
+/* ==========================================================================
+   Section calls to action on the home page (AI demo, integrations, FAQ)
+   ========================================================================== */
+.section-link {
+  margin-top: 28px;
+}
+
+.faq-ask {
+  display: grid;
+  gap: 10px;
+  margin-top: 36px;
+  padding: 24px;
+  max-width: 420px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--ink-3);
+}
+
+.faq-ask-title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+}
+
+.faq-ask-body {
+  color: var(--muted);
+}
+
+.faq-ask-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.faq-ask-actions .btn {
+  overflow-wrap: anywhere;
+}

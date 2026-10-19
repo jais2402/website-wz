@@ -1,4 +1,4 @@
-import { integrations, integrationsSection } from '@/content/site'
+import { ctas, integrations, integrationsSection } from '@/content/site'
 import { LogoMark } from './Logo'
 import { SplitReveal } from './Reveal'
 
@@ -12,6 +12,9 @@ export function Integrations() {
         <div>
           <SplitReveal as="h2" className="display" text={integrationsSection.title} />
           <p className="lead">{integrationsSection.body}</p>
+          <a className="btn btn-ghost section-link" href={ctas.integrations.href}>
+            {ctas.integrations.label} <span aria-hidden="true">→</span>
+          </a>
         </div>
         <div className="orbit" aria-label={`Integrations: ${integrations.join(', ')}`}>
           <div className="orbit-core">

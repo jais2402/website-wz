@@ -1,0 +1,49 @@
+/* Mid-page call to action (components/CtaStrip.tsx). */
+.cta-strip {
+  padding-top: clamp(16px, 3vw, 32px);
+  padding-bottom: clamp(16px, 3vw, 32px);
+}
+
+.cta-strip-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px 40px;
+  flex-wrap: wrap;
+  padding: clamp(24px, 3.4vw, 40px) clamp(22px, 3.6vw, 48px);
+  border-radius: var(--radius);
+  border: 1px solid rgba(77, 159, 255, 0.28);
+  background: radial-gradient(70% 140% at 100% 50%, rgba(37, 99, 235, 0.22), transparent 70%), var(--ink-3);
+}
+
+.cta-strip-copy {
+  display: grid;
+  gap: 8px;
+  max-width: 56ch;
+  min-width: 0;
+}
+
+.cta-strip-title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.cta-strip-body {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.cta-strip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media print {
+  .cta-strip {
+    display: none;
+  }
+}

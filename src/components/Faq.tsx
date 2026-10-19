@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { faq } from '@/content/site'
+import { brand, ctas, faq } from '@/content/site'
 import { SplitReveal } from './Reveal'
 
 export function Faq() {
@@ -9,6 +9,18 @@ export function Faq() {
       <div className="wrap faq-grid">
         <div>
           <SplitReveal as="h2" className="display" text="Straight answers." />
+          <div className="faq-ask">
+            <p className="faq-ask-title">{ctas.faq.title}</p>
+            <p className="faq-ask-body">{ctas.faq.body}</p>
+            <div className="faq-ask-actions">
+              <a className="btn btn-lime" href={brand.phoneHref}>
+                {ctas.faq.call} {brand.phone}
+              </a>
+              <a className="btn btn-ghost" href={`mailto:${brand.email}`}>
+                {brand.email}
+              </a>
+            </div>
+          </div>
         </div>
         <div className="faq-list">
           {faq.map((f, i) => {

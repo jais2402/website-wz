@@ -160,3 +160,15 @@
     translate: none;
   }
 }
+
+/* The page being viewed: a quiet blue pill in the bar, a blue label in the menus. */
+.nav-links > a[aria-current='page'],
+.nav-drop-trigger.is-current {
+  color: var(--text);
+  background: rgba(77, 159, 255, 0.14);
+}
+
+.nav-menu-panel a[aria-current='page'],
+.nav-sheet a[aria-current='page'] {
+  color: #8cc4ff;
+}

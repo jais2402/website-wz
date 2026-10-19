@@ -2,9 +2,9 @@ import { useGSAP } from '@gsap/react'
 import { type CSSProperties, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
 import { LoomLiteArt } from '@/components/LiteArt'
-import { loom, navSystems } from '@/content/site'
+import { ctas, loom, navSystems } from '@/content/site'
 import { useLite } from '@/hooks/useLite'
-import { gsap, ScrollTrigger } from '@/hooks/motion'
+import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { loomStore } from './store'
 
 // The time-loom hero and the "weave" in/out section. Used by the main site (index.html) and the loom page.
@@ -78,9 +78,7 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
         </div>
 
         <div className={`loom-intro${phase >= 0 ? ' is-gone' : ''}`}>
-          <p className="mono loom-eyebrow loom-fade">
-            {loom.eyebrow}
-          </p>
+          <p className="mono loom-eyebrow loom-fade">{loom.eyebrow}</p>
           <h1 className="loom-title">
             {loom.title.map((l, i) => (
               <span className="loom-line" key={l}>
@@ -89,6 +87,21 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
             ))}
           </h1>
           <p className="loom-sub loom-fade">{loom.sub}</p>
+          <div className="loom-actions loom-fade">
+            <a className="btn btn-lime" href={ctas.contact.href}>
+              {ctas.contact.label} <span aria-hidden="true">→</span>
+            </a>
+            <a
+              className="btn btn-ghost"
+              href={ctas.hero.secondary.href}
+              onClick={(e) => {
+                e.preventDefault()
+                scrollToTarget(ctas.hero.secondary.href)
+              }}
+            >
+              {ctas.hero.secondary.label}
+            </a>
+          </div>
           {/* Straight to the system pages; one swipeable row on phones. */}
           <nav className="loom-systems loom-fade" aria-label={loom.systemsLine}>
             <span className="mono loom-systems-label">{loom.systemsLine}</span>
@@ -113,7 +126,6 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
             </article>
           ))}
         </div>
-
       </div>
     </section>
   )
@@ -154,7 +166,13 @@ export function Weave() {
         gsap.set(heap, { rotate: (i: number) => HEAP[i % HEAP.length][2] })
         gsap
           .timeline({
-            scrollTrigger: { trigger: '.weave-grid', start: 'top 70%', end: 'bottom 85%', scrub: 0.8, invalidateOnRefresh: true },
+            scrollTrigger: {
+              trigger: '.weave-grid',
+              start: 'top 70%',
+              end: 'bottom 85%',
+              scrub: 0.8,
+              invalidateOnRefresh: true,
+            },
           })
           .to(heap, {
             x: (_, el) => toKnot(el, 'x'),
@@ -168,7 +186,11 @@ export function Weave() {
           })
           .to(knot, { scale: 1.8, duration: 0.3, ease: 'power2.out' }, '-=0.4')
           .to(knot, { scale: 1, duration: 0.4, ease: 'power2.inOut' })
-          .from('.weave-out li', { y: -24, opacity: 0, scale: 0.9, duration: 0.6, stagger: 0.14, ease: 'back.out(1.6)' }, '-=0.5')
+          .from(
+            '.weave-out li',
+            { y: -24, opacity: 0, scale: 0.9, duration: 0.6, stagger: 0.14, ease: 'back.out(1.6)' },
+            '-=0.5',
+          )
       })
       return () => mm.revert()
     },
@@ -194,11 +216,25 @@ export function Weave() {
           <svg className="weave-svg" viewBox="0 0 400 400" preserveAspectRatio="none" aria-hidden="true">
             {loom.threadsIn.map((_, i) => {
               const y = 25 + i * (350 / (loom.threadsIn.length - 1))
-              return <path key={`i${i}`} d={`M0 ${y} C 120 ${y}, 140 200, 200 200`} className="weave-thread" style={{ animationDelay: `${i * -0.3}s` }} />
+              return (
+                <path
+                  key={`i${i}`}
+                  d={`M0 ${y} C 120 ${y}, 140 200, 200 200`}
+                  className="weave-thread"
+                  style={{ animationDelay: `${i * -0.3}s` }}
+                />
+              )
             })}
             {loom.threadsOut.map((_, i) => {
               const y = 40 + i * (320 / (loom.threadsOut.length - 1))
-              return <path key={`o${i}`} d={`M200 200 C 260 200, 280 ${y}, 400 ${y}`} className="weave-thread is-out" style={{ animationDelay: `${i * -0.25}s` }} />
+              return (
+                <path
+                  key={`o${i}`}
+                  d={`M200 200 C 260 200, 280 ${y}, 400 ${y}`}
+                  className="weave-thread is-out"
+                  style={{ animationDelay: `${i * -0.25}s` }}
+                />
+              )
             })}
             <circle cx="200" cy="200" r="16" className="weave-knot" />
           </svg>

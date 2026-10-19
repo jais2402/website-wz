@@ -78,6 +78,20 @@
     filter 0.8s;
 }
 
+.loom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+/* Phones: the nav button and the floating call pill already carry the contact action; keep the panel short. */
+@media (max-width: 640px) {
+  .loom-actions .btn-ghost {
+    display: none;
+  }
+}
+
 .loom-intro.is-gone {
   opacity: 0;
   transform: translateY(-40px);

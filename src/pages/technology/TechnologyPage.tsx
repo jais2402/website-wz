@@ -1,7 +1,8 @@
 import { useGSAP } from '@gsap/react'
 import { type CSSProperties, useRef } from 'react'
-import { stack, technologyPage as p } from '@/content/site'
+import { ctas, stack, technologyPage as p } from '@/content/site'
 import { ScrollTrigger, scrollToTarget } from '@/hooks/motion'
+import { CtaStrip } from '@/components/CtaStrip'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
 import '../print.css'
@@ -17,8 +18,8 @@ export function TechnologyPage() {
         lead={p.lead}
         actions={
           <>
-            <a className="btn btn-lime btn-lg" href="/contact">
-              Tell us what is not working <span aria-hidden="true">→</span>
+            <a className="btn btn-lime btn-lg" href={ctas.contact.href}>
+              {ctas.contact.label} <span aria-hidden="true">→</span>
             </a>
             <a
               className="btn btn-ghost btn-lg"
@@ -54,6 +55,8 @@ export function TechnologyPage() {
       <PageSection title={p.layersTitle} className="tech-arch">
         <Layers />
       </PageSection>
+
+      <CtaStrip {...ctas.technology} />
 
       <PageSection title={p.aiTitle} className="tech-ai">
         <ul className="tech-ai-grid">

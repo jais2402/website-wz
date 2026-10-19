@@ -2,8 +2,9 @@ import { useGSAP } from '@gsap/react'
 import { useEffect, useRef, useState } from 'react'
 import { CountUp } from '@/components/Charts'
 import { aboutPage } from '@/content/pages'
-import { process, stats } from '@/content/site'
+import { ctas, process, stats } from '@/content/site'
 import { gsap } from '@/hooks/motion'
+import { CtaStrip } from '@/components/CtaStrip'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
 import './about.css'
@@ -46,6 +47,8 @@ export function AboutPage() {
       <PageSection title={p.numbersTitle} className="ab-numbers">
         <Numbers />
       </PageSection>
+
+      <CtaStrip {...ctas.about} />
 
       <PageSection title={p.processTitle} className="ab-process">
         <ol className="ab-steps">

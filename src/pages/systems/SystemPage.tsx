@@ -3,8 +3,9 @@ import { useRef } from 'react'
 import { CountUp, ModuleCard } from '@/components/Charts'
 import { SplitReveal } from '@/components/Reveal'
 import { type SystemPage as Page, type Voice, systemsSection as copy } from '@/content/pages'
-import { type Area, type Chart, areas, brand, sampleDataLabel, workSection } from '@/content/site'
+import { type Area, type Chart, areas, brand, ctas, sampleDataLabel, workSection } from '@/content/site'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
+import { CtaStrip } from '@/components/CtaStrip'
 import { LoomContact } from '@/loom/sections'
 import '../print.css'
 import { PageHero, PageSection, PageShell } from '../shell'
@@ -135,6 +136,8 @@ function System({ page }: { page: Page }) {
           </div>
         )}
       </PageSection>
+
+      <CtaStrip {...ctas.system} />
 
       <PageSection title={copy.toolsTitle} className="sy-tools">
         <dl className="sy-tool-rows">
