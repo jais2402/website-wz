@@ -5,9 +5,11 @@ import { loomStore } from '@/loom/store'
 
 const LoomScene = lazy(() => import('@/loom/LoomScene').then((m) => ({ default: m.LoomScene })))
 
-/** The loom from the home hero, framed on its own beside the contact headline. Static SVG art in lite mode. */
+/** The loom from the home hero, framed on its own beside the contact headline. Static SVG art on the static tier, the light loom on lite. */
 export function ContactLoom({ reducedMotion }: { reducedMotion: boolean }) {
-  const { lite, fallBack } = useLite()
+  const { tier, demote } = useLite()
+  // Static: code-drawn art, no WebGL. Lite: the light loom (software renderers). Full: the full loom.
+  const art = tier === 'static'
   const root = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
@@ -31,20 +33,26 @@ export function ContactLoom({ reducedMotion }: { reducedMotion: boolean }) {
     // A real GPU loss happens on a canvas still on the page; our own unmount (off screen) also fires this event,
     // on a canvas that has already been removed, and must not demote the page.
     const onLost = () => {
-      if (canvas.isConnected) fallBack('WebGL context lost')
+      if (canvas.isConnected) demote(tier === 'full' ? 'lite' : 'static', 'WebGL context lost')
     }
     canvas.addEventListener('webglcontextlost', onLost)
     return () => canvas.removeEventListener('webglcontextlost', onLost)
-  }, [ready, fallBack])
+  }, [ready, demote, tier])
 
   return (
-    <div ref={root} className={`cp-loom${ready || lite ? ' is-ready' : ''}`} aria-hidden="true">
-      {lite ? (
+    <div ref={root} className={`cp-loom${ready || art ? ' is-ready' : ''}`} aria-hidden="true">
+      {art ? (
         <LoomLiteArt />
       ) : (
         active && (
           <Suspense fallback={null}>
-            <LoomScene view="contact" reducedMotion={reducedMotion} active={active} onReady={() => setReady(true)} />
+            <LoomScene
+              light={tier === 'lite'}
+              view="contact"
+              reducedMotion={reducedMotion}
+              active={active}
+              onReady={() => setReady(true)}
+            />
           </Suspense>
         )
       )}

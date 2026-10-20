@@ -1240,3 +1240,14 @@
 .office-links a:hover {
   text-decoration-color: currentColor;
 }
+
+/* Light loom (perf-lite): no vignette pass in WebGL, so one static CSS vignette does the same job. */
+html.perf-lite .loom-canvas::after,
+html.perf-lite .hero-loom::after,
+html.perf-lite .cp-loom::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 75% 70% at 55% 45%, transparent 40%, rgba(4, 5, 12, 0.7) 100%);
+}

@@ -4797,7 +4797,9 @@ html:is(.perf-lite, .perf-static) :is(
     .sticky-call,
     .fragment
   ) {
-  background: var(--ink-3) !important;
+  /* The glass highlight without the blur: a faint sheen over a near-opaque ink fill. */
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.01) 55%), rgba(19, 19, 29, 0.94) !important;
 }
 
 html:is(.perf-lite, .perf-static) .nav.is-scrolled,

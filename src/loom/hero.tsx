@@ -16,7 +16,9 @@ const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.Loo
 
 /** Pinned hero: scroll flies the camera into the loom while the copy steps through three phases. */
 export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean; introReady: boolean }) {
-  const { lite, fallBack } = useLite()
+  const { tier, demote } = useLite()
+  // Static: code-drawn art, no WebGL. Lite: the light loom (software renderers). Full: the full loom.
+  const art = tier === 'static'
   const root = useRef<HTMLElement>(null)
   const [phase, setPhase] = useState(-1)
   const [active, setActive] = useState(true)
@@ -29,11 +31,11 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
     // A real GPU loss happens on a canvas still on the page; our own unmount (off screen) also fires this event,
     // on a canvas that has already been removed, and must not demote the page.
     const onLost = () => {
-      if (canvas.isConnected) fallBack('WebGL context lost')
+      if (canvas.isConnected) demote(tier === 'full' ? 'lite' : 'static', 'WebGL context lost')
     }
     canvas.addEventListener('webglcontextlost', onLost)
     return () => canvas.removeEventListener('webglcontextlost', onLost)
-  }, [ready, fallBack])
+  }, [ready, demote, tier])
 
   // Unmount the WebGL loom when the hero is fully off screen (and tell the fixed canvas it may mount).
   useEffect(() => {
@@ -79,14 +81,15 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   return (
     <section id="top" ref={root} className="loom-hero" aria-label={loom.title.join(' ')}>
       <div className="loom-sticky">
-        <div className={`loom-canvas${ready || lite ? ' is-ready' : ''}`} aria-hidden="true">
-          {lite ? (
+        <div className={`loom-canvas${ready || art ? ' is-ready' : ''}`} aria-hidden="true">
+          {art ? (
             <LoomLiteArt />
           ) : (
             // Mounted only while the hero is on screen: one WebGL context at a time on the page.
             active && (
               <Suspense fallback={null}>
                 <LoomScene
+                  light={tier === 'lite'}
                   reducedMotion={reducedMotion}
                   active={active}
                   onReady={() => {

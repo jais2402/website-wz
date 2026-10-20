@@ -36,18 +36,17 @@ const Scene = lazy(() => import('@/scene/Scene').then((m) => ({ default: m.Scene
  */
 export default function App() {
   const reducedMotion = usePrefersReducedMotion()
-  const { lite } = useLite()
+  const { lite, tier } = useLite()
   const [ready, setReady] = useState(false)
   useSmoothScroll(!reducedMotion)
   // /#faq and the other home-section links from inner pages land on their section once the page is laid out.
   useHashScroll(ready)
   usePauseOffscreen()
-  // Without WebGL there is no 3D to wait for.
+  // Lite runs only the light loom (no story/globe canvas); static has no WebGL at all.
   useEffect(() => {
-    if (!lite) return
-    homeGate?.done('loom')
-    homeGate?.done('scene')
-  }, [lite])
+    if (tier !== 'full') homeGate?.done('scene')
+    if (tier === 'static') homeGate?.done('loom')
+  }, [tier])
 
   return (
     <>

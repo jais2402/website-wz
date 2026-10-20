@@ -11,11 +11,13 @@ const LoomScene = lazy(() => import('@/loom/LoomScene').then((m) => ({ default: 
 /**
  * A loom beside an inner page's headline (PageHero `visual`): same language as the home hero, its own shape per
  * page (`variant`, see LoomScene).
- * Static SVG art in lite mode; the WebGL loop pauses once the hero scrolls away.
+ * Static SVG art on the static tier, the light loom on lite; the WebGL loop pauses once the hero scrolls away.
  */
 export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
   const reducedMotion = usePrefersReducedMotion()
-  const { lite, fallBack } = useLite()
+  const { tier, demote } = useLite()
+  // Static: code-drawn art, no WebGL. Lite: the light loom (software renderers). Full: the full loom.
+  const art = tier === 'static'
   const root = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
@@ -38,20 +40,21 @@ export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
     // A real GPU loss happens on a canvas still on the page; our own unmount (off screen) also fires this event,
     // on a canvas that has already been removed, and must not demote the page.
     const onLost = () => {
-      if (canvas.isConnected) fallBack('WebGL context lost')
+      if (canvas.isConnected) demote(tier === 'full' ? 'lite' : 'static', 'WebGL context lost')
     }
     canvas.addEventListener('webglcontextlost', onLost)
     return () => canvas.removeEventListener('webglcontextlost', onLost)
-  }, [ready, fallBack])
+  }, [ready, demote, tier])
 
   return (
-    <div ref={root} className={`hero-loom is-${variant}${ready || lite ? ' is-ready' : ''}`} aria-hidden="true">
-      {lite ? (
+    <div ref={root} className={`hero-loom is-${variant}${ready || art ? ' is-ready' : ''}`} aria-hidden="true">
+      {art ? (
         <LoomLiteArt />
       ) : (
         active && (
           <Suspense fallback={null}>
             <LoomScene
+              light={tier === 'lite'}
               view="contact"
               variant={variant}
               reducedMotion={reducedMotion}
