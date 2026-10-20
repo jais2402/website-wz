@@ -4,6 +4,7 @@ import { Bloom, EffectComposer, Vignette } from '@react-three/postprocessing'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { buildParticles, buildStrands } from '@/lib/loom'
+import { useBudgetDpr } from '@/hooks/useBudgetDpr'
 import { damp } from '@/lib/math'
 import { glowFragment, glowVertex, particleFragment, particleVertex, strandFragment, strandVertex } from './shaders'
 import { Warmup } from '@/scene/Warmup'
@@ -419,14 +420,17 @@ export function LoomScene({ reducedMotion, active, onReady, view = 'hero', varia
   const v = VARIANTS[variant]
   const quality = useMemo<Quality>(() => {
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
-    return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 1000, points: 150, particles: 7500 }
+    return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 800, points: 140, particles: 5600 }
   }, [])
+
+  const dpr = useBudgetDpr()
 
   return (
     <Canvas
-      dpr={[1, 2]}
+      dpr={dpr}
       camera={{ position: [-1.2, 0.6, 14], fov: 40, near: 0.1, far: 100 }}
-      gl={{ antialias: true, powerPreference: 'high-performance' }}
+      // No MSAA: post-processing renders to its own target, so canvas antialiasing only cost GPU time.
+      gl={{ antialias: false, powerPreference: 'high-performance' }}
       frameloop={active ? 'always' : 'never'}
     >
       {/* Contact page: match the page ink so the masked edges melt into it. */}
@@ -449,7 +453,15 @@ export function LoomScene({ reducedMotion, active, onReady, view = 'hero', varia
       {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} variant={variant} /> : <CameraRig />}
 
       <EffectComposer multisampling={0}>
-        <Bloom mipmapBlur intensity={0.85} luminanceThreshold={0.28} luminanceSmoothing={0.4} radius={0.7} />
+        <Bloom
+          mipmapBlur
+          levels={6}
+          resolutionScale={0.5}
+          intensity={0.85}
+          luminanceThreshold={0.28}
+          luminanceSmoothing={0.4}
+          radius={0.7}
+        />
         <Vignette eskil={false} offset={0.2} darkness={0.75} />
       </EffectComposer>
     </Canvas>

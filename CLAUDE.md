@@ -46,6 +46,8 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   (contact over the particle globe). They are not rendered.
 - The home preloader waits for `homeGate` (`lib/loadGate.ts`): fonts, window load, and both canvases reporting via
   `scene/Warmup.tsx` (shaders compiled + first frames drawn). It opens after 12 s regardless.
+- 3D render budget (`lib/render.ts`, `hooks/useBudgetDpr.ts`): each canvas renders at most ~1.6M pixels and
+  the browser scales it up; bloom runs at half resolution. Built for laptops without a dedicated GPU: keep it.
 - Two WebGL canvases share the page: the loom hero (in its sticky section) and the fixed canvas (story threads +
   countries globe, with bloom on desktop).
   Each pauses itself when off screen; keep it that way.

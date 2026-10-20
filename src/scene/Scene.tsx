@@ -1,6 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { Component, type ReactNode, useEffect, useState } from 'react'
+import { useBudgetDpr } from '@/hooks/useBudgetDpr'
 import { damp } from '@/lib/math'
 import { homeGate } from '@/lib/loadGate'
 import { sceneStore } from '@/lib/sceneStore'
@@ -42,6 +43,7 @@ function useIsMobile() {
  */
 export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   const mobile = useIsMobile()
+  const dpr = useBudgetDpr()
   const [active, setActive] = useState(true)
   // Keeps rendering until the shaders are compiled and drawn once, even before a 3D zone is on screen.
   const [warm, setWarm] = useState(false)
@@ -69,7 +71,7 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
       <WebGLBoundary>
         <Canvas
           frameloop={active || !warm ? 'always' : 'never'}
-          dpr={[1, mobile ? 1.5 : 2]}
+          dpr={dpr}
           camera={{ position: [0, 0, 7.5], fov: 45, near: 0.1, far: 60 }}
           gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
         >
@@ -82,14 +84,22 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
           <CameraRig />
           <Dust count={mobile ? 425 : 1190} />
           <ThreadField
-            quality={mobile ? { strands: 320, points: 90, riders: 1600 } : { strands: 760, points: 130, riders: 4200 }}
+            quality={mobile ? { strands: 320, points: 90, riders: 1600 } : { strands: 640, points: 120, riders: 3000 }}
             reducedMotion={reducedMotion}
           />
           <Globe dots={mobile ? 1400 : 2600} reducedMotion={reducedMotion} />
           {/* Loom-style glow on desktop; phones skip post-processing to keep frame rates up. */}
           {!mobile && (
             <EffectComposer multisampling={0}>
-              <Bloom mipmapBlur intensity={0.55} luminanceThreshold={0.32} luminanceSmoothing={0.4} radius={0.65} />
+              <Bloom
+                mipmapBlur
+                levels={6}
+                resolutionScale={0.5}
+                intensity={0.55}
+                luminanceThreshold={0.32}
+                luminanceSmoothing={0.4}
+                radius={0.65}
+              />
             </EffectComposer>
           )}
         </Canvas>
