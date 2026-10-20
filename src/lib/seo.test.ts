@@ -210,7 +210,7 @@ describe('jsonLd', () => {
         address: { '@type': 'PostalAddress', postalCode: '600092', addressLocality: 'Chennai', addressCountry: 'IN' },
       })
       expect(org.areaServed).toHaveLength(11)
-      expect(org).not.toHaveProperty('sameAs') // empty until the client supplies profiles
+      expect(org.sameAs).toEqual(site.sameAs)
     }
   })
 
@@ -340,20 +340,34 @@ describe('llmsTxt', () => {
   })
 })
 
-describe('social profiles (placeholders until the client fills them in)', () => {
+describe('social profiles', () => {
   const orgOf = (s: typeof site) =>
     (jsonLd(page('home'), s, seoData)['@graph'] as Record<string, unknown>[]).find((n) => typeIn(n, 'Organization'))!
 
-  it('leaves sameAs and twitter:site out while every slot is empty', () => {
-    expect(Object.values(site.social).every((v) => v === '')).toBe(true)
-    expect(orgOf(site).sameAs).toBeUndefined()
+  it('lists the company profiles as sameAs and leaves twitter:site out without a handle', () => {
+    expect(orgOf(site).sameAs).toEqual([
+      'https://www.linkedin.com/company/wezigns/',
+      'https://www.instagram.com/wezigns',
+      'https://www.facebook.com/wezigns',
+    ])
     expect(headTags(page('home'), site, seoData).join('\n')).not.toContain('twitter:site')
+  })
+
+  it('leaves sameAs out when no profile is set', () => {
+    const empty = {
+      ...site,
+      social: Object.fromEntries(Object.keys(site.social).map((k) => [k, ''])) as typeof site.social,
+      get sameAs(): string[] {
+        return Object.values(this.social).filter(Boolean)
+      },
+    }
+    expect(orgOf(empty).sameAs).toBeUndefined()
   })
 
   it('emits the filled profiles as sameAs and the handle as twitter:site', () => {
     const filled = {
       ...site,
-      social: { ...site.social, linkedin: 'https://www.linkedin.com/company/wezigns' },
+      social: { ...site.social, instagram: '', facebook: '', linkedin: 'https://www.linkedin.com/company/wezigns' },
       twitterHandle: 'wezigns',
       get sameAs(): string[] {
         return Object.values(this.social).filter(Boolean)

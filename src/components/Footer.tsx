@@ -1,4 +1,4 @@
-import { brand, countries, footer, footerCopy, legalLinks } from '@/content/site'
+import { brand, countries, footer, footerCopy, legalLinks, socials, whatsappHref } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
 import { AiSummary } from './AiSummary'
 import { CookieSettingsButton } from './CookieBanner'
@@ -14,6 +14,22 @@ export function Footer({ base = '' }: { base?: string }) {
             <Logo />
             <p>{footerCopy.tagline}</p>
             <address className="footer-address">{brand.address.join(', ')}</address>
+            <ul className="footer-social" aria-label="Wezigns elsewhere">
+              {Object.values(socials).map((x) => (
+                <li key={x.href}>
+                  <a href={x.href} target="_blank" rel="noopener noreferrer">
+                    {x.label} <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              ))}
+              {whatsappHref && (
+                <li>
+                  <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                    WhatsApp <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              )}
+            </ul>
           </div>
           {footer.map((col) => (
             <nav key={col.title} className="footer-col" aria-label={col.title}>

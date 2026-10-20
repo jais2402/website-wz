@@ -2,7 +2,7 @@
 // breadcrumbs and the facts in JSON-LD. Read by the build (scripts/vite-seo.ts, scripts/og-cards.mjs), so this file
 // and what it imports stay plain data (no React, no DOM) and use explicit `.ts` imports for Node.
 // Rules (docs/seo/plan.md): titles ≤ 60 chars, descriptions 140–160 chars, visible H1s unchanged, no GST claims.
-import { brand, countries, faq, pastWork, work } from './site.ts'
+import { brand, countries, faq, pastWork, socials, work } from './site.ts'
 import { aiPage, systemPages } from './pages.ts'
 
 // Full country names for structured data; `countries` uses short labels for the globe.
@@ -47,13 +47,13 @@ export const site = {
     'Document processing',
     'Hosting and maintenance of business software',
   ],
-  // TODO(client): company profile URLs. Empty ones are skipped; the filled ones become `sameAs` in the
+  // Company profile URLs (from `socials` in site.ts; add more there). Empty ones are skipped; the filled ones become `sameAs` in the
   // Organization JSON-LD, which helps search engines tie the site to the company.
   social: {
-    linkedin: '',
+    linkedin: socials.linkedin.href,
     x: '',
-    instagram: '',
-    facebook: '',
+    instagram: socials.instagram.href,
+    facebook: socials.facebook.href,
     youtube: '',
     clutch: '',
     goodfirms: '',

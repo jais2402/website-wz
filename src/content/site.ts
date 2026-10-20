@@ -13,11 +13,18 @@ export const brand = {
   url: 'https://www.wezigns.com',
   // TODO(client): WhatsApp Business number, digits only with country code (e.g. '919876543210').
   // Empty keeps every WhatsApp button hidden.
-  whatsapp: '',
+  whatsapp: '918124422205',
 }
 
 /** wa.me link for the WhatsApp buttons, or '' while no number is set. */
 export const whatsappHref = brand.whatsapp ? `https://wa.me/${brand.whatsapp}` : ''
+
+// Company profiles: shown in the footer and used as sameAs in the structured data (content/seo.ts).
+export const socials = {
+  linkedin: { label: 'LinkedIn', href: 'https://www.linkedin.com/company/wezigns/' },
+  instagram: { label: 'Instagram', href: 'https://www.instagram.com/wezigns' },
+  facebook: { label: 'Facebook', href: 'https://www.facebook.com/wezigns' },
+}
 
 // Header: every page is one click away. Questions (#faq) stays in the footer and on the home page.
 export const nav = [

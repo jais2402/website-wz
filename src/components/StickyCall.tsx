@@ -39,7 +39,11 @@ export function StickyCall() {
   }, [])
 
   return (
-    <div className={`sticky-call${shown ? ' is-shown' : ''}`} aria-hidden={!shown} inert={!shown}>
+    <div
+      className={`sticky-call${shown ? ' is-shown' : ''}${whatsappHref ? ' has-wa' : ''}`}
+      aria-hidden={!shown}
+      inert={!shown}
+    >
       <a
         href={brand.phoneHref}
         className="sticky-call-btn is-call"
@@ -51,10 +55,11 @@ export function StickyCall() {
             fill="currentColor"
           />
         </svg>
-        {quickContact.call}
+        <span className="sticky-call-lbl">{quickContact.call}</span>
       </a>
       <a
         href={`mailto:${brand.email}`}
+        aria-label={quickContact.email}
         className="sticky-call-btn"
         onClick={() => track('cta_click', { label: 'email', location: 'sticky_call' })}
       >
@@ -67,13 +72,14 @@ export function StickyCall() {
             strokeLinejoin="round"
           />
         </svg>
-        {quickContact.email}
+        <span className="sticky-call-lbl">{quickContact.email}</span>
       </a>
       {whatsappHref && (
         <a
           href={whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={quickContact.whatsapp}
           className="sticky-call-btn"
           onClick={() => track('cta_click', { label: 'whatsapp', location: 'sticky_call' })}
         >
@@ -86,7 +92,7 @@ export function StickyCall() {
               strokeLinejoin="round"
             />
           </svg>
-          {quickContact.whatsapp}
+          <span className="sticky-call-lbl">{quickContact.whatsapp}</span>
         </a>
       )}
     </div>

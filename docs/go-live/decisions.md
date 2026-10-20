@@ -18,13 +18,13 @@
 | Archive sectors | 73 stay under Other | nothing to do |
 | Archive links to systems | All seven correct | nothing to do |
 | Wezads | Keep | nothing to do |
-| Social profiles | Placeholders in `src/content/seo.ts` (`social`, `twitterHandle`); emitted only when filled | yes |
+| Social profiles | LinkedIn, Instagram and Facebook (`socials` in `src/content/site.ts`): footer links and `sameAs`; no X handle yet | yes |
 | AI crawlers | Search only: AI answer bots allowed, training crawlers blocked in `public/robots.txt` | yes |
 | Accent colour | Keep green to violet on card outlines and progress bars | nothing to do |
 | Our Work charts | Keep | nothing to do |
 | Explorer "Explore {system}" link | Keep | nothing to do |
 | Offices | Chennai only | nothing to do |
-| WhatsApp | Placeholder `brand.whatsapp` in `src/content/site.ts`; buttons appear on the phone pill and the contact page once a number is set | yes |
+| WhatsApp | +91 81244 22205 (`brand.whatsapp`): phone call pill, contact page card, footer | yes |
 | Cookie banner bug | Not seen now; re-test once the GA ID is set | later |
 | Pricing after-launch line | Approved | nothing to do |
 | Price signal, testimonials, security facts | None for now | later |
@@ -32,5 +32,5 @@
 ## Still with the client
 - Grievance Officer name and designation, CIN; lawyer review of the legal pages (incl. the EU-US Data Privacy Framework line).
 - `VITE_GA_MEASUREMENT_ID` in Vercel, then redeploy; GA4 settings (Google signals off, 14-month retention).
-- Social profile URLs and X handle; WhatsApp number.
+- X / Twitter handle, if there is one.
 - Vercel Domains: http and the bare domain 301 to https://www.wezigns.com; optional HSTS; promote the deployment.

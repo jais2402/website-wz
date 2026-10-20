@@ -3428,6 +3428,27 @@ main,
   line-height: 1.5;
 }
 
+/* Social profiles under the address: text links, no separators. */
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-social a {
+  color: var(--muted);
+  font-size: 0.92rem;
+  transition: color 0.2s;
+}
+
+.footer-social a:hover,
+.footer-social a:focus-visible {
+  color: var(--text);
+}
+
 .footer-col {
   display: grid;
   align-content: start;

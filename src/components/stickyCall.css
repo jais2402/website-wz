@@ -54,6 +54,18 @@
   scale: 0.97;
 }
 
+/* Three buttons (WhatsApp set): a little tighter; on narrow phones Email and WhatsApp show their icon only. */
+.sticky-call.has-wa .sticky-call-btn {
+  padding: 0 14px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 400px) {
+  .sticky-call.has-wa .sticky-call-btn:not(.is-call) .sticky-call-lbl {
+    display: none;
+  }
+}
+
 @media (min-width: 900px) {
   .sticky-call {
     display: none;
