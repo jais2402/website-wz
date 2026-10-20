@@ -6,7 +6,7 @@ import { Cursor } from '@/components/Cursor'
 import { Footer } from '@/components/Footer'
 import { Nav } from '@/components/Nav'
 import { SplitReveal } from '@/components/Reveal'
-import { brand, contactPage, countries, enquiryCopy, nav, office } from '@/content/site'
+import { brand, contactPage, countries, enquiryCopy, nav, office, quickContact, whatsappHref } from '@/content/site'
 import { gsap, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
 import { ContactLoom } from './ContactLoom'
 
@@ -72,6 +72,16 @@ export function ContactPage() {
               </a>
               <span className="cp-card-note">{contactPage.emailNote}</span>
             </div>
+
+            {whatsappHref && (
+              <div className="glass-card cp-card">
+                <span className="mono cp-card-label">{quickContact.whatsapp}</span>
+                <a className="cp-big" href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                  {`+${brand.whatsapp}`}
+                </a>
+                <span className="cp-card-note">{contactPage.whatsappNote}</span>
+              </div>
+            )}
 
             <p className="cp-reach">
               {contactPage.reach.replace('{n}', String(countries.length))} <a href="/#countries">{contactPage.reachLink} →</a>

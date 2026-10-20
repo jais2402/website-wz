@@ -17,9 +17,9 @@ Built from `old-site-audit.md`, `keyword-geo-research.md` and `new-site-audit.md
   (founding date 2012, 11 countries, case-study results). "GST billing" is not used anywhere until confirmed.
 - **Social cards:** PNG images (1200×630) are generated from code-drawn SVG at build time, so the page itself keeps
   its no-raster rule.
-- **AI crawlers are welcome:** robots.txt allows search and AI crawlers (OAI-SearchBot, GPTBot, ChatGPT-User,
-  ClaudeBot, Claude-SearchBot, PerplexityBot, Google-Extended, Applebot-Extended, Bingbot). The client can opt out of
-  training bots later. An `llms.txt` is published as low-cost extra.
+- **AI search bots are welcome, training crawlers are not** (client decision, 2026-10-20): robots.txt allows search
+  engines and AI answer bots (OAI-SearchBot, ChatGPT-User, Claude-SearchBot, PerplexityBot) and disallows training
+  crawlers (GPTBot, ClaudeBot, Google-Extended, Applebot-Extended, CCBot, Bytespider, Meta-ExternalAgent).
 - **Fonts are self-hosted** (removes the only third-party request on page load, helps GDPR and first paint).
 
 ## Work streams (parallel, separate files)

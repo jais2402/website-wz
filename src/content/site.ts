@@ -11,7 +11,13 @@ export const brand = {
   address: ['#4 / 25B, 1st Floor, Block 1', 'Boopathy Street, Arcot Road', 'Virugambakkam, Chennai 600092', 'India'],
   mapsHref: 'https://www.google.com/maps/search/?api=1&query=Boopathy+Street+Arcot+Road+Virugambakkam+Chennai+600092',
   url: 'https://www.wezigns.com',
+  // TODO(client): WhatsApp Business number, digits only with country code (e.g. '919876543210').
+  // Empty keeps every WhatsApp button hidden.
+  whatsapp: '',
 }
+
+/** wa.me link for the WhatsApp buttons, or '' while no number is set. */
+export const whatsappHref = brand.whatsapp ? `https://wa.me/${brand.whatsapp}` : ''
 
 // Header: every page is one click away. Questions (#faq) stays in the footer and on the home page.
 export const nav = [
@@ -37,7 +43,7 @@ export const navSystems = [
 ]
 
 // Sticky call button on phones; the phone was how most simulated prospects actually got in touch.
-export const quickContact = { call: 'Call us', email: 'Email' }
+export const quickContact = { call: 'Call us', email: 'Email', whatsapp: 'WhatsApp' }
 
 // Screen-reader and keyboard labels for the header.
 export const navA11y = { skip: 'Skip to content', menu: 'Menu', closeMenu: 'Close menu' }
@@ -662,6 +668,7 @@ export const contactPage = {
   lead: 'We reply within one working day. You get scope, price and timeline in writing before anything is built.',
   phoneNote: 'Head office, Chennai',
   emailNote: 'For enquiries and quotes.',
+  whatsappNote: 'Message us on WhatsApp.',
   // {n} is the number of countries.
   reach: 'Working with teams in {n} countries.',
   reachLink: 'See where',

@@ -78,6 +78,7 @@ export function headTags(page: SeoPage, site: SeoSite, data: SeoData, opts: { ap
     `<meta property="og:image:height" content="${site.ogImage.height}" />`,
     `<meta property="og:image:alt" content="${a(imageAlt)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
+    site.twitterHandle ? `<meta name="twitter:site" content="@${a(site.twitterHandle)}" />` : '',
     `<meta name="twitter:title" content="${a(ogTitle)}" />`,
     `<meta name="twitter:description" content="${a(ogDescription)}" />`,
     `<meta name="twitter:image" content="${a(image)}" />`,

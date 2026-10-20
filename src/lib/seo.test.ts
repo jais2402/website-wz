@@ -339,3 +339,27 @@ describe('llmsTxt', () => {
     expect(txt).toContain('+91 44 2364 3252')
   })
 })
+
+describe('social profiles (placeholders until the client fills them in)', () => {
+  const orgOf = (s: typeof site) =>
+    (jsonLd(page('home'), s, seoData)['@graph'] as Record<string, unknown>[]).find((n) => typeIn(n, 'Organization'))!
+
+  it('leaves sameAs and twitter:site out while every slot is empty', () => {
+    expect(Object.values(site.social).every((v) => v === '')).toBe(true)
+    expect(orgOf(site).sameAs).toBeUndefined()
+    expect(headTags(page('home'), site, seoData).join('\n')).not.toContain('twitter:site')
+  })
+
+  it('emits the filled profiles as sameAs and the handle as twitter:site', () => {
+    const filled = {
+      ...site,
+      social: { ...site.social, linkedin: 'https://www.linkedin.com/company/wezigns' },
+      twitterHandle: 'wezigns',
+      get sameAs(): string[] {
+        return Object.values(this.social).filter(Boolean)
+      },
+    }
+    expect(orgOf(filled).sameAs).toEqual(['https://www.linkedin.com/company/wezigns'])
+    expect(headTags(page('home'), filled, seoData).join('\n')).toContain('<meta name="twitter:site" content="@wezigns" />')
+  })
+})

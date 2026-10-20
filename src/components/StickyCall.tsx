@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { brand, quickContact } from '@/content/site'
+import { brand, quickContact, whatsappHref } from '@/content/site'
 import { track } from '@/lib/analytics'
 import './stickyCall.css'
 
@@ -69,6 +69,26 @@ export function StickyCall() {
         </svg>
         {quickContact.email}
       </a>
+      {whatsappHref && (
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="sticky-call-btn"
+          onClick={() => track('cta_click', { label: 'whatsapp', location: 'sticky_call' })}
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path
+              d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {quickContact.whatsapp}
+        </a>
+      )}
     </div>
   )
 }
