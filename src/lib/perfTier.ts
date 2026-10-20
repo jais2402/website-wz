@@ -2,8 +2,9 @@
 //   full   : everything (WebGL, frosted glass, ambient animation, Lenis)
 //   lite   : no WebGL, no backdrop blur (solid surfaces), short one-shot animations, native scroll
 //   static : lite plus no animation or transition at all
-// Decided once before first paint from a GPU probe (a software rasteriser such as Windows' "Microsoft Basic Render
-// Driver" or SwiftShader means lite), and demoted during the session by a frame-rate watchdog. Never promoted back.
+// Decided once before first paint from WebGL alone (client decision): no WebGL context means static; a software
+// rasteriser (Windows' "Microsoft Basic Render Driver", SwiftShader, llvmpipe) or an unidentifiable desktop GPU means
+// lite. A WebGL context lost mid-session also demotes. Device hints and frame rate are not used. Never promoted back.
 
 export type PerfTier = 'full' | 'lite' | 'static'
 export type TierDecision = { tier: PerfTier; reason: string }
@@ -26,18 +27,14 @@ export type GpuProbe = {
   debugInfo: boolean
 }
 
-export type DeviceSignals = { deviceMemoryGb?: number; cores?: number; desktop: boolean }
+export type DeviceSignals = { desktop: boolean }
 
-/** Tier from the GPU probe (highest priority) and device hints (which can only demote, never promote). */
+/** Tier from WebGL only: whether a context exists and which renderer it reports. */
 export function decideTier(gpu: GpuProbe, device: DeviceSignals): TierDecision {
   if (!gpu.context) return { tier: 'static', reason: 'no WebGL context' }
   if (gpu.renderer && SOFTWARE_RENDERER.test(gpu.renderer))
     return { tier: 'lite', reason: `software renderer: ${gpu.renderer}` }
   if (!gpu.debugInfo && device.desktop) return { tier: 'lite', reason: 'GPU not identifiable' }
-  if (device.deviceMemoryGb !== undefined && device.deviceMemoryGb <= 2)
-    return { tier: 'lite', reason: `low memory (${device.deviceMemoryGb} GB)` }
-  if (device.cores !== undefined && device.cores <= 2)
-    return { tier: 'lite', reason: `low CPU (${device.cores} cores)` }
   return { tier: 'full', reason: gpu.renderer ? `GPU: ${gpu.renderer}` : 'GPU' }
 }
 
@@ -50,34 +47,4 @@ export function parseOverride(search: string): PerfTier | undefined {
   if (l === '1') return 'lite'
   if (l === '0') return 'full'
   return undefined
-}
-
-// ---- Frame-rate watchdog -------------------------------------------------------------------------------------
-
-export type WatchdogState = { tier: PerfTier; slow: number; windows: number; done: boolean }
-
-export const watchdogStart = (tier: PerfTier): WatchdogState => ({ tier, slow: 0, windows: 0, done: tier === 'static' })
-
-/**
- * Feeds one ~1 s window's median frame time. Two slow windows in a row (median over 22 ms) demote full to lite;
- * two more over 40 ms demote lite to static. Stops after ten calm windows on a tier, or on static.
- */
-export function watchdogStep(s: WatchdogState, medianMs: number): WatchdogState {
-  if (s.done) return s
-  const limit = s.tier === 'full' ? 22 : 40
-  const slow = medianMs > limit ? s.slow + 1 : 0
-  if (slow >= 2) {
-    const tier: PerfTier = s.tier === 'full' ? 'lite' : 'static'
-    return { tier, slow: 0, windows: 0, done: tier === 'static' }
-  }
-  const windows = s.windows + 1
-  return { tier: s.tier, slow, windows, done: windows >= 10 }
-}
-
-/** Median of a list of frame deltas (ms). */
-export function median(values: number[]): number {
-  if (!values.length) return 0
-  const s = [...values].sort((a, b) => a - b)
-  const m = s.length >> 1
-  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
 }

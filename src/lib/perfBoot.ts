@@ -47,16 +47,11 @@ function boot(): TierDecision & { renderer: string } {
     const tier = saved.slice(7) as PerfTier
     return { tier, reason: `forced by ?perf=${tier}`, renderer }
   }
-  const nav = navigator as Navigator & { deviceMemory?: number }
-  const decided = decideTier(gpu, {
-    deviceMemoryGb: nav.deviceMemory,
-    cores: nav.hardwareConcurrency,
-    desktop: window.matchMedia('(pointer: fine)').matches,
-  })
-  // A demotion earlier in this session sticks (the watchdog never promotes back).
+  const decided = decideTier(gpu, { desktop: window.matchMedia('(pointer: fine)').matches })
+  // A demotion earlier in this session (a lost WebGL context) sticks.
   const demoted = saved.startsWith('demoted:') ? (saved.slice(8) as PerfTier) : undefined
   if (demoted && worseTier(demoted, decided.tier) === demoted && demoted !== decided.tier)
-    return { tier: demoted, reason: 'slow frame rate earlier this session', renderer }
+    return { tier: demoted, reason: 'WebGL context lost earlier this session', renderer }
   return { ...decided, renderer }
 }
 
@@ -64,7 +59,7 @@ export const bootTier =
   typeof window === 'undefined' ? { tier: 'full' as PerfTier, reason: 'server', renderer: '' } : boot()
 if (typeof window !== 'undefined') applyTier(bootTier.tier)
 
-/** True when the tier was forced with ?perf= (the watchdog then leaves it alone). */
+/** True when the tier was forced with ?perf=. */
 export const tierForced = bootTier.reason.startsWith('forced')
 
 /** Records a demotion so later pages in the same session start at that tier. */

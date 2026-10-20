@@ -1,6 +1,7 @@
 import { useGSAP } from '@gsap/react'
 import { useRef, useState } from 'react'
 import { gsap, lockScroll } from '@/hooks/motion'
+import { preloaderCopy } from '@/content/site'
 import type { Gate } from '@/lib/loadGate'
 import { LogoMark } from './Logo'
 
@@ -23,6 +24,11 @@ export function Preloader({
 }) {
   const root = useRef<HTMLDivElement>(null)
   const [gone, setGone] = useState(false)
+  // The home page ships this same markup in its HTML (lib/snapshot.ts, `is-boot`) so the loader paints before any
+  // script runs. Read during the first render, before React's commit replaces that copy with this one.
+  const [booted] = useState(
+    () => typeof document !== 'undefined' && !!document.querySelector('#root > .preloader.is-boot'),
+  )
 
   useGSAP(
     () => {
@@ -53,7 +59,12 @@ export function Preloader({
         num.textContent = String(Math.round(counter.v)).padStart(3, '0')
         bar.style.transform = `scaleX(${counter.v / 100})`
       }
-      gsap.from('.pre-mark', { scale: 0.6, opacity: 0, rotate: -20, duration: 1, ease: 'expo.out' })
+      const markIn = gsap.from('.pre-mark', { scale: 0.6, opacity: 0, rotate: -20, duration: 1, ease: 'expo.out' })
+      // The HTML copy already played (part of) this intro in CSS since its first paint: carry on from there.
+      if (booted) {
+        const painted = performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? 0
+        markIn.progress(Math.min(1, Math.max(0, (performance.now() - painted) / 1000)))
+      }
 
       // Climb towards the real progress (capped at 90 until the gate opens), never faster than a smooth count.
       const climb = () => {
@@ -85,7 +96,7 @@ export function Preloader({
 
   if (gone) return null
   return (
-    <div ref={root} className="preloader" role="status" aria-label="Loading">
+    <div ref={root} className="preloader" role="status" aria-label={preloaderCopy.label}>
       <div className="pre-panels" aria-hidden="true">
         {Array.from({ length: 5 }, (_, i) => (
           <span className="pre-panel" key={i} />

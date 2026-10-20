@@ -1241,13 +1241,56 @@
   text-decoration-color: currentColor;
 }
 
-/* Light loom (perf-lite): no vignette pass in WebGL, so one static CSS vignette does the same job. */
-html.perf-lite .loom-canvas::after,
-html.perf-lite .hero-loom::after,
-html.perf-lite .cp-loom::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse 75% 70% at 55% 45%, transparent 40%, rgba(4, 5, 12, 0.7) 100%);
+/* Lite tier (software renderer): the full loom in a box that runs from just under the copy panel to the screen's
+   right and bottom edges, so it draws a fraction of the pixels with no visible edge. Behind it, the "before"
+   panel's wine gradient. The canvas is transparent; the camera (LoomScene BoxRig) always fits the whole machine. */
+html.perf-lite .loom-sticky {
+  background:
+    radial-gradient(60% 70% at 30% 40%, rgba(255, 71, 99, 0.18), transparent 70%),
+    radial-gradient(50% 60% at 80% 70%, rgba(139, 123, 255, 0.16), transparent 70%), #120d14;
+}
+
+html.perf-lite .loom-intro {
+  max-width: min(600px, 46vw);
+}
+
+/* The narrower panel gets a headline sized to it, so it wraps on the same three lines as the full hero and the
+   panel stays clear of the header. */
+html.perf-lite .loom-title {
+  font-size: clamp(2.4rem, 3.9vw, 4.6rem);
+}
+
+html.perf-lite .loom-phases {
+  width: min(600px, 46vw);
+}
+
+/* Position and size come from hero.tsx (lib/liteBox.ts). The left edge fades (the shorter phase panels do not
+   cover it the way the intro does); the machine starts at about 11% of the box width (BoxRig), clear of the fade. */
+html.perf-lite .loom-canvas {
+  inset: auto;
+  transform: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 9%);
+  mask-image: linear-gradient(to right, transparent 0, #000 9%);
+}
+
+@media (max-width: 899px) {
+  html.perf-lite .loom-canvas {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+/* Phones: the panels span the width. */
+@media (max-width: 899px) {
+  html.perf-lite .loom-intro {
+    max-width: none;
+  }
+
+  html.perf-lite .loom-title {
+    font-size: clamp(2.6rem, 5.4vw, 5.8rem);
+  }
+
+  html.perf-lite .loom-phases {
+    width: calc(100% - 2 * var(--gutter));
+  }
 }

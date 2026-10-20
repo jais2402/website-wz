@@ -8,7 +8,14 @@ import { stageWeights } from '@/lib/shapes'
 import { riderFragment, riderVertex, threadFragment, threadVertex } from './threadShaders'
 
 type Quality = { strands: number; points: number; riders: number }
-type Props = { quality: Quality; reducedMotion: boolean }
+type Props = {
+  quality: Quality
+  reducedMotion: boolean
+  /** Thread brightness (lite tier: no bloom). */
+  boost?: number
+  /** Lite tier: the canvas is a box beside the copy; the shape centres in it and scales to fit. */
+  framed?: boolean
+}
 
 const STAGES = 4
 // Horizontal offset per stage (fraction of viewport width) so the shape sits beside the glass card.
@@ -21,6 +28,8 @@ function makeUniforms(extra: Record<string, THREE.IUniform> = {}) {
     uPointer: { value: new THREE.Vector2(99, 99) },
     uPointerStrength: { value: 0 },
     uFade: { value: 1 },
+    // Brightness multiplier: 1 normally; higher on the lite tier, which has no bloom pass to make the threads glow.
+    uBoost: { value: 1 },
     ...extra,
   }
 }
@@ -29,7 +38,7 @@ function makeUniforms(extra: Record<string, THREE.IUniform> = {}) {
  * The pinned story in the loom's language: loose threads (stage 0) weave into a panel (Simplify), climb a helix
  * cone (Scale) and wrap a sphere round a glowing core (Secure). Particles ride the threads.
  */
-export function ThreadField({ quality, reducedMotion }: Props) {
+export function ThreadField({ quality, reducedMotion, boost = 1, framed = false }: Props) {
   const group = useRef<THREE.Group>(null)
   const centre = useRef(new THREE.Vector3())
   const threadMat = useRef<THREE.ShaderMaterial>(null)
@@ -41,6 +50,22 @@ export function ThreadField({ quality, reducedMotion }: Props) {
   const pointer = useRef(new THREE.Vector2(99, 99))
   const visibleFade = useRef(1)
   const { viewport, gl } = useThree()
+  const glow = useRef<THREE.Sprite>(null)
+  // Radial falloff texture for the lite glow sprite (64 px, made once).
+  const glowMap = useMemo(() => {
+    const c = document.createElement('canvas')
+    c.width = c.height = 64
+    const g = c.getContext('2d')
+    if (g) {
+      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32)
+      r.addColorStop(0, 'rgba(255,255,255,1)')
+      r.addColorStop(0.25, 'rgba(255,255,255,0.45)')
+      r.addColorStop(1, 'rgba(255,255,255,0)')
+      g.fillStyle = r
+      g.fillRect(0, 0, 64, 64)
+    }
+    return new THREE.CanvasTexture(c)
+  }, [])
 
   const { threadGeo, riderGeo } = useMemo(() => {
     const data = buildStrands(quality.strands, quality.points, 31)
@@ -85,20 +110,33 @@ export function ThreadField({ quality, reducedMotion }: Props) {
       ;(mat.uniforms.uPointer.value as THREE.Vector2).copy(pointer.current)
       mat.uniforms.uPointerStrength.value = strength
       mat.uniforms.uFade.value = visibleFade.current
+      mat.uniforms.uBoost.value = boost
     }
+
+    // Lite glow follows the story fade (it hands over to the globe like the threads do).
+    if (glow.current) (glow.current.material as THREE.SpriteMaterial).opacity = visibleFade.current
 
     // Glowing core appears only inside the Secure sphere.
     if (coreMat.current && core.current) {
       coreMat.current.opacity = weights[3] * visibleFade.current
+      // Hidden when it has faded out: even at opacity 0 it would block the light and threads behind it.
+      core.current.visible = coreMat.current.opacity > 0.01
       core.current.scale.setScalar((0.16 + weights[3] * 0.14) * (1 + Math.sin(time * 2) * 0.06))
     }
 
     if (!group.current) return
-    const sideBySide = viewport.width > 5.2
-    group.current.position.x = sideBySide ? weights.reduce((a, w, i) => a + w * STAGE_OFFSET_X[i], 0) * viewport.width : 0
+    const sideBySide = !framed && viewport.width > 5.2
+    group.current.position.x = sideBySide
+      ? weights.reduce((a, w, i) => a + w * STAGE_OFFSET_X[i], 0) * viewport.width
+      : 0
     // On phones the copy card sits at the bottom, so lift the shape into the top half once the story starts.
-    group.current.position.y = sideBySide ? 0 : (1 - weights[0]) * viewport.height * 0.2
-    group.current.scale.setScalar(Math.min(1, viewport.width / 11) * (sideBySide ? 1 : 0.85))
+    group.current.position.y = sideBySide || framed ? 0 : (1 - weights[0]) * viewport.height * 0.2
+    // Framed (lite box): the panel, cone and sphere all fit inside the box with a margin.
+    group.current.scale.setScalar(
+      framed
+        ? Math.min(1, viewport.width / 6.8, viewport.height / 6.2)
+        : Math.min(1, viewport.width / 11) * (sideBySide ? 1 : 0.85),
+    )
 
     // The woven panel faces the viewer like a dashboard; the cone and sphere turn slowly.
     if (!reducedMotion) spin.current += dt * 0.16
@@ -140,6 +178,19 @@ export function ThreadField({ quality, reducedMotion }: Props) {
         <icosahedronGeometry args={[1, 3]} />
         <meshBasicMaterial ref={coreMat} color={[1.15, 1.05, 0.75]} transparent opacity={0} toneMapped={false} />
       </mesh>
+      {/* Lite (no bloom pass): a soft light at the shape's heart stands in for the glow bloom gives it. */}
+      {framed && (
+        <sprite ref={glow} scale={2.4}>
+          <spriteMaterial
+            map={glowMap}
+            color="#fff4e2"
+            transparent
+            opacity={1}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+          />
+        </sprite>
+      )}
     </group>
   )
 }

@@ -1,18 +1,21 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { LoomLiteArt } from '@/components/LiteArt'
+import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { useLite } from '@/hooks/useLite'
 import { loomStore } from '@/loom/store'
 
 const LoomScene = lazy(() => import('@/loom/LoomScene').then((m) => ({ default: m.LoomScene })))
 
-/** The loom from the home hero, framed on its own beside the contact headline. Static SVG art on the static tier, the light loom on lite. */
+/** The loom from the home hero, framed on its own beside the contact headline. A still of the real loom on the lite and static tiers. */
 export function ContactLoom({ reducedMotion }: { reducedMotion: boolean }) {
   const { tier, demote } = useLite()
-  // Static: code-drawn art, no WebGL. Lite: the light loom (software renderers). Full: the full loom.
+  // Static (no WebGL): a still of the real loom. Lite (software renderer): the light loom. Full: the full loom.
   const art = tier === 'static'
   const root = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
+  // three.js starts downloading only after the headline has painted.
+  const afterPaint = useAfterPaint()
 
   // Threads come in half-calmed: tangled on the way in, ordered once they pass through the loom.
   useEffect(() => {
@@ -42,17 +45,12 @@ export function ContactLoom({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <div ref={root} className={`cp-loom${ready || art ? ' is-ready' : ''}`} aria-hidden="true">
       {art ? (
-        <LoomLiteArt />
+        <LoomLiteArt poster="loom-contact" />
       ) : (
-        active && (
+        active &&
+        afterPaint && (
           <Suspense fallback={null}>
-            <LoomScene
-              light={tier === 'lite'}
-              view="contact"
-              reducedMotion={reducedMotion}
-              active={active}
-              onReady={() => setReady(true)}
-            />
+            <LoomScene view="contact" reducedMotion={reducedMotion} active={active} onReady={() => setReady(true)} />
           </Suspense>
         )
       )}

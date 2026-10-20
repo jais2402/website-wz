@@ -722,6 +722,9 @@ export const marketingOptIn = {
   hint: 'Optional. Your enquiry is sent either way.',
 }
 
+// Home preloader. Also written into index.html at build time (lib/snapshot.ts) so it paints before any script runs.
+export const preloaderCopy = { label: 'Loading', home: 'Untangling the threads' }
+
 // Second page: the time-loom concept (loom.html).
 export const loom = {
   eyebrow: 'Custom business software since 2012',

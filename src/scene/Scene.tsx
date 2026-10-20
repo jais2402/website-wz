@@ -2,6 +2,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { Component, type ReactNode, useEffect, useState } from 'react'
 import { useBudgetDpr } from '@/hooks/useBudgetDpr'
+import { useLite } from '@/hooks/useLite'
 import { useDocumentVisible } from '@/hooks/useDocumentVisible'
 import { damp } from '@/lib/math'
 import { canvasSlot } from '@/lib/canvasSlot'
@@ -45,7 +46,11 @@ function useIsMobile() {
  */
 export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   const mobile = useIsMobile()
-  const dpr = useBudgetDpr()
+  // Lite tier (software renderer): the same scene and models, without the bloom pass (brighter threads make up for
+  // the missing glow) and at a lower internal resolution.
+  const liteGl = useLite().tier === 'lite'
+  const budget = useBudgetDpr()
+  const dpr = liteGl ? Math.min(0.75, budget) : budget
   const [active, setActive] = useState(true)
   // Keeps rendering until the shaders are compiled and drawn once, even before a 3D zone is on screen.
   const [warm, setWarm] = useState(false)
@@ -96,11 +101,13 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
               quality={
                 mobile ? { strands: 320, points: 90, riders: 1600 } : { strands: 640, points: 120, riders: 3000 }
               }
+              boost={liteGl ? 1.3 : 1}
+              framed={liteGl}
               reducedMotion={reducedMotion}
             />
-            <Globe dots={mobile ? 1400 : 2600} reducedMotion={reducedMotion} />
+            <Globe dots={mobile ? 1400 : 2600} reducedMotion={reducedMotion} framed={liteGl} />
             {/* Loom-style glow on desktop; phones skip post-processing to keep frame rates up. */}
-            {!mobile && (
+            {!mobile && !liteGl && (
               <EffectComposer multisampling={0}>
                 <Bloom
                   mipmapBlur

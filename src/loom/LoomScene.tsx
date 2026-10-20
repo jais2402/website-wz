@@ -85,7 +85,9 @@ function makeCommonUniforms(v: VariantConfig) {
   }
 }
 
-export type LoomView = 'hero' | 'contact'
+/** hero: full-screen home hero. contact: framed beside a headline. box: the lite home hero, framed so the whole
+ *  machine always fits, following the hero scroll, on a transparent canvas over the page's gradient. */
+export type LoomView = 'hero' | 'contact' | 'box'
 
 function Threads({
   quality,
@@ -140,7 +142,7 @@ function Threads({
     )
     pointer.current.y = damp(pointer.current.y, (state.pointer.y * viewport.height) / 2, 6, dt)
     // The contact canvas sits under the page copy and gets no pointer events, so no thread parting there.
-    const strength = reducedMotion || view === 'contact' ? 0 : 1
+    const strength = reducedMotion || view !== 'hero' ? 0 : 1
     // Through the live materials (CLAUDE.md rule 4), including the variant's fray amount.
     for (const m of [strandMat.current, particleMat.current]) {
       if (!m) continue
@@ -376,6 +378,42 @@ function ContactRig({ reducedMotion, variant }: { reducedMotion: boolean; varian
   return null
 }
 
+/**
+ * Lite home hero: the loom machine (mouth ring to dish, x -1.4..6.8) always fully in frame. The camera distance comes
+ * from the canvas aspect so the machine plus a margin fits any box; the hero scroll adds a gentle dolly and pan that
+ * stay inside that margin, while the threads order themselves as on the full hero.
+ */
+function BoxRig({ reducedMotion }: { reducedMotion: boolean }) {
+  const look = useRef(new THREE.Vector3())
+  const placed = useRef(false)
+  useFrame(({ camera, clock, size }, delta) => {
+    const dt = Math.min(delta, 0.05)
+    const p = loomStore.progress
+    const aspect = size.width / Math.max(1, size.height)
+    const fov = (camera as THREE.PerspectiveCamera).fov ?? 40
+    const tanHalf = Math.tan((fov * Math.PI) / 360)
+    // Visible width at distance d is 2 * d * tan(fov/2) * aspect; the machine (7.5 units) plus a margin that keeps it
+    // clear of the box edges needs 9.6 units, and its height (rings, 2.8) plus margin 3.8 units.
+    const fit = Math.max(9.6 / (2 * tanHalf * aspect), 3.8 / (2 * tanHalf))
+    const sway = reducedMotion ? 0 : Math.sin(clock.elapsedTime * 0.12)
+    const centre = 2.7 + p * 0.5
+    const tx = centre - 2.2 + sway * 0.5
+    const ty = 1.4
+    const tz = fit * (1.02 - p * 0.06)
+    look.current.set(centre, 0, 0)
+    if (!placed.current) {
+      camera.position.set(tx, ty, tz)
+      placed.current = true
+    } else {
+      camera.position.x = damp(camera.position.x, tx, 2, dt)
+      camera.position.y = damp(camera.position.y, ty, 2, dt)
+      camera.position.z = damp(camera.position.z, tz, 2, dt)
+    }
+    camera.lookAt(look.current)
+  })
+  return null
+}
+
 /** Mouse parallax + scroll fly-in toward the loom mouth. Portrait screens pull back to fit the whole composition. */
 function CameraRig() {
   const look = useRef(new THREE.Vector3())
@@ -416,22 +454,10 @@ type SceneProps = {
   view?: LoomView
   variant?: LoomVariant
   /**
-   * Light loom for software renderers (perf-lite): about a fifth of the threads and particles, glow from additive
-   * light sprites instead of the bloom pass, a lower internal resolution and a steady 30 fps.
+   * Software renderer (perf-lite): the same loom and thread counts, without the bloom pass (soft light sprites
+   * stand in for it) and at a lower internal resolution.
    */
   light?: boolean
-}
-
-/** Renders a frame every ~33 ms while running (frameloop="demand"): a steady 30 fps for the light loom. */
-function Throttle({ running }: { running: boolean }) {
-  const invalidate = useThree((s) => s.invalidate)
-  useEffect(() => {
-    if (!running) return
-    invalidate()
-    const id = window.setInterval(() => invalidate(), 33)
-    return () => window.clearInterval(id)
-  }, [running, invalidate])
-  return null
 }
 
 export function LoomScene({
@@ -444,13 +470,12 @@ export function LoomScene({
 }: SceneProps) {
   const v = VARIANTS[variant]
   const quality = useMemo<Quality>(() => {
-    if (light) return { strands: 180, points: 90, particles: 1200 }
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
     return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 800, points: 140, particles: 5600 }
-  }, [light])
+  }, [])
 
   const budget = useBudgetDpr()
-  // The light loom renders at most 0.75x and lets the browser scale it up: soft threads hide the difference.
+  // No GPU: render at most 0.75x and let the browser scale it up; the soft, glowing threads hide the difference.
   const dpr = light ? Math.min(0.75, budget) : budget
   const visible = useDocumentVisible()
   const running = active && visible
@@ -460,27 +485,28 @@ export function LoomScene({
       dpr={dpr}
       camera={{ position: [-1.2, 0.6, 14], fov: 40, near: 0.1, far: 100 }}
       // No MSAA: post-processing renders to its own target, so canvas antialiasing only cost GPU time.
-      gl={{ antialias: false, powerPreference: 'high-performance' }}
-      frameloop={light ? 'demand' : running ? 'always' : 'never'}
+      gl={{ antialias: false, alpha: view === 'box', powerPreference: 'high-performance' }}
+      frameloop={running ? 'always' : 'never'}
     >
-      {light && <Throttle running={running} />}
       {/* Contact page: match the page ink so the masked edges melt into it. */}
-      <color attach="background" args={[view === 'contact' ? '#07070c' : '#04050c']} />
+      {view !== 'box' && <color attach="background" args={[view === 'contact' ? '#07070c' : '#04050c']} />}
       <ambientLight intensity={0.25} />
       <pointLight position={[-0.6, 0, 0]} color={v.light} intensity={60} distance={9} />
       <pointLight position={[6, 3, 4]} color="#6f7dff" intensity={25} distance={20} />
       <pointLight position={[3, -3, -3]} color="#c6ff3d" intensity={6} distance={12} />
 
-      <Glow position={[-14, 0, -12]} scale={40} color="#1a2350" opacity={0.6} />
+      {/* Deep-blue backdrop glow: only on an opaque canvas (the lite box shows the page gradient instead). */}
+      {view !== 'box' && <Glow position={[-14, 0, -12]} scale={40} color="#1a2350" opacity={0.6} />}
       {/* Everything that belongs to the loom turns with it (the spindle stands upright, the frayed loom tilts). */}
       <group rotation={v.rotation}>
         <Glow position={[-0.25, 0, 0]} scale={2.8} color={v.mouthGlow} opacity={0.9} />
-        <Glow position={[-0.4, 0, 0]} scale={9} color={v.haloGlow} opacity={0.22} />
+        {/* The lite box is only ~8 units tall: a smaller halo, so it fades out inside the frame instead of being cut. */}
+        <Glow position={[-0.4, 0, 0]} scale={view === 'box' ? 6 : 9} color={v.haloGlow} opacity={0.22} />
         {/* Light loom: extra soft sprites stand in for the bloom pass around the mouth and along the weave. */}
         {light && (
           <>
             <Glow position={[-0.3, 0, 0]} scale={4.6} color={v.mouthGlow} opacity={0.42} />
-            <Glow position={[-0.6, 0, 0]} scale={15} color={v.haloGlow} opacity={0.2} />
+            {view !== 'box' && <Glow position={[-0.6, 0, 0]} scale={15} color={v.haloGlow} opacity={0.2} />}
             <Glow position={[1.6, 0, 0]} scale={5} color={v.haloGlow} opacity={0.18} />
           </>
         )}
@@ -489,7 +515,13 @@ export function LoomScene({
       </group>
       {/* Ready = shaders compiled and the first frames drawn, not just the context created. */}
       {onReady && <Warmup onDone={onReady} />}
-      {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} variant={variant} /> : <CameraRig />}
+      {view === 'box' ? (
+        <BoxRig reducedMotion={reducedMotion} />
+      ) : view === 'contact' ? (
+        <ContactRig reducedMotion={reducedMotion} variant={variant} />
+      ) : (
+        <CameraRig />
+      )}
 
       {!light && (
         <EffectComposer multisampling={0}>

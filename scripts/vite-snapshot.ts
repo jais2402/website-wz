@@ -20,7 +20,9 @@ export const HEAD_SCRIPT =
   "document.documentElement.classList.add('js');setTimeout(function(){if(document.querySelector('#root>.snapshot'))document.documentElement.classList.remove('js')},6000)"
 
 // Minimal reading styles for no-JS visitors (the site CSS still applies), and the visually-hidden rule for JS users.
+// The boot preloader (home only) is for JS users: no-JS visitors, and the fallback above, get the snapshot instead.
 const HEAD_STYLE =
+  'html:not(.js) #root>.preloader{display:none}' +
   '.snapshot{max-width:72rem;margin:0 auto;padding:2rem 1.25rem;line-height:1.6}' +
   '.snapshot a{color:inherit}' +
   '.js .snapshot{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;' +
@@ -57,8 +59,10 @@ export function snapshotPlugin(): Plugin {
         const id = mod.pageForFile(relative(root, ctx.filename))
         const body = id && mod.snapshot(id)
         if (!body) return html
+        // The home preloader goes first, so it paints from the HTML before any script has run.
+        const boot = (id && mod.bootPreloader(id)) || ''
         return {
-          html: html.replace(ROOT_DIV, () => `<div id="root">${body}</div>`),
+          html: html.replace(ROOT_DIV, () => `<div id="root">${boot}${body}</div>`),
           tags: [
             { tag: 'script', children: HEAD_SCRIPT, injectTo: 'head' },
             { tag: 'style', children: HEAD_STYLE, injectTo: 'head' },

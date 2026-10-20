@@ -5,7 +5,8 @@ import { useEffect } from 'react'
  * which costs battery on phones. Marks each <main> section that is out of view with `.is-offscreen`; index.css
  * pauses every animation inside it. The WebGL canvases pause themselves the same way.
  */
-export function usePauseOffscreen() {
+/** `key`: re-scan the sections when it changes (the home page mounts most of its sections in a second pass). */
+export function usePauseOffscreen(key?: unknown) {
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
     const sections = [...document.querySelectorAll<HTMLElement>('main > section, main > * > section')]
@@ -19,5 +20,5 @@ export function usePauseOffscreen() {
       io.disconnect()
       sections.forEach((s) => s.classList.remove('is-offscreen'))
     }
-  }, [])
+  }, [key])
 }

@@ -41,7 +41,16 @@ void main() {
 `
 
 /** Countries globe: dotted sphere, latitude rings, pins and gold threads from Chennai. Fades in with sceneStore.globe. */
-export function Globe({ dots, reducedMotion }: { dots: number; reducedMotion: boolean }) {
+/** `framed`: lite tier, the canvas is a box beside the copy; the globe centres in it and scales to fit. */
+export function Globe({
+  dots,
+  reducedMotion,
+  framed = false,
+}: {
+  dots: number
+  reducedMotion: boolean
+  framed?: boolean
+}) {
   const group = useRef<THREE.Group>(null)
   const dotMat = useRef<THREE.PointsMaterial>(null)
   const ringMat = useRef<THREE.LineBasicMaterial>(null)
@@ -100,7 +109,10 @@ export function Globe({ dots, reducedMotion }: { dots: number; reducedMotion: bo
     return { dotGeo, ringGeo, arcGeo, pinPositions }
   }, [dots, hq, hqIndex])
 
-  const arcUniforms = useMemo(() => ({ uTime: { value: 0 }, uDraw: { value: 0 }, uHighlight: { value: -1 }, uOpacity: { value: 0 } }), [])
+  const arcUniforms = useMemo(
+    () => ({ uTime: { value: 0 }, uDraw: { value: 0 }, uHighlight: { value: -1 }, uOpacity: { value: 0 } }),
+    [],
+  )
   const baseRotY = facingRotationY(62) // Chennai just right of centre; Europe, the Gulf and Australia in view
 
   useFrame((state, delta) => {
@@ -130,11 +142,15 @@ export function Globe({ dots, reducedMotion }: { dots: number; reducedMotion: bo
       m.scale.setScalar((isHq ? 1.8 : lit ? 1.6 : 1) * pulse * f)
     })
 
-    const sideBySide = viewport.width > 5.2
+    const sideBySide = !framed && viewport.width > 5.2
     group.current.position.x = sideBySide ? viewport.width * 0.2 : 0
-    // Phones: fill most of the width in the open space above the card.
-    group.current.position.y = sideBySide ? 0 : viewport.height * 0.2
-    const size = sideBySide ? Math.min(1, viewport.width / 10) : Math.min(1, viewport.width / 5.4)
+    // Phones: fill most of the width in the open space above the card. Framed: centred.
+    group.current.position.y = sideBySide || framed ? 0 : viewport.height * 0.2
+    const size = framed
+      ? Math.min(1, Math.min(viewport.width, viewport.height) / 5.6)
+      : sideBySide
+        ? Math.min(1, viewport.width / 10)
+        : Math.min(1, viewport.width / 5.4)
     group.current.scale.setScalar(size * (0.9 + f * 0.1))
     // Gentle sway (not a full spin) so the threads stay in view; follows the pointer a little.
     // The globe sits right of the camera axis, so turn it back toward the camera by the viewing angle.
@@ -146,7 +162,15 @@ export function Globe({ dots, reducedMotion }: { dots: number; reducedMotion: bo
   return (
     <group ref={group} visible={false}>
       <points geometry={dotGeo}>
-        <pointsMaterial ref={dotMat} size={0.028} color="#9aa3c7" transparent opacity={0} depthWrite={false} sizeAttenuation />
+        <pointsMaterial
+          ref={dotMat}
+          size={0.028}
+          color="#9aa3c7"
+          transparent
+          opacity={0}
+          depthWrite={false}
+          sizeAttenuation
+        />
       </points>
       <lineSegments geometry={ringGeo}>
         <lineBasicMaterial ref={ringMat} color="#8cc4ff" transparent opacity={0} depthWrite={false} />

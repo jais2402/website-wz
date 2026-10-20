@@ -1,6 +1,6 @@
 // First: probe the GPU and set perf-<tier> on <html> before anything renders.
 import '@/lib/perfBoot'
-import { StrictMode } from 'react'
+import { StrictMode, startTransition } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import './loom/loom.css'
@@ -11,10 +11,15 @@ import { initAnalytics } from './lib/ga'
 // Consent-gated GA: no script or cookie until the visitor accepts; nothing at all without an ID.
 initAnalytics()
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <LiteProvider>
-      <App />
-    </LiteProvider>
-  </StrictMode>,
+// A transition render is time-sliced: React yields to the browser every few milliseconds while it builds the page,
+// instead of one long task that blocks input. The commit (and so what is on screen) is unchanged.
+const root = createRoot(document.getElementById('root')!)
+startTransition(() =>
+  root.render(
+    <StrictMode>
+      <LiteProvider>
+        <App />
+      </LiteProvider>
+    </StrictMode>,
+  ),
 )

@@ -39,6 +39,7 @@ import {
   office,
   pastWork,
   portfolioArchive,
+  preloaderCopy,
   pricing,
   principles,
   process,
@@ -164,11 +165,7 @@ function ctaStrip(c: { title: string; body?: string; secondary?: Link }): string
     a(ctas.contact.href, ctas.contact.label),
     ...(c.secondary ? [a(c.secondary.href, c.secondary.label)] : []),
   ]
-  return tag(
-    'aside',
-    p(c.title) + (c.body ? p(c.body) : '') + ulHtml(links),
-    ` aria-label="${t(c.title)}"`,
-  )
+  return tag('aside', p(c.title) + (c.body ? p(c.body) : '') + ulHtml(links), ` aria-label="${t(c.title)}"`)
 }
 
 function hero(kicker: string, title: string, lead: string, actions: Link[]): string {
@@ -270,16 +267,16 @@ function home(): string {
     'ai',
   )
 
-  const featured = workSection.featured
-    .map((id) => cases.find((c) => c.id === id))
-    .filter((c): c is Case => Boolean(c))
+  const featured = workSection.featured.map((id) => cases.find((c) => c.id === id)).filter((c): c is Case => Boolean(c))
   const workHtml = section(
     h2(workSection.title) +
       p(workSection.lead) +
       featured.map(caseCard).join('') +
       tag(
         'article',
-        h3(workSection.more.title) + p(workSection.more.body) + tag('p', a(workSection.all.href, workSection.all.label)),
+        h3(workSection.more.title) +
+          p(workSection.more.body) +
+          tag('p', a(workSection.all.href, workSection.all.label)),
       ),
     'work',
   )
@@ -404,10 +401,7 @@ function systemPageHtml(slug: string): string | null {
       )
     : ''
   return page(
-    hero(copy.kicker, `${sp.title}. ${sp.promise}`, sp.intro, [
-      copy.cta,
-      { label: copy.buildLink, href: '#build' },
-    ]) +
+    hero(copy.kicker, `${sp.title}. ${sp.promise}`, sp.intro, [copy.cta, { label: copy.buildLink, href: '#build' }]) +
       section(
         h2(copy.painsTitle) +
           sp.pains
@@ -681,6 +675,28 @@ export function snapshot(id: string): string | null {
   }
   if (id.startsWith('legal:')) return legalPageHtml(id.slice('legal:'.length))
   return id.startsWith('system:') ? systemPageHtml(id.slice('system:'.length)) : null
+}
+
+// The Wezigns mark as components/Logo.tsx's LogoMark renders it at 56 px (the preloader size).
+const PRELOADER_MARK =
+  '<svg width="56" height="56" viewBox="0 0 32 32" fill="none" aria-hidden="true">' +
+  '<path d="M3 8l6.5 16L16 11l6.5 13L29 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>' +
+  '<circle cx="16" cy="11" r="3.2" fill="var(--lime)"></circle></svg>'
+
+/**
+ * The home preloader (components/Preloader.tsx) as plain HTML, so it paints straight from the HTML instead of after
+ * the scripts have run. `is-boot` marks this copy: React's first render replaces it with the identical live one.
+ * Null for pages without a preloader.
+ */
+export function bootPreloader(id: string): string | null {
+  if (id !== 'home') return null
+  const panels = '<span class="pre-panel"></span>'.repeat(5)
+  return (
+    `<div class="preloader is-boot" role="status" aria-label="${t(preloaderCopy.label)}">` +
+    `<div class="pre-panels" aria-hidden="true">${panels}</div>` +
+    `<div class="pre-inner"><span class="pre-mark">${PRELOADER_MARK}</span><span class="pre-num mono">000</span>` +
+    `<span class="pre-bar"><i></i></span><span class="pre-caption mono">${t(preloaderCopy.home)}</span></div></div>`
+  )
 }
 
 /** Every page id with a snapshot, in page order. */

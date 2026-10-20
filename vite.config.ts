@@ -5,6 +5,7 @@ import { existsSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import { seo } from './scripts/vite-seo.ts'
 import { snapshotPlugin } from './scripts/vite-snapshot.ts'
+import { pagePreloadPlugin } from './scripts/vite-page-preload.ts'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
 const page = (path: string) => fileURLToPath(new URL(`./${path}`, import.meta.url))
@@ -40,6 +41,8 @@ export default defineConfig({
     // Head tags + JSON-LD + sitemap.xml/llms.txt (seo), and each page's copy as crawlable HTML in #root (snapshot).
     seo(),
     snapshotPlugin(),
+    // Inner pages: preload the page's own chunk with the shared entry instead of after it.
+    pagePreloadPlugin(),
     {
       // Clean URLs in dev and preview, matching Vercel's cleanUrls: /contact-us → /contact-us.html,
       // /systems/people → /systems/people.html. Only rewrites when that .html page exists.

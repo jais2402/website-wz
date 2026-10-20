@@ -21,12 +21,14 @@ import { Story } from '@/components/Story'
 import { Work } from '@/components/Work'
 import { useHashScroll, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
 import { useLite } from '@/hooks/useLite'
+import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
 import { LoomHero, Weave } from '@/loom/hero'
 import { BeforeAfter, LoomContact } from '@/loom/sections'
+import { preloaderCopy } from '@/content/site'
 
-// The fixed canvas (story threads + countries globe) is the heaviest chunk; load it in parallel with the preloader.
-// The loom hero lazy-loads its own canvas. Each pauses itself while off screen.
+// The fixed canvas (story threads + countries globe) is the heaviest chunk; it loads right after the hero's first
+// paint, while the preloader is up. The loom hero lazy-loads its own canvas. Each pauses itself while off screen.
 const Scene = lazy(() => import('@/scene/Scene').then((m) => ({ default: m.Scene })))
 
 /**
@@ -38,21 +40,31 @@ export default function App() {
   const reducedMotion = usePrefersReducedMotion()
   const { lite, tier } = useLite()
   const [ready, setReady] = useState(false)
+  // Two passes under the preloader: the first render is the hero alone, so it paints sooner; the rest of the page
+  // (and the fixed story/globe canvas, which looks up its sections on mount) follows right after that first paint,
+  // still under the preloader, so the page it reveals is unchanged.
+  const built = useAfterPaint({ idle: false })
   useSmoothScroll(!reducedMotion)
   // /#faq and the other home-section links from inner pages land on their section once the page is laid out.
   useHashScroll(ready)
-  usePauseOffscreen()
-  // Lite runs only the light loom (no story/globe canvas); static has no WebGL at all.
+  usePauseOffscreen(built)
+  // Static has no WebGL, so there is no 3D to wait for. Lite runs both scenes (boxed loom, story/globe).
   useEffect(() => {
-    if (tier !== 'full') homeGate?.done('scene')
-    if (tier === 'static') homeGate?.done('loom')
+    if (tier !== 'static') return
+    homeGate?.done('loom')
+    homeGate?.done('scene')
   }, [tier])
 
   return (
     <>
-      <Preloader reducedMotion={reducedMotion} gate={homeGate} caption="Untangling the threads" onDone={() => setReady(true)} />
-      {/* Lite mode never downloads three.js: the story and globe use static SVG art instead. */}
-      {!lite && (
+      <Preloader
+        reducedMotion={reducedMotion}
+        gate={homeGate}
+        caption={preloaderCopy.home}
+        onDone={() => setReady(true)}
+      />
+      {/* Static never downloads three.js: the story and globe show stills of the real scenes instead. */}
+      {tier !== 'static' && built && (
         <Suspense fallback={<div className="canvas-root canvas-fallback" aria-hidden="true" />}>
           <Scene reducedMotion={reducedMotion} />
         </Suspense>
@@ -60,7 +72,7 @@ export default function App() {
       <div className="grain" aria-hidden="true" />
       <Cursor />
       <Nav />
-      {!lite && <GuideLight active={ready} />}
+      {!lite && built && <GuideLight active={ready} />}
       {/* Before <main> in the DOM so keyboard and screen-reader users reach it early (it is fixed bottom-left).
           Held back until the preloader has finished. */}
       <CookieBanner ready={ready} />
@@ -68,51 +80,59 @@ export default function App() {
         <SectionBoundary name="LoomHero">
           <LoomHero reducedMotion={reducedMotion} introReady={ready} />
         </SectionBoundary>
-        <SectionBoundary name="Weave">
-          <Weave />
-        </SectionBoundary>
-        <SectionBoundary name="Story">
-          <Story />
-        </SectionBoundary>
-        <SectionBoundary name="Proof">
-          <Proof />
-        </SectionBoundary>
-        <SectionBoundary name="Services">
-          <Services />
-        </SectionBoundary>
-        <SectionBoundary name="Areas">
-          <Areas />
-        </SectionBoundary>
-        <SectionBoundary name="BeforeAfter">
-          <BeforeAfter />
-        </SectionBoundary>
-        <SectionBoundary name="AIDemo">
-          <AIDemo />
-        </SectionBoundary>
-        <SectionBoundary name="Work">
-          <Work />
-        </SectionBoundary>
-        <SectionBoundary name="Process">
-          <Process />
-        </SectionBoundary>
-        <SectionBoundary name="Pricing">
-          <Pricing />
-        </SectionBoundary>
-        <SectionBoundary name="Integrations">
-          <Integrations />
-        </SectionBoundary>
-        <SectionBoundary name="Countries">
-          <Countries />
-        </SectionBoundary>
-        <SectionBoundary name="Faq">
-          <Faq />
-        </SectionBoundary>
-        <SectionBoundary name="LoomContact">
-          <LoomContact />
-        </SectionBoundary>
+        {built && (
+          <>
+            <SectionBoundary name="Weave">
+              <Weave />
+            </SectionBoundary>
+            <SectionBoundary name="Story">
+              <Story />
+            </SectionBoundary>
+            <SectionBoundary name="Proof">
+              <Proof />
+            </SectionBoundary>
+            <SectionBoundary name="Services">
+              <Services />
+            </SectionBoundary>
+            <SectionBoundary name="Areas">
+              <Areas />
+            </SectionBoundary>
+            <SectionBoundary name="BeforeAfter">
+              <BeforeAfter />
+            </SectionBoundary>
+            <SectionBoundary name="AIDemo">
+              <AIDemo />
+            </SectionBoundary>
+            <SectionBoundary name="Work">
+              <Work />
+            </SectionBoundary>
+            <SectionBoundary name="Process">
+              <Process />
+            </SectionBoundary>
+            <SectionBoundary name="Pricing">
+              <Pricing />
+            </SectionBoundary>
+            <SectionBoundary name="Integrations">
+              <Integrations />
+            </SectionBoundary>
+            <SectionBoundary name="Countries">
+              <Countries />
+            </SectionBoundary>
+            <SectionBoundary name="Faq">
+              <Faq />
+            </SectionBoundary>
+            <SectionBoundary name="LoomContact">
+              <LoomContact />
+            </SectionBoundary>
+          </>
+        )}
       </main>
-      <Footer />
-      <StickyCall />
+      {built && (
+        <>
+          <Footer />
+          <StickyCall />
+        </>
+      )}
     </>
   )
 }

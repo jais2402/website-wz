@@ -113,10 +113,11 @@ void main() {
 `
 
 export const threadFragment = /* glsl */ `
+uniform float uBoost;
 varying vec3 vColor;
 varying float vAlpha;
 void main() {
-  gl_FragColor = vec4(vColor, vAlpha);
+  gl_FragColor = vec4(vColor, vAlpha * uBoost);
 }
 `
 
@@ -142,11 +143,12 @@ void main() {
 `
 
 export const riderFragment = /* glsl */ `
+uniform float uBoost;
 varying vec3 vColor;
 varying float vAlpha;
 void main() {
   float r = length(gl_PointCoord - 0.5);
   if (r > 0.5) discard;
-  gl_FragColor = vec4(vColor, pow(smoothstep(0.5, 0.0, r), 1.8) * vAlpha);
+  gl_FragColor = vec4(vColor, pow(smoothstep(0.5, 0.0, r), 1.8) * vAlpha * uBoost);
 }
 `

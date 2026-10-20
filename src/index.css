@@ -452,6 +452,21 @@ main,
   color: var(--muted);
 }
 
+/* The copy of the preloader in the HTML (is-boot) plays the mark's intro in CSS until React takes over and
+   continues it in GSAP (Preloader.tsx). expo.out as a curve. */
+@media (prefers-reduced-motion: no-preference) {
+  .preloader.is-boot .pre-mark {
+    animation: pre-mark-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes pre-mark-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-20deg);
+  }
+}
+
 /* ==========================================================================
    Nav
    ========================================================================== */
@@ -3585,47 +3600,38 @@ main,
 }
 
 /* ==========================================================================
-   Lite mode (no WebGL): static SVG stand-ins for the 3D scenes
+   Lite tier (no WebGL): stills of the real 3D scenes (LiteArt.tsx, public/lite/)
    ========================================================================== */
-.lite-art {
+.lite-poster {
   display: block;
   pointer-events: none;
+  user-select: none;
 }
 
-.lite-loom {
+/* Full-bleed stills, placed like the canvas they stand in for, with a slow drift so the scene still breathes. */
+.lite-loom,
+.lite-story .lite-poster {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  animation: liteDrift 28s ease-in-out infinite alternate;
 }
 
 .lite-story {
   position: absolute;
-  right: max(var(--gutter), calc((100vw - 1320px) / 2));
-  top: 50%;
-  translate: 0 -50%;
-  width: min(46vw, 620px);
-  height: auto;
+  inset: 0;
+  pointer-events: none;
 }
 
-.lite-story g {
+.lite-story .lite-poster {
   opacity: 0;
-  transition: opacity 0.8s var(--ease-out);
+  transition: opacity 0.9s var(--ease-out);
 }
 
-.lite-story g.is-on {
+.lite-story .lite-poster.is-on {
   opacity: 1;
-}
-
-.lite-thread {
-  fill: none;
-  stroke: #e9d7b0;
-  stroke-opacity: 0.55;
-  stroke-width: 1.4;
-}
-
-.lite-thread.alt {
-  stroke: #8cc4ff;
 }
 
 .countries-lite {
@@ -3633,20 +3639,36 @@ main,
   place-items: center;
 }
 
+/* The globe sits in the right part of its still: a square crop keeps it centred in the card's column. */
 .lite-globe {
   width: min(100%, 560px);
-  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: 100% 50%;
+  animation: liteDrift 28s ease-in-out infinite alternate;
+}
+
+@keyframes liteDrift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05) translate3d(-1%, 0.5%, 0);
+  }
+}
+
+/* The lite tier caps animations at one short pass; the drift is the one ambient loop it keeps. */
+html.perf-lite .lite-poster {
+  animation-duration: 28s !important;
+  animation-iteration-count: infinite !important;
 }
 
 @media (max-width: 899px) {
-  .lite-story {
-    top: 22%;
-    right: 50%;
-    translate: 50% -50%;
-    width: min(80vw, 420px);
+  /* Phones: the shapes sit right of centre in the stills; keep them in view above the copy. */
+  .lite-story .lite-poster {
+    object-position: 78% 50%;
   }
 
-  /* In the countries section the art goes above the card on phones. */
   .countries-lite {
     order: -1;
   }
@@ -3658,6 +3680,12 @@ main,
 
   .lite-globe {
     width: min(78vw, 360px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lite-poster {
+    animation: none !important;
   }
 }
 
@@ -4765,7 +4793,6 @@ main,
   }
 }
 
-
 /* ==========================================================================
    Rendering tiers (lib/perfTier.ts): perf-full | perf-lite | perf-static on <html>.
    Lite is for machines without GPU acceleration (software rasteriser): every blur and composite would run on the
@@ -4785,7 +4812,8 @@ html.perf-static *::after {
 }
 
 /* Former glass surfaces: solid fills from the ink tokens, so text keeps its contrast without the blur. */
-html:is(.perf-lite, .perf-static) :is(
+html:is(.perf-lite, .perf-static)
+  :is(
     .hero-glass,
     .story-copy,
     .glass-card,
@@ -4831,4 +4859,77 @@ html.perf-static *::before,
 html.perf-static *::after {
   animation: none !important;
   transition: none !important;
+}
+
+/* Lite keeps the running card outline (a small repaint per card); only on-screen sections animate (.is-offscreen
+   pauses the rest). */
+html.perf-lite
+  :is(
+    .glass-card,
+    .case-card,
+    .loom-card,
+    .sv-card,
+    .svc-inner,
+    .nf-card,
+    .ai-card,
+    .aip-inside-card,
+    .aip-doc-card,
+    .sy-more-card,
+    .sy-module,
+    .sy-tooltile,
+    .price-card,
+    .cta-strip-card,
+    .contact-card,
+    .areas-cta,
+    .faq-ask,
+    .loom-intro,
+    .story-copy,
+    .loom-phase,
+    .areas-screen,
+    .ba-stage,
+    .ai-app,
+    .sv-job,
+    .aip-way-visual,
+    .aip-tool,
+    .tech-group,
+    .pf-case.is-lead
+  )::after {
+  animation-duration: 7s !important;
+  animation-iteration-count: infinite !important;
+}
+
+/* Lite tier: the story/globe canvas becomes a box right of the copy (like the hero loom), so the same scene draws a
+   fraction of the pixels; the shapes centre and fit inside it (framed in ThreadField / Globe). Soft edges. */
+/* The full-screen glow the canvas normally carries moves to a fixed layer behind it, so the 3D zones still show it
+   edge to edge (opaque sections cover it as usual). */
+html.perf-lite body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(60% 50% at 50% 45%, rgba(139, 123, 255, 0.14), transparent 70%), var(--ink);
+}
+
+html.perf-lite .canvas-root {
+  background: none;
+  inset: 96px max(var(--gutter), calc((100vw - 1320px) / 2)) 40px auto;
+  width: min(44vw, 640px);
+  height: auto;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+  mask-composite: intersect;
+}
+
+@media (max-width: 899px) {
+  html.perf-lite .canvas-root {
+    inset: 84px 0 auto 0;
+    width: auto;
+    height: 44vh;
+  }
 }

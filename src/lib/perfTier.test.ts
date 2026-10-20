@@ -1,6 +1,6 @@
-import { decideTier, median, parseOverride, watchdogStart, watchdogStep, worseTier } from './perfTier'
+import { decideTier, parseOverride, worseTier } from './perfTier'
 
-const desktop = { desktop: true, cores: 16, deviceMemoryGb: 8 }
+const desktop = { desktop: true }
 
 describe('decideTier', () => {
   it('serves the full site on a real GPU', () => {
@@ -31,21 +31,6 @@ describe('decideTier', () => {
     expect(decideTier({ context: true, debugInfo: false }, desktop).tier).toBe('lite')
     expect(decideTier({ context: true, debugInfo: false }, { desktop: false }).tier).toBe('full')
   })
-
-  it('lets low memory or CPU demote, but a high core count never promotes a software renderer', () => {
-    expect(
-      decideTier({ context: true, debugInfo: true, renderer: 'Apple GPU' }, { ...desktop, deviceMemoryGb: 2 }).tier,
-    ).toBe('lite')
-    expect(decideTier({ context: true, debugInfo: true, renderer: 'Apple GPU' }, { ...desktop, cores: 2 }).tier).toBe(
-      'lite',
-    )
-    expect(
-      decideTier(
-        { context: true, debugInfo: true, renderer: 'Microsoft Basic Render Driver' },
-        { desktop: true, cores: 64, deviceMemoryGb: 64 },
-      ).tier,
-    ).toBe('lite')
-  })
 })
 
 describe('overrides and ordering', () => {
@@ -61,32 +46,5 @@ describe('overrides and ordering', () => {
     expect(worseTier('full', 'lite')).toBe('lite')
     expect(worseTier('static', 'lite')).toBe('static')
     expect(worseTier('full', 'full')).toBe('full')
-  })
-})
-
-describe('frame-rate watchdog', () => {
-  const feed = (tier: 'full' | 'lite', ms: number[]) => ms.reduce(watchdogStep, watchdogStart(tier))
-
-  it('demotes full to lite after two slow windows in a row, not one', () => {
-    expect(feed('full', [30, 16, 30]).tier).toBe('full')
-    expect(feed('full', [30, 30]).tier).toBe('lite')
-  })
-
-  it('demotes lite to static only when it stays over 40 ms', () => {
-    expect(feed('full', [30, 30, 30, 30]).tier).toBe('lite')
-    expect(feed('full', [30, 30, 45, 45]).tier).toBe('static')
-    expect(feed('full', [30, 30, 45, 45]).done).toBe(true)
-  })
-
-  it('stops after ten calm windows and never promotes', () => {
-    const calm = feed('full', Array(10).fill(16))
-    expect(calm.done).toBe(true)
-    expect(watchdogStep(calm, 200).tier).toBe('full')
-  })
-
-  it('takes the median of frame deltas', () => {
-    expect(median([16, 17, 100])).toBe(17)
-    expect(median([10, 20])).toBe(15)
-    expect(median([])).toBe(0)
   })
 })

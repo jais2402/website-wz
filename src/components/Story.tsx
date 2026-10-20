@@ -12,7 +12,7 @@ export function Story() {
   const root = useRef<HTMLElement>(null)
   const bar = useRef<HTMLSpanElement>(null)
   const [step, setStep] = useState(0)
-  const { lite } = useLite()
+  const { tier } = useLite()
 
   useGSAP(
     () => {
@@ -37,7 +37,7 @@ export function Story() {
   return (
     <section ref={root} className="story" data-3d-zone aria-label="Our principles">
       <div className="story-sticky">
-        {lite && <StoryLiteArt step={step} />}
+        {tier === 'static' && <StoryLiteArt step={step} />}
         <div className="story-rail" aria-hidden="true">
           <span className="story-rail-fill" ref={bar} />
         </div>

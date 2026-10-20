@@ -16,7 +16,7 @@ const indexOf = (name: string) => countries.findIndex((c) => c.name === name)
  */
 export function Countries() {
   const root = useRef<HTMLElement>(null)
-  const { lite } = useLite()
+  const { tier } = useLite()
 
   useGSAP(
     () => {
@@ -81,7 +81,7 @@ export function Countries() {
               ))}
           </ul>
         </div>
-        {lite && (
+        {tier === 'static' && (
           <div className="countries-lite">
             <GlobeLiteArt />
           </div>
