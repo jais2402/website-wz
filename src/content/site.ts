@@ -137,7 +137,7 @@ export const tools = [
 ]
 
 export const stats = [
-  { value: 20, suffix: '+', label: 'Products, portals and platforms shipped' },
+  { value: 20, suffix: '+', label: 'Business systems and platforms shipped' },
   { value: 11, suffix: '', label: 'Countries our systems run in' },
   { value: 2012, suffix: '', label: 'Building since', plain: true },
 ]
@@ -315,7 +315,7 @@ export const workSection = {
   featured: ['safety-training', 'tourism', 'engineering-event', 'marketplace', 'car-rental'],
   more: {
     title: 'Over a hundred projects and counting.',
-    body: 'Every case study, plus the stores, portals and booking systems behind them.',
+    body: 'Twenty-plus business systems, and the websites, stores and portals we have built since 2012.',
   },
 }
 
