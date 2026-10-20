@@ -58,7 +58,7 @@ export function PortfolioPage() {
               <div className="pf-case-copy">
                 <p className="mono pf-case-tag case-card-tag">
                   {c.sector}
-                  {c.place && <span className="case-card-place">{c.place}</span>}
+                  {'place' in c && <span className="case-card-place">{c.place}</span>}
                 </p>
                 <h3>{c.title}</h3>
                 <p className="pf-case-body">{c.body}</p>

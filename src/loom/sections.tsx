@@ -320,7 +320,7 @@ export function Timelines() {
           <article key={c.id} className={`tl glass-card tone-${c.tone}`}>
             <header className="tl-head">
               <span className="mono tl-tag">
-                {c.sector}, {c.place}
+                {'place' in c ? `${c.sector}, ${c.place}` : c.sector}
               </span>
               <h3>{c.title}</h3>
             </header>

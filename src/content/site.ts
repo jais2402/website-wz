@@ -364,8 +364,7 @@ export const work = [
   },
   {
     id: 'marketplace',
-    place: 'Retail',
-    sector: 'Marketplace',
+    sector: 'B2B marketplace',
     title: 'Sellers grew fifteen times over. Support headcount did not.',
     body: 'Automated seller onboarding with real-time API integrations for a regional B2B marketplace.',
     metrics: [
