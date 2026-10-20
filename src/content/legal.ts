@@ -204,7 +204,7 @@ export const termsOfUse: LegalDoc = {
       id: 'case-studies',
       heading: 'Case studies and sample figures',
       body: [
-        'Our case studies describe real projects. Clients are not named unless they have agreed, and some details are changed to protect confidentiality.',
+        'Our case studies describe real projects. They name the sector, not the client, and some details are changed to protect confidentiality. The project list on our portfolio page uses the project names that were already published on our earlier website. If you would like your project removed from that list, email us and we will take it down.',
         'Results such as percentages are what those clients saw in their own circumstances. Your results will depend on your business and are not guaranteed.',
         'The dashboards in the systems explorer and on the system pages show sample data, labelled as such. They illustrate what a system can look like and are not real client figures.',
       ],

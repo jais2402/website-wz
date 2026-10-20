@@ -331,7 +331,7 @@ export const servicesPage = {
 export const portfolioPage = {
   kicker: 'Our work',
   title: ['Systems we have built', 'for growing', 'businesses.'],
-  lead: 'Training platforms, event dashboards, marketplaces, stores and portals that replaced spreadsheets, email threads and manual work. Case studies name the sector, not the client.',
+  lead: 'Training platforms, event dashboards, marketplaces, stores and portals that replaced spreadsheets, email threads and manual work. Case studies name the sector, not the client; the full project list uses the names first published on our earlier website.',
   systemsLink: { label: 'See the systems we build', href: '/our-services' },
   featuredKicker: 'Case studies',
   featuredTitle: 'What changed for our clients.',
