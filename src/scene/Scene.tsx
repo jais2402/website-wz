@@ -2,10 +2,12 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { Component, type ReactNode, useEffect, useState } from 'react'
 import { damp } from '@/lib/math'
+import { homeGate } from '@/lib/loadGate'
 import { sceneStore } from '@/lib/sceneStore'
 import { Dust } from './Dust'
 import { Globe } from './Globe'
 import { ThreadField } from './ThreadField'
+import { Warmup } from './Warmup'
 
 /** Renders a static gradient if WebGL is unavailable instead of crashing the page. */
 class WebGLBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -41,6 +43,8 @@ function useIsMobile() {
 export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   const mobile = useIsMobile()
   const [active, setActive] = useState(true)
+  // Keeps rendering until the shaders are compiled and drawn once, even before a 3D zone is on screen.
+  const [warm, setWarm] = useState(false)
 
   useEffect(() => {
     const zones = Array.from(document.querySelectorAll('[data-3d-zone]'))
@@ -64,11 +68,17 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
     <div className={`canvas-root${active ? '' : ' is-paused'}`} aria-hidden="true">
       <WebGLBoundary>
         <Canvas
-          frameloop={active ? 'always' : 'never'}
+          frameloop={active || !warm ? 'always' : 'never'}
           dpr={[1, mobile ? 1.5 : 2]}
           camera={{ position: [0, 0, 7.5], fov: 45, near: 0.1, far: 60 }}
           gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
         >
+          <Warmup
+            onDone={() => {
+              setWarm(true)
+              homeGate?.done('scene')
+            }}
+          />
           <CameraRig />
           <Dust count={mobile ? 425 : 1190} />
           <ThreadField

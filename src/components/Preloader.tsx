@@ -1,19 +1,24 @@
 import { useGSAP } from '@gsap/react'
 import { useRef, useState } from 'react'
 import { gsap, lockScroll } from '@/hooks/motion'
+import type { Gate } from '@/lib/loadGate'
 import { LogoMark } from './Logo'
 
-// Phones and touch tablets skip the intro so the headline and offer line are on screen at once.
-const SKIP_QUERY = '(max-width: 768px), (pointer: coarse)'
-
-/** Counter-driven intro (0 → 100) that wipes away to reveal the scene. Skipped for reduced motion and on phones. */
+/**
+ * Counter-driven intro (0 → 100) that wipes away to reveal the scene. With a `gate` it waits until everything is
+ * loaded (fonts, the page, both 3D scenes compiled and drawn): the counter follows real progress up to 90, holds
+ * there, and finishes once the gate opens (the gate itself times out, so this never hangs). Reduced motion: a
+ * still loader that simply disappears when ready.
+ */
 export function Preloader({
   reducedMotion,
   onDone,
+  gate,
   caption = 'Organising the chaos',
 }: {
   reducedMotion: boolean
   onDone: () => void
+  gate?: Gate | null
   caption?: string
 }) {
   const root = useRef<HTMLDivElement>(null)
@@ -21,33 +26,59 @@ export function Preloader({
 
   useGSAP(
     () => {
-      if (reducedMotion || window.matchMedia(SKIP_QUERY).matches) {
-        setGone(true)
-        onDone()
-        return
-      }
+      const ready = gate?.ready ?? Promise.resolve()
       lockScroll(true)
-      const counter = { v: 0 }
-      const num = root.current!.querySelector('.pre-num')!
-      const tl = gsap.timeline({
-        onComplete: () => {
+      let cancelled = false
+      const finish = () => {
+        lockScroll(false)
+        setGone(true)
+      }
+
+      if (reducedMotion) {
+        ready.then(() => {
+          if (cancelled) return
+          onDone()
+          finish()
+        })
+        return () => {
+          cancelled = true
           lockScroll(false)
-          setGone(true)
-        },
+        }
+      }
+
+      const num = root.current!.querySelector('.pre-num')!
+      const bar = root.current!.querySelector<HTMLElement>('.pre-bar > i')!
+      const counter = { v: 0 }
+      const show = () => {
+        num.textContent = String(Math.round(counter.v)).padStart(3, '0')
+        bar.style.transform = `scaleX(${counter.v / 100})`
+      }
+      gsap.from('.pre-mark', { scale: 0.6, opacity: 0, rotate: -20, duration: 1, ease: 'expo.out' })
+
+      // Climb towards the real progress (capped at 90 until the gate opens), never faster than a smooth count.
+      const climb = () => {
+        const target = Math.min(90, 12 + (gate?.progress() ?? 1) * 78)
+        if (target > counter.v) counter.v += Math.max(0.4, (target - counter.v) * 0.08)
+        show()
+      }
+      gsap.ticker.add(climb)
+      const minShown = new Promise((r) => setTimeout(r, 1400))
+
+      Promise.all([ready, minShown]).then(() => {
+        if (cancelled) return
+        gsap.ticker.remove(climb)
+        gsap
+          .timeline({ onComplete: finish })
+          .to(counter, { v: 100, duration: 0.45, ease: 'power2.out', onUpdate: show })
+          .to('.pre-inner', { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' }, '+=0.15')
+          .add(onDone, '<')
+          .to('.pre-panel', { yPercent: -100, duration: 1, ease: 'expo.inOut', stagger: 0.06 }, '<0.1')
       })
-      tl.to(counter, {
-        v: 100,
-        duration: 2.1,
-        ease: 'power2.inOut',
-        onUpdate: () => {
-          num.textContent = String(Math.round(counter.v)).padStart(3, '0')
-        },
-      })
-        .to('.pre-bar > i', { scaleX: 1, duration: 2.1, ease: 'power2.inOut' }, 0)
-        .from('.pre-mark', { scale: 0.6, opacity: 0, rotate: -20, duration: 1, ease: 'expo.out' }, 0)
-        .to('.pre-inner', { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' }, '+=0.15')
-        .add(onDone, '<')
-        .to('.pre-panel', { yPercent: -100, duration: 1, ease: 'expo.inOut', stagger: 0.06 }, '<0.1')
+      return () => {
+        cancelled = true
+        gsap.ticker.remove(climb)
+        lockScroll(false)
+      }
     },
     { scope: root },
   )

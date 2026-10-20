@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { AIDemo } from '@/components/AIDemo'
 import { Areas } from '@/components/Areas'
 import { Countries } from '@/components/Countries'
@@ -10,6 +10,7 @@ import { GuideLight } from '@/components/GuideLight'
 import { Integrations } from '@/components/Integrations'
 import { Nav } from '@/components/Nav'
 import { Preloader } from '@/components/Preloader'
+import { homeGate } from '@/lib/loadGate'
 import { Pricing } from '@/components/Pricing'
 import { Process } from '@/components/Process'
 import { Proof } from '@/components/Proof'
@@ -41,11 +42,16 @@ export default function App() {
   // /#faq and the other home-section links from inner pages land on their section once the page is laid out.
   useHashScroll(ready)
   usePauseOffscreen()
-  // Once the intro is done, check the 3D keeps up; if not, switch to the lite (no-WebGL) site.
+  // Without WebGL there is no 3D to wait for.
+  useEffect(() => {
+    if (!lite) return
+    homeGate?.done('loom')
+    homeGate?.done('scene')
+  }, [lite])
 
   return (
     <>
-      <Preloader reducedMotion={reducedMotion || lite} caption="Untangling the threads" onDone={() => setReady(true)} />
+      <Preloader reducedMotion={reducedMotion} gate={homeGate} caption="Untangling the threads" onDone={() => setReady(true)} />
       {/* Lite mode never downloads three.js: the story and globe use static SVG art instead. */}
       {!lite && (
         <Suspense fallback={<div className="canvas-root canvas-fallback" aria-hidden="true" />}>

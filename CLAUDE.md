@@ -44,6 +44,8 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   assets anywhere. The look is recognisable, so flag it in client reviews (see `docs/concept-study.md`).
 - Unused alternates kept for reference: `components/Hero.tsx` (particle hero) and `components/Contact.tsx`
   (contact over the particle globe). They are not rendered.
+- The home preloader waits for `homeGate` (`lib/loadGate.ts`): fonts, window load, and both canvases reporting via
+  `scene/Warmup.tsx` (shaders compiled + first frames drawn). It opens after 12 s regardless.
 - Two WebGL canvases share the page: the loom hero (in its sticky section) and the fixed canvas (story threads +
   countries globe, with bloom on desktop).
   Each pauses itself when off screen; keep it that way.
@@ -116,7 +118,7 @@ src/
 - GSAP via `useGSAP(() => …, { scope })` so everything auto-reverts on unmount.
 - Page-level smooth scroll is Lenis. Use `scrollToTarget()` for in-page links. `window.scrollTo` gets
   overridden by Lenis.
-- Every effect must respect `prefers-reduced-motion` (Lenis is disabled, the preloader is skipped, CSS animations stop).
+- Every effect must respect `prefers-reduced-motion` (Lenis is disabled, the preloader is a still loader, CSS animations stop).
 - Desktop-only effects (horizontal service pin, cursor ring, pointer repulsion) are gated by `gsap.matchMedia`
   or `(pointer: fine)`.
 

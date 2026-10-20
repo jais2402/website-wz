@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { buildParticles, buildStrands } from '@/lib/loom'
 import { damp } from '@/lib/math'
 import { glowFragment, glowVertex, particleFragment, particleVertex, strandFragment, strandVertex } from './shaders'
+import { Warmup } from '@/scene/Warmup'
 import { loomStore } from './store'
 
 type Quality = { strands: number; points: number; particles: number }
@@ -425,7 +426,6 @@ export function LoomScene({ reducedMotion, active, onReady, view = 'hero', varia
     <Canvas
       dpr={[1, 2]}
       camera={{ position: [-1.2, 0.6, 14], fov: 40, near: 0.1, far: 100 }}
-      onCreated={onReady}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       frameloop={active ? 'always' : 'never'}
     >
@@ -444,6 +444,8 @@ export function LoomScene({ reducedMotion, active, onReady, view = 'hero', varia
         <Threads quality={quality} reducedMotion={reducedMotion} view={view} v={v} />
         <Loom reducedMotion={reducedMotion} variant={variant} v={v} />
       </group>
+      {/* Ready = shaders compiled and the first frames drawn, not just the context created. */}
+      {onReady && <Warmup onDone={onReady} />}
       {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} variant={variant} /> : <CameraRig />}
 
       <EffectComposer multisampling={0}>

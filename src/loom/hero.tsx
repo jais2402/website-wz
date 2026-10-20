@@ -1,4 +1,5 @@
 import { useGSAP } from '@gsap/react'
+import { homeGate } from '@/lib/loadGate'
 import { type CSSProperties, Fragment, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
 import { LoomLiteArt } from '@/components/LiteArt'
@@ -72,7 +73,11 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
             <LoomLiteArt />
           ) : (
             <Suspense fallback={null}>
-              <LoomScene reducedMotion={reducedMotion} active={active} onReady={() => setReady(true)} />
+              <LoomScene reducedMotion={reducedMotion} active={active} onReady={() => {
+                  setReady(true)
+                  homeGate?.done('loom')
+                }}
+              />
             </Suspense>
           )}
         </div>
