@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { LoomLiteArt } from '@/components/LiteArt'
-import { useFpsWatchdog, useLite } from '@/hooks/useLite'
+import { useLite } from '@/hooks/useLite'
 import { usePrefersReducedMotion } from '@/hooks/motion'
 import type { LoomVariant } from '@/loom/LoomScene'
 import { loomStore } from '@/loom/store'
@@ -19,7 +19,6 @@ export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
   const root = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
-  useFpsWatchdog(ready && active)
 
   // Threads come in half-calmed: tangled on the way in, ordered once they pass through the loom.
   useEffect(() => {

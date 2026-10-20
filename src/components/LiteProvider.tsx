@@ -3,8 +3,8 @@ import { LiteContext } from '@/hooks/useLite'
 import { decideLite, readLiteSignals } from '@/lib/lite'
 
 /**
- * Lite mode = the same site without WebGL. Decided up front from device/network signals, and switched on later
- * if the 3D cannot keep up (low frame rate) or the GPU drops the WebGL context.
+ * Lite mode = the same site without WebGL. Only used when the browser has no WebGL, or later if the GPU drops
+ * the WebGL context (the canvas would otherwise go blank).
  */
 export function LiteProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState(() => decideLite(readLiteSignals()))

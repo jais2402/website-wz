@@ -19,7 +19,7 @@ import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
 import { Work } from '@/components/Work'
 import { useHashScroll, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
-import { useFpsWatchdog, useLite } from '@/hooks/useLite'
+import { useLite } from '@/hooks/useLite'
 import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
 import { LoomHero, Weave } from '@/loom/hero'
 import { BeforeAfter, LoomContact } from '@/loom/sections'
@@ -42,7 +42,6 @@ export default function App() {
   useHashScroll(ready)
   usePauseOffscreen()
   // Once the intro is done, check the 3D keeps up; if not, switch to the lite (no-WebGL) site.
-  useFpsWatchdog(ready && !reducedMotion)
 
   return (
     <>

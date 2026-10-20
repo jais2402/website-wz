@@ -1,4 +1,4 @@
-// Decides whether to serve the "lite" site: same content, no WebGL. Pure so it can be unit-tested; the browser
+// Decides whether to serve the "lite" site (same content, no WebGL): only when WebGL is missing or ?lite=1. Pure so it can be unit-tested; the browser
 // signals are gathered by readLiteSignals() below.
 
 export type LiteSignals = {
@@ -21,23 +21,10 @@ export type LiteDecision = { lite: boolean; reason: string }
 export function decideLite(s: LiteSignals): LiteDecision {
   if (s.override === 'lite') return { lite: true, reason: 'forced by ?lite=1' }
   if (s.override === 'full') return { lite: false, reason: 'forced by ?lite=0' }
+  // Lite only when 3D cannot run at all. Network, memory and CPU hints no longer downgrade the site (client
+  // decision, 2026-10-20): Chrome's downlink estimate read ~1.35 Mbps on fast connections and served line art.
   if (!s.webgl) return { lite: true, reason: 'WebGL unavailable' }
-  if (s.saveData) return { lite: true, reason: 'data saver is on' }
-  // effectiveType is Chrome's estimate and reads '3g' on ordinary Wi-Fi now and then, so only 2G counts on its own.
-  if (s.effectiveType && /(^|-)2g$/.test(s.effectiveType)) return { lite: true, reason: `slow network (${s.effectiveType})` }
-  if (s.downlinkMbps !== undefined && s.downlinkMbps > 0 && s.downlinkMbps < 1.5) {
-    return { lite: true, reason: `slow network (${s.downlinkMbps} Mbps)` }
-  }
-  if (s.deviceMemoryGb !== undefined && s.deviceMemoryGb <= 2) return { lite: true, reason: `low memory (${s.deviceMemoryGb} GB)` }
-  if (s.cores !== undefined && s.cores <= 2) return { lite: true, reason: `low CPU (${s.cores} cores)` }
   return { lite: false, reason: 'full experience' }
-}
-
-/** Average frames per second from a list of frame timestamps (ms). */
-export function averageFps(timestamps: number[]): number {
-  if (timestamps.length < 2) return 0
-  const span = timestamps[timestamps.length - 1] - timestamps[0]
-  return span > 0 ? ((timestamps.length - 1) * 1000) / span : 0
 }
 
 type NetworkInformation = { saveData?: boolean; effectiveType?: string; downlink?: number }

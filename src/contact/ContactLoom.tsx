@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { LoomLiteArt } from '@/components/LiteArt'
-import { useFpsWatchdog, useLite } from '@/hooks/useLite'
+import { useLite } from '@/hooks/useLite'
 import { loomStore } from '@/loom/store'
 
 const LoomScene = lazy(() => import('@/loom/LoomScene').then((m) => ({ default: m.LoomScene })))
@@ -11,7 +11,6 @@ export function ContactLoom({ reducedMotion }: { reducedMotion: boolean }) {
   const root = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
-  useFpsWatchdog(ready && active)
 
   // Threads come in half-calmed: tangled on the way in, ordered once they pass through the loom.
   useEffect(() => {
