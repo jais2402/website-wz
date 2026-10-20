@@ -9,6 +9,7 @@ uniform float uPointerStrength;
 uniform vec2 uRange;      // which slice of the palette this loom uses (start, width)
 uniform vec3 uWoven;      // colour of the threads once they are ordered
 uniform float uFray;      // 0 = threads order after the loom, 1 = they stay frayed (the 404 loom)
+uniform float uSpread;    // how far the tangle reaches: 1 normally, less on the lite hero (concentrated middle)
 
 const float X0 = -15.0;
 const float X1 = 18.0;
@@ -52,7 +53,7 @@ vec3 strandPos(float t, vec4 seed, float time) {
 
   // Tangled position: layered, slowly drifting waves that grow wilder further from the loom.
   float k = x * 0.32;
-  float spread = (0.45 + seed.w * 0.75) * (0.55 + clamp(-x / 9.0, 0.0, 1.6) * 0.65);
+  float spread = (0.45 + seed.w * 0.75) * (0.55 + clamp(-x / 9.0, 0.0, 1.6) * 0.65) * uSpread;
   vec2 tangle = vec2(
     sin(k * 1.3 + seed.x * 23.0 + time * 0.35) * 1.9 + sin(k * 2.9 + seed.y * 13.0 - time * 0.6) * 0.9,
     cos(k * 1.1 + seed.z * 17.0 + time * 0.42) * 2.2 + sin(k * 3.4 + seed.w * 11.0 + time * 0.55) * 0.9

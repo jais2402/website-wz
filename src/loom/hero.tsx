@@ -8,7 +8,6 @@ import { ctas, loom, navSystems } from '@/content/site'
 import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { useLite } from '@/hooks/useLite'
 import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
-import { liteBox } from '@/lib/liteBox'
 import { loomStore } from './store'
 
 // The time-loom hero and the "weave" in/out section. Used by the main site (index.html) and the loom page.
@@ -19,8 +18,8 @@ const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.Loo
 /** Pinned hero: scroll flies the camera into the loom while the copy steps through three phases. */
 export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean; introReady: boolean }) {
   const { tier, demote } = useLite()
-  // Static (no WebGL): a still of the real loom. Lite (software renderer): the full loom in a box beside the
-  // headline, like the About page, still following the scroll. Full: the full-screen loom.
+  // Static (no WebGL): a still of the real loom. Lite (software renderer): the same full-screen loom and camera,
+  // lighter (minimal threads, no bloom). Full: the full loom.
   const art = tier === 'static'
   const root = useRef<HTMLElement>(null)
   const [phase, setPhase] = useState(-1)
@@ -41,38 +40,6 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
     canvas.addEventListener('webglcontextlost', onLost)
     return () => canvas.removeEventListener('webglcontextlost', onLost)
   }, [ready, demote, tier])
-
-  // Lite: place the framed loom in the free space beside (desktop) or above (phones) the intro panel, re-measured
-  // on resize, so the panel never covers it. The box camera always fits the whole machine inside.
-  useLayoutEffect(() => {
-    const el = root.current
-    if (tier !== 'lite' || !el) return
-    const box = el.querySelector<HTMLElement>('.loom-canvas')
-    const intro = el.querySelector<HTMLElement>('.loom-intro')
-    if (!box || !intro) return
-    const place = () => {
-      const nav = document.querySelector('header')?.getBoundingClientRect()
-      const r = intro.getBoundingClientRect()
-      const phases = el.querySelector('.loom-phases')?.getBoundingClientRect()
-      const panelRight = Math.max(r.right, phases?.right ?? 0)
-      const b = liteBox(window.innerWidth, window.innerHeight, nav?.bottom ?? 80, panelRight, r.top)
-      Object.assign(box.style, {
-        left: `${b.left}px`,
-        top: `${b.top}px`,
-        width: `${b.width}px`,
-        height: `${b.height}px`,
-      })
-    }
-    place()
-    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(place)
-    ro?.observe(intro)
-    window.addEventListener('resize', place)
-    return () => {
-      ro?.disconnect()
-      window.removeEventListener('resize', place)
-      box.removeAttribute('style')
-    }
-  }, [tier])
 
   // Unmount the WebGL loom when the hero is fully off screen (and tell the fixed canvas it may mount).
   useEffect(() => {
@@ -127,7 +94,6 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
             afterPaint && (
               <Suspense fallback={null}>
                 <LoomScene
-                  view={tier === 'lite' ? 'box' : 'hero'}
                   light={tier === 'lite'}
                   reducedMotion={reducedMotion}
                   active={active}
