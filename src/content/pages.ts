@@ -220,7 +220,7 @@ export const systemsSection = {
 export const aboutPage = {
   kicker: 'About Wezigns',
   title: ['From small business', 'to enterprise', 'systems.'],
-  lead: 'The leading systems and custom software provider for SMEs and MSMEs. We are a software studio in Chennai, and since 2012 we have built the systems growing businesses run on: the portals, stores, dashboards and tools that replace spreadsheets, chat threads and manual work.',
+  lead: 'Systems and custom software for SMEs and MSMEs, since 2012: 20+ business systems running in 11 countries. We are a software studio in Chennai, building the systems growing businesses run on: the portals, stores, dashboards and tools that replace spreadsheets, chat threads and manual work.',
   whyTitle: 'Why small and growing businesses work with us',
   why: [
     { title: 'Built around how you work.', text: 'We start from your people and your process, not from a template. The software fits the business, not the other way round.' },
