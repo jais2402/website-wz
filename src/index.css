@@ -100,6 +100,36 @@ ol {
   border-radius: 6px;
 }
 
+/* Focused items scroll clear of the fixed header (WCAG 2.4.11). */
+html {
+  scroll-padding-top: 110px;
+}
+
+/* Skip link: off screen until focused, then a pill above the header. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #1d4ed8;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  translate: 0 -200%;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  translate: 0 0;
+  outline-color: #fff;
+}
+
+main:focus {
+  outline: none;
+}
+
 main,
 .footer {
   position: relative;
@@ -1524,7 +1554,7 @@ main,
 
 .mods {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   padding: 16px;
 }
@@ -1551,6 +1581,22 @@ main,
 
 .mod.is-wide {
   grid-column: span 2;
+}
+
+/* Tablet landscape (900-1099px): the screen is narrow for four columns, so cards shrink instead of being cut off. */
+.mod {
+  min-width: 0;
+}
+
+@media (min-width: 900px) and (max-width: 1099px) {
+  .mods {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .mod {
+    padding: 12px;
+  }
 }
 
 .mod-head {
@@ -2534,6 +2580,11 @@ main,
     grid-column: 1 / -1;
     grid-row: auto;
   }
+
+  /* The full-width tile makes each window 240px wide (180px tall) plus the deck offsets: keep it all in the box. */
+  .wk-stack {
+    min-height: 230px;
+  }
 }
 
 @media (max-width: 899px) {
@@ -2989,6 +3040,51 @@ main,
 .ring-2 .sat > span {
   animation-name: counterSpinRev;
   animation-duration: 70s;
+}
+
+/* Small phones: the orbit is too narrow for its chips (they ran off both screen edges), so it becomes the
+   Wezigns mark above a centred, wrapped list of chips. */
+@media (max-width: 480px) {
+  .orbit {
+    aspect-ratio: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .orbit::before {
+    inset: 0 25%;
+  }
+
+  .orbit-core {
+    position: relative;
+    inset: auto;
+    width: 76px;
+    height: 76px;
+    margin: 0 calc(50% - 38px) 10px;
+  }
+
+  .ring {
+    display: contents;
+    animation: none;
+  }
+
+  .sat {
+    position: static;
+    width: auto;
+    height: auto;
+    transform: none;
+  }
+
+  .orbit .sat > span {
+    position: static;
+    display: inline-block;
+    translate: none;
+    transform: none;
+    animation: none;
+  }
 }
 
 /* Countries (3D zone: transparent, globe sits to the right) */
@@ -3759,11 +3855,15 @@ main,
   }
 
   .countries-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .countries-card {
+    min-width: 0;
   }
 
   .country-list {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2px 12px;
   }
 
@@ -4239,8 +4339,23 @@ main,
    Systems explorer call to action (under the tabs on desktop, under the dashboard on phones)
    ========================================================================== */
 @media (min-width: 900px) {
+  /* The screen spans the tabs and the CTA card, so it is taller than its content: the module grid stretches to
+     fill it instead of leaving an empty band at the bottom. */
   .areas-screen {
     grid-row: span 2;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .areas-screen .screen-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .areas-screen .mods {
+    flex: 1 1 auto;
+    grid-auto-rows: 1fr;
   }
 
   .areas-cta {
