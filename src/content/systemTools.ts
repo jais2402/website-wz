@@ -1,6 +1,6 @@
 // Tools each system page says we connect to. Research and reasons: docs/tools-research.md.
 // Every entry is a real product with a public API or a documented file/portal format.
-// Client to confirm which of these Wezigns has integrated before (see the doc's "To confirm" list).
+// Confirmed by the client on 2026-10-20: all listed integrations stay, Azure is offered, GST goes direct to the portals.
 
 export type Tool = { name: string; role: string }
 export type ToolGroup = { label: string; tools: Tool[] }
@@ -77,6 +77,8 @@ export const systemTools: Record<SystemSlug, ToolGroup[]> = {
         { name: 'PayU', role: 'cards, UPI and net banking' },
         { name: 'Cashfree', role: 'payment links and refunds' },
         { name: 'PayPal', role: 'payments from overseas customers' },
+        { name: 'Telr', role: 'card payments in the UAE and Saudi' },
+        { name: 'PayTabs', role: 'payment links across the Gulf' },
       ],
     },
     {
@@ -161,6 +163,9 @@ export const systemTools: Record<SystemSlug, ToolGroup[]> = {
         { name: 'Cashfree', role: 'payments and instant refunds' },
         { name: 'PayPal', role: 'payments from overseas buyers' },
         { name: 'Tabby', role: 'pay later in the Gulf' },
+        { name: 'Tamara', role: 'pay later in Saudi and the UAE' },
+        { name: 'Telr', role: 'card checkout in the UAE and Saudi' },
+        { name: 'PayTabs', role: 'Gulf card and wallet payments' },
       ],
     },
     {
