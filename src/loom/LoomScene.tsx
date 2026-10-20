@@ -382,7 +382,9 @@ function CameraRig() {
     const portrait = size.height > size.width
     const p = loomStore.progress
     const baseZ = portrait ? 24 : 14
-    const tx = (portrait ? 0.4 : -1.2) + p * 2.8 + pointer.x * 0.8
+    // Landscape starts further left so the loom mouth sits clear of the intro panel's right edge (it used to
+    // glow under the glass corner); the end of the scroll (p = 1) frames exactly as before.
+    const tx = (portrait ? 0.4 + p * 2.8 : -3.6 + p * 5.2) + pointer.x * 0.8
     const ty = 0.6 - p * 0.3 + pointer.y * 0.5
     const tz = baseZ - p * (portrait ? 11 : 6.5)
     camera.position.x = damp(camera.position.x, tx, 2.2, dt)
@@ -390,7 +392,7 @@ function CameraRig() {
     camera.position.z = damp(camera.position.z, tz, 2.2, dt)
     // Aim below the loom so the composition rides in the upper part of the frame, above the copy.
     look.current.set(
-      damp(look.current.x, (portrait ? 1.6 : -1.6) + p * 2.9, 2.2, dt),
+      damp(look.current.x, portrait ? 1.6 + p * 2.9 : -4.0 + p * 5.3, 2.2, dt),
       damp(look.current.y, portrait ? -1.5 : -1.8 + p * 1.8, 2.2, dt),
       0,
     )
