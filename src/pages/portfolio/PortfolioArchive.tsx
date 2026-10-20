@@ -1,8 +1,8 @@
-import { type MouseEvent, useState } from 'react'
+import { Fragment, type MouseEvent, useState } from 'react'
 import { portfolioPage as p } from '@/content/pages'
 import { archiveSectors, portfolioArchive } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
-import { countLabel, filterBySector, sectorCounts } from '@/lib/portfolio'
+import { countLabel, filterBySector, nameBreaks, sectorCounts } from '@/lib/portfolio'
 
 type Sector = (typeof archiveSectors)[number]
 
@@ -47,7 +47,14 @@ export function PortfolioArchive() {
       <ul className="pf-archive-list">
         {shown.map((item) => (
           <li key={item.id} id={item.id} className="pf-archive-item">
-            <span className="pf-archive-name">{item.name}</span>
+            <span className="pf-archive-name">
+              {nameBreaks(item.name).map((part, i) => (
+                <Fragment key={i}>
+                  {i > 0 && <wbr />}
+                  {part}
+                </Fragment>
+              ))}
+            </span>
             {item.sector !== 'Other' && <span className="mono pf-archive-sector">{item.sector}</span>}
             {item.system && (
               <a className="pf-archive-link" href={`#${item.system}`} onClick={toSystem}>

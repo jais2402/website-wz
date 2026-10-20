@@ -102,7 +102,7 @@ export function enquiryMailto(e: Enquiry, now = new Date()): string {
     '',
     p.message,
     '',
-    `— ${p.name}`,
+    `From: ${p.name}`,
     p.company ? `Company: ${p.company}` : '',
     `Email: ${p.email}`,
     p.phone ? `Phone: ${p.phone}` : '',
@@ -167,6 +167,7 @@ export async function submitEnquiry(e: Enquiry, config = enquiryConfig, opts: Su
     return data?.ok ? { ok: true, via: 'endpoint' } : mailto(true)
   }
   if (res.status === 400 && data?.error === 'invalid') return { ok: false, error: 'Some details did not pass our check. Please review the form and try again.' }
+  if (res.status === 429) return { ok: false, error: `Too many messages from this connection. Please try again in a few minutes, or email ${brand.email}.` }
   if (res.status === 413) return { ok: false, error: `Your message is too long. Please keep it under ${LIMITS.message} characters.` }
   return { ok: false, error: `We could not send your message just now (error ${res.status}).` }
 }

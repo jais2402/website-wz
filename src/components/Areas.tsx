@@ -1,6 +1,6 @@
 import { useGSAP } from '@gsap/react'
 import { type CSSProperties, useRef, useState } from 'react'
-import { areas, ctas, navSystemsAll, sampleDataLabel } from '@/content/site'
+import { areas, areasSection, ctas, navSystemsAll, sampleDataLabel } from '@/content/site'
 import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { track } from '@/lib/analytics'
 import { activeIndex, tabFill } from '@/lib/charts'
@@ -112,12 +112,31 @@ export function Areas() {
     scrollToTarget(st.start + ((i + 0.5) / areas.length) * (st.end - st.start))
   }
 
+  // ARIA tabs pattern: arrows (and Home/End) move focus to a tab and select it; one Tab stop for the row.
+  const onTabKey = (e: React.KeyboardEvent, i: number) => {
+    const n = areas.length
+    const next =
+      e.key === 'ArrowRight' || e.key === 'ArrowDown'
+        ? (i + 1) % n
+        : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
+          ? (i - 1 + n) % n
+          : e.key === 'Home'
+            ? 0
+            : e.key === 'End'
+              ? n - 1
+              : -1
+    if (next < 0) return
+    e.preventDefault()
+    tabs.current[next]?.focus({ preventScroll: true })
+    select(next)
+  }
+
   return (
     <section ref={root} className="panel areas" aria-labelledby="areas-title">
       <div className="wrap">
         <div className="areas-head">
-          <p className="mono label">The systems we build</p>
-          <SplitReveal as="h2" className="display" text="Every corner of the business, connected." />
+          <p className="mono label">{areasSection.kicker}</p>
+          <SplitReveal as="h2" className="display" text={areasSection.title} />
         </div>
 
         <div className="areas-ui">
@@ -129,9 +148,13 @@ export function Areas() {
                   tabs.current[i] = el
                 }}
                 role="tab"
+                id={`area-tab-${i}`}
                 aria-selected={i === active}
+                aria-controls="areas-panel"
+                tabIndex={i === active ? 0 : -1}
                 className={`area-tab${i === active ? ' is-active' : ''}`}
                 onClick={() => select(i)}
+                onKeyDown={(e) => onTabKey(e, i)}
               >
                 <span className="area-icon" aria-hidden="true">
                   {ICONS[i]}
@@ -143,7 +166,13 @@ export function Areas() {
             ))}
           </div>
 
-          <div className="areas-screen" role="tabpanel" aria-label={area.title} ref={screen}>
+          <div
+            id="areas-panel"
+            className="areas-screen"
+            role="tabpanel"
+            aria-labelledby={`area-tab-${active}`}
+            ref={screen}
+          >
             <span className="screen-sweep" aria-hidden="true" />
             <div className="screen-bar" style={BAR}>
               <span className="mono" style={PATH}>

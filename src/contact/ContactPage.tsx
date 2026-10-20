@@ -6,7 +6,7 @@ import { Cursor } from '@/components/Cursor'
 import { Footer } from '@/components/Footer'
 import { Nav } from '@/components/Nav'
 import { SplitReveal } from '@/components/Reveal'
-import { brand, contactPage, countries, nav } from '@/content/site'
+import { brand, contactPage, countries, enquiryCopy, nav, office } from '@/content/site'
 import { gsap, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
 import { ContactLoom } from './ContactLoom'
 
@@ -30,8 +30,10 @@ export function ContactPage() {
     <>
       <div className="grain" aria-hidden="true" />
       <Cursor />
-      <Nav items={homeNav} logoHref="/" cta={{ label: 'Send a message', href: '#contact-form' }} />
-      <main ref={root} className="cp">
+      <Nav items={homeNav} logoHref="/" cta={{ label: enquiryCopy.submit, href: '#contact-form' }} />
+      {/* Before <main> in the DOM so keyboard users reach it early; it is fixed bottom-left. */}
+      <CookieBanner />
+      <main id="main" tabIndex={-1} ref={root} className="cp">
         <section className="wrap cp-head" aria-label="Contact Wezigns">
           <div className="cp-head-copy">
             <p className="mono label">{contactPage.kicker}</p>
@@ -44,14 +46,14 @@ export function ContactPage() {
         <section className="wrap cp-body">
           <div className="cp-cards">
             <address className="glass-card cp-card">
-              <span className="mono cp-card-label">Head office</span>
+              <span className="mono cp-card-label">{office.short}</span>
               <span className="cp-card-lines">
                 {brand.address.map((l) => (
                   <span key={l}>{l}</span>
                 ))}
               </span>
               <a className="cp-link" href={brand.mapsHref} target="_blank" rel="noopener noreferrer">
-                Open in Google Maps ↗
+                {office.maps} ↗
               </a>
             </address>
 
@@ -72,7 +74,7 @@ export function ContactPage() {
             </div>
 
             <p className="cp-reach">
-              Working with teams in {countries.length} countries. <a href="/#countries">See where →</a>
+              {contactPage.reach.replace('{n}', String(countries.length))} <a href="/#countries">{contactPage.reachLink} →</a>
             </p>
           </div>
 
@@ -82,7 +84,6 @@ export function ContactPage() {
         </section>
       </main>
       <Footer base="/" />
-      <CookieBanner />
     </>
   )
 }

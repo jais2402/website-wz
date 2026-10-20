@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { archiveSectors, pastWork, portfolioArchive, work } from '@/content/site'
-import { countLabel, filterBySector, sectorCounts } from './portfolio'
+import { countLabel, filterBySector, nameBreaks, sectorCounts } from './portfolio'
 
 const items: { id: string; sector: string }[] = [
   { id: 'a', sector: 'Retail' },
@@ -51,5 +51,18 @@ describe('portfolioArchive', () => {
   it('links only to earlier systems that exist', () => {
     const pastIds: string[] = pastWork.map((c) => c.id)
     for (const p of portfolioArchive) if (p.system) expect(pastIds).toContain(p.system)
+  })
+})
+
+describe('nameBreaks', () => {
+  it('splits a domain-like name before each dot', () => {
+    expect(nameBreaks('Callrehabcenters.com')).toEqual(['Callrehabcenters', '.com'])
+    expect(nameBreaks('shop.example.co')).toEqual(['shop', '.example', '.co'])
+  })
+
+  it('keeps names with spaces or without a dot whole', () => {
+    expect(nameBreaks('Acme Retail')).toEqual(['Acme Retail'])
+    expect(nameBreaks('St. Mary School')).toEqual(['St. Mary School'])
+    expect(nameBreaks('Wezigns')).toEqual(['Wezigns'])
   })
 })

@@ -123,7 +123,7 @@ function systemPage(
     path,
     title: p.title,
     description: p.description,
-    card: { kicker: `Systems · ${sys.title}`, title: p.cardTitle },
+    card: { kicker: `Systems: ${sys.title}`, title: p.cardTitle },
     breadcrumb: [HOME, SERVICES, { name: sys.title, path }],
     schema: 'Service',
     indexable: true,

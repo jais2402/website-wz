@@ -305,8 +305,8 @@ describe('pricing', () => {
 })
 
 describe('sitemapXml', () => {
-  it('lists only indexable pages with absolute www URLs and lastmod', () => {
-    const xml = sitemapXml(pages, site, '2026-10-19')
+  it('lists only indexable pages with absolute www URLs, and lastmod only where a page has a date', () => {
+    const xml = sitemapXml(pages, site, (p) => (p.id === 'privacy' ? '2026-10-19' : undefined))
     expect(xml.match(/<url>/g)).toHaveLength(17)
     expect(xml).toContain('<loc>https://www.wezigns.com/portfolio</loc>')
     expect(xml).toContain('<loc>https://www.wezigns.com/pricing</loc>')
@@ -317,7 +317,9 @@ describe('sitemapXml', () => {
     expect(xml).not.toContain('/sitemap<')
     expect(xml).not.toContain('/404')
     expect(xml).not.toContain('/loom')
-    expect(xml).toContain('<lastmod>2026-10-19</lastmod>')
+    expect(xml.match(/<lastmod>/g)).toHaveLength(1)
+    expect(xml).toContain('<loc>https://www.wezigns.com/privacy-policy</loc>\n    <lastmod>2026-10-19</lastmod>')
+    expect(sitemapXml(pages, site)).not.toContain('<lastmod>')
     expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true)
   })
 })

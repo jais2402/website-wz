@@ -3,15 +3,19 @@
 import { existsSync } from 'node:fs'
 import { relative, resolve } from 'node:path'
 import type { Plugin } from 'vite'
+import { legalMeta } from '../src/content/legal.ts'
 import { pages, seoData, site } from '../src/content/seo.ts'
 import { applyHead, headTags, llmsTxt, pageForFile, sitemapXml } from '../src/lib/seo.ts'
+
+const LEGAL_IDS = new Set(['privacy', 'terms', 'cookies'])
 
 export function seo(): Plugin {
   let root = process.cwd()
   let publicDir = resolve(root, 'public')
   const hasAppleIcon = () => existsSync(resolve(publicDir, site.appleTouchIcon.replace(/^\//, '')))
   const files = () => ({
-    'sitemap.xml': sitemapXml(pages, site, new Date().toISOString().slice(0, 10)),
+    // Only the legal pages carry a real "last updated" date; the others leave <lastmod> out.
+    'sitemap.xml': sitemapXml(pages, site, (p) => (LEGAL_IDS.has(p.id) ? legalMeta.updated : undefined)),
     'llms.txt': llmsTxt(pages, site, seoData),
   })
 

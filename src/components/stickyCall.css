@@ -47,7 +47,7 @@
 
 .sticky-call-btn.is-call {
   color: #fff;
-  background: linear-gradient(135deg, var(--cta-2), var(--cta-1) 60%, var(--cta-3));
+  background: linear-gradient(135deg, var(--cta-1), var(--cta-3) 60%, #1e40af);
 }
 
 .sticky-call-btn:active {

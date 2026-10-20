@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { brand, ctas, nav, navSystems, navSystemsAll } from '@/content/site'
-import { scrollToTarget } from '@/hooks/motion'
+import { brand, ctas, nav, navA11y, navSystems, navSystemsAll } from '@/content/site'
+import { lockScroll, scrollToTarget } from '@/hooks/motion'
 import { track } from '@/lib/analytics'
 import { inSection, isCurrentPage } from '@/lib/navCurrent'
 import { Logo } from './Logo'
@@ -30,6 +30,9 @@ export function Nav({
   const drop = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLAnchorElement>(null)
   const closeTimer = useRef(0)
+  const header = useRef<HTMLElement>(null)
+  const burger = useRef<HTMLButtonElement>(null)
+  const sheet = useRef<HTMLDivElement>(null)
   // Set when focus returns to the trigger after Escape, so focusing it doesn't reopen the menu.
   const skipFocusOpen = useRef(false)
 
@@ -63,8 +66,62 @@ export function Nav({
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), [])
 
+  // Burger sheet: the page behind stops scrolling, focus moves into the sheet and stays in the header,
+  // Escape closes it (focus back on the burger) and so does a tap outside the header.
+  useEffect(() => {
+    if (!open) return
+    lockScroll(true)
+    const focusables = () => [
+      ...(burger.current ? [burger.current] : []),
+      ...(sheet.current?.querySelectorAll<HTMLElement>('a[href], button') ?? []),
+    ]
+    // The sheet is already shown (hidden removed) when this effect runs.
+    sheet.current?.querySelector<HTMLElement>('a[href]')?.focus()
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        burger.current?.focus()
+        return
+      }
+      if (e.key !== 'Tab') return
+      const list = focusables()
+      if (!list.length) return
+      const first = list[0]
+      const last = list[list.length - 1]
+      const inside = header.current?.contains(document.activeElement)
+      if (e.shiftKey && (document.activeElement === first || !inside)) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && (document.activeElement === last || !inside)) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    const down = (e: PointerEvent) => {
+      if (!header.current?.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('keydown', key)
+    document.addEventListener('pointerdown', down)
+    return () => {
+      document.removeEventListener('keydown', key)
+      document.removeEventListener('pointerdown', down)
+      lockScroll(false)
+    }
+  }, [open])
+
+  // Skip link: focus <main id="main"> and bring it into view.
+  const skip = (e: React.MouseEvent) => {
+    const main = document.getElementById('main')
+    if (!main) return
+    e.preventDefault()
+    main.focus({ preventScroll: true })
+    scrollToTarget(main)
+  }
+
   // In-page anchors scroll smoothly; links to other pages (e.g. the loom) navigate normally.
   const go = (href: string) => (e: React.MouseEvent) => {
+    // Unlock first: a stopped Lenis ignores scrollTo, and the sheet's cleanup only runs after this click.
+    if (open) lockScroll(false)
     setOpen(false)
     setSysOpen(false)
     if (!href.startsWith('#')) return
@@ -142,61 +199,73 @@ export function Nav({
   }
 
   return (
-    <header className={`nav${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
-      <a href={logoHref} className="nav-logo" onClick={go(logoHref)} aria-label={`${brand.name} home`}>
-        <Logo />
+    <>
+      <a href="#main" className="skip-link" onClick={skip}>
+        {navA11y.skip}
       </a>
-      <nav className="nav-links" aria-label="Primary">
-        {items.map((l) =>
-          isSystems(l) ? (
-            systemsMenu(l)
-          ) : (
-            <a key={l.href} href={l.href} onClick={go(l.href)} aria-current={current(l.href)}>
-              {l.label}
-            </a>
-          ),
-        )}
-      </nav>
-      <a href={cta.href} className="btn btn-lime nav-cta" onClick={ctaClick}>
-        {cta.label}
-      </a>
-      <button className="nav-burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        <span />
-        <span />
-      </button>
-      <div className="nav-sheet" hidden={!open} data-lenis-prevent>
-        {items.map((l) =>
-          isSystems(l) ? (
-            <div key={l.href} className="nav-sheet-group">
-              <a
-                className="mono nav-sheet-label"
-                href={navSystemsAll.href}
-                onClick={go(navSystemsAll.href)}
-                aria-current={current(navSystemsAll.href)}
-              >
+      <header ref={header} className={`nav${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
+        <a href={logoHref} className="nav-logo" onClick={go(logoHref)} aria-label={`${brand.name} home`}>
+          <Logo />
+        </a>
+        <nav className="nav-links" aria-label="Primary">
+          {items.map((l) =>
+            isSystems(l) ? (
+              systemsMenu(l)
+            ) : (
+              <a key={l.href} href={l.href} onClick={go(l.href)} aria-current={current(l.href)}>
                 {l.label}
               </a>
-              <ul className="nav-sheet-systems">
-                {navSystems.map((s) => (
-                  <li key={s.href}>
-                    <a href={s.href} onClick={go(s.href)} aria-current={current(s.href)}>
-                      <span>{s.label}</span>
-                      <span className="mono">{s.short}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <a key={l.href} href={l.href} onClick={go(l.href)} aria-current={current(l.href)}>
-              {l.label}
-            </a>
-          ),
-        )}
-        <a href={cta.href} className="btn btn-lime" onClick={ctaClick}>
+            ),
+          )}
+        </nav>
+        <a href={cta.href} className="btn btn-lime nav-cta" onClick={ctaClick}>
           {cta.label}
         </a>
-      </div>
-    </header>
+        <button
+          ref={burger}
+          className="nav-burger"
+          aria-label={open ? navA11y.closeMenu : navA11y.menu}
+          aria-expanded={open}
+          aria-controls="nav-sheet"
+          onClick={() => setOpen((o) => !o)}
+        >
+          <span />
+          <span />
+        </button>
+        <div ref={sheet} id="nav-sheet" className="nav-sheet" hidden={!open} data-lenis-prevent>
+          {items.map((l) =>
+            isSystems(l) ? (
+              <div key={l.href} className="nav-sheet-group">
+                <a
+                  className="mono nav-sheet-label"
+                  href={navSystemsAll.href}
+                  onClick={go(navSystemsAll.href)}
+                  aria-current={current(navSystemsAll.href)}
+                >
+                  {l.label}
+                </a>
+                <ul className="nav-sheet-systems">
+                  {navSystems.map((s) => (
+                    <li key={s.href}>
+                      <a href={s.href} onClick={go(s.href)} aria-current={current(s.href)}>
+                        <span>{s.label}</span>
+                        <span className="mono">{s.short}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <a key={l.href} href={l.href} onClick={go(l.href)} aria-current={current(l.href)}>
+                {l.label}
+              </a>
+            ),
+          )}
+          <a href={cta.href} className="btn btn-lime" onClick={ctaClick}>
+            {cta.label}
+          </a>
+        </div>
+      </header>
+    </>
   )
 }

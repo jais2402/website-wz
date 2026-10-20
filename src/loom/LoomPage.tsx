@@ -22,7 +22,7 @@ export function LoomPage() {
       <Preloader reducedMotion={reducedMotion} caption="Untangling the threads" onDone={() => setIntroReady(true)} />
       <Nav items={loom.nav} cta={{ label: 'Hand us the tangle', href: '#contact' }} />
       <ThreadRail />
-      <main>
+      <main id="main" tabIndex={-1}>
         <LoomHero reducedMotion={reducedMotion} introReady={introReady} />
         <Untangle />
         <Weave />

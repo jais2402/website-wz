@@ -55,7 +55,16 @@ export default defineConfig({
   // three.js lives in its own lazy chunk (~245 kB gzip); that size is expected.
   build: {
     chunkSizeWarningLimit: 1000,
-    rolldownOptions: { input: INPUTS },
+    rolldownOptions: {
+      input: INPUTS,
+      // GSAP, ScrollTrigger and Lenis get their own cacheable 'motion' chunk instead of riding in whichever
+      // shared chunk imports them first (they were bundled as "EnquiryForm").
+      output: {
+        codeSplitting: {
+          groups: [{ name: 'motion', test: /node_modules[\\/](gsap|@gsap|lenis)[\\/]/ }],
+        },
+      },
+    },
   },
   // Honour PORT so this can run beside other local dev servers.
   server: { port: Number(process.env.PORT) || 5173 },

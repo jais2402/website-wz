@@ -15,7 +15,8 @@ type SnapshotModule = typeof import('../src/lib/snapshot.ts')
 const SNAPSHOT = fileURLToPath(new URL('../src/lib/snapshot.ts', import.meta.url))
 const ROOT_DIV = /<div id="root">\s*<\/div>/
 
-const HEAD_SCRIPT =
+// vercel.json allows this script by its sha256 in the Content-Security-Policy (api/_vercel.test.ts checks it).
+export const HEAD_SCRIPT =
   "document.documentElement.classList.add('js');setTimeout(function(){if(document.querySelector('#root>.snapshot'))document.documentElement.classList.remove('js')},6000)"
 
 // Minimal reading styles for no-JS visitors (the site CSS still applies), and the visually-hidden rule for JS users.

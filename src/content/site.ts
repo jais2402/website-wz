@@ -39,11 +39,51 @@ export const navSystems = [
 // Sticky call button on phones; the phone was how most simulated prospects actually got in touch.
 export const quickContact = { call: 'Call us', email: 'Email' }
 
+// Screen-reader and keyboard labels for the header.
+export const navA11y = { skip: 'Skip to content', menu: 'Menu', closeMenu: 'Close menu' }
+
 // Shown on every dashboard built from `areas`, so demo figures are never read as client results.
 export const sampleDataLabel = 'Sample data'
 
+// Section headings and labels that several components (and the crawlable snapshot in lib/snapshot.ts) share.
+export const storySection = { kicker: 'How a Wezigns system feels' }
+export const proofSection = { toolsLabel: 'Tools we build with', title: 'Building software for growing businesses since 2012.' }
+export const areasSection = { kicker: 'The systems we build', title: 'Every corner of the business, connected.' }
+export const faqSection = { title: 'Straight answers.' }
+export const footerCopy = {
+  tagline: `Custom software that grows with you. Designed, built, hosted and maintained from ${brand.city}.`,
+}
+
+// The head office block on the contact sections and the contact page.
+export const office = { label: 'Head office, Chennai', short: 'Head office', maps: 'Open in Google Maps' }
+
+// Both enquiry forms and the contact page header share one submit label.
+export const enquiryCopy = { submit: 'Send message', sending: 'Sending…' }
+
+// The AI demo on the home page. Vendors and amounts are invented, and the window carries `sampleDataLabel`.
+export const aiDemo = {
+  window: 'Purchase approvals',
+  columns: ['PO', 'Vendor', 'Amount', 'Status'],
+  focusId: 'PO-2231',
+  rows: [
+    { id: 'PO-2229', vendor: 'Gulf Safety Supplies', amt: '₹ 1,24,000', status: 'Approved' },
+    { id: 'PO-2231', vendor: 'Apex Industrial', amt: '₹ 3,86,500', status: 'Review' },
+    { id: 'PO-2234', vendor: 'Coastline Logistics', amt: '₹ 58,200', status: 'Approved' },
+    { id: 'PO-2236', vendor: 'Northwind Traders', amt: '₹ 2,10,750', status: 'Pending' },
+  ],
+  approvedStatus: 'Approved',
+  cardLabel: 'Wezigns AI suggestion',
+  suggestion:
+    'Invoice #0193 matches PO-2231 except quantity: 48 received vs 50 ordered. Suggest approving 48 and flagging the supplier for the short delivery.',
+  done: '✓ Approved by you and logged to the audit trail',
+  replay: 'Replay',
+  approve: 'Approve 48 units',
+  askAgain: 'Ask again',
+  human: 'Human in control',
+}
+
 export const hero = {
-  eyebrow: 'Custom software · Since 2012',
+  eyebrow: 'Custom software since 2012',
   title: ['Systems', 'that grow', 'with you.'],
   sub: 'Custom software for businesses that have outgrown spreadsheets, message threads and manual work.',
   primary: { label: 'Tell us what is not working', href: '#contact' },
@@ -51,7 +91,7 @@ export const hero = {
   // Floating "chaos" fragments the 3D scene organises as you scroll.
   fragments: [
     'orders_FINAL_v7.xlsx',
-    '42 unread · Ops group',
+    '42 unread in Ops group',
     'Manual entry',
     'Copy → paste → repeat',
     'Who approved this?',
@@ -169,7 +209,7 @@ export const areas: Area[] = [
     modules: [
       { name: 'HR', value: 248, caption: 'headcount', delta: '+14 this qtr', chart: { kind: 'area', series: [182, 190, 197, 205, 214, 226, 237, 248] } },
       { name: 'Payroll', value: 18.4, prefix: '₹', suffix: 'L', decimals: 1, caption: 'processed this month', delta: 'on time', chart: { kind: 'bars', series: [62, 70, 66, 74, 71, 80, 84] } },
-      { name: 'Attendance', value: 96.4, suffix: '%', decimals: 1, caption: 'present · last 4 weeks', chart: { kind: 'heatmap', cells: 28, seed: 3 } },
+      { name: 'Attendance', value: 96.4, suffix: '%', decimals: 1, caption: 'present, last 4 weeks', chart: { kind: 'heatmap', cells: 28, seed: 3 } },
       { name: 'Appraisals', value: 72, suffix: '%', caption: 'reviews completed', delta: '+18%', chart: { kind: 'ring', percent: 72 } },
       { name: 'Training', value: 3, caption: 'programmes running', chart: { kind: 'stack', items: [['Safety', 92], ['Compliance', 78], ['Product', 54]] } },
       { name: 'Hiring', value: 9, caption: 'offers out', delta: '-6 days to hire', chart: { kind: 'funnel', items: [['Applied', 320], ['Screened', 96], ['Interview', 34], ['Offer', 9]] } },
@@ -186,7 +226,7 @@ export const areas: Area[] = [
       { name: 'CRM', value: 1284, caption: 'active accounts', delta: '+9.2%', chart: { kind: 'line', series: [40, 46, 44, 55, 52, 63, 66, 74] } },
       { name: 'Quotations', value: 86, caption: 'sent this month', delta: '+12', chart: { kind: 'bars', series: [38, 52, 47, 66, 58, 72, 86] } },
       { name: 'Billing', value: 94, suffix: '%', caption: 'invoices collected', chart: { kind: 'gauge', percent: 94 } },
-      { name: 'Support desk', value: 18, caption: 'open tickets · 2.4h avg', delta: '-31%', chart: { kind: 'list', rows: [['#4821 Login loop on portal', 'P1'], ['#4819 Invoice PDF missing', 'P2'], ['#4817 Add GST field', 'P3']] } },
+      { name: 'Support desk', value: 18, caption: 'open tickets, 2.4h avg', delta: '-31%', chart: { kind: 'list', rows: [['#4821 Login loop on portal', 'P1'], ['#4819 Invoice PDF missing', 'P2'], ['#4817 Add GST field', 'P3']] } },
       { name: 'Renewals', value: 88, suffix: '%', caption: 'retention this year', delta: '+4%', chart: { kind: 'ring', percent: 88 } },
       { name: 'Partner portals', value: 42, caption: 'partners active', chart: { kind: 'dots', total: 48, on: 42 } },
     ],
@@ -236,7 +276,7 @@ export const areas: Area[] = [
       { name: 'Dashboards', value: 26, caption: 'live reports', chart: { kind: 'bars', series: [48, 62, 55, 78, 70, 88, 92] } },
       { name: 'Audit', value: 0, caption: 'open findings', delta: 'clean', chart: { kind: 'list', rows: [['Q2 access review', 'Done'], ['Vendor KYC refresh', 'Done'], ['GST reconciliation', 'Today']] } },
       { name: 'Projects', value: 14, caption: 'projects on track', chart: { kind: 'stack', items: [['Portal v2', 86], ['ERP sync', 62], ['Mobile app', 38]] } },
-      { name: 'Approvals', value: 7, caption: 'awaiting sign-off · 3.2h avg', chart: { kind: 'dots', total: 48, on: 7 } },
+      { name: 'Approvals', value: 7, caption: 'awaiting sign-off, 3.2h avg', chart: { kind: 'dots', total: 48, on: 7 } },
     ],
   },
   {
@@ -269,7 +309,7 @@ export const ai = {
 
 export const workSection = {
   title: 'Our Work',
-  lead: 'Five of the systems we have built: what each one replaced and the numbers it moved.',
+  lead: 'Five of the systems we have built and what each one replaced.',
   all: { label: 'See all our work', href: '/portfolio' },
   // The bento grid on the home page: the first id is the large lead tile.
   featured: ['safety-training', 'tourism', 'engineering-event', 'marketplace', 'car-rental'],
@@ -300,7 +340,7 @@ export const work = [
     id: 'tourism',
     place: 'Singapore',
     sector: 'Tourism',
-    title: 'One record of events, instead of email threads.',
+    title: 'One record of events instead of email threads.',
     body: 'A shared record of events and listings for operators, planners and government agencies. Data stays in-country.',
     metrics: [
       { value: 'Zero', label: 'unplanned downtime' },
@@ -605,7 +645,7 @@ export const reach = {
   title: 'Delivered across 11 countries.',
   body: 'Designed and built in Chennai. Running every day for teams across Asia, the Middle East, Europe, Australia and the Americas.',
   hq: 'India',
-  hqLabel: 'HQ · Chennai',
+  hqLabel: 'HQ, Chennai',
   regions: [
     { name: 'South Asia', countries: ['India'] },
     { name: 'Middle East', countries: ['UAE', 'Saudi Arabia'] },
@@ -622,11 +662,16 @@ export const contactPage = {
   title: 'Tell us what is not working.',
   lead: 'We reply within one working day. You get scope, price and timeline in writing before anything is built.',
   phoneNote: 'Head office, Chennai',
-  emailNote: 'We reply within one working day.',
+  emailNote: 'For enquiries and quotes.',
+  // {n} is the number of countries.
+  reach: 'Working with teams in {n} countries.',
+  reachLink: 'See where',
+  // The enquiry form's question, also the no-JavaScript snapshot's form section.
+  formIntro: 'What is slowing your team down?',
 }
 
 export const footer = [
-  { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '/portfolio'], ['Pricing', '/pricing'], ['Questions', '#faq']] },
+  { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '/portfolio'], ['How pricing works', '/pricing'], ['Questions', '#faq']] },
   {
     title: 'Systems',
     links: [
@@ -640,7 +685,7 @@ export const footer = [
     ],
   },
   { title: 'Capabilities', links: [['Custom software', '#build'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
-  { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Case studies', '/portfolio'], ['Email us', 'mailto:contact@wezigns.com']] },
+  { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
 // Footer bottom row, beside the copyright.
@@ -666,7 +711,7 @@ export const marketingOptIn = {
 
 // Second page: the time-loom concept (loom.html).
 export const loom = {
-  eyebrow: 'Custom business software · Since 2012',
+  eyebrow: 'Custom business software since 2012',
   title: ['Every loose thread,', 'woven into', 'one system.'],
   sub: 'We design, build and run custom software for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
   // Links straight to the system pages, which convert best (docs/audience-study/summary.md).
@@ -701,8 +746,22 @@ export const loom = {
     { label: 'Contact', href: '#contact' },
   ],
   untangle: ['Spreadsheets', 'WhatsApp groups', 'Email approvals', 'Paper forms', 'Legacy databases', 'Copy → paste', 'Monday reports', 'Side tools'],
-  stats: { kicker: 'Twelve years at the loom', title: 'Woven, shipped and still running.' },
+  stats: { kicker: 'At the loom since 2012', title: 'Woven, shipped and still running.' },
   beforeAfter: {
+    // The "after" dashboard in the slider. Figures and names are invented and carry `sampleDataLabel`.
+    app: {
+      url: 'ops.wezigns.app',
+      kpis: [
+        { label: 'Orders today', value: '1,284' },
+        { label: 'On time', value: '98.2%' },
+        { label: 'Approvals pending', value: '0' },
+      ],
+      rows: [
+        { label: 'PO-2231, Apex Industrial', status: 'Approved' },
+        { label: 'Stock: finished goods', status: 'Live' },
+        { label: 'Weekly report', status: 'Auto, Mon 9:00' },
+      ],
+    },
     title: 'From a dozen apps and manual work to one unified system.',
     before: ['Orders tracked in three spreadsheets', 'Approvals buried in chat', 'Stock counted every Friday', 'Reports rebuilt by hand each Monday'],
     after: ['One order system', 'Approvals with an audit trail', 'Live stock levels', 'Reports that build themselves'],
@@ -738,7 +797,7 @@ export const stack = [
   { group: 'AI & machine learning', items: ['OpenAI', 'Claude', 'Gemini', 'Open-source models', 'LangChain', 'LlamaIndex', 'pgvector', 'Retrieval (RAG)', 'OCR & document AI', 'Whisper speech-to-text'] },
   { group: 'Cloud, DevOps & security', items: ['AWS', 'Google Cloud', 'Microsoft Azure', 'Docker', 'Kubernetes', 'Terraform', 'GitHub Actions', 'Cloudflare', 'Monitoring & alerts'] },
   { group: 'Commerce & content', items: ['Shopify', 'Magento', 'WooCommerce', 'WordPress', 'Headless CMS'] },
-  { group: 'Payments, messaging & integrations', items: ['Stripe', 'Razorpay', 'Twilio', 'WhatsApp Business API', 'Mailchimp', 'Klaviyo', 'Google Workspace', 'Microsoft 365'] },
+  { group: 'Payments, messaging & integrations', items: ['Stripe', 'Razorpay', 'Twilio', 'WhatsApp Business Platform', 'Mailchimp', 'Klaviyo', 'Google Workspace', 'Microsoft 365'] },
 ]
 
 export const technologyPage = {
@@ -786,7 +845,7 @@ export const ctas = {
   technology: {
     title: 'Not sure which stack fits?',
     body: 'Tell us what the system has to do. We choose the stack around it and explain why.',
-    secondary: { label: 'Explore the systems', href: '/systems/people' },
+    secondary: { label: 'Explore the systems', href: '/our-services' },
   },
   about: {
     title: 'Work with a team that has been building since 2012.',

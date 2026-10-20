@@ -10,7 +10,7 @@ import {
   systemsSection,
 } from '@/content/pages'
 import { legalPages } from '@/content/sitemap'
-import { brand, faq, loom, pastWork, portfolioArchive, pricing, process, stats, work } from '@/content/site'
+import { brand, faq, loom, pastWork, portfolioArchive, pricing, process, proofSection, stats, work } from '@/content/site'
 import { legalAnchor } from './legal'
 import { escapeHtml, pageForFile, snapshot, snapshotPages } from './snapshot'
 
@@ -72,7 +72,7 @@ describe('snapshot', () => {
     for (const h of [
       loom.weave.title,
       'Simplify.',
-      'Twelve years of building software for growing businesses.',
+      proofSection.title,
       'Every corner of the business, connected.',
       'Our Work',
       'Four stages. No surprises.',
@@ -101,6 +101,10 @@ describe('snapshot', () => {
     expect(html('services')).toContain(`<h2>${servicesPage.systemsTitle}</h2>`)
     expect(h1Text(html('technology'))).toBe('The stack behind the systems we build.')
     expect(h1Text(html('contact'))).toBe('Tell us what is not working.')
+    // The header CTA points at the form section on the same page, which exists.
+    expect(hrefs(html('contact'))).toContain('#contact-form')
+    expect(hrefs(html('contact'))).not.toContain('/#contact-form')
+    expect(html('contact')).toContain('id="contact-form"')
     expect(h1Text(html('notFound'))).toBe(notFoundPage.title.join(' '))
     for (const sp of systemPages) {
       const s = html(`system:${sp.slug}`)
@@ -241,5 +245,11 @@ describe('pageForFile', () => {
     expect(pageForFile('loom.html')).toBeNull()
     expect(pageForFile('systems/nope.html')).toBeNull()
     expect(pageForFile('src/index.html')).toBeNull()
+  })
+})
+
+describe('snapshot copy style', () => {
+  it('never joins items with a middle dot separator', () => {
+    for (const id of snapshotPages) expect(html(id), id).not.toContain(' · ')
   })
 })

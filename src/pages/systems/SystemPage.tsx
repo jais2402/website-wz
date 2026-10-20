@@ -65,10 +65,10 @@ function System({ page }: { page: Page }) {
                 scrollToTarget('#build')
               }}
             >
-              See what we build
+              {copy.buildLink}
             </a>
             <button type="button" className="btn btn-ghost btn-lg" onClick={() => window.print()}>
-              <DocIcon /> Download a one-page summary
+              <DocIcon /> {copy.print}
             </button>
           </>
         }
@@ -143,7 +143,7 @@ function System({ page }: { page: Page }) {
             <b className="sy-proof-value">{page.proof.value}</b>
             <p className="sy-proof-label">{page.proof.label}</p>
             <a className="sy-proof-link" href={`/portfolio#${page.proof.caseId}`}>
-              Read the case <span aria-hidden="true">→</span>
+              {copy.readCase} <span aria-hidden="true">→</span>
             </a>
           </div>
         )}
@@ -183,7 +183,7 @@ function System({ page }: { page: Page }) {
       <aside className="print-only sy-print-contact">
         <b>{brand.legal}</b>
         <p>
-          {brand.phone} · {brand.email}
+          {brand.phone}, {brand.email}
         </p>
         <p>{brand.address.join(', ')}</p>
         <p>{pageUrl}</p>

@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
-import { brand, enquiryTopics, marketingOptIn, privacyNotice } from '@/content/site'
+import { brand, enquiryCopy, enquiryTopics, marketingOptIn, privacyNotice } from '@/content/site'
 import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, trackLead, validateEnquiry } from '@/lib/enquiry'
 import './enquiry.css'
 
@@ -276,7 +276,7 @@ export function EnquiryForm() {
 
       <div className="composer-foot">
         <button type="submit" className="btn btn-lime btn-lg" disabled={sending}>
-          {sending ? 'Sending…' : 'Start the conversation'} <span aria-hidden="true">→</span>
+          {sending ? enquiryCopy.sending : enquiryCopy.submit} <span aria-hidden="true">→</span>
         </button>
         <span className="mono composer-alt">
           or <a href={`mailto:${brand.email}`}>{brand.email}</a>

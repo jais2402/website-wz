@@ -18,8 +18,9 @@ import { Services } from '@/components/Services'
 import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
 import { Work } from '@/components/Work'
-import { usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
+import { useHashScroll, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
 import { useFpsWatchdog, useLite } from '@/hooks/useLite'
+import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
 import { LoomHero, Weave } from '@/loom/hero'
 import { BeforeAfter, LoomContact } from '@/loom/sections'
 
@@ -37,6 +38,9 @@ export default function App() {
   const { lite } = useLite()
   const [ready, setReady] = useState(false)
   useSmoothScroll(!reducedMotion)
+  // /#faq and the other home-section links from inner pages land on their section once the page is laid out.
+  useHashScroll(ready)
+  usePauseOffscreen()
   // Once the intro is done, check the 3D keeps up; if not, switch to the lite (no-WebGL) site.
   useFpsWatchdog(ready && !reducedMotion)
 
@@ -53,7 +57,10 @@ export default function App() {
       <Cursor />
       <Nav />
       {!lite && <GuideLight active={ready} />}
-      <main>
+      {/* Before <main> in the DOM so keyboard and screen-reader users reach it early (it is fixed bottom-left).
+          Held back until the preloader has finished. */}
+      <CookieBanner ready={ready} />
+      <main id="main" tabIndex={-1}>
         <SectionBoundary name="LoomHero">
           <LoomHero reducedMotion={reducedMotion} introReady={ready} />
         </SectionBoundary>
@@ -102,8 +109,6 @@ export default function App() {
       </main>
       <Footer />
       <StickyCall />
-      {/* Held back until the preloader has finished. */}
-      <CookieBanner ready={ready} />
     </>
   )
 }

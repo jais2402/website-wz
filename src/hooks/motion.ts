@@ -2,6 +2,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import { useEffect, useState } from 'react'
+import { hashTarget } from '@/lib/hash'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -43,14 +44,43 @@ export function usePrefersReducedMotion() {
 
 let lenis: Lenis | null = null
 
-/** Smoothly scrolls to an in-page hash, element or absolute Y position, falling back to native scrolling. */
-export function scrollToTarget(target: string | HTMLElement | number) {
-  if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1.4 })
-  else if (typeof target === 'number') window.scrollTo({ top: target, behavior: 'smooth' })
+/**
+ * Smoothly scrolls to an in-page hash, element or absolute Y position, falling back to native scrolling.
+ * `immediate` jumps there with no animation (deep links on load).
+ */
+export function scrollToTarget(target: string | HTMLElement | number, { immediate = false } = {}) {
+  if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1.4, immediate, force: immediate })
+  else if (typeof target === 'number') window.scrollTo({ top: target, behavior: immediate ? 'auto' : 'smooth' })
   else {
     const el = typeof target === 'string' ? document.querySelector(target) : target
-    el?.scrollIntoView({ behavior: 'smooth' })
+    el?.scrollIntoView({ behavior: immediate ? 'auto' : 'smooth' })
   }
+}
+
+/**
+ * Deep links (/#faq from another page): the browser's own jump happens before the pins and lazy sections exist,
+ * so it lands on the hero. Once `ready`, re-measure the pins and jump to the hash; later hash changes scroll too.
+ */
+export function useHashScroll(ready: boolean) {
+  useEffect(() => {
+    if (!ready) return
+    const go = (immediate: boolean) => {
+      const id = hashTarget(window.location.hash)
+      const el = id ? document.getElementById(id) : null
+      if (el) scrollToTarget(el, { immediate })
+    }
+    const timer = window.setTimeout(() => {
+      if (!hashTarget(window.location.hash)) return
+      ScrollTrigger.refresh()
+      go(true)
+    }, 150)
+    const onHash = () => go(false)
+    window.addEventListener('hashchange', onHash)
+    return () => {
+      window.clearTimeout(timer)
+      window.removeEventListener('hashchange', onHash)
+    }
+  }, [ready])
 }
 
 /** Lenis smooth scrolling, driven by GSAP's ticker so ScrollTrigger stays in sync. Disabled for reduced motion. */

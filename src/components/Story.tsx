@@ -1,6 +1,6 @@
 import { useGSAP } from '@gsap/react'
 import { useRef, useState } from 'react'
-import { principles } from '@/content/site'
+import { principles, storySection } from '@/content/site'
 import { useLite } from '@/hooks/useLite'
 import { StoryLiteArt } from './LiteArt'
 import { ScrollTrigger } from '@/hooks/motion'
@@ -42,7 +42,7 @@ export function Story() {
           <span className="story-rail-fill" ref={bar} />
         </div>
         <div className="story-copy">
-          <p className="mono story-kicker">How a Wezigns system feels</p>
+          <p className="mono story-kicker">{storySection.kicker}</p>
           <div className="story-panels">
             {principles.map((p, i) => (
               <article key={p.key} className={`story-panel${i === step ? ' is-active' : ''}`} aria-hidden={i !== step}>

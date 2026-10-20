@@ -54,7 +54,8 @@ export function Countries() {
     <section id="countries" ref={root} className="countries" data-3d-zone aria-labelledby="countries-title">
       <div className="wrap countries-grid">
         <div className="glass-card countries-card">
-          <SplitReveal as="h2" className="display countries-title" text={reach.title} />
+          {/* Starts as soon as the card enters, so it never shows as an empty glass box. */}
+          <SplitReveal as="h2" className="display countries-title" text={reach.title} start="top 98%" />
           <p className="lead">{reach.body}</p>
 
           {/* One flat list (HQ first, then region by region); region names are not shown. */}

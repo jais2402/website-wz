@@ -21,3 +21,12 @@ export function filterBySector<T extends { sector: string }>(items: readonly T[]
 export function countLabel(label: string, n: number, total: number): string {
   return label.replace('{n}', String(n)).replace('{total}', String(total))
 }
+
+/**
+ * Splits a domain-like name ("Callrehabcenters.com") before each dot, so a narrow card can break the line at
+ * the dot (with <wbr>) instead of mid-word. Names with spaces, or without a dot, come back whole.
+ */
+export function nameBreaks(name: string): string[] {
+  if (/\s/.test(name) || !name.includes('.')) return [name]
+  return name.split(/(?=\.)/)
+}

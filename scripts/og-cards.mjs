@@ -1,4 +1,4 @@
-// Renders the social cards (1200×630 PNG per page) and the logo/touch icon into public/og/ from code-drawn SVG.
+// Renders the social cards (1200×630 PNG per page) and the logo/touch icon (plus public/favicon.ico) into public/og/ from code-drawn SVG.
 // Copy comes from src/content/seo.ts (Node strips its types). Run `npm run og` after changing a card title, then
 // commit the PNGs. The page itself stays raster-free; these files are only for link previews and JSON-LD.
 import { Resvg } from '@resvg/resvg-js'
@@ -93,25 +93,57 @@ function card(page, i) {
   <text x="146" y="108" font-family="${FONT}" font-size="34" font-weight="700" letter-spacing="-0.5" fill="#f2efe6">${esc(site.name)}</text>
   <text x="80" y="${top - lineH - 6}" font-family="${MONO}" font-size="22" letter-spacing="3" fill="#8cc4ff">${esc(page.card.kicker.toUpperCase())}</text>
   <text font-family="${FONT}" font-size="${size}" font-weight="700" letter-spacing="-2" fill="#f2efe6">${text}</text>
-  <text x="80" y="560" font-family="${MONO}" font-size="20" letter-spacing="2" fill="#9a9aae">WEZIGNS.COM · CHENNAI · SINCE ${site.foundingDate}</text>
+  <text x="80" y="560" font-family="${MONO}" font-size="20" letter-spacing="2" fill="#9a9aae">WEZIGNS.COM, CHENNAI, SINCE ${site.foundingDate}</text>
 </svg>`
 }
 
 // Rasterise, then quantise to a 256-colour palette (UPNG) so each card stays well under 150 kB.
-function render(svg, width, name) {
+function toPng(svg, width) {
   const img = new Resvg(svg, {
     fitTo: { mode: 'width', value: width },
     font: { fontFiles: [new URL('./fonts/Satoshi-Variable.ttf', import.meta.url).pathname], loadSystemFonts: true, defaultFontFamily: 'Satoshi' },
   }).render()
   const rgba = Uint8Array.from(img.pixels)
-  const png = Buffer.from(UPNG.encode([rgba.buffer], img.width, img.height, 256))
+  return Buffer.from(UPNG.encode([rgba.buffer], img.width, img.height, 256))
+}
+
+function render(svg, width, name) {
+  const png = toPng(svg, width)
   writeFileSync(`${out}${name}`, png)
   console.log(`og: ${name} ${(png.length / 1024).toFixed(0)} kB`)
 }
 
-pages.forEach((page, i) => render(card(page, i), W, `${page.id}.png`))
+// favicon.ico for browsers, readers and crawlers that ask for /favicon.ico: 16, 32 and 48 px PNGs in one ICO.
+function writeIco(svg, sizes, file) {
+  const images = sizes.map((size) => toPng(svg, size))
+  const header = Buffer.alloc(6 + 16 * images.length)
+  header.writeUInt16LE(0, 0)
+  header.writeUInt16LE(1, 2)
+  header.writeUInt16LE(images.length, 4)
+  let offset = header.length
+  images.forEach((png, i) => {
+    const e = 6 + 16 * i
+    header.writeUInt8(sizes[i] % 256, e)
+    header.writeUInt8(sizes[i] % 256, e + 1)
+    header.writeUInt16LE(1, e + 4)
+    header.writeUInt16LE(32, e + 6)
+    header.writeUInt32LE(png.length, e + 8)
+    header.writeUInt32LE(offset, e + 12)
+    offset += png.length
+  })
+  const ico = Buffer.concat([header, ...images])
+  writeFileSync(file, ico)
+  console.log(`og: ${file.split('/').pop()} ${(ico.length / 1024).toFixed(1)} kB`)
+}
+
+// The internal loom page is never built, so its card is not shipped. The index stays the page's own, so every
+// other card keeps its seed.
+pages.forEach((page, i) => {
+  if (page.id !== 'loom') render(card(page, i), W, `${page.id}.png`)
+})
 
 // Logo (JSON-LD) and touch icon, from the favicon.
 const favicon = readFileSync(`${root}public/favicon.svg`, 'utf8')
 render(favicon, site.logo.width, 'logo.png')
 render(favicon.replace('rx="8"', 'rx="0"'), 180, 'apple-touch-icon.png')
+writeIco(favicon, [16, 32, 48], `${root}public/favicon.ico`)

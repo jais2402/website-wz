@@ -201,6 +201,8 @@
 }
 
 .lg-prose p {
+  /* About 75 characters a line: 70ch on the column measures wider than the text's average glyph. */
+  max-width: 62ch;
   margin: 0 0 16px;
   color: #c9cbd8;
   font-size: 1.02rem;

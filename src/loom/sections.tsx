@@ -5,7 +5,7 @@ import { EnquiryForm } from '@/components/EnquiryForm'
 import { BuildArt, ConnectArt, RunArt } from '@/components/Illustrations'
 import { Marquee } from '@/components/Proof'
 import { SplitReveal } from '@/components/Reveal'
-import { brand, loom, process, services, stats, tools, work } from '@/content/site'
+import { brand, loom, office, process, sampleDataLabel, services, stats, tools, work } from '@/content/site'
 import { gsap, scrollToTarget } from '@/hooks/motion'
 
 /** Mounts children only once the element scrolls into view, so count-ups start when seen. */
@@ -175,19 +175,17 @@ export function BeforeAfter() {
                 <i />
                 <i />
                 <i />
-                <span className="mono">ops.wezigns.app</span>
+                <span className="mono">{loom.beforeAfter.app.url}</span>
+                <span className="mono win-sample">{sampleDataLabel}</span>
               </div>
               <div className="ba-app-body">
                 <div className="ba-kpis">
-                  <b>
-                    <small>Orders today</small>1,284
-                  </b>
-                  <b>
-                    <small>On time</small>98.2%
-                  </b>
-                  <b>
-                    <small>Approvals pending</small>0
-                  </b>
+                  {loom.beforeAfter.app.kpis.map((k) => (
+                    <b key={k.label}>
+                      <small>{k.label}</small>
+                      {k.value}
+                    </b>
+                  ))}
                 </div>
                 <svg className="ba-chart" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
                   <path d="M0 64 L40 58 L80 60 L120 44 L160 46 L200 30 L240 26 L300 12" />
@@ -197,15 +195,11 @@ export function BeforeAfter() {
                   />
                 </svg>
                 <ul className="ba-rows">
-                  <li>
-                    PO-2231 · Apex Industrial <em>Approved</em>
-                  </li>
-                  <li>
-                    Stock · Finished goods <em>Live</em>
-                  </li>
-                  <li>
-                    Weekly report <em>Auto · Mon 9:00</em>
-                  </li>
+                  {loom.beforeAfter.app.rows.map((r) => (
+                    <li key={r.label}>
+                      {r.label} <em>{r.status}</em>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -326,7 +320,7 @@ export function Timelines() {
           <article key={c.id} className={`tl glass-card tone-${c.tone}`}>
             <header className="tl-head">
               <span className="mono tl-tag">
-                {c.sector} · {c.place}
+                {c.sector}, {c.place}
               </span>
               <h3>{c.title}</h3>
             </header>
@@ -334,7 +328,7 @@ export function Timelines() {
               <div className="tl-start">
                 <span className="tl-tangle" aria-hidden="true" />
                 <span className="mono">{c.sector}</span>
-                <span>{c.tags.join(' · ')}</span>
+                <span>{c.tags.join(', ')}</span>
               </div>
               <div className="tl-thread">
                 <span className="tl-thread-line" aria-hidden="true">
@@ -372,7 +366,7 @@ export function LoomContact() {
           <SplitReveal as="h2" className="display loom-contact-title" text={loom.contact.title} />
           <p className="lead">{loom.contact.body}</p>
           <address className="office">
-            <span className="mono office-label">Head office · Chennai</span>
+            <span className="mono office-label">{office.label}</span>
             <span className="office-lines">
               {brand.address.map((l) => (
                 <span key={l}>{l}</span>
@@ -382,7 +376,7 @@ export function LoomContact() {
               <a href={brand.phoneHref}>{brand.phone}</a>
               <a href={`mailto:${brand.email}`}>{brand.email}</a>
               <a href={brand.mapsHref} target="_blank" rel="noopener noreferrer">
-                Open in Google Maps ↗
+                {office.maps} ↗
               </a>
             </span>
           </address>

@@ -3,10 +3,17 @@ import { Fragment, type ReactNode, useRef } from 'react'
 import { gsap } from '@/hooks/motion'
 
 type Tag = 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'p'
-type SplitProps = { text: string; as?: Tag; className?: string; delay?: number; trigger?: boolean }
+type SplitProps = { text: string; as?: Tag; className?: string; delay?: number; trigger?: boolean; start?: string }
 
 /** Word-by-word masked rise. Words stay readable to screen readers via the aria-label on the wrapper. */
-export function SplitReveal({ text, as = 'span', className, delay = 0, trigger = true }: SplitProps) {
+export function SplitReveal({
+  text,
+  as = 'span',
+  className,
+  delay = 0,
+  trigger = true,
+  start = 'top 85%',
+}: SplitProps) {
   // Narrowed to one intrinsic type so the ref typechecks; the rendered tag still follows `as`.
   const Tag = as as 'div'
   const ref = useRef<HTMLDivElement>(null)
@@ -24,7 +31,7 @@ export function SplitReveal({ text, as = 'span', className, delay = 0, trigger =
           ease: 'expo.out',
           stagger: 0.06,
           delay,
-          scrollTrigger: trigger ? { trigger: ref.current, start: 'top 85%' } : undefined,
+          scrollTrigger: trigger ? { trigger: ref.current, start } : undefined,
         },
       )
     },

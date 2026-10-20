@@ -35,6 +35,11 @@
   margin-top: 14px;
 }
 
+/* A line that has to wrap splits evenly instead of leaving one word alone ("of"). */
+.pg-title-line {
+  text-wrap: balance;
+}
+
 .pg-title-line.serif {
   color: #8cc4ff;
 }

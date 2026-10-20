@@ -19,12 +19,16 @@ import { type LegalKey, legalCopy, legalPages } from '../content/sitemap.ts'
 import {
   ai,
   areas,
+  areasSection,
   brand,
   contactPage,
   countries,
   ctas,
+  enquiryCopy,
   faq,
+  faqSection,
   footer,
+  footerCopy,
   integrations,
   integrationsSection,
   legalLinks,
@@ -32,17 +36,20 @@ import {
   nav,
   navSystems,
   navSystemsAll,
+  office,
   pastWork,
   portfolioArchive,
   pricing,
   principles,
   process,
   processSection,
+  proofSection,
   reach,
   services,
   servicesSection,
   stack,
   stats,
+  storySection,
   technologyPage,
   tools,
   work,
@@ -102,7 +109,8 @@ function header(onHome: boolean, cta: Link = ctas.contact): string {
   return tag(
     'header',
     a(onHome ? '#top' : '/', brand.name) +
-      tag('nav', ulHtml([...items, a(homeHref(cta.href, onHome), cta.label)]), ' aria-label="Primary"'),
+      // The CTA is used as given: a page passes its own in-page anchor (the contact page's #contact-form).
+      tag('nav', ulHtml([...items, a(cta.href, cta.label)]), ' aria-label="Primary"'),
   )
 }
 
@@ -113,7 +121,7 @@ function address(label: string): string {
       `<br>${t(label)}<br>` +
       brand.address.map(t).join('<br>') +
       `<br>${a(brand.phoneHref, brand.phone)}<br>${a(`mailto:${brand.email}`, brand.email)}<br>` +
-      a(brand.mapsHref, 'Open in Google Maps'),
+      a(brand.mapsHref, office.maps),
   )
 }
 
@@ -129,10 +137,10 @@ function footerHtml(onHome: boolean): string {
     .join('')
   return tag(
     'footer',
-    p(`Custom software that grows with you. Designed, built, hosted and maintained from ${brand.city}.`) +
-      address('Head office · Chennai') +
+    p(footerCopy.tagline) +
+      address(office.label) +
       cols +
-      p(countries.map((c) => c.name).join(' · ')) +
+      p(countries.map((c) => c.name).join(', ')) +
       p(`© 2026 ${brand.legal}`) +
       tag('nav', ulHtml(legalLinks.map((l) => a(l.href, l.label))), ' aria-label="Legal"'),
   )
@@ -144,7 +152,7 @@ function contactBlock(): string {
     p(loom.contact.kicker) +
       h2(loom.contact.title) +
       p(loom.contact.body) +
-      address('Head office · Chennai') +
+      address(office.label) +
       tag('p', a(ctas.contact.href, ctas.contact.label)),
     'contact',
   )
@@ -158,13 +166,13 @@ function ctaStrip(c: { title: string; body?: string; secondary?: Link }): string
   ]
   return tag(
     'aside',
-    p(c.title) + (c.body ? p(c.body) : '') + tag('p', links.join(' · ')),
+    p(c.title) + (c.body ? p(c.body) : '') + ulHtml(links),
     ` aria-label="${t(c.title)}"`,
   )
 }
 
 function hero(kicker: string, title: string, lead: string, actions: Link[]): string {
-  return section(p(kicker) + h1(title) + p(lead) + tag('p', actions.map((l) => a(l.href, l.label)).join(' · ')))
+  return section(p(kicker) + h1(title) + p(lead) + ulHtml(actions.map((l) => a(l.href, l.label))))
 }
 
 type Case = {
@@ -185,7 +193,7 @@ function caseCard(c: Case): string {
     : ''
   return tag(
     'article',
-    p(c.place ? `${c.sector} · ${c.place}` : c.sector) + h3(c.title) + p(c.body) + metrics + ul(c.tags),
+    p(c.place ? `${c.sector}, ${c.place}` : c.sector) + h3(c.title) + p(c.body) + metrics + ul(c.tags),
     ` id="${t(c.id)}"`,
   )
 }
@@ -202,10 +210,7 @@ function home(): string {
     p(loom.eyebrow) +
       h1(line(loom.title)) +
       p(loom.sub) +
-      tag(
-        'p',
-        `${a(ctas.contact.href, ctas.contact.label)} · ${a(ctas.hero.secondary.href, ctas.hero.secondary.label)}`,
-      ) +
+      ulHtml([a(ctas.contact.href, ctas.contact.label), a(ctas.hero.secondary.href, ctas.hero.secondary.label)]) +
       tag(
         'nav',
         p(loom.systemsLine) + ulHtml(navSystems.map((s) => a(s.href, s.label))),
@@ -221,14 +226,14 @@ function home(): string {
   )
 
   const story = section(
-    p('How a Wezigns system feels') +
+    p(storySection.kicker) +
       principles.map((pr) => tag('article', h2(`${pr.title}.`) + p(pr.body) + ul(pr.chips))).join(''),
   )
 
   const proof = section(
-    p('Tools we build with') +
+    p(proofSection.toolsLabel) +
       ul(tools) +
-      h2('Twelve years of building software for growing businesses.') +
+      h2(proofSection.title) +
       ulHtml(stats.map((s) => `${tag('strong', t(`${s.value}${s.suffix}`))} ${t(s.label)}`)),
     'stats',
   )
@@ -241,8 +246,8 @@ function home(): string {
   )
 
   const explorer = section(
-    p('The systems we build') +
-      h2('Every corner of the business, connected.') +
+    p(areasSection.kicker) +
+      h2(areasSection.title) +
       areas
         .map((ar, i) => {
           const href = navSystems[i]?.href ?? navSystemsAll.href
@@ -323,11 +328,11 @@ function home(): string {
   )
 
   const faqHtml = section(
-    h2('Straight answers.') +
+    h2(faqSection.title) +
       faq.map((f) => h3(f.q) + p(f.a)).join('') +
       p(ctas.faq.title) +
       p(ctas.faq.body) +
-      tag('p', `${a(brand.phoneHref, `${ctas.faq.call} ${brand.phone}`)} · ${a(`mailto:${brand.email}`, brand.email)}`),
+      ulHtml([a(brand.phoneHref, `${ctas.faq.call} ${brand.phone}`), a(`mailto:${brand.email}`, brand.email)]),
     'faq',
   )
 
@@ -395,13 +400,13 @@ function systemPageHtml(slug: string): string | null {
         'aside',
         tag('p', tag('strong', t(sp.proof.value))) +
           p(sp.proof.label) +
-          tag('p', a(`/portfolio#${sp.proof.caseId}`, 'Read the case')),
+          tag('p', a(`/portfolio#${sp.proof.caseId}`, copy.readCase)),
       )
     : ''
   return page(
     hero(copy.kicker, `${sp.title}. ${sp.promise}`, sp.intro, [
       copy.cta,
-      { label: 'See what we build', href: '#build' },
+      { label: copy.buildLink, href: '#build' },
     ]) +
       section(
         h2(copy.painsTitle) +
@@ -604,13 +609,15 @@ function contactPageHtml(): string {
   return page(
     section(p(c.kicker) + h1(c.title) + p(c.lead)) +
       section(
-        address('Head office') +
+        address(office.short) +
           p(`Phone: ${brand.phone}. ${c.phoneNote}.`) +
           p(`Email: ${brand.email}. ${c.emailNote}`) +
-          tag('p', `${t(`Working with teams in ${countries.length} countries.`)} ${a('/#countries', 'See where')}`),
-      ),
+          tag('p', `${t(c.reach.replace('{n}', String(countries.length)))} ${a('/#countries', c.reachLink)}`),
+      ) +
+      // Where the enquiry form renders: the header CTA points here.
+      section(p(c.formIntro) + tag('p', a(`mailto:${brand.email}`, brand.email)), 'contact-form'),
     false,
-    { label: 'Send a message', href: '#contact-form' },
+    { label: enquiryCopy.submit, href: '#contact-form' },
   )
 }
 

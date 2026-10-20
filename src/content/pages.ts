@@ -212,6 +212,9 @@ export const systemsSection = {
   toolsTitle: 'Connects to the tools you use',
   moreTitle: 'Other systems we build',
   cta: { label: 'Tell us what is not working', href: '/contact-us' },
+  buildLink: 'See what we build',
+  print: 'Download a one-page summary',
+  readCase: 'Read the case',
 }
 
 export const aboutPage = {
@@ -224,7 +227,7 @@ export const aboutPage = {
     { title: 'Priced on outcomes.', text: 'One price and one timeline, agreed before we build. No hourly meter running in the background.' },
     { title: 'Grows in stages.', text: 'Start with the part that hurts most. Add the next module when you are ready, without a rewrite.' },
   ],
-  storyTitle: 'Twelve years, one thread',
+  storyTitle: 'One thread since 2012',
   story: [
     { year: '2012', title: 'Started in Chennai', text: 'A small design and web team, building websites for local businesses.' },
     { year: 'Portals & stores', title: 'From pages to platforms', text: 'Online stores, job portals, booking and education systems for clients at home and abroad.' },

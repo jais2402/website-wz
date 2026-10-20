@@ -179,8 +179,14 @@ function Numbers() {
         <div className="ab-stat" key={s.label}>
           <dt className="ab-stat-label">{s.label}</dt>
           <dd className="ab-stat-value">
-            {seen ? (
-              <CountUp value={s.value} suffix={s.suffix} delay={i * 120} group={!s.plain} />
+            {/* A year never counts up: mid-count it reads as a wrong year (1317, 2010). */}
+            {s.plain ? (
+              <span className="count">
+                {s.value}
+                {s.suffix}
+              </span>
+            ) : seen ? (
+              <CountUp value={s.value} suffix={s.suffix} delay={i * 120} />
             ) : (
               // Holds the final width so the row does not shift when the count starts.
               <span className="ab-stat-hold">

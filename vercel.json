@@ -23,6 +23,10 @@
         {
           "key": "Permissions-Policy",
           "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Content-Security-Policy-Report-Only",
+          "value": "default-src 'self'; script-src 'self' 'sha256-dm9j0BMfr835WYmshKZRfe0aWpKQraO6Xf8pVXU2DMY=' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:; object-src 'none'"
         }
       ]
     },
@@ -49,7 +53,7 @@
       "has": [
         {
           "type": "host",
-          "value": "website-wz.vercel.app"
+          "value": ".*\\.vercel\\.app"
         }
       ],
       "headers": [
@@ -154,6 +158,11 @@
       "statusCode": 301
     },
     {
+      "source": "/portfolio-item-ckca-rental",
+      "destination": "/portfolio#car-rental",
+      "statusCode": 301
+    },
+    {
       "source": "/portfolio-item-:slug",
       "destination": "/portfolio#:slug",
       "statusCode": 301
@@ -170,6 +179,26 @@
     },
     {
       "source": "/sitemap",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/index.php",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/contact-us.php",
+      "destination": "/contact-us",
+      "permanent": true
+    },
+    {
+      "source": "/work",
+      "destination": "/portfolio",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap_index.xml",
       "destination": "/sitemap.xml",
       "permanent": true
     }

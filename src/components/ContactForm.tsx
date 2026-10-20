@@ -1,5 +1,5 @@
 import { type FormEvent, useRef, useState } from 'react'
-import { enquiryTopics } from '@/content/site'
+import { contactPage, enquiryCopy, enquiryTopics } from '@/content/site'
 import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, trackLead, validateEnquiry } from '@/lib/enquiry'
 import { EnquiryError, EnquirySent, MarketingOptIn, PrivacyNote, type SendStatus } from './EnquiryForm'
 
@@ -118,7 +118,7 @@ export function ContactForm() {
 
       <div className="cf-field">
         <label htmlFor="cf-message">
-          What is slowing your team down? <span aria-hidden="true">*</span>
+          {contactPage.formIntro} <span aria-hidden="true">*</span>
         </label>
         <textarea {...fieldProps('message')} rows={5} required maxLength={LIMITS.message} value={data.message} onChange={(e) => set('message', e.target.value)} />
         {err('message') && <span className="cf-error" id="cf-message-error">{err('message')}</span>}
@@ -134,9 +134,8 @@ export function ContactForm() {
 
       <div className="cf-foot">
         <button type="submit" className="btn btn-lime btn-lg" disabled={status.kind === 'sending'}>
-          {status.kind === 'sending' ? 'Sending…' : 'Send message'} <span aria-hidden="true">→</span>
+          {status.kind === 'sending' ? enquiryCopy.sending : enquiryCopy.submit} <span aria-hidden="true">→</span>
         </button>
-        <span className="cf-note">We reply within one working day.</span>
         <PrivacyNote />
       </div>
       <EnquiryError status={status} onRetry={() => void send()} />

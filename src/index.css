@@ -10,6 +10,8 @@
   --ink-3: #15151f;
   --line: rgba(255, 255, 255, 0.08);
   --line-2: rgba(255, 255, 255, 0.14);
+  /* Form field edges: about 3:1 on ink so inputs read as inputs (WCAG 1.4.11). */
+  --field-line: rgba(255, 255, 255, 0.38);
   --text: #ededf3;
   --muted: #9a9cb0;
   --lime: #4d9fff; /* accent blue (token name kept; was lime) */
@@ -130,6 +132,14 @@ main:focus {
   outline: none;
 }
 
+/* Sections far off screen (usePauseOffscreen): CSS loops pause until they come back. */
+.is-offscreen,
+.is-offscreen *,
+.is-offscreen *::before,
+.is-offscreen *::after {
+  animation-play-state: paused !important;
+}
+
 main,
 .footer {
   position: relative;
@@ -237,7 +247,8 @@ main,
 
 /* Primary CTA: shades of blue (class name kept for history; every primary button uses it). */
 .btn-lime {
-  background: linear-gradient(135deg, var(--cta-2) 0%, var(--cta-1) 55%, var(--cta-3) 100%);
+  /* Every stop under the white label is #2563eb or darker (4.5:1 or more). */
+  background: linear-gradient(135deg, var(--cta-1) 0%, var(--cta-3) 55%, #1e40af 100%);
   color: #fff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.25),
@@ -245,7 +256,7 @@ main,
 }
 
 .btn-lime:hover {
-  background: linear-gradient(135deg, #7cc0ff 0%, var(--cta-2) 55%, var(--cta-1) 100%);
+  background: linear-gradient(135deg, var(--cta-2) 0%, var(--cta-1) 45%, var(--cta-3) 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     0 10px 40px -8px rgba(59, 130, 246, 0.65);
@@ -881,6 +892,13 @@ main,
   color: var(--lime);
 }
 
+/* Tablets: the floating Call/Email pill (shown below 900px) sits at the bottom centre; keep the stage dots above it. */
+@media (max-width: 899px) {
+  .story-dots {
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* ==========================================================================
    Opaque panels that slide over the canvas
    ========================================================================== */
@@ -932,12 +950,13 @@ main,
   font-weight: 600;
   font-size: clamp(1.6rem, 3.6vw, 3.2rem);
   letter-spacing: -0.04em;
-  color: #3b3c4e;
+  /* Large text: at least 3:1 on ink (WCAG 1.4.3). */
+  color: #686a7e;
   transition: color 0.3s;
 }
 
 .marquee.is-reverse .marquee-item {
-  color: #2a2b38;
+  color: #5f6175;
   font-family: var(--f-serif);
   font-style: italic;
   font-weight: 400;
@@ -1160,6 +1179,17 @@ main,
   color: var(--muted);
   font-size: 0.65rem;
   text-transform: none;
+}
+
+/* "Sample data" chip at the right of a window bar: demo figures must never read as client results. */
+.win-bar .win-sample {
+  margin-left: auto;
+  padding: 2px 7px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  white-space: nowrap;
+  opacity: 0.85;
 }
 
 .win-body {
@@ -1978,6 +2008,11 @@ main,
   margin: 0 clamp(0px, 1vw, 12px);
 }
 
+/* The default blue focus ring is 2.4:1 on cream; a deep blue keeps it above 3:1. */
+.ai :focus-visible {
+  outline-color: #1d4ed8;
+}
+
 .ai .label {
   color: #5b5b66;
 }
@@ -2045,9 +2080,9 @@ main,
 .ai-table th {
   text-align: left;
   font-family: var(--f-mono);
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  color: #8a8a94;
+  color: #6b6b75;
   font-weight: 400;
   padding: 14px 18px 10px;
 }
@@ -2722,6 +2757,15 @@ main,
   border-top: 1px solid var(--line);
 }
 
+/* Pricing into integrations: two full panel paddings back to back left a ~400px empty band on wide screens. */
+.pricing {
+  padding-bottom: clamp(80px, 9vw, 120px);
+}
+
+.integrations {
+  padding-top: clamp(80px, 9vw, 120px);
+}
+
 .pricing-grid {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
@@ -3026,7 +3070,6 @@ main,
   position: absolute;
   left: 0;
   top: 0;
-  translate: -50% -50%;
   transform: rotate(calc(-1 * var(--a)));
   animation: counterSpin 50s linear infinite;
   padding: 8px 14px;
@@ -3035,6 +3078,14 @@ main,
   border: 1px solid var(--line-2);
   font-size: 0.82rem;
   white-space: nowrap;
+}
+
+/* Centre each label on its orbit point. Only above 480px: on phones the labels become a static list, and an
+   override back to no translate gets dropped by the CSS minifier. */
+@media (min-width: 481px) {
+  .sat > span {
+    translate: -50% -50%;
+  }
 }
 
 .ring-2 .sat > span {
@@ -3081,7 +3132,6 @@ main,
   .orbit .sat > span {
     position: static;
     display: inline-block;
-    translate: none;
     transform: none;
     animation: none;
   }
@@ -3217,11 +3267,18 @@ main,
 .faq-a {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.5s var(--ease-out);
+  visibility: hidden;
+  transition:
+    grid-template-rows 0.5s var(--ease-out),
+    visibility 0s 0.5s;
 }
 
 .faq-item.is-open .faq-a {
   grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows 0.5s var(--ease-out),
+    visibility 0s;
 }
 
 .faq-a > div {
@@ -3294,7 +3351,7 @@ main,
   font: inherit;
   color: var(--text);
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--field-line);
   border-radius: 14px;
   padding: 14px 16px;
   resize: vertical;
@@ -3472,6 +3529,18 @@ main,
 .footer-bottom a {
   color: var(--muted);
   transition: color 0.2s;
+}
+
+/* 24px tall tap targets that do not overlap when the row wraps on phones (WCAG 2.5.8). */
+.footer-bottom a,
+.footer-legal .cookie-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+.footer-legal {
+  align-items: center;
 }
 
 .footer-legal a:hover,

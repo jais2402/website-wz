@@ -28,3 +28,8 @@ dist-ssr
 
 # Playwright MCP scratch output
 .playwright-mcp/
+
+# Local environment files (RESEND_API_KEY, GA ID, ...). Only the example is committed.
+.env
+.env.*
+!.env.example

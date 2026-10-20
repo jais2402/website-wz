@@ -1,4 +1,4 @@
-import { brand, countries, footer, legalLinks } from '@/content/site'
+import { brand, countries, footer, footerCopy, legalLinks } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
 import { AiSummary } from './AiSummary'
 import { CookieSettingsButton } from './CookieBanner'
@@ -12,7 +12,7 @@ export function Footer({ base = '' }: { base?: string }) {
         <div className="footer-top">
           <div className="footer-brand">
             <Logo />
-            <p>Custom software that grows with you. Designed, built, hosted and maintained from {brand.city}.</p>
+            <p>{footerCopy.tagline}</p>
             <address className="footer-address">{brand.address.join(', ')}</address>
           </div>
           {footer.map((col) => (

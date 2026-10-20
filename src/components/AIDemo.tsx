@@ -1,16 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { ai, ctas } from '@/content/site'
+import { ai, aiDemo, ctas, sampleDataLabel } from '@/content/site'
 import { SplitReveal } from './Reveal'
 
-const SUGGESTION =
-  'Invoice #0193 matches PO-2231 except quantity: 48 received vs 50 ordered. Suggest approving 48 and flagging the supplier for the short delivery.'
-
-const ROWS = [
-  { id: 'PO-2229', vendor: 'Gulf Safety Supplies', amt: '₹ 1,24,000', status: 'Approved' },
-  { id: 'PO-2231', vendor: 'Apex Industrial', amt: '₹ 3,86,500', status: 'Review' },
-  { id: 'PO-2234', vendor: 'Coastline Logistics', amt: '₹ 58,200', status: 'Approved' },
-  { id: 'PO-2236', vendor: 'Northwind Traders', amt: '₹ 2,10,750', status: 'Pending' },
-]
+const SUGGESTION = aiDemo.suggestion
 
 type Phase = 'idle' | 'typing' | 'ready' | 'approved'
 type RunState = 'idle' | 'running' | 'approved'
@@ -72,22 +64,22 @@ export function AIDemo() {
             <i />
             <i />
             <i />
-            <span className="mono">Purchase approvals</span>
+            <span className="mono">{aiDemo.window}</span>
+            <span className="mono win-sample">{sampleDataLabel}</span>
           </div>
           <table className="ai-table">
             <thead>
               <tr>
-                <th>PO</th>
-                <th>Vendor</th>
-                <th>Amount</th>
-                <th>Status</th>
+                {aiDemo.columns.map((c) => (
+                  <th key={c}>{c}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {ROWS.map((r) => {
-                const status = r.id === 'PO-2231' && phase === 'approved' ? 'Approved' : r.status
+              {aiDemo.rows.map((r) => {
+                const status = r.id === aiDemo.focusId && phase === 'approved' ? aiDemo.approvedStatus : r.status
                 return (
-                  <tr key={r.id} className={r.id === 'PO-2231' ? 'is-focus' : ''}>
+                  <tr key={r.id} className={r.id === aiDemo.focusId ? 'is-focus' : ''}>
                     <td className="mono">{r.id}</td>
                     <td>{r.vendor}</td>
                     <td className="mono">{r.amt}</td>
@@ -103,7 +95,7 @@ export function AIDemo() {
           <div className={`ai-card phase-${phase}`} aria-live="polite">
             <div className="ai-card-head">
               <span className="ai-orb" aria-hidden="true" />
-              <span className="mono">Wezigns AI · suggestion</span>
+              <span className="mono">{aiDemo.cardLabel}</span>
             </div>
             <p>
               {SUGGESTION.slice(0, typed)}
@@ -111,20 +103,20 @@ export function AIDemo() {
             </p>
             {phase === 'approved' ? (
               <div className="ai-done">
-                <span>✓ Approved by you · logged to audit trail</span>
+                <span>{aiDemo.done}</span>
                 <button className="link-btn" onClick={replay}>
-                  Replay
+                  {aiDemo.replay}
                 </button>
               </div>
             ) : (
               <div className="ai-actions">
                 <button className="btn btn-ink btn-sm" disabled={phase !== 'ready'} onClick={() => setRun('approved')}>
-                  Approve 48 units
+                  {aiDemo.approve}
                 </button>
                 <button className="btn btn-outline btn-sm" disabled={phase !== 'ready'} onClick={replay}>
-                  Ask again
+                  {aiDemo.askAgain}
                 </button>
-                <span className="ai-human mono">Human in control</span>
+                <span className="ai-human mono">{aiDemo.human}</span>
               </div>
             )}
           </div>

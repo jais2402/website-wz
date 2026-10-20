@@ -2,7 +2,18 @@
 // Underscore prefix: Vercel does not deploy this file as a function.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { marketingOptIn } from '../src/content/site.ts'
-import { MARKETING_WORDING, enquiryEmail, escapeHtml, formatIst, handleEnquiry, parseEnquiry } from './enquiry.ts'
+import {
+  MARKETING_WORDING,
+  RATE,
+  enquiryEmail,
+  escapeHtml,
+  formatIst,
+  handleEnquiry,
+  originAllowed,
+  parseEnquiry,
+  rateLimited,
+  resetRateLimit,
+} from './enquiry.ts'
 
 const valid = {
   name: 'Asha Rao',
@@ -21,7 +32,7 @@ const env = { RESEND_API_KEY: 're_test' }
 const post = (body: unknown, headers: Record<string, string> = {}) =>
   new Request('https://wezigns.com/api/enquiry', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers },
+    headers: { 'Content-Type': 'application/json', Origin: 'https://www.wezigns.com', ...headers },
     body: typeof body === 'string' ? body : JSON.stringify(body),
   })
 
@@ -157,5 +168,48 @@ describe('handleEnquiry', () => {
     const res = await handleEnquiry(post(valid), env)
     expect(res.status).toBe(502)
     expect(await res.json()).toEqual({ ok: false, error: 'send-failed' })
+  })
+})
+
+describe('abuse limits', () => {
+  beforeEach(() => resetRateLimit())
+
+  it('accepts the site, its own host and local development, and refuses other origins', () => {
+    const url = 'https://wezigns-git-main-team.vercel.app/api/enquiry'
+    expect(originAllowed('https://www.wezigns.com', url)).toBe(true)
+    expect(originAllowed('https://wezigns-git-main-team.vercel.app', url)).toBe(true)
+    expect(originAllowed('http://localhost:5173', url)).toBe(true)
+    expect(originAllowed('https://evil.example', url)).toBe(false)
+    expect(originAllowed(null, url)).toBe(false)
+  })
+
+  it('answers 403 to a post from another site or with no Origin', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
+    expect((await handleEnquiry(post(valid, { Origin: 'https://evil.example' }), env)).status).toBe(403)
+    const bare = new Request('https://wezigns.com/api/enquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(valid),
+    })
+    expect((await handleEnquiry(bare, env)).status).toBe(403)
+    expect(fetchMock).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
+  })
+
+  it('limits each IP to a few enquiries per window, then lets it through again', () => {
+    const now = 1_000_000
+    for (let i = 0; i < RATE.max; i++) expect(rateLimited('203.0.113.7', now + i)).toBe(false)
+    expect(rateLimited('203.0.113.7', now + RATE.max)).toBe(true)
+    expect(rateLimited('198.51.100.2', now)).toBe(false)
+    expect(rateLimited('203.0.113.7', now + RATE.windowMs + RATE.max)).toBe(false)
+  })
+
+  it('answers 429 once an IP is over the limit', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 200 })))
+    const ip = { 'X-Forwarded-For': '203.0.113.9, 10.0.0.1' }
+    for (let i = 0; i < RATE.max; i++) expect((await handleEnquiry(post(valid, ip), env)).status).toBe(200)
+    expect((await handleEnquiry(post(valid, ip), env)).status).toBe(429)
+    vi.unstubAllGlobals()
   })
 })

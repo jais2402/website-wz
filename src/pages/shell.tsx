@@ -8,6 +8,7 @@ import { SplitReveal } from '@/components/Reveal'
 import { StickyCall } from '@/components/StickyCall'
 import { nav } from '@/content/site'
 import { gsap, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
+import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
 
 // Shared building blocks for the inner pages. Styles in pages.css (classes prefixed `pg-`).
 
@@ -21,13 +22,20 @@ const homeNav = nav.map((l) => ({ ...l, href: l.href.startsWith('#') ? `/${l.hre
 export function PageShell({ children, className = '' }: { children: ReactNode; className?: string }) {
   const reducedMotion = usePrefersReducedMotion()
   useSmoothScroll(!reducedMotion)
+  usePauseOffscreen()
   const root = useRef<HTMLElement>(null)
 
   useGSAP(
     () => {
       if (reducedMotion) return
       gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
-        gsap.from(el, { y: 36, opacity: 0, duration: 0.9, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 88%' } })
+        gsap.from(el, {
+          y: 36,
+          opacity: 0,
+          duration: 0.9,
+          ease: 'expo.out',
+          scrollTrigger: { trigger: el, start: 'top 88%' },
+        })
       })
     },
     { scope: root, dependencies: [reducedMotion] },
@@ -38,12 +46,13 @@ export function PageShell({ children, className = '' }: { children: ReactNode; c
       <div className="grain" aria-hidden="true" />
       <Cursor />
       <Nav items={homeNav} logoHref="/" />
-      <main ref={root} className={`pg ${className}`}>
+      {/* Before <main> in the DOM so keyboard users reach it early; it is fixed bottom-left. */}
+      <CookieBanner />
+      <main id="main" tabIndex={-1} ref={root} className={`pg ${className}`}>
         {children}
       </main>
       <Footer base="/" />
       <StickyCall />
-      <CookieBanner />
     </>
   )
 }
@@ -71,7 +80,9 @@ export function PageHero({
           {title.map((line, i) => (
             <Fragment key={line}>
               {i > 0 && ' '}
-              <span className={`pg-title-line${i === title.length - 1 && title.length > 1 ? ' serif' : ''}`}>{line}</span>
+              <span className={`pg-title-line${i === title.length - 1 && title.length > 1 ? ' serif' : ''}`}>
+                {line}
+              </span>
             </Fragment>
           ))}
         </h1>

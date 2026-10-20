@@ -59,6 +59,8 @@ describe('payload, honeypot and mailto', () => {
     const body = params.get('body')!
     for (const part of ['three spreadsheets', 'Asha Rao', 'asha@example.com', '+91 98400 12345']) expect(body).toContain(part)
     expect(body).toContain('Marketing emails: No')
+    expect(body).toContain('From: Asha Rao')
+    expect(body).not.toContain('—')
   })
 })
 
@@ -167,6 +169,14 @@ describe('submitEnquiry', () => {
     if (!r.ok) expect(r.error).toContain('500')
     fetchSpy.mockResolvedValueOnce(reply({ ok: false, error: 'invalid', fields: ['email'] }, 400))
     expect((await submitEnquiry(valid, cfg, { open })).ok).toBe(false)
+    expect(open).not.toHaveBeenCalled()
+  })
+
+  it('explains a rate limit (429) without opening the mail app', async () => {
+    fetchSpy.mockResolvedValueOnce(reply({ ok: false, error: 'rate-limited' }, 429))
+    const r = await submitEnquiry(valid, cfg, { open })
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.error).toContain('try again in a few minutes')
     expect(open).not.toHaveBeenCalled()
   })
 

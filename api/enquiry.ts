@@ -100,6 +100,40 @@ export function enquiryEmail(e: CleanEnquiry, receivedAt = new Date()) {
   return { subject, html, text }
 }
 
+// Browsers send Origin on every POST from a page. Only the site itself (any host it is served from, e.g. a Vercel
+// preview) and local development may post. This stops other sites from using the form as a mail relay.
+const ALLOWED_ORIGINS = new Set(['https://www.wezigns.com', 'https://wezigns.com'])
+const LOCAL_ORIGIN = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/
+
+export function originAllowed(origin: string | null, requestUrl: string): boolean {
+  if (!origin) return false
+  if (ALLOWED_ORIGINS.has(origin) || LOCAL_ORIGIN.test(origin)) return true
+  try {
+    return origin === new URL(requestUrl).origin
+  } catch {
+    return false
+  }
+}
+
+// Best-effort per-IP limit (per function instance, so it only slows a burst down). The firm limit is a Vercel
+// Firewall rate-limit rule on /api/enquiry: see docs/enquiry-setup.md.
+export const RATE = { max: 5, windowMs: 10 * 60_000 }
+const hits = new Map<string, number[]>()
+
+export function rateLimited(ip: string, now = Date.now()): boolean {
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE.windowMs)
+  const limited = recent.length >= RATE.max
+  if (!limited) recent.push(now)
+  hits.set(ip, recent)
+  // Keep the map small on a long-lived instance.
+  if (hits.size > 5000) hits.clear()
+  return limited
+}
+
+export const resetRateLimit = () => hits.clear()
+
+const clientIp = (request: Request) => (request.headers.get('x-forwarded-for') ?? '').split(',')[0].trim()
+
 export async function handleEnquiry(request: Request, env: Env = process.env): Promise<Response> {
   if (request.method !== 'POST') {
     return new Response(JSON.stringify({ ok: false, error: 'method-not-allowed' }), {
@@ -107,6 +141,9 @@ export async function handleEnquiry(request: Request, env: Env = process.env): P
       headers: { 'Content-Type': 'application/json; charset=utf-8', Allow: 'POST' },
     })
   }
+  if (!originAllowed(request.headers.get('origin'), request.url)) return json({ ok: false, error: 'forbidden-origin' }, 403)
+  const ip = clientIp(request)
+  if (ip && rateLimited(ip)) return json({ ok: false, error: 'rate-limited' }, 429)
   if (!(request.headers.get('content-type') ?? '').includes('application/json')) return json({ ok: false, error: 'unsupported-type' }, 415)
   if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY) return json({ ok: false, error: 'too-large' }, 413)
 

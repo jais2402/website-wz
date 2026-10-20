@@ -55,9 +55,7 @@
 .loom-phase {
   padding: clamp(22px, 3vw, 40px);
   border-radius: 32px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.015) 55%),
-    rgba(6, 7, 16, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.015) 55%), rgba(6, 7, 16, 0.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
   backdrop-filter: blur(20px) saturate(1.4);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -137,11 +135,30 @@
   line-height: 1.55;
 }
 
+/* Big monitors: the headline grows a step; the panel keeps its 760px width so the loom mouth stays clear. */
+@media (min-width: 1921px) {
+  .loom-title {
+    font-size: clamp(5.8rem, 4.2vw, 6.6rem);
+  }
+
+  .loom-sub {
+    font-size: 1.35rem;
+  }
+}
+
 .loom-phases {
   left: var(--gutter);
   bottom: 9vh;
   width: min(660px, calc(100% - 2 * var(--gutter)));
   display: grid;
+}
+
+/* Wide screens: the intro and phase panels line up with the centred page container (1320px .wrap). */
+@media (min-width: 1440px) {
+  .loom-intro,
+  .loom-phases {
+    left: max(var(--gutter), calc((100% - 1320px) / 2 + var(--gutter)));
+  }
 }
 
 .loom-phase {
@@ -185,11 +202,6 @@
   line-height: 1.55;
   max-width: 40ch;
 }
-
-
-
-
-
 
 /* Weave: in → knot → out */
 .weave-knot-m {
@@ -301,7 +313,6 @@
 }
 
 @media (max-width: 899px) {
-
   .weave-grid {
     grid-template-columns: 1fr;
   }
@@ -428,25 +439,20 @@
   background: rgba(77, 159, 255, 0.08);
 }
 
-/* Phones: one row that swipes sideways, so the panel only grows by a single line. */
+/* Phones: the six chips wrap onto two short rows, so none hides off the edge of the panel. */
 @media (max-width: 640px) {
   .loom-systems {
-    flex-wrap: nowrap;
     max-width: 100%;
     margin-top: 16px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(to right, #000 85%, transparent);
-    mask-image: linear-gradient(to right, #000 85%, transparent);
-  }
-
-  .loom-systems::-webkit-scrollbar {
-    display: none;
+    gap: 8px;
   }
 
   .loom-systems ul {
-    flex-wrap: nowrap;
-    padding-right: 24px;
+    gap: 5px;
+  }
+
+  .loom-systems a {
+    padding: 5px 9px;
   }
 }
 
@@ -562,9 +568,7 @@
 
 /* Stats */
 .loom-stats {
-  background:
-    radial-gradient(50% 60% at 80% 0%, rgba(140, 196, 255, 0.08), transparent 70%),
-    var(--ink-2);
+  background: radial-gradient(50% 60% at 80% 0%, rgba(140, 196, 255, 0.08), transparent 70%), var(--ink-2);
 }
 
 .loom-stat-row {
@@ -643,8 +647,7 @@
 .ba-before {
   background:
     radial-gradient(60% 70% at 30% 40%, rgba(255, 71, 99, 0.18), transparent 70%),
-    radial-gradient(50% 60% at 80% 70%, rgba(139, 123, 255, 0.16), transparent 70%),
-    #120d14;
+    radial-gradient(50% 60% at 80% 70%, rgba(139, 123, 255, 0.16), transparent 70%), #120d14;
 }
 
 .ba-tangle {
@@ -714,13 +717,41 @@
   box-shadow: 0 16px 30px -12px rgba(0, 0, 0, 0.7);
 }
 
-.n1 { left: 6%; top: 12%; rotate: -6deg; }
-.n2 { left: 14%; top: 26%; rotate: 4deg; }
-.n3 { left: 46%; top: 16%; rotate: -3deg; }
-.n4 { left: 58%; top: 58%; rotate: 6deg; }
-.n5 { left: 10%; top: 72%; rotate: 3deg; }
-.s1 { left: 34%; top: 46%; rotate: -8deg; }
-.s2 { left: 74%; top: 22%; rotate: 7deg; }
+.n1 {
+  left: 6%;
+  top: 12%;
+  rotate: -6deg;
+}
+.n2 {
+  left: 14%;
+  top: 26%;
+  rotate: 4deg;
+}
+.n3 {
+  left: 46%;
+  top: 16%;
+  rotate: -3deg;
+}
+.n4 {
+  left: 58%;
+  top: 58%;
+  rotate: 6deg;
+}
+.n5 {
+  left: 10%;
+  top: 72%;
+  rotate: 3deg;
+}
+.s1 {
+  left: 34%;
+  top: 46%;
+  rotate: -8deg;
+}
+.s2 {
+  left: 74%;
+  top: 22%;
+  rotate: 7deg;
+}
 
 .ba-after {
   display: grid;
@@ -728,8 +759,7 @@
   padding: clamp(16px, 4vw, 48px);
   background:
     radial-gradient(60% 70% at 70% 30%, rgba(77, 159, 255, 0.12), transparent 70%),
-    radial-gradient(50% 60% at 20% 80%, rgba(140, 196, 255, 0.1), transparent 70%),
-    #0b0f0c;
+    radial-gradient(50% 60% at 20% 80%, rgba(140, 196, 255, 0.1), transparent 70%), #0b0f0c;
   clip-path: inset(0 0 0 var(--pos));
 }
 
@@ -916,9 +946,7 @@
 
 /* Three looms */
 .looms {
-  background:
-    radial-gradient(40% 50% at 10% 20%, rgba(139, 123, 255, 0.12), transparent 70%),
-    var(--ink);
+  background: radial-gradient(40% 50% at 10% 20%, rgba(139, 123, 255, 0.12), transparent 70%), var(--ink);
 }
 
 .loom-cards {
@@ -1037,9 +1065,18 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background:
-    conic-gradient(from 30deg, #ff4763, var(--violet), #2fd0ff, #ff4763);
-  mask: radial-gradient(circle, transparent 38%, #000 40%, #000 46%, transparent 48%, transparent 58%, #000 60%, #000 66%, transparent 68%);
+  background: conic-gradient(from 30deg, #ff4763, var(--violet), #2fd0ff, #ff4763);
+  mask: radial-gradient(
+    circle,
+    transparent 38%,
+    #000 40%,
+    #000 46%,
+    transparent 48%,
+    transparent 58%,
+    #000 60%,
+    #000 66%,
+    transparent 68%
+  );
   animation: spin 6s linear infinite;
 }
 
@@ -1115,8 +1152,7 @@
 .loom-contact {
   background:
     radial-gradient(50% 60% at 20% 100%, rgba(139, 123, 255, 0.22), transparent 70%),
-    radial-gradient(40% 50% at 90% 10%, rgba(140, 196, 255, 0.1), transparent 70%),
-    var(--ink);
+    radial-gradient(40% 50% at 90% 10%, rgba(140, 196, 255, 0.1), transparent 70%), var(--ink);
 }
 
 .loom-contact-grid {

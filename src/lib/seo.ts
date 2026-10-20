@@ -310,14 +310,19 @@ function serviceNodes(page: SeoPage, site: SeoSite, data: SeoData): Json[] {
   }))
 }
 
-/** sitemap.xml for every indexable page. `lastmod` is a YYYY-MM-DD date. */
-export function sitemapXml(pages: SeoPage[], site: SeoSite, lastmod: string) {
+/**
+ * sitemap.xml for every indexable page. `lastmod` gives a page's real content date (YYYY-MM-DD) or undefined. A page
+ * without one gets no <lastmod>: stamping every URL with the build date would mark the whole site changed on each
+ * deploy, and Google ignores lastmod once it proves inaccurate.
+ */
+export function sitemapXml(pages: SeoPage[], site: SeoSite, lastmod: (p: SeoPage) => string | undefined = () => undefined) {
   const urls = pages
     .filter((p) => p.indexable)
-    .map(
-      (p) =>
-        `  <url>\n    <loc>${escapeXml(absoluteUrl(site.origin, p.path))}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`,
-    )
+    .map((p) => {
+      const date = lastmod(p)
+      const mod = date ? `\n    <lastmod>${escapeXml(date)}</lastmod>` : ''
+      return `  <url>\n    <loc>${escapeXml(absoluteUrl(site.origin, p.path))}</loc>${mod}\n  </url>`
+    })
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`
 }
 

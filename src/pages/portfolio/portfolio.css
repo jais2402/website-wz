@@ -432,7 +432,8 @@
   font-size: 1.02rem;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  overflow-wrap: anywhere;
+  /* Domain names break at their dots (<wbr>); only a word longer than the card breaks inside. */
+  overflow-wrap: break-word;
 }
 
 .pf-archive-sector {
@@ -441,6 +442,10 @@
 }
 
 .pf-archive-link {
+  /* 24px tall tap target (WCAG 2.5.8). */
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   justify-self: start;
   color: var(--lime);
   font-size: 0.82rem;
