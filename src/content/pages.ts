@@ -220,7 +220,7 @@ export const systemsSection = {
 export const aboutPage = {
   kicker: 'About Wezigns',
   title: ['From small business', 'to enterprise', 'systems.'],
-  lead: 'Systems and custom software for SMEs and MSMEs, since 2012: 20+ business systems running in 11 countries. We are a software studio in Chennai, building the systems growing businesses run on: the portals, stores, dashboards and tools that replace spreadsheets, chat threads and manual work.',
+  lead: 'Systems and custom software for small to medium businesses, since 2012: 20+ business systems running in 11 countries. We are a software studio in Chennai, building the systems growing businesses run on: the portals, stores, dashboards and tools that replace spreadsheets, chat threads and manual work.',
   whyTitle: 'Why small and growing businesses work with us',
   why: [
     { title: 'Built around how you work.', text: 'We start from your people and your process, not from a template. The software fits the business, not the other way round.' },
@@ -232,7 +232,7 @@ export const aboutPage = {
     { year: '2012', title: 'Started in Chennai', text: 'A small design and web team, building websites for local businesses.' },
     { year: 'Portals & stores', title: 'From pages to platforms', text: 'Online stores, job portals, booking and education systems for clients at home and abroad.' },
     { year: 'Business systems', title: 'The software teams run on', text: 'HR, operations, finance and industry systems that replace spreadsheets and chat threads.' },
-    { year: 'Today', title: 'Systems with AI inside', text: 'Custom systems and AI workflows for SMEs and MSMEs in 11 countries.' },
+    { year: 'Today', title: 'Systems with AI inside', text: 'Custom systems and AI workflows for small to medium businesses in 11 countries.' },
   ],
   numbersTitle: 'In numbers',
   processTitle: 'How we work',
