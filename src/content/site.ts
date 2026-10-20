@@ -797,7 +797,7 @@ export const stack = [
   { group: 'AI & machine learning', items: ['OpenAI', 'Claude', 'Gemini', 'Open-source models', 'LangChain', 'LlamaIndex', 'pgvector', 'Retrieval (RAG)', 'OCR & document AI', 'Whisper speech-to-text'] },
   { group: 'Cloud, DevOps & security', items: ['AWS', 'Google Cloud', 'Microsoft Azure', 'Docker', 'Kubernetes', 'Terraform', 'GitHub Actions', 'Cloudflare', 'Monitoring & alerts'] },
   { group: 'Commerce & content', items: ['Shopify', 'Magento', 'WooCommerce', 'WordPress', 'Headless CMS'] },
-  { group: 'Payments, messaging & integrations', items: ['Stripe', 'Razorpay', 'Twilio', 'WhatsApp Business Platform', 'Mailchimp', 'Klaviyo', 'Google Workspace', 'Microsoft 365'] },
+  { group: 'Payments, messaging & integrations', items: ['Stripe', 'Razorpay', 'Twilio', 'WhatsApp Business Platform', 'Mailchimp', 'Klaviyo', 'Google Workspace', 'Microsoft 365', 'Solvable', 'Inscribe'] },
 ]
 
 export const technologyPage = {
