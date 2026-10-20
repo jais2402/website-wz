@@ -16,8 +16,9 @@ const privacyEmail = brand.email
 
 export const legalMeta = {
   updated: '2026-10-20',
-  reviewNote:
-    'Draft for review by a qualified lawyer before publishing. Fill in every [placeholder] and remove this note once approved.',
+  // The visible draft notice is off (client decision, 2026-10-20). Placeholders such as [CIN] stay until the
+  // details arrive; set a note here again to show it on every legal page.
+  reviewNote: '',
 }
 
 export const privacyPolicy: LegalDoc = {
