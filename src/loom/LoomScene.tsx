@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { buildParticles, buildStrands } from '@/lib/loom'
 import { useBudgetDpr } from '@/hooks/useBudgetDpr'
+import { useDocumentVisible } from '@/hooks/useDocumentVisible'
 import { damp } from '@/lib/math'
 import { glowFragment, glowVertex, particleFragment, particleVertex, strandFragment, strandVertex } from './shaders'
 import { Warmup } from '@/scene/Warmup'
@@ -424,6 +425,7 @@ export function LoomScene({ reducedMotion, active, onReady, view = 'hero', varia
   }, [])
 
   const dpr = useBudgetDpr()
+  const visible = useDocumentVisible()
 
   return (
     <Canvas
@@ -431,7 +433,7 @@ export function LoomScene({ reducedMotion, active, onReady, view = 'hero', varia
       camera={{ position: [-1.2, 0.6, 14], fov: 40, near: 0.1, far: 100 }}
       // No MSAA: post-processing renders to its own target, so canvas antialiasing only cost GPU time.
       gl={{ antialias: false, powerPreference: 'high-performance' }}
-      frameloop={active ? 'always' : 'never'}
+      frameloop={active && visible ? 'always' : 'never'}
     >
       {/* Contact page: match the page ink so the masked edges melt into it. */}
       <color attach="background" args={[view === 'contact' ? '#07070c' : '#04050c']} />

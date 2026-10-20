@@ -35,7 +35,11 @@ export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
   useEffect(() => {
     const canvas = root.current?.querySelector('canvas')
     if (!ready || !canvas) return
-    const onLost = () => fallBack('WebGL context lost')
+    // A real GPU loss happens on a canvas still on the page; our own unmount (off screen) also fires this event,
+    // on a canvas that has already been removed, and must not demote the page.
+    const onLost = () => {
+      if (canvas.isConnected) fallBack('WebGL context lost')
+    }
     canvas.addEventListener('webglcontextlost', onLost)
     return () => canvas.removeEventListener('webglcontextlost', onLost)
   }, [ready, fallBack])
@@ -45,15 +49,17 @@ export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
       {lite ? (
         <LoomLiteArt />
       ) : (
-        <Suspense fallback={null}>
-          <LoomScene
-            view="contact"
-            variant={variant}
-            reducedMotion={reducedMotion}
-            active={active}
-            onReady={() => setReady(true)}
-          />
-        </Suspense>
+        active && (
+          <Suspense fallback={null}>
+            <LoomScene
+              view="contact"
+              variant={variant}
+              reducedMotion={reducedMotion}
+              active={active}
+              onReady={() => setReady(true)}
+            />
+          </Suspense>
+        )
       )}
     </div>
   )

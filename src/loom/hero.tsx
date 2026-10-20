@@ -1,4 +1,5 @@
 import { useGSAP } from '@gsap/react'
+import { canvasSlot } from '@/lib/canvasSlot'
 import { homeGate } from '@/lib/loadGate'
 import { type CSSProperties, Fragment, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
@@ -25,16 +26,26 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   useEffect(() => {
     const canvas = root.current?.querySelector('.loom-canvas canvas')
     if (!ready || !canvas) return
-    const onLost = () => fallBack('WebGL context lost')
+    // A real GPU loss happens on a canvas still on the page; our own unmount (off screen) also fires this event,
+    // on a canvas that has already been removed, and must not demote the page.
+    const onLost = () => {
+      if (canvas.isConnected) fallBack('WebGL context lost')
+    }
     canvas.addEventListener('webglcontextlost', onLost)
     return () => canvas.removeEventListener('webglcontextlost', onLost)
   }, [ready, fallBack])
 
-  // Pause the WebGL loop when the hero is fully off screen.
+  // Unmount the WebGL loom when the hero is fully off screen (and tell the fixed canvas it may mount).
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => setActive(e.isIntersecting))
+    const io = new IntersectionObserver(([e]) => {
+      setActive(e.isIntersecting)
+      canvasSlot.setHeroVisible(e.isIntersecting)
+    })
     if (root.current) io.observe(root.current)
-    return () => io.disconnect()
+    return () => {
+      io.disconnect()
+      canvasSlot.setHeroVisible(false)
+    }
   }, [])
 
   // Headline intro plays once the preloader wipes away (same sequencing as Concept A).
@@ -72,13 +83,19 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
           {lite ? (
             <LoomLiteArt />
           ) : (
-            <Suspense fallback={null}>
-              <LoomScene reducedMotion={reducedMotion} active={active} onReady={() => {
-                  setReady(true)
-                  homeGate?.done('loom')
-                }}
-              />
-            </Suspense>
+            // Mounted only while the hero is on screen: one WebGL context at a time on the page.
+            active && (
+              <Suspense fallback={null}>
+                <LoomScene
+                  reducedMotion={reducedMotion}
+                  active={active}
+                  onReady={() => {
+                    setReady(true)
+                    homeGate?.done('loom')
+                  }}
+                />
+              </Suspense>
+            )
           )}
         </div>
 

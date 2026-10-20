@@ -35,7 +35,7 @@ describe('heading text spacing', () => {
   it('home hero H1 reads its lines with single spaces', () => {
     render(
       // Lite mode renders the static SVG art instead of the lazy WebGL loom.
-      <LiteContext.Provider value={{ lite: true, reason: 'test', fallBack: () => {} }}>
+      <LiteContext.Provider value={{ lite: true, reason: 'test', fallBack: () => {}, tier: 'lite', demote: () => {} }}>
         <LoomHero reducedMotion introReady={false} />
       </LiteContext.Provider>,
     )

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { budgetDpr } from '@/lib/render'
 
-/** Pixel ratio for a full-viewport 3D canvas, kept within the render budget; updates on resize. */
+/** Pixel ratio for a full-viewport 3D canvas: at most 1.5 and within the render budget; updates on resize. */
 export function useBudgetDpr() {
-  const read = () => budgetDpr(window.innerWidth, window.innerHeight, window.devicePixelRatio)
+  const read = () => Math.min(1.5, budgetDpr(window.innerWidth, window.innerHeight, window.devicePixelRatio))
   const [dpr, setDpr] = useState(read)
   useEffect(() => {
     const on = () => setDpr(read())

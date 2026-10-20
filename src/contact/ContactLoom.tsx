@@ -28,7 +28,11 @@ export function ContactLoom({ reducedMotion }: { reducedMotion: boolean }) {
   useEffect(() => {
     const canvas = root.current?.querySelector('canvas')
     if (!ready || !canvas) return
-    const onLost = () => fallBack('WebGL context lost')
+    // A real GPU loss happens on a canvas still on the page; our own unmount (off screen) also fires this event,
+    // on a canvas that has already been removed, and must not demote the page.
+    const onLost = () => {
+      if (canvas.isConnected) fallBack('WebGL context lost')
+    }
     canvas.addEventListener('webglcontextlost', onLost)
     return () => canvas.removeEventListener('webglcontextlost', onLost)
   }, [ready, fallBack])
@@ -38,9 +42,11 @@ export function ContactLoom({ reducedMotion }: { reducedMotion: boolean }) {
       {lite ? (
         <LoomLiteArt />
       ) : (
-        <Suspense fallback={null}>
-          <LoomScene view="contact" reducedMotion={reducedMotion} active={active} onReady={() => setReady(true)} />
-        </Suspense>
+        active && (
+          <Suspense fallback={null}>
+            <LoomScene view="contact" reducedMotion={reducedMotion} active={active} onReady={() => setReady(true)} />
+          </Suspense>
+        )
       )}
     </div>
   )

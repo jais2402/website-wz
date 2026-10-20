@@ -46,6 +46,12 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   (contact over the particle globe). They are not rendered.
 - The home preloader waits for `homeGate` (`lib/loadGate.ts`): fonts, window load, and both canvases reporting via
   `scene/Warmup.tsx` (shaders compiled + first frames drawn). It opens after 12 s regardless.
+- Rendering tiers (`lib/perfTier.ts`, `lib/perfBoot.ts`, `components/LiteProvider.tsx`): a GPU probe before first
+  paint puts `perf-full | perf-lite | perf-static` on `<html>`; a software renderer (Basic Render Driver, SwiftShader,
+  llvmpipe) means lite, and a frame-rate watchdog can demote mid-session (never promote). Lite/static: no WebGL,
+  no backdrop blur (solid surfaces), short one-shot animations, no Lenis; static also no animation. Force with
+  `?perf=full|lite|static`. Only one WebGL canvas is mounted at a time (`lib/canvasSlot.ts`).
+  Check with `npm run build && npm run perf:audit` (GPU and SwiftShader runs).
 - 3D render budget (`lib/render.ts`, `hooks/useBudgetDpr.ts`): each canvas renders at most ~1.6M pixels and
   the browser scales it up; bloom runs at half resolution. Built for laptops without a dedicated GPU: keep it.
 - Two WebGL canvases share the page: the loom hero (in its sticky section) and the fixed canvas (story threads +

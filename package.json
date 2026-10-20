@@ -13,7 +13,8 @@
     "typecheck": "tsc -b",
     "format": "prettier --write .",
     "validate": "npm run test && npm run lint && npm run typecheck",
-    "og": "node scripts/og-cards.mjs"
+    "og": "node scripts/og-cards.mjs",
+    "perf:audit": "node scripts/perf-audit.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -38,6 +39,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "jsdom": "^29.1.1",
     "oxlint": "^1.81.0",
+    "playwright-core": "^1.56.1",
     "prettier": "^3.9.10",
     "typescript": "~6.0.2",
     "upng-js": "^2.1.0",

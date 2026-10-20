@@ -206,7 +206,6 @@ main,
 
 .w > span {
   display: inline-block;
-  will-change: transform;
 }
 
 /* Buttons */
@@ -4764,4 +4763,70 @@ main,
   :is(.glass-card, .case-card, .sy-module, .sy-tooltile, .sy-more-card)::after {
     display: none;
   }
+}
+
+
+/* ==========================================================================
+   Rendering tiers (lib/perfTier.ts): perf-full | perf-lite | perf-static on <html>.
+   Lite is for machines without GPU acceleration (software rasteriser): every blur and composite would run on the
+   CPU, so the glass becomes solid, nothing blurs, ambient loops play once and short, and WebGL is never created
+   (components render their static art). Static additionally has no animation or transition at all.
+   ========================================================================== */
+html.perf-lite *,
+html.perf-lite *::before,
+html.perf-lite *::after,
+html.perf-static *,
+html.perf-static *::before,
+html.perf-static *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+
+/* Former glass surfaces: solid fills from the ink tokens, so text keeps its contrast without the blur. */
+html:is(.perf-lite, .perf-static) :is(
+    .hero-glass,
+    .story-copy,
+    .glass-card,
+    .loom-intro,
+    .loom-phase,
+    .nav-sheet,
+    .contact-card,
+    .cookie-banner,
+    .sticky-call,
+    .fragment
+  ) {
+  background: var(--ink-3) !important;
+}
+
+html:is(.perf-lite, .perf-static) .nav.is-scrolled,
+html:is(.perf-lite, .perf-static) :is(.hero-eyebrow, .loom-eyebrow, .contact-globe-caption, .ba-tag) {
+  background: var(--ink-2) !important;
+}
+
+html:is(.perf-lite, .perf-static) .btn-ghost {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Full-screen film grain: one more layer to composite on every frame. */
+html:is(.perf-lite, .perf-static) .grain {
+  display: none;
+}
+
+/* Lite: entry animations stay but are short; ambient loops play once. Transitions are left as they are: a
+   global transition-duration would give every element (pin spacers included) a transition on every property. */
+html.perf-lite *,
+html.perf-lite *::before,
+html.perf-lite *::after {
+  animation-duration: 0.2s !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* Static: no motion at all. */
+html.perf-static *,
+html.perf-static *::before,
+html.perf-static *::after {
+  animation: none !important;
+  transition: none !important;
 }
