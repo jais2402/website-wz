@@ -422,8 +422,8 @@ type SceneProps = {
   view?: LoomView
   variant?: LoomVariant
   /**
-   * Software renderer (perf-lite): no bloom pass (soft light sprites stand in for it) and a lower internal
-   * resolution. On the home hero also a minimal thread count, gathered toward the middle.
+   * Software renderer (perf-lite): the same look (bloom included) at a lower internal resolution. On the home hero
+   * also a minimal thread count, gathered toward the middle.
    */
   light?: boolean
 }
@@ -440,14 +440,14 @@ export function LoomScene({
   // Lite home hero: the same full-screen loom and camera, with a minimal set of threads gathered in the middle.
   const minimal = light && view === 'hero'
   const quality = useMemo<Quality>(() => {
-    if (minimal) return { strands: 300, points: 110, particles: 1800 }
+    if (minimal) return { strands: 240, points: 100, particles: 1400 }
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
     return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 800, points: 140, particles: 5600 }
   }, [minimal])
 
   const budget = useBudgetDpr()
-  // No GPU: render at most 0.75x and let the browser scale it up; the soft, glowing threads hide the difference.
-  const dpr = light ? Math.min(0.75, budget) : budget
+  // No GPU: render at most 0.6x and let the browser scale it up; the soft, glowing threads hide the difference.
+  const dpr = light ? Math.min(0.6, budget) : budget
   const visible = useDocumentVisible()
   const running = active && visible
 
@@ -471,14 +471,6 @@ export function LoomScene({
       <group rotation={v.rotation}>
         <Glow position={[-0.25, 0, 0]} scale={2.8} color={v.mouthGlow} opacity={0.9} />
         <Glow position={[-0.4, 0, 0]} scale={9} color={v.haloGlow} opacity={0.22} />
-        {/* Light loom: extra soft sprites stand in for the bloom pass around the mouth and along the weave. */}
-        {light && (
-          <>
-            <Glow position={[-0.3, 0, 0]} scale={4.6} color={v.mouthGlow} opacity={0.42} />
-            <Glow position={[-0.6, 0, 0]} scale={15} color={v.haloGlow} opacity={0.2} />
-            <Glow position={[1.6, 0, 0]} scale={5} color={v.haloGlow} opacity={0.18} />
-          </>
-        )}
         <Threads quality={quality} reducedMotion={reducedMotion} view={view} v={v} spread={minimal ? 0.55 : 1} />
         <Loom reducedMotion={reducedMotion} variant={variant} v={v} />
       </group>
@@ -486,7 +478,7 @@ export function LoomScene({
       {onReady && <Warmup onDone={onReady} />}
       {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} variant={variant} /> : <CameraRig />}
 
-      {!light && (
+      {
         <EffectComposer multisampling={0}>
           <Bloom
             mipmapBlur
@@ -499,7 +491,7 @@ export function LoomScene({
           />
           <Vignette eskil={false} offset={0.2} darkness={0.75} />
         </EffectComposer>
-      )}
+      }
     </Canvas>
   )
 }

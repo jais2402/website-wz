@@ -28,7 +28,7 @@ function makeUniforms(extra: Record<string, THREE.IUniform> = {}) {
     uPointer: { value: new THREE.Vector2(99, 99) },
     uPointerStrength: { value: 0 },
     uFade: { value: 1 },
-    // Brightness multiplier: 1 normally; higher on the lite tier, which has no bloom pass to make the threads glow.
+    // Brightness multiplier (1 = as designed); kept as a tuning knob for the threads.
     uBoost: { value: 1 },
     ...extra,
   }
@@ -50,22 +50,6 @@ export function ThreadField({ quality, reducedMotion, boost = 1, framed = false 
   const pointer = useRef(new THREE.Vector2(99, 99))
   const visibleFade = useRef(1)
   const { viewport, gl } = useThree()
-  const glow = useRef<THREE.Sprite>(null)
-  // Radial falloff texture for the lite glow sprite (64 px, made once).
-  const glowMap = useMemo(() => {
-    const c = document.createElement('canvas')
-    c.width = c.height = 64
-    const g = c.getContext('2d')
-    if (g) {
-      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32)
-      r.addColorStop(0, 'rgba(255,255,255,1)')
-      r.addColorStop(0.25, 'rgba(255,255,255,0.45)')
-      r.addColorStop(1, 'rgba(255,255,255,0)')
-      g.fillStyle = r
-      g.fillRect(0, 0, 64, 64)
-    }
-    return new THREE.CanvasTexture(c)
-  }, [])
 
   const { threadGeo, riderGeo } = useMemo(() => {
     const data = buildStrands(quality.strands, quality.points, 31)
@@ -112,9 +96,6 @@ export function ThreadField({ quality, reducedMotion, boost = 1, framed = false 
       mat.uniforms.uFade.value = visibleFade.current
       mat.uniforms.uBoost.value = boost
     }
-
-    // Lite glow follows the story fade (it hands over to the globe like the threads do).
-    if (glow.current) (glow.current.material as THREE.SpriteMaterial).opacity = visibleFade.current
 
     // Glowing core appears only inside the Secure sphere.
     if (coreMat.current && core.current) {
@@ -178,19 +159,6 @@ export function ThreadField({ quality, reducedMotion, boost = 1, framed = false 
         <icosahedronGeometry args={[1, 3]} />
         <meshBasicMaterial ref={coreMat} color={[1.15, 1.05, 0.75]} transparent opacity={0} toneMapped={false} />
       </mesh>
-      {/* Lite (no bloom pass): a soft light at the shape's heart stands in for the glow bloom gives it. */}
-      {framed && (
-        <sprite ref={glow} scale={2.4}>
-          <spriteMaterial
-            map={glowMap}
-            color="#fff4e2"
-            transparent
-            opacity={1}
-            depthWrite={false}
-            blending={THREE.AdditiveBlending}
-          />
-        </sprite>
-      )}
     </group>
   )
 }

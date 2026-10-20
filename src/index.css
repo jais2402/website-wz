@@ -4795,13 +4795,16 @@ html.perf-lite .lite-poster {
 
 /* ==========================================================================
    Rendering tiers (lib/perfTier.ts): perf-full | perf-lite | perf-static on <html>.
-   Lite is for machines without GPU acceleration (software rasteriser): every blur and composite would run on the
-   CPU, so the glass becomes solid, nothing blurs, ambient loops play once and short, and WebGL is never created
-   (components render their static art). Static additionally has no animation or transition at all.
+   Lite (software renderer) looks like the full site: same glass blur, colours and animation; only its 3D is
+   lighter (fewer threads, smaller frames, lower resolution) and smooth scrolling is native.
+   Static (no WebGL) shows stills and drops every blur, composite and animation.
    ========================================================================== */
 html.perf-lite *,
 html.perf-lite *::before,
-html.perf-lite *::after,
+html.perf-lite *::after {
+  will-change: auto !important;
+}
+
 html.perf-static *,
 html.perf-static *::before,
 html.perf-static *::after {
@@ -4809,10 +4812,12 @@ html.perf-static *::after {
   backdrop-filter: none !important;
   filter: none !important;
   will-change: auto !important;
+  animation: none !important;
+  transition: none !important;
 }
 
-/* Former glass surfaces: solid fills from the ink tokens, so text keeps its contrast without the blur. */
-html:is(.perf-lite, .perf-static)
+/* Static: former glass surfaces get solid fills from the ink tokens, so text keeps its contrast without the blur. */
+html.perf-static
   :is(
     .hero-glass,
     .story-copy,
@@ -4825,81 +4830,24 @@ html:is(.perf-lite, .perf-static)
     .sticky-call,
     .fragment
   ) {
-  /* The glass highlight without the blur: a faint sheen over a near-opaque ink fill. */
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.01) 55%), rgba(19, 19, 29, 0.94) !important;
 }
 
-html:is(.perf-lite, .perf-static) .nav.is-scrolled,
-html:is(.perf-lite, .perf-static) :is(.hero-eyebrow, .loom-eyebrow, .contact-globe-caption, .ba-tag) {
+html.perf-static .nav.is-scrolled,
+html.perf-static :is(.hero-eyebrow, .loom-eyebrow, .contact-globe-caption, .ba-tag) {
   background: var(--ink-2) !important;
 }
 
-html:is(.perf-lite, .perf-static) .btn-ghost {
+html.perf-static .btn-ghost {
   background: rgba(255, 255, 255, 0.06) !important;
 }
 
 /* Full-screen film grain: one more layer to composite on every frame. */
-html:is(.perf-lite, .perf-static) .grain {
+html.perf-static .grain {
   display: none;
 }
 
-/* Lite: entry animations stay but are short; ambient loops play once. Transitions are left as they are: a
-   global transition-duration would give every element (pin spacers included) a transition on every property. */
-html.perf-lite *,
-html.perf-lite *::before,
-html.perf-lite *::after {
-  animation-duration: 0.2s !important;
-  animation-iteration-count: 1 !important;
-}
-
-/* Static: no motion at all. */
-html.perf-static *,
-html.perf-static *::before,
-html.perf-static *::after {
-  animation: none !important;
-  transition: none !important;
-}
-
-/* Lite keeps the running card outline (a small repaint per card); only on-screen sections animate (.is-offscreen
-   pauses the rest). */
-html.perf-lite
-  :is(
-    .glass-card,
-    .case-card,
-    .loom-card,
-    .sv-card,
-    .svc-inner,
-    .nf-card,
-    .ai-card,
-    .aip-inside-card,
-    .aip-doc-card,
-    .sy-more-card,
-    .sy-module,
-    .sy-tooltile,
-    .price-card,
-    .cta-strip-card,
-    .contact-card,
-    .areas-cta,
-    .faq-ask,
-    .loom-intro,
-    .story-copy,
-    .loom-phase,
-    .areas-screen,
-    .ba-stage,
-    .ai-app,
-    .sv-job,
-    .aip-way-visual,
-    .aip-tool,
-    .tech-group,
-    .pf-case.is-lead
-  )::after {
-  animation-duration: 7s !important;
-  animation-iteration-count: infinite !important;
-}
-
-/* Lite tier: the story/globe canvas becomes a box right of the copy (like the hero loom), so the same scene draws a
-   fraction of the pixels; the shapes centre and fit inside it (framed in ThreadField / Globe). Soft edges. */
 /* The full-screen glow the canvas normally carries moves to a fixed layer behind it, so the 3D zones still show it
    edge to edge (opaque sections cover it as usual). */
 html.perf-lite body::before {
