@@ -49,9 +49,10 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
 - Rendering tiers (`lib/perfTier.ts`, `lib/perfBoot.ts`, `components/LiteProvider.tsx`): decided by WebGL only
   (client decision), before first paint: no context means static; a software renderer (Basic Render Driver,
   SwiftShader, llvmpipe) or an unidentifiable desktop GPU means lite; a lost context mid-session demotes. Classes
-  `perf-full | perf-lite | perf-static` on `<html>`. Lite/static: no WebGL (stills of the real scenes from
-  `public/lite/`, made by `scripts/capture-lite-posters.mjs`), no backdrop blur, short one-shot animations, no
-  Lenis; static also no animation. Force with `?perf=full|lite|static`. One WebGL canvas at a time
+  `perf-full | perf-lite | perf-static` on `<html>`. Lite: the same look as full (blur, bloom, animations) with fewer
+  threads; the story/globe canvas is a smaller box beside the copy (no dust), the hero keeps full screen with a
+  minimal thread set; no Lenis. Static: no WebGL, SVG drawings of the real scenes in `public/lite/` (drawn from the
+  shader maths by `scripts/build-static-svg.mjs`; re-run it when a scene changes), no blur, no animation. Force with `?perf=full|lite|static`. One WebGL canvas at a time
   (`lib/canvasSlot.ts`).
   Check with `npm run build && npm run perf:audit` (GPU and SwiftShader runs).
 - 3D render budget (`lib/render.ts`, `hooks/useBudgetDpr.ts`): each canvas renders at most ~1.6M pixels and

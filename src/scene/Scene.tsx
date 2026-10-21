@@ -50,7 +50,8 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   // the copy and at a lower internal resolution.
   const liteGl = useLite().tier === 'lite'
   const budget = useBudgetDpr()
-  const dpr = liteGl ? Math.min(0.6, budget) : budget
+  // Lite: the canvas is a small box beside the copy (about 0.5M px), so it can render near 1x and stay sharp.
+  const dpr = liteGl ? Math.min(0.85, budget) : budget
   const [active, setActive] = useState(true)
   // Keeps rendering until the shaders are compiled and drawn once, even before a 3D zone is on screen.
   const [warm, setWarm] = useState(false)
@@ -96,7 +97,8 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
               }}
             />
             <CameraRig />
-            <Dust count={mobile ? 425 : 1190} />
+            {/* Lite: no dust; inside the boxed canvas it only outlined the box. */}
+            {!liteGl && <Dust count={mobile ? 425 : 1190} />}
             <ThreadField
               quality={
                 liteGl

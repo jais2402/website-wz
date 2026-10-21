@@ -14,9 +14,6 @@ export function Marquee({ items, reverse = false }: { items: readonly string[]; 
       <div className="marquee-track">
         {doubled.map((t, i) => (
           <span className="marquee-item" key={i} aria-hidden={i >= items.length}>
-            <i className="marquee-star" aria-hidden="true">
-              ✦
-            </i>
             {t}
           </span>
         ))}

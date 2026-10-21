@@ -958,8 +958,7 @@ main,
 .marquee-item {
   display: inline-flex;
   align-items: center;
-  gap: 22px;
-  padding-right: 22px;
+  padding-right: clamp(36px, 4.5vw, 72px);
   font-family: var(--f-display);
   font-weight: 600;
   font-size: clamp(1.6rem, 3.6vw, 3.2rem);
@@ -978,12 +977,6 @@ main,
 
 .marquee-item:hover {
   color: var(--text);
-}
-
-.marquee-star {
-  font-style: normal;
-  font-size: 0.5em;
-  color: var(--lime);
 }
 
 .proof-title {
@@ -3600,7 +3593,7 @@ main,
 }
 
 /* ==========================================================================
-   Lite tier (no WebGL): stills of the real 3D scenes (LiteArt.tsx, public/lite/)
+   Static tier (no WebGL): SVG drawings of the real 3D scenes (LiteArt.tsx, public/lite/)
    ========================================================================== */
 .lite-poster {
   display: block;
@@ -3639,12 +3632,11 @@ main,
   place-items: center;
 }
 
-/* The globe sits in the right part of its still: a square crop keeps it centred in the card's column. */
+/* The globe SVG is square and centred (scripts/build-static-svg.mjs). */
 .lite-globe {
   width: min(100%, 560px);
   aspect-ratio: 1;
-  object-fit: cover;
-  object-position: 100% 50%;
+  object-fit: contain;
   animation: liteDrift 28s ease-in-out infinite alternate;
 }
 

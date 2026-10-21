@@ -1,5 +1,5 @@
-// Lite tier (no GPU acceleration): stills of the real WebGL scenes instead of the live 3D. No three.js is loaded.
-// The stills are captured from the full site by scripts/capture-lite-posters.mjs into public/lite/.
+// Static tier (no WebGL): SVG drawings of the real 3D scenes instead of the live 3D. No three.js is loaded.
+// The SVGs are drawn from the same shader maths by scripts/build-static-svg.mjs into public/lite/.
 
 type Poster = 'loom-hero' | 'loom-contact' | 'loom-spindle' | 'loom-frayed' | 'globe'
 
@@ -7,7 +7,7 @@ function Still({ name, className = '', eager = false }: { name: string; classNam
   return (
     <img
       className={`lite-poster ${className}`.trim()}
-      src={`/lite/${name}.webp`}
+      src={`/lite/${name}.svg`}
       alt=""
       aria-hidden="true"
       decoding="async"
