@@ -471,9 +471,7 @@ export function LoomScene({
         {/* Lite (no bloom pass): wider glows give the mouth its white-hot bloom and the violet halo. */}
         {light && (
           <>
-            <Glow position={[-0.25, 0, 0]} scale={3.6} color={v.mouthGlow} opacity={1} />
-            <Glow position={[-0.25, 0, 0]} scale={6} color={v.mouthGlow} opacity={0.75} />
-            <Glow position={[-0.4, 0, 0]} scale={15} color={v.haloGlow} opacity={0.3} />
+            <Glow position={[-0.25, 0, 0]} scale={4.2} color={v.mouthGlow} opacity={0.35} />
           </>
         )}
         <Threads quality={quality} reducedMotion={reducedMotion} view={view} v={v} />
