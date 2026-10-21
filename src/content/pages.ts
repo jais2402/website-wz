@@ -2,6 +2,8 @@
 // Rules: pain points and impact are written in the visitor's own words; no invented statistics (real case results
 // only, linked to Our Work); each system's tools are in systemTools.ts.
 
+import { areas } from './site.ts'
+
 export type Voice = 'Owner' | 'Manager' | 'Team member'
 
 export type SystemPage = {
@@ -24,7 +26,7 @@ export const systemPages: SystemPage[] = [
     slug: 'people',
     area: 0,
     title: 'People & workforce',
-    promise: 'Your people, payroll and paperwork in one place.',
+    promise: areas[0].promise,
     intro:
       'HR, payroll, attendance, appraisals, training and hiring in one system your team actually uses. No more chasing forms, rebuilding spreadsheets or asking who approved what.',
     pains: [
@@ -55,7 +57,7 @@ export const systemPages: SystemPage[] = [
     slug: 'revenue',
     area: 1,
     title: 'Revenue & customers',
-    promise: 'Every customer, quote and invoice, followed through.',
+    promise: areas[1].promise,
     intro:
       'CRM, quotations, billing, support, renewals and partner portals working as one. Your team sees the whole customer, and fewer deals or payments slip through the cracks.',
     pains: [
@@ -85,7 +87,7 @@ export const systemPages: SystemPage[] = [
     slug: 'operations',
     area: 2,
     title: 'Operations & supply chain',
-    promise: 'Orders, stock and production you can see in real time.',
+    promise: areas[2].promise,
     intro:
       'Orders, inventory, warehouse, procurement, production and assets in one live picture. Know what you have, what is coming and what is stuck, before a customer asks.',
     pains: [
@@ -115,7 +117,7 @@ export const systemPages: SystemPage[] = [
     slug: 'ecommerce',
     area: 3,
     title: 'Ecommerce',
-    promise: 'A store that sells, with the operations behind it.',
+    promise: areas[3].promise,
     intro:
       'Storefront, orders, payments, catalogue, returns and fulfilment connected to the rest of your business. Selling online stops meaning a second set of spreadsheets.',
     pains: [
@@ -146,7 +148,7 @@ export const systemPages: SystemPage[] = [
     slug: 'finance',
     area: 4,
     title: 'Finance & governance',
-    promise: 'Money, approvals and audits you can trust.',
+    promise: areas[4].promise,
     intro:
       'Accounts, expenses, dashboards, audit, projects and approvals with one source of truth. Month-end gets shorter, and every number has a trail.',
     pains: [
@@ -176,7 +178,7 @@ export const systemPages: SystemPage[] = [
     slug: 'industry',
     area: 5,
     title: 'Industry systems',
-    promise: 'Software shaped around how your sector works.',
+    promise: areas[5].promise,
     intro:
       'Healthcare, education, property and hotels, lending, retail and logistics each have their own rules. We build systems that already speak your industry’s language.',
     pains: [

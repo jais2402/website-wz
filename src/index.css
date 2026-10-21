@@ -1401,112 +1401,184 @@ main,
 }
 
 .areas-head {
-  margin-bottom: 56px;
-}
-
-/* Pinned (desktop): fit the whole explorer in one viewport. */
-.areas.is-pinned {
-  min-height: 100vh;
-  min-height: 100svh;
   display: flex;
-  align-items: center;
-  padding: 92px 0 28px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
-.areas.is-pinned .areas-head {
-  margin-bottom: 24px;
-}
-
-.areas.is-pinned .display {
-  font-size: clamp(2rem, 3.6vw, 3.6rem);
+/* One-line headline so the six cards sit close under it. */
+.areas .display {
+  font-size: clamp(2.2rem, 4.2vw, 4rem);
   max-width: none;
 }
 
-.areas.is-pinned .label {
-  margin-bottom: 12px;
-}
-
-.areas-ui {
-  display: grid;
-  grid-template-columns: minmax(240px, 320px) 1fr;
-  gap: 20px;
-  align-items: stretch;
-}
-
-.areas-tabs {
-  display: grid;
-  gap: 6px;
-  align-content: start;
-}
-
-.area-tab {
-  --fill: 0;
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 14px;
-  align-items: center;
-  text-align: left;
-  padding: 16px;
-  border-radius: 18px;
-  border: 1px solid transparent;
-  transition:
-    background 0.3s,
-    border-color 0.3s;
-}
-
-.area-tab:hover,
-.area-tab.is-active {
-  background: var(--ink-3);
-  border-color: var(--line);
-}
-
-/* Scroll progress through this system (set from JS as --fill 0..1). */
-.area-progress {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: 100%;
-  background: var(--progress-gradient);
-  transform: scaleX(var(--fill));
-  transform-origin: left;
-  opacity: 0.9;
-}
-
-.area-icon {
-  grid-row: span 2;
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+.sys-sample {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line-2);
   color: var(--muted);
+  font-size: 0.62rem;
+}
+
+/* Six system cards (Areas.tsx): 3 x 2 on desktop, 2 columns on tablets, a swipe strip on phones. */
+.sys-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sys-item {
+  display: flex;
+}
+
+.sys-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 20px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: radial-gradient(120% 80% at 100% 0%, rgba(77, 159, 255, 0.07), transparent 60%), var(--ink-3);
+  color: var(--text);
+  text-decoration: none;
   transition:
-    background 0.3s,
-    color 0.3s,
-    transform 0.5s var(--ease-out);
+    border-color 0.3s,
+    transform 0.5s var(--ease-out),
+    box-shadow 0.5s var(--ease-out);
 }
 
-.area-tab.is-active .area-icon {
-  background: var(--lime);
-  color: var(--ink);
-  transform: rotate(-8deg) scale(1.05);
+.sys-card:hover,
+.sys-card:focus-visible {
+  border-color: rgba(77, 159, 255, 0.45);
+  transform: translateY(-4px);
+  box-shadow: 0 30px 80px -40px rgba(77, 159, 255, 0.45);
 }
 
-.area-tab > span:nth-child(2) {
-  font-family: var(--f-display);
-  font-weight: 600;
-  font-size: 1.05rem;
-  letter-spacing: -0.02em;
-}
-
-.area-count {
+.sys-top {
+  display: flex;
+  justify-content: space-between;
   color: var(--muted);
   font-size: 0.65rem;
+}
+
+.sys-title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: clamp(1.25rem, 1.7vw, 1.55rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.sys-promise {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.sys-preview {
+  margin-top: 4px;
+  pointer-events: none;
+}
+
+.sys-preview .mod {
+  min-height: 132px;
+  background: var(--ink);
+}
+
+.sys-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.sys-tags span {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.sys-go {
+  color: var(--lime);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.sys-go span {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out);
+}
+
+.sys-card:hover .sys-go span {
+  transform: translateX(4px);
+}
+
+.areas .areas-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 22px 24px;
+}
+
+.areas .areas-cta .btn {
+  flex: none;
+}
+
+@media (max-width: 1099px) {
+  .sys-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Phones: one swipe strip instead of six stacked cards. */
+@media (max-width: 699px) {
+  .areas-head {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 28px;
+  }
+
+  .sys-grid {
+    display: flex;
+    gap: 12px;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 4px var(--gutter) 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .sys-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sys-item {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+
+  .areas .areas-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .areas .areas-cta .btn {
+    justify-content: center;
+  }
 }
 
 .areas-screen {
@@ -3876,7 +3948,6 @@ html.perf-lite .lite-poster {
     margin-top: 6px;
   }
 
-  .areas-ui,
   .ai-grid,
   .integrations-grid,
   .faq-grid,
@@ -3884,32 +3955,6 @@ html.perf-lite .lite-poster {
     grid-template-columns: 1fr;
   }
 
-  /* Mobile: tabs stack vertically as a compact list instead of a sideways-scrolling row. */
-  .areas-tabs {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
-
-  .area-tab {
-    grid-template-rows: auto;
-    padding: 10px 12px;
-    border-radius: 14px;
-  }
-
-  .area-icon {
-    grid-row: auto;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-  }
-
-  .area-tab > span:nth-child(2) {
-    font-size: 1rem;
-  }
-
-  .area-count {
-    display: none;
-  }
 
   .mods {
     grid-template-columns: repeat(2, 1fr);
@@ -4249,141 +4294,6 @@ html.perf-lite .lite-poster {
 }
 
 /* ==========================================================================
-   Systems explorer on phones: app-style tiles, a swipe strip of modules, and a "next system" button.
-   ========================================================================== */
-.mods-dots,
-.areas-next {
-  display: none;
-}
-
-@media (max-width: 899px) {
-  .areas .areas-tabs {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-
-  .areas .area-tab {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    row-gap: 8px;
-    padding: 12px 6px;
-    text-align: center;
-    border-radius: 16px;
-    background: var(--ink-3);
-    border-color: var(--line);
-  }
-
-  .areas .area-tab.is-active {
-    border-color: rgba(77, 159, 255, 0.55);
-    background: linear-gradient(180deg, rgba(77, 159, 255, 0.16), var(--ink-3));
-  }
-
-  .areas .area-tab > span:nth-child(2) {
-    font-size: 0.78rem;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-  }
-
-  .areas .area-progress {
-    display: none;
-  }
-
-  .areas .mods {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    overscroll-behavior-x: contain;
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .areas .mods::-webkit-scrollbar {
-    display: none;
-  }
-
-  .areas .mod {
-    flex: 0 0 84%;
-    min-height: 210px;
-    scroll-snap-align: center;
-  }
-
-  .mods-dots {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: 0 0 14px;
-  }
-
-  .mods-dots span {
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: var(--line-2);
-    transition:
-      width 0.3s var(--ease-out),
-      background 0.3s;
-  }
-
-  .mods-dots span.is-on {
-    width: 18px;
-    background: var(--lime);
-  }
-
-  .areas-next {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 16px 18px;
-    border-radius: 18px;
-    border: 1px solid var(--line);
-    background: var(--ink-3);
-    color: var(--text);
-    font-family: var(--f-display);
-    font-weight: 600;
-    text-align: right;
-  }
-
-  .areas-next .mono {
-    color: var(--muted);
-    font-size: 0.7rem;
-    font-weight: 400;
-  }
-}
-
-/* ==========================================================================
-   Systems explorer: "Explore {system} →" link to the system's own page (Areas.tsx).
-   Desktop: a pill in the screen bar. Phones: a full-width link under the "next system" button.
-   ========================================================================== */
-.areas-explore {
-  margin-right: 10px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(77, 159, 255, 0.35);
-  color: var(--lime);
-  white-space: nowrap;
-  transition: background 0.25s;
-}
-
-.areas-explore:hover {
-  background: rgba(77, 159, 255, 0.12);
-}
-
-@media (max-width: 1220px) {
-  .areas .screen-step {
-    display: none;
-  }
-}
-
-@media (max-width: 899px) {
-  .areas-explore {
-    display: none;
-  }
-}
-
-/* ==========================================================================
    Section calls to action on the home page (AI demo, integrations, FAQ)
    ========================================================================== */
 .section-link {
@@ -4465,11 +4375,6 @@ html.perf-lite .lite-poster {
   .areas-screen .mods {
     flex: 1 1 auto;
     grid-auto-rows: 1fr;
-  }
-
-  .areas-cta {
-    grid-column: 1;
-    align-self: end;
   }
 }
 
@@ -4643,6 +4548,7 @@ html.perf-lite .lite-poster {
   .story-copy,
   .loom-phase,
   .areas-screen,
+  .sys-card,
   .ba-stage,
   .ai-app,
   .sv-job,
@@ -4676,6 +4582,7 @@ html.perf-lite .lite-poster {
   .story-copy,
   .loom-phase,
   .areas-screen,
+  .sys-card,
   .ba-stage,
   .ai-app,
   .sv-job,
@@ -4766,6 +4673,7 @@ html.perf-lite .lite-poster {
     .story-copy,
     .loom-phase,
     .areas-screen,
+  .sys-card,
     .ba-stage,
     .ai-app,
     .sv-job,

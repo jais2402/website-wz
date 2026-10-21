@@ -209,11 +209,13 @@ export type Module = {
 
 export type Kpi = { label: string; value: number; prefix?: string; suffix?: string; decimals?: number }
 
-export type Area = { title: string; kpis: Kpi[]; modules: Module[] }
+/** `promise` is the one-line pitch on the home card and the system page's hero (content/pages.ts). */
+export type Area = { title: string; promise: string; kpis: Kpi[]; modules: Module[] }
 
 export const areas: Area[] = [
   {
     title: 'People & workforce',
+    promise: 'Your people, payroll and paperwork in one place.',
     kpis: [
       { label: 'Employees', value: 248 },
       { label: 'Attendance today', value: 96.4, suffix: '%', decimals: 1 },
@@ -230,6 +232,7 @@ export const areas: Area[] = [
   },
   {
     title: 'Revenue & customers',
+    promise: 'Every customer, quote and invoice, followed through.',
     kpis: [
       { label: 'Pipeline', value: 4.2, prefix: '₹', suffix: ' Cr', decimals: 1 },
       { label: 'Win rate', value: 31, suffix: '%' },
@@ -246,6 +249,7 @@ export const areas: Area[] = [
   },
   {
     title: 'Operations & supply chain',
+    promise: 'Orders, stock and production you can see in real time.',
     kpis: [
       { label: 'Orders today', value: 1284 },
       { label: 'On time', value: 98.2, suffix: '%', decimals: 1 },
@@ -262,6 +266,7 @@ export const areas: Area[] = [
   },
   {
     title: 'Ecommerce',
+    promise: 'A store that sells, with the operations behind it.',
     kpis: [
       { label: 'Sales today', value: 4.6, prefix: '₹', suffix: 'L', decimals: 1 },
       { label: 'Orders today', value: 312 },
@@ -278,6 +283,7 @@ export const areas: Area[] = [
   },
   {
     title: 'Finance & governance',
+    promise: 'Money, approvals and audits you can trust.',
     kpis: [
       { label: 'Revenue MTD', value: 3.1, prefix: '₹', suffix: ' Cr', decimals: 1 },
       { label: 'Expenses MTD', value: 1.2, prefix: '₹', suffix: ' Cr', decimals: 1 },
@@ -294,6 +300,7 @@ export const areas: Area[] = [
   },
   {
     title: 'Industry systems',
+    promise: 'Software shaped around how your sector works.',
     kpis: [
       { label: 'Patients / day', value: 420 },
       { label: 'Students', value: 3200 },

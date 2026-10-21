@@ -103,8 +103,8 @@ src/
                          screen positions (loomStore.mouth, sceneStore.core). Desktop only, off in lite mode.
   hooks/motion.ts      ← GSAP/ScrollTrigger registration, Lenis, scrollToTarget(), reduced-motion
   hooks/useCountUp.ts  ← count-up numbers (instant under reduced motion)
-  components/Areas.tsx ← systems explorer: pins on desktop, scroll steps through the 5 systems; data + chart
-                         kinds live in `areas` in content/site.ts (numbers there are illustrative demo data)
+  components/Areas.tsx ← "The systems we build": six cards (no pin), each a sample module + link to its system
+                         page; data + chart kinds live in `areas` in content/site.ts (illustrative demo data)
   components/Charts.tsx ← mini dashboard charts (line/area/bars/ring/gauge/heatmap/funnel/stack/list/dots)
   loom/                ← The Loom page: LoomPage (sections), LoomScene (threads, particles, loom machine, bloom),
                          shaders.ts (shared strandPos() for threads + particles), store.ts, loom.css

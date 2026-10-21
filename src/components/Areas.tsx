@@ -1,255 +1,93 @@
 import { useGSAP } from '@gsap/react'
-import { type CSSProperties, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { areas, areasSection, ctas, navSystemsAll, sampleDataLabel } from '@/content/site'
-import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
+import { gsap } from '@/hooks/motion'
 import { track } from '@/lib/analytics'
-import { activeIndex, tabFill } from '@/lib/charts'
-import { CountUp, ModuleCard } from './Charts'
+import { ModuleCard } from './Charts'
 import { SplitReveal } from './Reveal'
 
-// One icon per entry in `areas`, in order.
-const ICONS = ['◎', '◆', '▣', '◈', '▲', '✚']
-// Bento: in a 4-column grid the first and last module span two columns.
-const WIDE = new Set([0, 5])
 // Each system's own page (/systems/<slug>), in `areas` order. Matches `systemPages` in content/pages.ts.
 const SLUGS = ['people', 'revenue', 'operations', 'ecommerce', 'finance', 'industry']
-// The bar is a single flex row: the path label gives way (ellipsis) so the status side always fits at 375px.
-const BAR: CSSProperties = { gap: 10, alignItems: 'center' }
-const PATH: CSSProperties = { minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
-// "Sample data" chip: demo figures must never read as client results. Muted text, thin border.
-const SAMPLE: CSSProperties = {
-  marginRight: 6,
-  padding: '3px 8px',
-  borderRadius: 6,
-  border: '1px solid var(--line-2)',
-  color: 'var(--muted)',
-  fontSize: '0.62rem',
-  whiteSpace: 'nowrap',
-}
+// Module names shown as tags on each card; the rest are counted.
+const TAGS = 3
 
 /**
- * Systems explorer. On desktop the section pins and scrolling steps through each business system;
- * tabs fill up as you go. On mobile / reduced motion it is a plain tab switcher.
+ * The systems we build: six cards, one per business system, each with a live sample module and a link to the
+ * system's own page. No pinning or scroll-stepping: the detail lives on the system pages.
+ * Desktop: a 3 × 2 grid. Phones: a swipe strip, so the section stays one screen tall.
  */
 export function Areas() {
   const root = useRef<HTMLElement>(null)
-  const screen = useRef<HTMLDivElement>(null)
-  const tabs = useRef<(HTMLButtonElement | null)[]>([])
-  const trigger = useRef<ScrollTrigger | null>(null)
-  const [active, setActive] = useState(0)
-  const [mod, setMod] = useState(0)
-  const area = areas[active]
-  const nextArea = areas[(active + 1) % areas.length]
-  // Shown in the screen bar on desktop and under the "next system" button on phones.
-  const explore = (className: string) => (
-    <a className={className} href={`/systems/${SLUGS[active]}`}>
-      Explore {area.title} <span aria-hidden="true">→</span>
-    </a>
-  )
 
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
-      mm.add('(min-width: 900px) and (min-height: 640px) and (prefers-reduced-motion: no-preference)', () => {
-        trigger.current = ScrollTrigger.create({
-          trigger: root.current,
-          start: 'top top',
-          end: () => `+=${window.innerHeight * areas.length * 0.85}`,
-          pin: true,
-          onUpdate: (st) => {
-            setActive(activeIndex(st.progress, areas.length))
-            tabs.current.forEach((t, i) =>
-              t?.style.setProperty('--fill', String(tabFill(st.progress, areas.length, i))),
-            )
-          },
+      // Desktop only: on phones the cards sit in a swipe strip, which would clip a slide-up.
+      mm.add('(min-width: 700px) and (prefers-reduced-motion: no-preference)', () => {
+        gsap.from('.sys-card', {
+          y: 36,
+          opacity: 0,
+          duration: 0.9,
+          ease: 'expo.out',
+          stagger: 0.07,
+          scrollTrigger: { trigger: '.sys-grid', start: 'top 85%', once: true },
         })
-        root.current?.classList.add('is-pinned')
-        return () => {
-          trigger.current = null
-          root.current?.classList.remove('is-pinned')
-        }
       })
       return () => mm.revert()
     },
     { scope: root },
   )
 
-  // Switching systems: a light sweep crosses the screen while the new modules rise in.
-  useGSAP(
-    () => {
-      gsap
-        .timeline()
-        .fromTo(
-          '.screen-sweep',
-          { yPercent: -100, opacity: 1 },
-          { yPercent: 100, opacity: 0.2, duration: 0.9, ease: 'power2.inOut' },
-          0,
-        )
-        .fromTo(
-          '.mod',
-          { y: 28, opacity: 0, rotateX: -14, filter: 'blur(6px)' },
-          { y: 0, opacity: 1, rotateX: 0, filter: 'blur(0px)', duration: 0.8, ease: 'expo.out', stagger: 0.06 },
-          0.12,
-        )
-        .fromTo(
-          '.screen-kpi',
-          { y: 12, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out', stagger: 0.05 },
-          0.05,
-        )
-    },
-    { scope: screen, dependencies: [active] },
-  )
-
-  // Clicking a tab: when pinned, scroll to that system's slice; otherwise just switch.
-  const select = (i: number) => {
-    const st = trigger.current
-    if (!st) {
-      setActive(i)
-      setMod(0)
-      return
-    }
-    scrollToTarget(st.start + ((i + 0.5) / areas.length) * (st.end - st.start))
-  }
-
-  // ARIA tabs pattern: arrows (and Home/End) move focus to a tab and select it; one Tab stop for the row.
-  const onTabKey = (e: React.KeyboardEvent, i: number) => {
-    const n = areas.length
-    const next =
-      e.key === 'ArrowRight' || e.key === 'ArrowDown'
-        ? (i + 1) % n
-        : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
-          ? (i - 1 + n) % n
-          : e.key === 'Home'
-            ? 0
-            : e.key === 'End'
-              ? n - 1
-              : -1
-    if (next < 0) return
-    e.preventDefault()
-    tabs.current[next]?.focus({ preventScroll: true })
-    select(next)
-  }
-
   return (
-    <section ref={root} className="panel areas" aria-labelledby="areas-title">
+    <section ref={root} className="panel areas" aria-label={areasSection.title}>
       <div className="wrap">
         <div className="areas-head">
-          <p className="mono label">{areasSection.kicker}</p>
-          <SplitReveal as="h2" className="display" text={areasSection.title} />
+          <div>
+            <p className="mono label">{areasSection.kicker}</p>
+            <SplitReveal as="h2" className="display" text={areasSection.title} />
+          </div>
+          <span className="sys-sample mono">{sampleDataLabel}</span>
         </div>
 
-        <div className="areas-ui">
-          <div className="areas-tabs" role="tablist" aria-label="Business areas">
-            {areas.map((a, i) => (
-              <button
-                key={a.title}
-                ref={(el) => {
-                  tabs.current[i] = el
-                }}
-                role="tab"
-                id={`area-tab-${i}`}
-                aria-selected={i === active}
-                aria-controls="areas-panel"
-                tabIndex={i === active ? 0 : -1}
-                className={`area-tab${i === active ? ' is-active' : ''}`}
-                onClick={() => select(i)}
-                onKeyDown={(e) => onTabKey(e, i)}
-              >
-                <span className="area-icon" aria-hidden="true">
-                  {ICONS[i]}
+        <ul className="sys-grid">
+          {areas.map((a, i) => (
+            <li key={a.title} className="sys-item">
+              <a className="sys-card" href={`/systems/${SLUGS[i]}`}>
+                <span className="sys-top mono">
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                  <span>{a.modules.length} modules</span>
                 </span>
-                <span>{a.title}</span>
-                <span className="area-count mono">{a.modules.length} modules</span>
-                <span className="area-progress" aria-hidden="true" />
-              </button>
-            ))}
-          </div>
+                <h3 className="sys-title">{a.title}</h3>
+                <p className="sys-promise">{a.promise}</p>
+                <div className="sys-preview" aria-hidden="true">
+                  <ModuleCard m={a.modules[0]} wide={false} index={i} />
+                </div>
+                <span className="sys-tags">
+                  {a.modules.slice(0, TAGS).map((m) => (
+                    <span key={m.name}>{m.name}</span>
+                  ))}
+                  {a.modules.length > TAGS && <span>+{a.modules.length - TAGS}</span>}
+                </span>
+                <span className="sys-go">
+                  Explore <span aria-hidden="true">→</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
 
-          <div
-            id="areas-panel"
-            className="areas-screen"
-            role="tabpanel"
-            aria-labelledby={`area-tab-${active}`}
-            ref={screen}
-          >
-            <span className="screen-sweep" aria-hidden="true" />
-            <div className="screen-bar" style={BAR}>
-              <span className="mono" style={PATH}>
-                wezigns / {area.title.toLowerCase()}
-              </span>
-              <span className="screen-status mono" style={{ flexShrink: 0 }}>
-                {explore('areas-explore')}
-                <span className="screen-sample" style={SAMPLE}>
-                  {sampleDataLabel}
-                </span>
-                <i className="live" /> synced
-              </span>
-            </div>
-            {/* key remounts the content so every number and chart replays its build-up */}
-            <div key={active} className="screen-body">
-              <div className="screen-kpis">
-                {area.kpis.map((k, i) => (
-                  <div className="screen-kpi" key={k.label}>
-                    <span className="mono">{k.label}</span>
-                    <b>
-                      <CountUp
-                        value={k.value}
-                        prefix={k.prefix}
-                        suffix={k.suffix}
-                        decimals={k.decimals}
-                        delay={i * 80}
-                      />
-                    </b>
-                  </div>
-                ))}
-              </div>
-              <div
-                className="mods"
-                onScroll={(e) => {
-                  // Phone swipe strip: which module card is in view (drives the dots).
-                  const el = e.currentTarget
-                  const card = el.firstElementChild as HTMLElement | null
-                  if (card) setMod(Math.round(el.scrollLeft / (card.offsetWidth + 8)))
-                }}
-              >
-                {area.modules.map((m, i) => (
-                  <ModuleCard key={m.name} m={m} wide={WIDE.has(i)} index={i} />
-                ))}
-              </div>
-            </div>
-            <div className="mods-dots" aria-hidden="true">
-              {area.modules.map((m, i) => (
-                <span key={m.name} className={i === mod ? 'is-on' : ''} />
-              ))}
-            </div>
-          </div>
-          <button type="button" className="areas-next" onClick={() => select((active + 1) % areas.length)}>
-            <span className="mono">Next system</span>
-            <span>
-              {nextArea.title} <span aria-hidden="true">→</span>
-            </span>
-          </button>
-          {/* Call to action for the selected system: under the tabs on desktop, under the dashboard on phones. */}
-          <div className="areas-cta">
+        <div className="areas-cta">
+          <div>
             <p className="areas-cta-title">{ctas.explorer.title}</p>
             <p className="areas-cta-body">{ctas.explorer.body}</p>
-            <div className="areas-cta-actions">
-              <a
-                className="btn btn-lime"
-                href={navSystemsAll.href}
-                onClick={() =>
-                  track('cta_click', {
-                    label: ctas.explorer.explore,
-                    location: 'systems_explorer',
-                    system: SLUGS[active],
-                  })
-                }
-              >
-                {ctas.explorer.explore} <span aria-hidden="true">→</span>
-              </a>
-            </div>
           </div>
+          <a
+            className="btn btn-lime"
+            href={navSystemsAll.href}
+            onClick={() => track('cta_click', { label: ctas.explorer.explore, location: 'systems_explorer' })}
+          >
+            {ctas.explorer.explore} <span aria-hidden="true">→</span>
+          </a>
         </div>
       </div>
     </section>
