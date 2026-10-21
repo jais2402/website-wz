@@ -422,8 +422,8 @@ type SceneProps = {
   view?: LoomView
   variant?: LoomVariant
   /**
-   * Software renderer (perf-lite): the same look (bloom included) at a lower internal resolution. On the home hero
-   * also a minimal thread count, gathered toward the middle.
+   * Software renderer (perf-lite): the same threads and loom at full resolution, without the bloom pass (on a
+   * software renderer bloom alone halves the frame rate); glow sprites stand in for it.
    */
   light?: boolean
 }
@@ -437,17 +437,14 @@ export function LoomScene({
   light = false,
 }: SceneProps) {
   const v = VARIANTS[variant]
-  // Lite home hero: the same full-screen loom and camera, with a minimal set of threads gathered in the middle.
-  const minimal = light && view === 'hero'
   const quality = useMemo<Quality>(() => {
-    if (minimal) return { strands: 240, points: 100, particles: 1400 }
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
     return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 800, points: 140, particles: 5600 }
-  }, [minimal])
+  }, [])
 
-  const budget = useBudgetDpr()
-  // No GPU: render at most 0.6x and let the browser scale it up; the soft, glowing threads hide the difference.
-  const dpr = light ? Math.min(0.6, budget) : budget
+  // Lite renders at the same resolution as full: measured on SwiftShader at 1920x1080, the threads cost little and
+  // a lower resolution only made them jagged; the bloom pass was the expensive part.
+  const dpr = useBudgetDpr()
   const visible = useDocumentVisible()
   const running = active && visible
 
@@ -471,14 +468,22 @@ export function LoomScene({
       <group rotation={v.rotation}>
         <Glow position={[-0.25, 0, 0]} scale={2.8} color={v.mouthGlow} opacity={0.9} />
         <Glow position={[-0.4, 0, 0]} scale={9} color={v.haloGlow} opacity={0.22} />
-        <Threads quality={quality} reducedMotion={reducedMotion} view={view} v={v} spread={minimal ? 0.55 : 1} />
+        {/* Lite (no bloom pass): wider glows give the mouth its white-hot bloom and the violet halo. */}
+        {light && (
+          <>
+            <Glow position={[-0.25, 0, 0]} scale={3.6} color={v.mouthGlow} opacity={1} />
+            <Glow position={[-0.25, 0, 0]} scale={6} color={v.mouthGlow} opacity={0.75} />
+            <Glow position={[-0.4, 0, 0]} scale={15} color={v.haloGlow} opacity={0.3} />
+          </>
+        )}
+        <Threads quality={quality} reducedMotion={reducedMotion} view={view} v={v} />
         <Loom reducedMotion={reducedMotion} variant={variant} v={v} />
       </group>
       {/* Ready = shaders compiled and the first frames drawn, not just the context created. */}
       {onReady && <Warmup onDone={onReady} />}
       {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} variant={variant} /> : <CameraRig />}
 
-      {
+      {!light && (
         <EffectComposer multisampling={0}>
           <Bloom
             mipmapBlur
@@ -491,7 +496,7 @@ export function LoomScene({
           />
           <Vignette eskil={false} offset={0.2} darkness={0.75} />
         </EffectComposer>
-      }
+      )}
     </Canvas>
   )
 }

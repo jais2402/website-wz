@@ -50,8 +50,9 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   (client decision), before first paint: no context means static; a software renderer (Basic Render Driver,
   SwiftShader, llvmpipe) or an unidentifiable desktop GPU means lite; a lost context mid-session demotes. Classes
   `perf-full | perf-lite | perf-static` on `<html>`. Lite: the same look as full (blur, bloom, animations) with fewer
-  threads; the story/globe canvas is a smaller box beside the copy (no dust), the hero keeps full screen with a
-  minimal thread set; no Lenis. Static: no WebGL, SVG drawings of the real scenes in `public/lite/` (drawn from the
+  threads; the story/globe canvas is a smaller box beside the copy (no dust), the looms (hero, contact, About, 404)
+  render the full thread set at full resolution without the bloom pass (on a software renderer bloom alone halved
+  the frame rate; glow sprites + a CSS vignette stand in for it); no Lenis. Static: no WebGL, SVG drawings of the real scenes in `public/lite/` (drawn from the
   shader maths by `scripts/build-static-svg.mjs`; re-run it when a scene changes), no blur, no animation. Force with `?perf=full|lite|static`. One WebGL canvas at a time
   (`lib/canvasSlot.ts`).
   Check with `npm run build && npm run perf:audit` (GPU and SwiftShader runs).
