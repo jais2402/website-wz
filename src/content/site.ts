@@ -2,7 +2,7 @@
 
 export const brand = {
   name: 'Wezigns',
-  legal: 'Wezigns Software Private Limited',
+  legal: 'Wezigns',
   email: 'contact@wezigns.com',
   phone: '+91 44 2364 3252',
   phoneHref: 'tel:+914423643252',
@@ -138,8 +138,6 @@ export const tools = [
   'Google Cloud',
   'Stripe',
   'Razorpay',
-  'Solvable',
-  'Inscribe',
   'Shopify',
   'Magento',
   'WordPress',
@@ -331,12 +329,8 @@ export const workSection = {
   title: 'Our Work',
   lead: 'Five of the systems we have built and what each one replaced.',
   all: { label: 'See all our work', href: '/portfolio' },
-  // The bento grid on the home page: the first id is the large lead tile.
+  // The one-screen bento on the home page, in tile order: the first is the large lead tile, then a 2 x 2.
   featured: ['safety-training', 'tourism', 'engineering-event', 'marketplace', 'car-rental'],
-  more: {
-    title: 'Over a hundred projects and counting.',
-    body: 'Twenty-plus business systems, and the websites, stores and portals we have built since 2012.',
-  },
 }
 
 export const processSection = { kicker: 'How we build', title: 'Four stages. No surprises.' }
@@ -800,7 +794,7 @@ export const loom = {
 export const aiSummary = {
   title: 'Executive AI Summary',
   prompt:
-    'Give me an executive summary of Wezigns Software Private Limited (https://www.wezigns.com), a custom software and systems company in Chennai, India, founded in 2012. Cover: what they build (business systems for HR, CRM, operations, ecommerce, finance and industry, plus AI workflows and custom AI solutions), who they serve (SMEs and MSMEs in India and 10 other countries), how they work and price projects, and what a growing business should ask them before starting.',
+    'Give me an executive summary of Wezigns (https://www.wezigns.com), a custom software and systems company in Chennai, India, founded in 2012. Cover: what they build (business systems for HR, CRM, operations, ecommerce, finance and industry, plus AI workflows and custom AI solutions), who they serve (SMEs and MSMEs in India and 10 other countries), how they work and price projects, and what a growing business should ask them before starting.',
   engines: [
     { key: 'chatgpt', name: 'ChatGPT', url: 'https://chatgpt.com/?q={q}' },
     { key: 'claude', name: 'Claude', url: 'https://claude.ai/new?q={q}' },
@@ -820,7 +814,7 @@ export const stack = [
   { group: 'AI & machine learning', items: ['OpenAI', 'Claude', 'Gemini', 'Open-source models', 'LangChain', 'LlamaIndex', 'pgvector', 'Retrieval (RAG)', 'OCR & document AI', 'Whisper speech-to-text'] },
   { group: 'Cloud, DevOps & security', items: ['AWS', 'Google Cloud', 'Microsoft Azure', 'Docker', 'Kubernetes', 'Terraform', 'GitHub Actions', 'Cloudflare', 'Monitoring & alerts'] },
   { group: 'Commerce & content', items: ['Shopify', 'Magento', 'WooCommerce', 'WordPress', 'Headless CMS'] },
-  { group: 'Payments, messaging & integrations', items: ['Stripe', 'Razorpay', 'Twilio', 'WhatsApp Business Platform', 'Mailchimp', 'Klaviyo', 'Google Workspace', 'Microsoft 365', 'Solvable', 'Inscribe'] },
+  { group: 'Payments, messaging & integrations', items: ['Stripe', 'Razorpay', 'Twilio', 'WhatsApp Business Platform', 'Mailchimp', 'Klaviyo', 'Google Workspace', 'Microsoft 365'] },
 ]
 
 export const technologyPage = {

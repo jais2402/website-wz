@@ -224,7 +224,6 @@ export const systemTools: Record<SystemSlug, ToolGroup[]> = {
         { name: 'Power BI', role: 'board and finance dashboards' },
         { name: 'Looker Studio', role: 'shared monthly reports' },
         { name: 'Metabase', role: 'self-serve reports on live data' },
-        { name: 'Inscribe', role: 'document fraud checks' },
         { name: 'DocuSign', role: 'approvals signed online' },
       ],
     },
@@ -247,7 +246,6 @@ export const systemTools: Record<SystemSlug, ToolGroup[]> = {
         { name: 'DigiLocker', role: 'verified customer documents' },
         { name: 'Digio', role: 'Aadhaar eKYC and eSign' },
         { name: 'Leegality', role: 'loan and lease agreements signed' },
-        { name: 'Inscribe', role: 'document fraud checks' },
       ],
     },
     {

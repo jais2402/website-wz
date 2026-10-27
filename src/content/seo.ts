@@ -255,7 +255,7 @@ export const pages: SeoPage[] = [
     path: '/about-us',
     title: 'About Wezigns: Chennai Software Studio Since 2012',
     description:
-      'Wezigns Software Private Limited is a Chennai studio building custom systems for SMEs and MSMEs since 2012. Our story, what we build and how we price and work.',
+      'Wezigns is a Chennai software studio building custom systems for SMEs and MSMEs since 2012. Read our story, what we build and how we price and work.',
     card: { kicker: 'About Wezigns', title: 'From small business to enterprise systems.' },
     breadcrumb: [HOME, { name: 'About us', path: '/about-us' }],
     schema: 'AboutPage',

@@ -203,7 +203,7 @@ describe('jsonLd', () => {
       expect(org['@id']).toBe('https://www.wezigns.com/#org')
       expect(typeIn(org, 'ProfessionalService')).toBe(true)
       expect(org).toMatchObject({
-        legalName: 'Wezigns Software Private Limited',
+        legalName: 'Wezigns',
         foundingDate: '2012',
         telephone: brand.phone,
         email: brand.email,

@@ -3,6 +3,7 @@ import { scrollToTarget } from '@/hooks/motion'
 import { AiSummary } from './AiSummary'
 import { CookieSettingsButton } from './CookieBanner'
 import { Logo } from './Logo'
+import { SocialIcon, type SocialName } from './SocialIcon'
 
 /** `base` prefixes in-page links when the footer is used on another page (e.g. './' from the loom page). */
 export function Footer({ base = '' }: { base?: string }) {
@@ -15,17 +16,17 @@ export function Footer({ base = '' }: { base?: string }) {
             <p>{footerCopy.tagline}</p>
             <address className="footer-address">{brand.address.join(', ')}</address>
             <ul className="footer-social" aria-label="Wezigns elsewhere">
-              {Object.values(socials).map((x) => (
+              {Object.entries(socials).map(([name, x]) => (
                 <li key={x.href}>
-                  <a href={x.href} target="_blank" rel="noopener noreferrer">
-                    {x.label} <span aria-hidden="true">↗</span>
+                  <a href={x.href} target="_blank" rel="noopener noreferrer" aria-label={x.label} title={x.label}>
+                    <SocialIcon name={name as SocialName} />
                   </a>
                 </li>
               ))}
               {whatsappHref && (
                 <li>
-                  <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
-                    WhatsApp <span aria-hidden="true">↗</span>
+                  <a href={whatsappHref} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" title="WhatsApp">
+                    <SocialIcon name="whatsapp" />
                   </a>
                 </li>
               )}

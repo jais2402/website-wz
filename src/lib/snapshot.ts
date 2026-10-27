@@ -271,13 +271,8 @@ function home(): string {
   const workHtml = section(
     h2(workSection.title) +
       p(workSection.lead) +
-      featured.map(caseCard).join('') +
-      tag(
-        'article',
-        h3(workSection.more.title) +
-          p(workSection.more.body) +
-          tag('p', a(workSection.all.href, workSection.all.label)),
-      ),
+      tag('p', a(workSection.all.href, workSection.all.label)) +
+      featured.map(caseCard).join(''),
     'work',
   )
 

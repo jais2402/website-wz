@@ -9,7 +9,7 @@
 | Case-study figures | All confirmed | nothing to do |
 | About opener | Facts instead of "the leading": small to medium businesses, since 2012, 20+ systems, 11 countries | yes |
 | Wording | Visible copy says "small to medium businesses"; SEO titles and descriptions keep "SMEs" | yes |
-| Solvable, Inscribe | Keep both; also listed in the Technology stack | yes |
+| Solvable, Inscribe | Removed from the tools strip, Technology stack and system pages (2026-10-28) | yes |
 | Integrations on system pages | Keep all; Azure offered; GST e-invoice and e-way bill direct to the government portals | yes |
 | Gulf gateways | Add Telr, PayTabs, Tamara | yes |
 | Team section | Not added; About description no longer mentions a team | yes |

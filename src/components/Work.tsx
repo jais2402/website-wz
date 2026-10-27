@@ -1,5 +1,4 @@
-import type { CSSProperties } from 'react'
-import { pastWork, work, workSection } from '@/content/site'
+import { work, pastWork, workSection } from '@/content/site'
 import { CaseArt } from './CaseArt'
 import { SplitReveal } from './Reveal'
 
@@ -18,8 +17,10 @@ const all: Case[] = [...work, ...pastWork]
 const featured = workSection.featured.map((id) => all.find((c) => c.id === id)).filter((c): c is Case => Boolean(c))
 
 /**
- * Our Work on the home page: five cases in one bento grid (a large lead tile, four smaller ones) and a tile that
- * leads to /portfolio for the rest. No pin or sideways scroll; on phones the tiles stack.
+ * Our Work on the home page: five cases in one bento that fits a single screen on desktop. The lead case fills the
+ * left half (copy, module window, results); the other four sit in a 2 x 2 beside it with the sector, headline and
+ * one result (or the modules when a case has no published result). The rest are on /portfolio, linked from the head.
+ * Tablets get two columns and phones one, at natural height.
  */
 export function Work() {
   return (
@@ -27,71 +28,65 @@ export function Work() {
       <div className="wrap">
         <header className="wk-head">
           <SplitReveal as="h2" className="display" text={workSection.title} />
-          <p className="lead">{workSection.lead}</p>
+          <div className="wk-head-side">
+            <p className="lead">{workSection.lead}</p>
+            <a className="btn btn-ghost wk-all" href={workSection.all.href}>
+              {workSection.all.label} <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </header>
 
         <div className="wk-bento">
-          {featured.map((c, i) => (
-            <article key={c.id} className={`case-card wk-tile tone-${c.tone}${i === 0 ? ' wk-lead' : ''}`} data-reveal>
-              <span className="mono case-card-tag">
-                {c.sector}
-                {c.place && <span className="case-card-place">{c.place}</span>}
-              </span>
-              <h3>{c.title}</h3>
-              <p className="case-card-body">{c.body}</p>
-              <CaseArt modules={c.tags} />
-              {c.metrics?.length ? (
-                <dl className="case-card-metrics">
-                  {c.metrics.map((m) => (
-                    <div key={m.label}>
-                      <dt>{m.value}</dt>
-                      <dd>{m.label}</dd>
+          {featured.map((c, i) =>
+            i === 0 ? (
+              <article key={c.id} className={`case-card wk-tile wk-lead tone-${c.tone}`} data-reveal>
+                <Tag c={c} />
+                <h3>{c.title}</h3>
+                <p className="case-card-body">{c.body}</p>
+                <CaseArt modules={c.tags} />
+                {c.metrics?.length ? (
+                  <dl className="case-card-metrics">
+                    {c.metrics.map((m) => (
+                      <div key={m.label}>
+                        <dt>{m.value}</dt>
+                        <dd>{m.label}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : null}
+              </article>
+            ) : (
+              <article key={c.id} className={`case-card wk-tile wk-small tone-${c.tone}`} data-reveal>
+                <Tag c={c} />
+                <h3>{c.title}</h3>
+                {c.metrics?.length ? (
+                  <dl className="case-card-metrics">
+                    <div>
+                      <dt>{c.metrics[0].value}</dt>
+                      <dd>{c.metrics[0].label}</dd>
                     </div>
-                  ))}
-                </dl>
-              ) : null}
-            </article>
-          ))}
-
-          <a className="case-card wk-tile wk-more" href={workSection.all.href}>
-            <MoreStack />
-            <h3>{workSection.more.title}</h3>
-            <p className="case-card-body">{workSection.more.body}</p>
-            <span className="btn btn-lime">
-              {workSection.all.label} <span aria-hidden="true">→</span>
-            </span>
-          </a>
+                  </dl>
+                ) : (
+                  <ul className="case-card-tags">
+                    {c.tags.map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ),
+          )}
         </div>
       </div>
     </section>
   )
 }
 
-const STACK = ['coral', 'violet', 'lime'] as const
-
-/** "More behind this": three mini system windows stacked like a deck, in the case colours; they fan out on hover. */
-function MoreStack() {
+function Tag({ c }: { c: Case }) {
   return (
-    <div className="wk-stack" aria-hidden="true">
-      {STACK.map((tone, k) => (
-        <div key={tone} className={`wk-stack-win tone-${tone}`} style={{ '--k': k } as CSSProperties}>
-          <span className="wk-stack-dots">
-            <i />
-            <i />
-            <i />
-          </span>
-          {[82, 58, 70].map((w, r) => (
-            <span key={r} className="wk-stack-row">
-              <b style={{ width: `${w - k * 6}%` }} />
-            </span>
-          ))}
-          <span className="wk-stack-bars">
-            {[40, 55, 48, 66, 60, 78, 90].map((h, b) => (
-              <i key={b} style={{ height: `${h}%` }} />
-            ))}
-          </span>
-        </div>
-      ))}
-    </div>
+    <span className="mono case-card-tag">
+      {c.sector}
+      {c.place && <span className="case-card-place">{c.place}</span>}
+    </span>
   )
 }

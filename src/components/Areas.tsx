@@ -3,8 +3,9 @@ import { useRef } from 'react'
 import { areas, areasSection, ctas, navSystemsAll, sampleDataLabel } from '@/content/site'
 import { gsap } from '@/hooks/motion'
 import { track } from '@/lib/analytics'
-import { ModuleCard } from './Charts'
+import { CountUp } from './Charts'
 import { SplitReveal } from './Reveal'
+import { SysArt } from './SysArt'
 
 // Each system's own page (/systems/<slug>), in `areas` order. Matches `systemPages` in content/pages.ts.
 const SLUGS = ['people', 'revenue', 'operations', 'ecommerce', 'finance', 'industry']
@@ -24,14 +25,21 @@ export function Areas() {
       const mm = gsap.matchMedia()
       // Desktop only: on phones the cards sit in a swipe strip, which would clip a slide-up.
       mm.add('(min-width: 700px) and (prefers-reduced-motion: no-preference)', () => {
-        gsap.from('.sys-card', {
-          y: 36,
-          opacity: 0,
-          duration: 0.9,
-          ease: 'expo.out',
-          stagger: 0.07,
-          scrollTrigger: { trigger: '.sys-grid', start: 'top 85%', once: true },
-        })
+        // fromTo on the list items, not the cards: an explicit end can't stick at the offset (a re-run `from`
+        // captured 36px as its end), and the card's own hover lift stays in CSS.
+        gsap.fromTo(
+          '.sys-item',
+          { y: 36, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.9,
+            ease: 'expo.out',
+            stagger: 0.07,
+            clearProps: 'transform,opacity',
+            scrollTrigger: { trigger: '.sys-grid', start: 'top 85%', once: true },
+          },
+        )
       })
       return () => mm.revert()
     },
@@ -60,7 +68,20 @@ export function Areas() {
                 <h3 className="sys-title">{a.title}</h3>
                 <p className="sys-promise">{a.promise}</p>
                 <div className="sys-preview" aria-hidden="true">
-                  <ModuleCard m={a.modules[0]} wide={false} index={i} />
+                  <SysArt system={SLUGS[i]} />
+                  <span className="sys-stat">
+                    <span>{a.modules[0].name}</span>
+                    <strong>
+                      <CountUp
+                        value={a.modules[0].value}
+                        prefix={a.modules[0].prefix}
+                        suffix={a.modules[0].suffix}
+                        decimals={a.modules[0].decimals}
+                        delay={120 + i * 70}
+                      />
+                    </strong>
+                    <span>{a.modules[0].caption}</span>
+                  </span>
                 </div>
                 <span className="sys-tags">
                   {a.modules.slice(0, TAGS).map((m) => (
