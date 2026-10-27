@@ -1,8 +1,6 @@
 import { useGSAP } from '@gsap/react'
 import { useRef, useState } from 'react'
 import { principles, storySection } from '@/content/site'
-import { useLite } from '@/hooks/useLite'
-import { StoryLiteArt } from './LiteArt'
 import { ScrollTrigger } from '@/hooks/motion'
 import { sceneStore } from '@/lib/sceneStore'
 import { storyStage, storyStep } from '@/lib/story'
@@ -12,7 +10,6 @@ export function Story() {
   const root = useRef<HTMLElement>(null)
   const bar = useRef<HTMLSpanElement>(null)
   const [step, setStep] = useState(0)
-  const { tier } = useLite()
 
   useGSAP(
     () => {
@@ -37,7 +34,6 @@ export function Story() {
   return (
     <section ref={root} className="story" data-3d-zone aria-label="Our principles">
       <div className="story-sticky">
-        {tier === 'static' && <StoryLiteArt step={step} />}
         <div className="story-rail" aria-hidden="true">
           <span className="story-rail-fill" ref={bar} />
         </div>

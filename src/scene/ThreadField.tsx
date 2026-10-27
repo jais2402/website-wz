@@ -11,10 +11,8 @@ type Quality = { strands: number; points: number; riders: number }
 type Props = {
   quality: Quality
   reducedMotion: boolean
-  /** Thread brightness (lite tier: no bloom). */
+  /** Thread brightness multiplier (1 = as designed). */
   boost?: number
-  /** Lite tier: the canvas is a box beside the copy; the shape centres in it and scales to fit. */
-  framed?: boolean
 }
 
 const STAGES = 4
@@ -38,7 +36,7 @@ function makeUniforms(extra: Record<string, THREE.IUniform> = {}) {
  * The pinned story in the loom's language: loose threads (stage 0) weave into a panel (Simplify), climb a helix
  * cone (Scale) and wrap a sphere round a glowing core (Secure). Particles ride the threads.
  */
-export function ThreadField({ quality, reducedMotion, boost = 1, framed = false }: Props) {
+export function ThreadField({ quality, reducedMotion, boost = 1 }: Props) {
   const group = useRef<THREE.Group>(null)
   const centre = useRef(new THREE.Vector3())
   const threadMat = useRef<THREE.ShaderMaterial>(null)
@@ -106,18 +104,13 @@ export function ThreadField({ quality, reducedMotion, boost = 1, framed = false 
     }
 
     if (!group.current) return
-    const sideBySide = !framed && viewport.width > 5.2
+    const sideBySide = viewport.width > 5.2
     group.current.position.x = sideBySide
       ? weights.reduce((a, w, i) => a + w * STAGE_OFFSET_X[i], 0) * viewport.width
       : 0
     // On phones the copy card sits at the bottom, so lift the shape into the top half once the story starts.
-    group.current.position.y = sideBySide || framed ? 0 : (1 - weights[0]) * viewport.height * 0.2
-    // Framed (lite box): the panel, cone and sphere all fit inside the box with a margin.
-    group.current.scale.setScalar(
-      framed
-        ? Math.min(1, viewport.width / 6.8, viewport.height / 6.2)
-        : Math.min(1, viewport.width / 11) * (sideBySide ? 1 : 0.85),
-    )
+    group.current.position.y = sideBySide ? 0 : (1 - weights[0]) * viewport.height * 0.2
+    group.current.scale.setScalar(Math.min(1, viewport.width / 11) * (sideBySide ? 1 : 0.85))
 
     // The woven panel faces the viewer like a dashboard; the cone and sphere turn slowly.
     if (!reducedMotion) spin.current += dt * 0.16

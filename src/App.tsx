@@ -20,7 +20,7 @@ import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
 import { Work } from '@/components/Work'
 import { useHashScroll, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
-import { useLite } from '@/hooks/useLite'
+import { webgl } from '@/lib/webgl'
 import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
 import { LoomHero, Weave } from '@/loom/hero'
@@ -38,7 +38,6 @@ const Scene = lazy(() => import('@/scene/Scene').then((m) => ({ default: m.Scene
  */
 export default function App() {
   const reducedMotion = usePrefersReducedMotion()
-  const { lite, tier } = useLite()
   const [ready, setReady] = useState(false)
   // Two passes under the preloader: the first render is the hero alone, so it paints sooner; the rest of the page
   // (and the fixed story/globe canvas, which looks up its sections on mount) follows right after that first paint,
@@ -48,12 +47,12 @@ export default function App() {
   // /#faq and the other home-section links from inner pages land on their section once the page is laid out.
   useHashScroll(ready)
   usePauseOffscreen(built)
-  // Static has no WebGL, so there is no 3D to wait for. Lite runs both scenes (boxed loom, story/globe).
+  // Without WebGL there is no 3D to wait for: the preloader opens as soon as the page itself is ready.
   useEffect(() => {
-    if (tier !== 'static') return
+    if (webgl) return
     homeGate?.done('loom')
     homeGate?.done('scene')
-  }, [tier])
+  }, [])
 
   return (
     <>
@@ -63,8 +62,8 @@ export default function App() {
         caption={preloaderCopy.home}
         onDone={() => setReady(true)}
       />
-      {/* Static never downloads three.js: the story and globe show stills of the real scenes instead. */}
-      {tier !== 'static' && built && (
+      {/* Without WebGL three.js is never downloaded. */}
+      {webgl && built && (
         <Suspense fallback={<div className="canvas-root canvas-fallback" aria-hidden="true" />}>
           <Scene reducedMotion={reducedMotion} />
         </Suspense>
@@ -72,7 +71,7 @@ export default function App() {
       <div className="grain" aria-hidden="true" />
       <Cursor />
       <Nav />
-      {!lite && built && <GuideLight active={ready} />}
+      {webgl && built && <GuideLight active={ready} />}
       {/* Before <main> in the DOM so keyboard and screen-reader users reach it early (it is fixed bottom-left).
           Held back until the preloader has finished. */}
       <CookieBanner ready={ready} />

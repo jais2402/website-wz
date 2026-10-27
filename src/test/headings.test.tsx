@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { SplitReveal } from '@/components/Reveal'
 import { loom } from '@/content/site'
-import { LiteContext } from '@/hooks/useLite'
 import { LoomHero } from '@/loom/hero'
 import { PageHero } from '@/pages/shell'
 
@@ -34,10 +33,8 @@ vi.hoisted(() => {
 describe('heading text spacing', () => {
   it('home hero H1 reads its lines with single spaces', () => {
     render(
-      // Lite mode renders the static SVG art instead of the lazy WebGL loom.
-      <LiteContext.Provider value={{ lite: true, reason: 'test', fallBack: () => {}, tier: 'lite', demote: () => {} }}>
-        <LoomHero reducedMotion introReady={false} />
-      </LiteContext.Provider>,
+      // jsdom has no WebGL, so the hero renders its copy without the lazy 3D loom.
+      <LoomHero reducedMotion introReady={false} />,
     )
     const h1 = screen.getByRole('heading', { level: 1 })
     expect(h1.textContent).toBe(loom.title.join(' '))

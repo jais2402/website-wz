@@ -106,8 +106,8 @@ varying vec3 vColor;
 varying float vAlpha;
 void main() {
   gl_FragColor = vec4(vColor, vAlpha);
-  // Screen colour space: a no-op when post-processing renders to its linear target (full tier); converts when
-  // drawing straight to the canvas (lite tier, no composer), so both tiers show the same colours.
+  // Screen colour space: a no-op into the post-processing pass's linear target; converts if ever drawn straight
+  // to the canvas, so the colours stay right either way.
   #include <colorspace_fragment>
 }
 `
@@ -144,8 +144,8 @@ void main() {
   if (r > 0.5) discard;
   float glow = pow(smoothstep(0.5, 0.0, r), 1.8);
   gl_FragColor = vec4(vColor, glow * vAlpha);
-  // Screen colour space: a no-op when post-processing renders to its linear target (full tier); converts when
-  // drawing straight to the canvas (lite tier, no composer), so both tiers show the same colours.
+  // Screen colour space: a no-op into the post-processing pass's linear target; converts if ever drawn straight
+  // to the canvas, so the colours stay right either way.
   #include <colorspace_fragment>
 }
 `
@@ -168,8 +168,8 @@ void main() {
   float core = smoothstep(1.0, 0.0, r);
   float a = pow(core, 3.0) * (0.85 + 0.15 * sin(uTime * 3.0));
   gl_FragColor = vec4(uColor, a);
-  // Screen colour space: a no-op when post-processing renders to its linear target (full tier); converts when
-  // drawing straight to the canvas (lite tier, no composer), so both tiers show the same colours.
+  // Screen colour space: a no-op into the post-processing pass's linear target; converts if ever drawn straight
+  // to the canvas, so the colours stay right either way.
   #include <colorspace_fragment>
 }
 `

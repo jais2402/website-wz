@@ -24,7 +24,7 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
 - `contact-us.html` → `src/contact/main.tsx` → `ContactPage.tsx`: `/contact-us` (clean URL in dev, preview and Vercel).
   Pages keep the old wezigns.com slugs (`/contact-us`, `/about-us`, `/our-services`) so those URLs need no redirect.
   Address, phone and email cards, the enquiry form (`ContactForm`, sending switchable in `lib/enquiry.ts`), and the
-  loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`, SVG art in lite mode).
+  loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`).
 - `about-us.html`, `our-services.html` (systems overview), `ai.html`, `technology.html`, `privacy-policy.html`,
   `terms-and-conditions.html`, `cookie-policy.html` (legal copy in `src/content/legal.ts`, drafts for
   legal review, see `docs/legal/research.md`; GA4 loads only after the cookie banner's Accept, see `docs/analytics.md`), `portfolio.html` (`/portfolio`, all case studies + earlier systems), `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
@@ -46,16 +46,10 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   (contact over the particle globe). They are not rendered.
 - The home preloader waits for `homeGate` (`lib/loadGate.ts`): fonts, window load, and both canvases reporting via
   `scene/Warmup.tsx` (shaders compiled + first frames drawn). It opens after 12 s regardless.
-- Rendering tiers (`lib/perfTier.ts`, `lib/perfBoot.ts`, `components/LiteProvider.tsx`): decided by WebGL only
-  (client decision), before first paint: no context means static; a software renderer (Basic Render Driver,
-  SwiftShader, llvmpipe) or an unidentifiable desktop GPU means lite; a lost context mid-session demotes. Classes
-  `perf-full | perf-lite | perf-static` on `<html>`. Lite: the same look as full (blur, bloom, animations) with fewer
-  threads; the story/globe canvas is a smaller box beside the copy (no dust), the looms (hero, contact, About, 404)
-  render the full thread set at full resolution without the bloom pass (on a software renderer bloom alone halved
-  the frame rate; glow sprites + a CSS vignette stand in for it); no Lenis. Static: no WebGL, SVG drawings of the real scenes in `public/lite/` (drawn from the
-  shader maths by `scripts/build-static-svg.mjs`; re-run it when a scene changes), no blur, no animation. Force with `?perf=full|lite|static`. One WebGL canvas at a time
-  (`lib/canvasSlot.ts`).
-  Check with `npm run build && npm run perf:audit` (GPU and SwiftShader runs).
+- One version for everyone (client decision): no lite or static tier, no GPU detection, no `?perf=` switch.
+  `lib/webgl.ts` only checks whether a WebGL context can be created; without one the 3D scenes are not mounted
+  (their areas stay empty) and the home preloader does not wait for them. One WebGL canvas at a time
+  (`lib/canvasSlot.ts`). `npm run build && npm run perf:audit` measures frame rates with the GPU and with SwiftShader.
 - 3D render budget (`lib/render.ts`, `hooks/useBudgetDpr.ts`): each canvas renders at most ~1.6M pixels and
   the browser scales it up; bloom runs at half resolution. Built for laptops without a dedicated GPU: keep it.
 - Two WebGL canvases share the page: the loom hero (in its sticky section) and the fixed canvas (story threads +
@@ -101,7 +95,7 @@ src/
   components/GuideLight.tsx ← the loom's white glow travelling with scroll: loom mouth → weave knot → story shape
                          centre → top of the woven tower beside the proof headline (`ProofTower.tsx`, CSS 3D, builds
                          on scroll). Our Work has a thread strung through a knot on every card (`lib/thread.ts`). Anchor maths in lib/guide.ts; the 3D scenes publish
-                         screen positions (loomStore.mouth, sceneStore.core). Desktop only, off in lite mode.
+                         screen positions (loomStore.mouth, sceneStore.core). Desktop only, off without WebGL.
   hooks/motion.ts      ← GSAP/ScrollTrigger registration, Lenis, scrollToTarget(), reduced-motion
   hooks/useCountUp.ts  ← count-up numbers (instant under reduced motion)
   components/Areas.tsx ← "The systems we build": six cards (no pin), each a sample module + link to its system

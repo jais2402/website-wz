@@ -2,7 +2,6 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { Component, type ReactNode, useEffect, useState } from 'react'
 import { useBudgetDpr } from '@/hooks/useBudgetDpr'
-import { useLite } from '@/hooks/useLite'
 import { useDocumentVisible } from '@/hooks/useDocumentVisible'
 import { damp } from '@/lib/math'
 import { canvasSlot } from '@/lib/canvasSlot'
@@ -46,12 +45,7 @@ function useIsMobile() {
  */
 export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   const mobile = useIsMobile()
-  // Lite tier (software renderer): the same scene and look (bloom included), fewer threads, framed smaller beside
-  // the copy and at a lower internal resolution.
-  const liteGl = useLite().tier === 'lite'
-  const budget = useBudgetDpr()
-  // Lite: the canvas is a small box beside the copy (about 0.5M px), so it can render near 1x and stay sharp.
-  const dpr = liteGl ? Math.min(0.85, budget) : budget
+  const dpr = useBudgetDpr()
   const [active, setActive] = useState(true)
   // Keeps rendering until the shaders are compiled and drawn once, even before a 3D zone is on screen.
   const [warm, setWarm] = useState(false)
@@ -97,21 +91,12 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
               }}
             />
             <CameraRig />
-            {/* Lite: no dust; inside the boxed canvas it only outlined the box. */}
-            {!liteGl && <Dust count={mobile ? 425 : 1190} />}
+            <Dust count={mobile ? 425 : 1190} />
             <ThreadField
-              quality={
-                liteGl
-                  ? { strands: 380, points: 100, riders: 1500 }
-                  : mobile
-                    ? { strands: 320, points: 90, riders: 1600 }
-                    : { strands: 640, points: 120, riders: 3000 }
-              }
-              boost={1}
-              framed={liteGl}
+              quality={mobile ? { strands: 320, points: 90, riders: 1600 } : { strands: 640, points: 120, riders: 3000 }}
               reducedMotion={reducedMotion}
             />
-            <Globe dots={mobile ? 1400 : 2600} reducedMotion={reducedMotion} framed={liteGl} />
+            <Globe dots={mobile ? 1400 : 2600} reducedMotion={reducedMotion} />
             {/* Loom-style glow on desktop; phones skip post-processing to keep frame rates up. */}
             {!mobile && (
               <EffectComposer multisampling={0}>

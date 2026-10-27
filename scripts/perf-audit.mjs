@@ -4,7 +4,7 @@
 //   npm run build && node scripts/perf-audit.mjs [--gpu-only | --cpu-only] [--shots <dir>] [--url <base>]
 //
 // Runs headless Chrome twice: with the GPU, and with --disable-gpu --use-gl=swiftshader, which reproduces a
-// machine without GPU acceleration (Windows' "Microsoft Basic Render Driver"). Prints the tier the page picked,
+// machine without GPU acceleration (Windows' "Microsoft Basic Render Driver"). Prints the renderer,
 // idle and scrolling frame rates, frame-time percentiles and the checks from the performance spec.
 // Uses the system Chrome (or PERF_CHROME=/path/to/chrome). No browser download needed.
 
@@ -29,7 +29,7 @@ const CHROME =
     (p) => existsSync(p),
   )
 
-// Surfaces that are frosted glass in the full tier: their text must stay readable once the blur is gone.
+// Frosted-glass surfaces: their text must stay readable against their own background.
 const GLASS = [
   '.hero-glass',
   '.loom-intro',
@@ -95,10 +95,6 @@ async function run(mode) {
   })
   const ctx = await browser.newContext({ viewport: { width: 1227, height: 705 }, deviceScaleFactor: 1.25 })
   const page = await ctx.newPage()
-  const tierLog = []
-  page.on('console', (m) => {
-    if (m.text().includes('rendering:')) tierLog.push(m.text().replace('[wezigns] ', ''))
-  })
   await page.addInitScript(measureInPage)
   await page.goto(BASE + '/', { waitUntil: 'load' })
   await page.waitForFunction(() => !document.querySelector('.preloader'), null, { timeout: 45000 }).catch(() => {})
@@ -109,7 +105,6 @@ async function run(mode) {
       document.createElement('canvas').getContext('webgl2') || document.createElement('canvas').getContext('webgl')
     const ext = gl && gl.getExtension('WEBGL_debug_renderer_info')
     return {
-      tier: [...document.documentElement.classList].find((c) => c.startsWith('perf-')) || '(none)',
       renderer: ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : gl ? '(hidden)' : '(no WebGL)',
     }
   })
@@ -204,11 +199,8 @@ async function run(mode) {
     }
   }
 
-  const finalTier = await page.evaluate(() =>
-    [...document.documentElement.classList].find((c) => c.startsWith('perf-')),
-  )
   await browser.close()
-  return { mode, ...facts, finalTier, tierLog, idle, scrolling, ...checks }
+  return { mode, ...facts, idle, scrolling, ...checks }
 }
 
 const preview = await startPreview()
@@ -219,9 +211,6 @@ try {
     const label = m === 'gpu' ? 'GPU' : 'no GPU (SwiftShader)'
     console.log(`\n== ${label} ==`)
     console.log(`renderer        ${r.renderer}`)
-    console.log(
-      `tier            ${r.tier} at start, ${r.finalTier} at the end${r.tierLog.length ? ` (${r.tierLog.join('; ')})` : ''}`,
-    )
     console.log(
       `idle            ${r.idle.fps} fps   p50 ${r.idle.p50} ms   p95 ${r.idle.p95} ms   max ${r.idle.max} ms`,
     )

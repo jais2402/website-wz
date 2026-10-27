@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import { LoomLiteArt } from '@/components/LiteArt'
 import { useAfterPaint } from '@/hooks/useAfterPaint'
-import { useLite } from '@/hooks/useLite'
+import { webgl } from '@/lib/webgl'
 import { usePrefersReducedMotion } from '@/hooks/motion'
 import type { LoomVariant } from '@/loom/LoomScene'
 import { loomStore } from '@/loom/store'
@@ -12,13 +11,10 @@ const LoomScene = lazy(() => import('@/loom/LoomScene').then((m) => ({ default: 
 /**
  * A loom beside an inner page's headline (PageHero `visual`): same language as the home hero, its own shape per
  * page (`variant`, see LoomScene).
- * A still of the real loom on the lite and static tiers; the WebGL loop pauses once the hero scrolls away.
+ * The WebGL loop pauses once the hero scrolls away; without WebGL the space stays empty.
  */
 export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
   const reducedMotion = usePrefersReducedMotion()
-  const { tier, demote } = useLite()
-  // Static (no WebGL): a still of the real loom. Lite (software renderer): the light loom. Full: the full loom.
-  const art = tier === 'static'
   const root = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
@@ -37,30 +33,13 @@ export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
     return () => io.disconnect()
   }, [])
 
-  useEffect(() => {
-    const canvas = root.current?.querySelector('canvas')
-    if (!ready || !canvas) return
-    // A real GPU loss happens on a canvas still on the page; our own unmount (off screen) also fires this event,
-    // on a canvas that has already been removed, and must not demote the page.
-    const onLost = () => {
-      if (canvas.isConnected) demote(tier === 'full' ? 'lite' : 'static', 'WebGL context lost')
-    }
-    canvas.addEventListener('webglcontextlost', onLost)
-    return () => canvas.removeEventListener('webglcontextlost', onLost)
-  }, [ready, demote, tier])
-
   return (
-    <div ref={root} className={`hero-loom is-${variant}${ready || art ? ' is-ready' : ''}`} aria-hidden="true">
-      {art ? (
-        <LoomLiteArt
-          poster={variant === 'spindle' ? 'loom-spindle' : variant === 'frayed' ? 'loom-frayed' : 'loom-contact'}
-        />
-      ) : (
+    <div ref={root} className={`hero-loom is-${variant}${ready ? ' is-ready' : ''}`} aria-hidden="true">
+      {webgl &&
         active &&
         afterPaint && (
           <Suspense fallback={null}>
             <LoomScene
-              light={tier === 'lite'}
               view="contact"
               variant={variant}
               reducedMotion={reducedMotion}
@@ -68,8 +47,7 @@ export function HeroLoom({ variant = 'classic' }: { variant?: LoomVariant }) {
               onReady={() => setReady(true)}
             />
           </Suspense>
-        )
-      )}
+        )}
     </div>
   )
 }

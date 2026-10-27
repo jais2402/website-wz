@@ -3,10 +3,9 @@ import { canvasSlot } from '@/lib/canvasSlot'
 import { homeGate } from '@/lib/loadGate'
 import { type CSSProperties, Fragment, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { SplitReveal } from '@/components/Reveal'
-import { LoomLiteArt } from '@/components/LiteArt'
 import { ctas, loom, navSystems } from '@/content/site'
 import { useAfterPaint } from '@/hooks/useAfterPaint'
-import { useLite } from '@/hooks/useLite'
+import { webgl } from '@/lib/webgl'
 import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { loomStore } from './store'
 
@@ -17,29 +16,12 @@ const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.Loo
 
 /** Pinned hero: scroll flies the camera into the loom while the copy steps through three phases. */
 export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean; introReady: boolean }) {
-  const { tier, demote } = useLite()
-  // Static (no WebGL): a still of the real loom. Lite (software renderer): the same full-screen loom and camera,
-  // lighter (minimal threads, no bloom). Full: the full loom.
-  const art = tier === 'static'
   const root = useRef<HTMLElement>(null)
   const [phase, setPhase] = useState(-1)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
   // The loom (three.js) starts loading once the hero copy has painted: it is under the preloader either way.
   const afterPaint = useAfterPaint({ idle: false })
-
-  // If the GPU drops the WebGL context (common on low-memory phones), swap to the static art.
-  useEffect(() => {
-    const canvas = root.current?.querySelector('.loom-canvas canvas')
-    if (!ready || !canvas) return
-    // A real GPU loss happens on a canvas still on the page; our own unmount (off screen) also fires this event,
-    // on a canvas that has already been removed, and must not demote the page.
-    const onLost = () => {
-      if (canvas.isConnected) demote(tier === 'full' ? 'lite' : 'static', 'WebGL context lost')
-    }
-    canvas.addEventListener('webglcontextlost', onLost)
-    return () => canvas.removeEventListener('webglcontextlost', onLost)
-  }, [ready, demote, tier])
 
   // Unmount the WebGL loom when the hero is fully off screen (and tell the fixed canvas it may mount).
   useEffect(() => {
@@ -85,16 +67,14 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   return (
     <section id="top" ref={root} className="loom-hero" aria-label={loom.title.join(' ')}>
       <div className="loom-sticky">
-        <div className={`loom-canvas${ready || art ? ' is-ready' : ''}`} aria-hidden="true">
-          {art ? (
-            <LoomLiteArt />
-          ) : (
+        <div className={`loom-canvas${ready ? ' is-ready' : ''}`} aria-hidden="true">
+          {
             // Mounted only while the hero is on screen: one WebGL context at a time on the page.
+            webgl &&
             active &&
             afterPaint && (
               <Suspense fallback={null}>
                 <LoomScene
-                  light={tier === 'lite'}
                   reducedMotion={reducedMotion}
                   active={active}
                   onReady={() => {
@@ -104,7 +84,7 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
                 />
               </Suspense>
             )
-          )}
+          }
         </div>
 
         <div className={`loom-intro${phase >= 0 ? ' is-gone' : ''}`}>

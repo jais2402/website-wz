@@ -421,11 +421,6 @@ type SceneProps = {
   onReady?: () => void
   view?: LoomView
   variant?: LoomVariant
-  /**
-   * Software renderer (perf-lite): the same threads and loom at full resolution, without the bloom pass (on a
-   * software renderer bloom alone halves the frame rate); glow sprites stand in for it.
-   */
-  light?: boolean
 }
 
 export function LoomScene({
@@ -434,7 +429,6 @@ export function LoomScene({
   onReady,
   view = 'hero',
   variant = 'classic',
-  light = false,
 }: SceneProps) {
   const v = VARIANTS[variant]
   const quality = useMemo<Quality>(() => {
@@ -442,8 +436,6 @@ export function LoomScene({
     return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 800, points: 140, particles: 5600 }
   }, [])
 
-  // Lite renders at the same resolution as full: measured on SwiftShader at 1920x1080, the threads cost little and
-  // a lower resolution only made them jagged; the bloom pass was the expensive part.
   const dpr = useBudgetDpr()
   const visible = useDocumentVisible()
   const running = active && visible
@@ -468,12 +460,6 @@ export function LoomScene({
       <group rotation={v.rotation}>
         <Glow position={[-0.25, 0, 0]} scale={2.8} color={v.mouthGlow} opacity={0.9} />
         <Glow position={[-0.4, 0, 0]} scale={9} color={v.haloGlow} opacity={0.22} />
-        {/* Lite (no bloom pass): wider glows give the mouth its white-hot bloom and the violet halo. */}
-        {light && (
-          <>
-            <Glow position={[-0.25, 0, 0]} scale={4.2} color={v.mouthGlow} opacity={0.35} />
-          </>
-        )}
         <Threads quality={quality} reducedMotion={reducedMotion} view={view} v={v} />
         <Loom reducedMotion={reducedMotion} variant={variant} v={v} />
       </group>
@@ -481,7 +467,7 @@ export function LoomScene({
       {onReady && <Warmup onDone={onReady} />}
       {view === 'contact' ? <ContactRig reducedMotion={reducedMotion} variant={variant} /> : <CameraRig />}
 
-      {!light && (
+      {
         <EffectComposer multisampling={0}>
           <Bloom
             mipmapBlur
@@ -494,7 +480,7 @@ export function LoomScene({
           />
           <Vignette eskil={false} offset={0.2} darkness={0.75} />
         </EffectComposer>
-      )}
+      }
     </Canvas>
   )
 }

@@ -16,8 +16,7 @@
   opacity: 1;
 }
 
-.hero-loom canvas,
-.hero-loom .lite-poster {
+.hero-loom canvas {
   position: absolute;
   inset: 0;
   width: 100% !important;

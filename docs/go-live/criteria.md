@@ -49,7 +49,7 @@ Viewports: **375x812** phone, **768x1024** and **1024x1366** tablet, **1440x900*
 | VP-07 | Glass over 3D | All copy over WebGL sits on a frosted glass panel; no ancestor of a visible glass panel has `filter` or `opacity < 1` (that kills `backdrop-filter`). |
 | VP-08 | Fonts | Satoshi, Instrument Serif italic and JetBrains Mono load from `/fonts`; no flash of a wrong font longer than the swap period; ₹ renders (Inter fallback). |
 | VP-09 | Illustrations | All visuals code-drawn (CSS/SVG/WebGL): no raster images in the page body, no hero video. |
-| VP-10 | Lite / no-WebGL mode | With WebGL unavailable or in lite mode every hero shows its SVG fallback; no blank black blocks. |
+| VP-10 | No-WebGL browsers | With WebGL unavailable the page still loads without waiting on 3D, and all copy and links work (the 3D areas stay empty; single-version site, no fallback art). |
 | VP-11 | Hover, focus, active states | Every button and link has visible hover and focus states; no stuck hover on touch. |
 | VP-12 | Print | System pages print as a one-page summary (`print.css`). |
 

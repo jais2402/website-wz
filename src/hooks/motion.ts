@@ -1,7 +1,6 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
-import type { PerfTier } from '@/lib/perfTier'
 import { useEffect, useState } from 'react'
 import { hashTarget } from '@/lib/hash'
 
@@ -32,27 +31,8 @@ watchPageHeight()
 
 export { gsap, ScrollTrigger }
 
-const tierNow = (): PerfTier =>
-  document.documentElement.classList.contains('perf-static')
-    ? 'static'
-    : document.documentElement.classList.contains('perf-lite')
-      ? 'lite'
-      : 'full'
-
-/** The rendering tier on <html> (lib/perfTier.ts); follows demotions made during the session. */
-export function usePerfTier(): PerfTier {
-  const [tier, setTier] = useState(tierNow)
-  useEffect(() => {
-    const on = () => setTier(tierNow())
-    window.addEventListener('wz:perf', on)
-    return () => window.removeEventListener('wz:perf', on)
-  }, [])
-  return tier
-}
-
-/** prefers-reduced-motion, and also true on the static tier (no motion at all there). */
+/** prefers-reduced-motion. */
 export function usePrefersReducedMotion() {
-  const tier = usePerfTier()
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -60,7 +40,7 @@ export function usePrefersReducedMotion() {
     mq.addEventListener('change', on)
     return () => mq.removeEventListener('change', on)
   }, [])
-  return reduced || tier === 'static'
+  return reduced
 }
 
 let lenis: Lenis | null = null
@@ -106,10 +86,7 @@ export function useHashScroll(ready: boolean) {
 
 /** Lenis smooth scrolling, driven by GSAP's ticker so ScrollTrigger stays in sync. Disabled for reduced motion. */
 export function useSmoothScroll(enabled: boolean) {
-  // Lenis only on the full tier: at a low frame rate its easing keeps drifting after the wheel stops, which
-  // reads as the page "buffering". Lite and static scroll natively.
-  const tier = usePerfTier()
-  const on = enabled && tier === 'full'
+  const on = enabled
   useEffect(() => {
     if (!on) return
     lenis = new Lenis({ duration: 1.15, smoothWheel: true })

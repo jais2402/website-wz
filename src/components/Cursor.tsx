@@ -1,16 +1,14 @@
 import { useEffect, useRef } from 'react'
-import { usePerfTier } from '@/hooks/motion'
 
 /**
  * Desktop-only trailing cursor ring that grows over interactive elements. Native cursor stays visible.
- * Full tier only. Its loop sleeps once the ring has caught up with the pointer and wakes on the next move.
+ * Its loop sleeps once the ring has caught up with the pointer and wakes on the next move.
  */
 export function Cursor() {
-  const tier = usePerfTier()
   const ring = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (tier !== 'full' || !window.matchMedia('(pointer: fine)').matches) return
+    if (!window.matchMedia('(pointer: fine)').matches) return
     const el = ring.current
     if (!el) return
     let x = window.innerWidth / 2
@@ -38,8 +36,7 @@ export function Cursor() {
       window.removeEventListener('pointermove', move)
       cancelAnimationFrame(raf)
     }
-  }, [tier])
+  }, [])
 
-  if (tier !== 'full') return null
   return <div ref={ring} className="cursor" aria-hidden="true" />
 }

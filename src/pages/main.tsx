@@ -1,11 +1,8 @@
-// First: probe the GPU and set perf-<tier> on <html> before anything renders.
-import '@/lib/perfBoot'
 import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@/index.css'
 import '@/loom/loom.css'
 import './pages.css'
-import { LiteProvider } from '@/components/LiteProvider'
 import { initAnalytics } from '@/lib/ga'
 
 // Consent-gated GA: no script or cookie until the visitor accepts; nothing at all without an ID.
@@ -18,10 +15,8 @@ loadPage(document.body.dataset.page ?? '').then(
   (page) => {
     createRoot(document.getElementById('root')!).render(
       <StrictMode>
-        <LiteProvider>
           {/* Safety net only: each page's lazy 3D pieces have their own boundaries. */}
           <Suspense fallback={null}>{page}</Suspense>
-        </LiteProvider>
       </StrictMode>,
     )
   },

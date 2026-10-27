@@ -33,24 +33,6 @@
   transform: none;
 }
 
-/* Lite tier renders without the post-processing pass: this stands in for its vignette (darker edges). */
-html.perf-lite .loom-canvas::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse 72% 72% at 50% 50%, transparent 45%, rgba(4, 5, 12, 0.72) 100%);
-}
-
-/* Lite tier renders without the post-processing pass: this stands in for its vignette (darker edges). */
-html.perf-lite .loom-canvas::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse 72% 72% at 50% 50%, transparent 45%, rgba(4, 5, 12, 0.72) 100%);
-}
-
 /* Legibility: darken the lower-left where the copy sits, leave the loom bright. */
 .loom-sticky::after {
   content: '';
