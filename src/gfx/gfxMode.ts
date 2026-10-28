@@ -6,6 +6,7 @@
 // poster for the rest of the tab's session. Both live in sessionStorage, not localStorage: a test switch, or one slow
 // moment (another app busy on the GPU), must not follow a visitor into every later visit.
 
+import { useSyncExternalStore } from 'react'
 import { allowsLive, classifyTier, type GfxMode, type GfxTier, parseMode } from '@/lib/gfx'
 
 const OVERRIDE_KEY = 'gfx-override'
@@ -71,15 +72,34 @@ function resolve() {
 
 const resolved = resolve()
 
+const listeners = new Set<() => void>()
+
 export const gfx = {
   mode: resolved.mode,
   tier: resolved.tier,
   renderer: resolved.renderer,
-  /** Whether the live scenes may load on this visit. */
+  /** Whether the live scenes may load on this visit (turns false if this machine proves too slow for them). */
   live: allowsLive(resolved.mode, resolved.tier),
-  /** The frame test failed: remember this GPU so the tab's later pages show the poster straight away. */
+  /**
+   * The live scenes are too slow here: switch this page to the poster and lighter scenes, and remember this GPU so
+   * the tab's later pages show the poster straight away.
+   */
   markSlow() {
     if (resolved.renderer) write(SLOW_KEY, resolved.renderer)
     document.documentElement.dataset.gfx = 'software'
+    if (!gfx.live) return
+    gfx.live = false
+    listeners.forEach((l) => l())
   },
+  subscribe(l: () => void) {
+    listeners.add(l)
+    return () => {
+      listeners.delete(l)
+    }
+  },
+}
+
+/** `gfx.live`, re-rendering when it turns off. */
+export function useGfxLive() {
+  return useSyncExternalStore(gfx.subscribe, () => gfx.live)
 }

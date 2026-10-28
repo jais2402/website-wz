@@ -8,7 +8,8 @@ import { canvasSlot } from '@/lib/canvasSlot'
 import { homeGate } from '@/lib/loadGate'
 import { sceneStore } from '@/lib/sceneStore'
 import { Dust } from './Dust'
-import { gfx } from '@/gfx/gfxMode'
+import { gfx, useGfxLive } from '@/gfx/gfxMode'
+import { watchFrames } from '@/gfx/frameTest'
 import { Globe } from './Globe'
 import { ThreadField } from './ThreadField'
 import { Warmup } from './Warmup'
@@ -48,8 +49,9 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   const mobile = useIsMobile()
   const budgetDpr = useBudgetDpr()
   // Poster mode (no live hero loom: a weak GPU, or ?gfx=poster) keeps the story scenes but lighter: at most 1x
-  // pixels, half the threads and riders, and smaller shapes. The live mode is unchanged.
-  const lite = !gfx.live
+  // pixels, half the threads and riders, and smaller shapes. The live mode is unchanged. A machine that turns out too
+  // slow for the live scenes (hero or story) switches to it on the spot.
+  const lite = !useGfxLive()
   const dpr = lite ? Math.min(1, budgetDpr) : budgetDpr
   const [active, setActive] = useState(true)
   // Keeps rendering until the shaders are compiled and drawn once, even before a 3D zone is on screen.
@@ -82,11 +84,20 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
     return () => io.disconnect()
   }, [])
 
+  // The story and globe are watched like the hero: kept under ~25 fps, they switch to the lighter scene.
+  const watching = mounted && warm && active && visible && !lite && !reducedMotion && gfx.mode !== 'live'
+  useEffect(() => {
+    if (!watching) return
+    return watchFrames(() => gfx.markSlow())
+  }, [watching])
+
   return (
     <div className={`canvas-root${active ? '' : ' is-paused'}`} aria-hidden="true">
       <WebGLBoundary>
         {mounted && (
           <Canvas
+            // Switching to the lighter scene rebuilds the canvas with its smaller buffers.
+            key={lite ? 'lite' : 'full'}
             frameloop={(active || !warm) && visible ? 'always' : 'never'}
             dpr={dpr}
             camera={{ position: [0, 0, 7.5], fov: 45, near: 0.1, far: 60 }}

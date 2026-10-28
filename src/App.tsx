@@ -22,7 +22,7 @@ import { StoryStatic } from '@/components/StoryStatic'
 import { TestBadge } from '@/components/TestBadge'
 import { Work } from '@/components/Work'
 import { useHashScroll, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
-import { gfx } from '@/gfx/gfxMode'
+import { useGfxLive } from '@/gfx/gfxMode'
 import { webgl } from '@/lib/webgl'
 import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
@@ -43,6 +43,7 @@ const Globe2D = lazy(() => import('@/gfx/Globe2D').then((m) => ({ default: m.Glo
  */
 export default function App() {
   const reducedMotion = usePrefersReducedMotion()
+  const live = useGfxLive()
   const [ready, setReady] = useState(false)
   // Two passes under the preloader: the first render is the hero alone, so it paints sooner; the rest of the page
   // (and the fixed story/globe canvas, which looks up its sections on mount) follows right after that first paint,
@@ -84,7 +85,7 @@ export default function App() {
       <Cursor />
       <Nav />
       {/* The glow rides on the live loom's mouth: with the hero poster alone it would float over nothing. */}
-      {webgl && gfx.live && built && <GuideLight active={ready} />}
+      {webgl && live && built && <GuideLight active={ready} />}
       {/* Before <main> in the DOM so keyboard and screen-reader users reach it early (it is fixed bottom-left).
           Held back until the preloader has finished. */}
       <CookieBanner ready={ready} />

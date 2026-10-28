@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { allowsLive, classifyTier, coverPoint, flowPoint, flyScale, zoomInset, medianMs, parseMode } from './gfx'
+import { allowsLive, classifyTier, coverPoint, flowPoint, flyScale, zoomInset, medianMs, parseMode, sustainedSlow } from './gfx'
 
 const gpu = (renderer: string, caveat = true) => ({ context: true, caveat, renderer })
 
@@ -60,6 +60,16 @@ describe('medianMs', () => {
     expect(medianMs([])).toBe(0)
     expect(medianMs([40, 10, 20])).toBe(20)
     expect(medianMs([10, 20, 30, 100])).toBe(25)
+  })
+})
+
+describe('sustainedSlow', () => {
+  it('needs every one of the last windows to be slow', () => {
+    expect(sustainedSlow([60])).toBe(false)
+    expect(sustainedSlow([60, 70])).toBe(true)
+    expect(sustainedSlow([60, 16, 70])).toBe(false)
+    expect(sustainedSlow([16, 16, 45, 50])).toBe(true)
+    expect(sustainedSlow([40, 40])).toBe(false)
   })
 })
 

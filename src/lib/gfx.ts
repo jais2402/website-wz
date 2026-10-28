@@ -33,6 +33,20 @@ export function allowsLive(mode: GfxMode, tier: GfxTier): boolean {
 /** Frames the live scene must keep up with before it replaces its poster: median frame time at or under this. */
 export const FRAME_BUDGET_MS = 30
 
+/**
+ * After the live scene is showing, it keeps being watched: a median frame time above this (under ~25 fps), for
+ * SLOW_WINDOWS one-second windows in a row, swaps it for the poster (the hero) or the lighter scene (the story).
+ * The start-up test can pass on a machine that cannot keep it up (heat, another app on the GPU, a screen recorder).
+ */
+export const SLOW_FRAME_MS = 40
+export const SLOW_WINDOWS = 2
+
+/** Whether the last `windows` window medians (ms) were all slower than `limit`. */
+export function sustainedSlow(medians: readonly number[], limit = SLOW_FRAME_MS, windows = SLOW_WINDOWS): boolean {
+  if (medians.length < windows) return false
+  return medians.slice(-windows).every((m) => m > limit)
+}
+
 /** Median of the frame times (ms); 0 for no samples. */
 export function medianMs(samples: readonly number[]): number {
   if (!samples.length) return 0

@@ -16,7 +16,7 @@ import { SplitReveal } from '@/components/Reveal'
 import { ctas, loom, navSystems } from '@/content/site'
 import { useAfterPaint } from '@/hooks/useAfterPaint'
 import posters from '@/generated/posters.json'
-import { measureFrames } from '@/gfx/frameTest'
+import { measureFrames, watchFrames } from '@/gfx/frameTest'
 import { gfx } from '@/gfx/gfxMode'
 import { ScenePoster } from '@/gfx/ScenePoster'
 import { FRAME_BUDGET_MS } from '@/lib/gfx'
@@ -29,8 +29,9 @@ import { studio } from './studio'
 
 const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.LoomScene })))
 const progress = () => loomStore.progress
-/** Longest the preloader waits for the hero poster itself. */
-const POSTER_WAIT_MS = 3000
+/** Longest the preloader waits for the hero poster and its video, once the poster is what the hero will show. */
+const POSTER_WAIT_MS = 5000
+const saveData = () => !!(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
 /** The camera glides into its resting framing (the poster's) over ~2 s after the scene mounts: fade in after. */
 const CAMERA_SETTLE_MS = 2000
 const wait = (ms: number) => new Promise((r) => window.setTimeout(r, ms))
@@ -45,16 +46,22 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   // frame test, then fades in. If it is too slow, or WebGL is lost, the still stays and three.js is let go.
   const [live, setLive] = useState(gfx.live)
   const tested = useRef(gfx.mode === 'live')
-  // Machines that may run the live loom keep the preloader up until it is drawn, so the page opens once, on the live
-  // scene (opening on the poster and fading to the live loom read as two transitions). Poster-only machines open
-  // on the poster.
-  const posterDone = useCallback(() => {
-    if (!gfx.live) homeGate?.done('loom')
+  // The page opens once, on the hero as it will stay: machines that may run the live loom keep the preloader up until
+  // it is drawn; the others until the loom's video is playing (or, where it will not play, the still has loaded).
+  // Opening on the still and then fading to the live loom or the video read as two transitions.
+  const videoWanted = !reducedMotion && !saveData()
+  const showsPoster = !live
+  const posterLoaded = useCallback(() => {
+    if (!gfx.live && !videoWanted) homeGate?.done('loom')
+  }, [videoWanted])
+  const videoPlaying = useCallback((on: boolean) => {
+    if (on && !gfx.live) homeGate?.done('loom')
   }, [])
   useEffect(() => {
-    const t = window.setTimeout(posterDone, POSTER_WAIT_MS)
+    if (!showsPoster) return
+    const t = window.setTimeout(() => homeGate?.done('loom'), POSTER_WAIT_MS)
     return () => window.clearTimeout(t)
-  }, [posterDone])
+  }, [showsPoster])
   const onSceneReady = useCallback(async () => {
     // Under the preloader the camera's glide is hidden anyway; only a swap in view waits for it to settle.
     const settled = homeGate && !homeGate.isReady() ? Promise.resolve() : wait(CAMERA_SETTLE_MS)
@@ -62,9 +69,9 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
       const ms = await measureFrames()
       tested.current = true
       if (ms > FRAME_BUDGET_MS) {
+        // The poster and its video take over; the preloader opens once the video plays.
         gfx.markSlow()
         setLive(false)
-        homeGate?.done('loom')
         return
       }
     }
@@ -72,6 +79,26 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
     setReady(true)
     homeGate?.done('loom')
   }, [])
+  // Still watched once showing: a machine that passed the test but cannot keep the loom smooth gets the poster (and
+  // its video) instead. Not when ?gfx=live forces the live scene.
+  useEffect(() => {
+    if (!ready || !live || !active || reducedMotion || gfx.mode === 'live') return
+    // From when the page is revealed: under the preloader the story scene is still compiling alongside.
+    let stop = () => {}
+    let alive = true
+    void (homeGate?.ready ?? Promise.resolve()).then(() => {
+      if (!alive) return
+      stop = watchFrames(() => {
+        gfx.markSlow()
+        setReady(false)
+        setLive(false)
+      })
+    })
+    return () => {
+      alive = false
+      stop()
+    }
+  }, [ready, live, active, reducedMotion])
   // WebGL lost (driver reset, GPU process crash, or forced): back to the poster.
   useEffect(() => {
     if (!ready) return
@@ -152,7 +179,8 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
           flow={active && phase < 0}
           // Machines that show the poster instead of the live loom get its looping video while the hero is on screen.
           video={!live && active}
-          onLoad={posterDone}
+          onLoad={posterLoaded}
+          onVideo={videoPlaying}
         />
         <div className={`loom-canvas has-poster${ready ? ' is-ready' : ''}`} aria-hidden="true">
           {

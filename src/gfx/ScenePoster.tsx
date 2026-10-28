@@ -42,6 +42,7 @@ export function ScenePoster({
   flow = false,
   video = false,
   onLoad,
+  onVideo,
 }: {
   poster: Poster
   priority?: boolean
@@ -50,6 +51,8 @@ export function ScenePoster({
   flow?: boolean
   video?: boolean
   onLoad?: () => void
+  /** The video started (true) or stopped (false) playing over the still. */
+  onVideo?: (playing: boolean) => void
 }) {
   const [videoOn, setVideoOn] = useState(false)
   const img = useRef<HTMLImageElement>(null)
@@ -161,7 +164,16 @@ export function ScenePoster({
         </picture>
         {still.mouth && <ThreadFlow mouth={still.mouth} image={still} active={flow && !hidden && !videoOn} />}
       </div>
-      {still.video && <SceneVideo video={still.video} play={video && !hidden} onPlaying={setVideoOn} />}
+      {still.video && (
+        <SceneVideo
+          video={still.video}
+          play={video && !hidden}
+          onPlaying={(on) => {
+            setVideoOn(on)
+            onVideo?.(on)
+          }}
+        />
+      )}
     </div>
   )
 }
