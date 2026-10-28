@@ -13,6 +13,10 @@ const GLOBE_R = 1.9
 const FPS = 30
 const MAX_PIXELS = 2_000_000
 
+// Woven threads are drawn paler than their raw colour: the 3D threads read muted once thousands overlap.
+const PALE: V3 = [0.8, 0.8, 0.92]
+const muted = (c: V3, k: number): V3 => [0, 1, 2].map((i) => c[i] + (PALE[i] - c[i]) * 0.45 * k) as V3
+
 const rgba = (c: V3, a: number) =>
   `rgba(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)},${Math.min(1, a).toFixed(3)})`
 
@@ -50,8 +54,8 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
     const ctx = el?.getContext('2d')
     if (!el || !ctx || !active) return
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
-    const seeds: Seed[] = strandSeeds(small ? 90 : 170)
-    const POINTS = small ? 56 : 72
+    const seeds: Seed[] = strandSeeds(small ? 200 : 420)
+    const POINTS = small ? 64 : 96
     const riders = seeds.map((s, i) => ({ s, phase: (i * 0.618) % 1, speed: 0.04 + s[3] * 0.05 }))
     const dust = strandSeeds(small ? 70 : 160, 7)
 
@@ -151,9 +155,22 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
         const rotX = 0.12 * weights[1] + 0.22 * weights[2] + 0.15 * weights[3]
         const screen = (p: V3) => project(place(p, scale, rotX, rotY, at), w, h)
 
-        // Fewer strands than the 3D story, so each carries more light.
-        const boost = small ? 1.9 : 1.6
-        ctx.lineWidth = small ? 1 : 1.15
+        // Haze inside the cone and sphere, like the bloom on the 3D shapes.
+        const solid = weights[2] + weights[3]
+        if (solid > 0.01) {
+          const c = screen([0, 0, 0])
+          if (c) {
+            const rad = (h / VIEW_HEIGHT) * scale * 2
+            const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, rad)
+            g.addColorStop(0, `rgba(150,140,220,${(0.22 * solid * fade).toFixed(3)})`)
+            g.addColorStop(1, 'rgba(150,140,220,0)')
+            ctx.fillStyle = g
+            ctx.fillRect(c.x - rad, c.y - rad, rad * 2, rad * 2)
+          }
+        }
+        // Many fine, faint threads (as in the 3D story) rather than a few bright ones: thin lines read as woven.
+        const boost = small ? 1.15 : 1
+        ctx.lineWidth = small ? 0.7 : 0.6
         for (const s of seeds) {
           let loose = 0
           ctx.beginPath()
@@ -166,8 +183,8 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
             if (i === 0) ctx.moveTo(q.x, q.y)
             else ctx.lineTo(q.x, q.y)
           }
-          const alpha = (loose * 0.085 + (1 - loose) * 0.36) * (0.55 + s[3] * 0.9) * fade * boost
-          ctx.strokeStyle = rgba(threadColor(s, loose), alpha)
+          const alpha = (loose * 0.07 + (1 - loose) * 0.2) * (0.55 + s[3] * 0.9) * fade * boost
+          ctx.strokeStyle = rgba(muted(threadColor(s, loose), 1 - loose), alpha)
           ctx.stroke()
         }
         // Riders: small lights running along the threads.
@@ -178,19 +195,22 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
           if (!q) continue
           const c = threadColor(r.s, tp.loose)
           const lit: V3 = [c[0] * 0.55 + 0.45, c[1] * 0.55 + 0.45, c[2] * 0.55 + 0.45]
-          const size = (small ? 1.6 : 2) * (1 + r.s[3])
-          ctx.fillStyle = rgba(lit, (0.45 + r.s[3] * 0.4) * fade)
+          const size = (small ? 1.2 : 1.4) * (1 + r.s[3] * 0.6)
+          ctx.fillStyle = rgba(lit, (0.35 + r.s[3] * 0.35) * fade)
           ctx.fillRect(q.x - size / 2, q.y - size / 2, size, size)
         }
         // The glowing core inside the Secure sphere.
         if (weights[3] > 0.01) {
           const c = screen([0, 0, 0])
           if (c) {
-            const rad = (h / VIEW_HEIGHT) * scale * (0.9 + Math.sin(time * 2) * 0.05)
+            // A solid white core with a soft edge, as in the 3D sphere.
+            const rad = (h / VIEW_HEIGHT) * scale * (0.75 + Math.sin(time * 2) * 0.03)
+            const a = weights[3] * fade
             const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, rad)
-            g.addColorStop(0, `rgba(255,255,255,${(0.95 * weights[3] * fade).toFixed(3)})`)
-            g.addColorStop(0.25, `rgba(255,236,200,${(0.5 * weights[3] * fade).toFixed(3)})`)
-            g.addColorStop(1, 'rgba(255,220,160,0)')
+            g.addColorStop(0, `rgba(255,255,255,${a.toFixed(3)})`)
+            g.addColorStop(0.36, `rgba(255,255,255,${a.toFixed(3)})`)
+            g.addColorStop(0.42, `rgba(235,232,255,${(0.35 * a).toFixed(3)})`)
+            g.addColorStop(1, 'rgba(200,190,255,0)')
             ctx.fillStyle = g
             ctx.fillRect(c.x - rad, c.y - rad, rad * 2, rad * 2)
           }
@@ -269,7 +289,7 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
         gctx.globalCompositeOperation = 'copy'
         gctx.drawImage(el, 0, 0, glow.width, glow.height)
         ctx.setTransform(1, 0, 0, 1, 0, 0)
-        ctx.globalAlpha = 0.55
+        ctx.globalAlpha = 0.4
         ctx.drawImage(glow, 0, 0, el.width, el.height)
         ctx.globalAlpha = 1
       }
