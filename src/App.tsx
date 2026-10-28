@@ -31,6 +31,8 @@ import { preloaderCopy } from '@/content/site'
 // The fixed canvas (story threads + countries globe) is the heaviest chunk; it loads right after the hero's first
 // paint, while the preloader is up. The loom hero lazy-loads its own canvas. Each pauses itself while off screen.
 const Scene = lazy(() => import('@/scene/Scene').then((m) => ({ default: m.Scene })))
+// Without WebGL the story and globe are drawn on a 2D canvas instead (no three.js).
+const Story2D = lazy(() => import('@/gfx/Story2D').then((m) => ({ default: m.Story2D })))
 
 /**
  * Final site: the time-loom hero and the "weave" / before-after sections from concept B, followed by the
@@ -67,6 +69,11 @@ export default function App() {
       {webgl && built && (
         <Suspense fallback={<div className="canvas-root canvas-fallback" aria-hidden="true" />}>
           <Scene reducedMotion={reducedMotion} />
+        </Suspense>
+      )}
+      {!webgl && built && (
+        <Suspense fallback={<div className="canvas-root canvas-fallback" aria-hidden="true" />}>
+          <Story2D reducedMotion={reducedMotion} />
         </Suspense>
       )}
       <div className="grain" aria-hidden="true" />

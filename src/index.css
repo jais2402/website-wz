@@ -4766,3 +4766,10 @@ main,
   }
 }
 
+
+/* The story drawn in 2D for browsers without WebGL (gfx/Story2D.tsx): its canvas fills .canvas-root. */
+.story-2d canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

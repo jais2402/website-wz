@@ -111,8 +111,12 @@ export function ThreadField({ quality, reducedMotion, boost = 1, size = 1 }: Pro
       ? weights.reduce((a, w, i) => a + w * STAGE_OFFSET_X[i], 0) * viewport.width
       : 0
     // On phones the copy card sits at the bottom, so lift the shape into the top half once the story starts.
-    group.current.position.y = sideBySide ? 0 : (1 - weights[0]) * viewport.height * 0.2
-    group.current.scale.setScalar(Math.min(1, viewport.width / 11) * (sideBySide ? 1 : 0.85) * size)
+    group.current.position.y = sideBySide ? 0 : (1 - weights[0]) * viewport.height * 0.23
+    // Phones have their own size: scaled from the desktop one the panel was a third of the screen wide; this makes
+    // it about 70% (the panel is 4.2 wide), sized to the space between the nav and the card.
+    group.current.scale.setScalar(
+      (sideBySide ? Math.min(1, viewport.width / 11) : Math.min(1, viewport.width / 6.2)) * size,
+    )
 
     // The woven panel faces the viewer like a dashboard; the cone and sphere turn slowly.
     if (!reducedMotion) spin.current += dt * 0.16
