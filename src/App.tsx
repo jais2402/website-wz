@@ -19,6 +19,7 @@ import { Services } from '@/components/Services'
 import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
 import { StoryStatic } from '@/components/StoryStatic'
+import { TestBadge } from '@/components/TestBadge'
 import { Work } from '@/components/Work'
 import { useHashScroll, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
 import { gfx } from '@/gfx/gfxMode'
@@ -78,6 +79,8 @@ export default function App() {
         </Suspense>
       )}
       <div className="grain" aria-hidden="true" />
+      {/* Testing aid: how this device draws the 3D (dev and the testing preview only, or ?badge=1). */}
+      <TestBadge />
       <Cursor />
       <Nav />
       {/* The glow rides on the live loom's mouth: with the hero poster alone it would float over nothing. */}

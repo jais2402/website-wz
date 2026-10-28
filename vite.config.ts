@@ -73,6 +73,8 @@ export default defineConfig({
       },
     },
   },
+  // Vercel's build environment (production / preview), for the testing badge: shown on preview builds only.
+  define: { 'import.meta.env.VITE_VERCEL_ENV': JSON.stringify(process.env.VERCEL_ENV ?? '') },
   // Honour PORT so this can run beside other local dev servers.
   server: { port: Number(process.env.PORT) || 5173 },
   resolve: {

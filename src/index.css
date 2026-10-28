@@ -4833,3 +4833,51 @@ main,
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Testing badge (components/TestBadge.tsx): dev and the testing preview only. Above everything, never in the way. */
+.test-badge {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  z-index: 200;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  max-width: calc(100vw - 32px);
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(7, 7, 12, 0.85);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+.test-badge span {
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .test-badge {
+    bottom: 8px;
+    gap: 2px 10px;
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+}
+.test-badge b {
+  color: #fff;
+  font-weight: 600;
+}
+.test-badge b[data-v='3D'] {
+  color: #6ee7a0;
+}
+.test-badge b[data-v='Video'],
+.test-badge b[data-v='3D lite'] {
+  color: #8cc4ff;
+}
+.test-badge b[data-v='Still'],
+.test-badge b[data-v='2D'] {
+  color: #ff7a59;
+}
