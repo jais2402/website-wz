@@ -57,11 +57,12 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   const [heroVisible, setHeroVisible] = useState(canvasSlot.heroVisible)
   const visible = useDocumentVisible()
   useEffect(() => canvasSlot.subscribe(setHeroVisible), [])
-  // One WebGL context at a time: mounted once while the preloader runs (shaders compiled and cached), then only
-  // while a 3D zone is on screen and the hero's loom is not. Unmounting tears down the context and its loop.
-  // Poster mode has no hero WebGL to share with, so the story stays mounted (paused while off screen) and is ready
-  // the moment it scrolls in instead of being rebuilt every time.
-  const mounted = lite || !warm || (active && !heroVisible)
+  // One WebGL context at a time: mounted once while the preloader runs (shaders compiled and cached), then whenever
+  // the hero's loom is off screen. It mounts as soon as the hero leaves (not when a 3D zone arrives), so the shaders
+  // are rebuilt during the sections before the story and the threads are there the moment it scrolls in; between
+  // the story and the globe it stays mounted and only pauses. Unmounting tears down the context and its loop.
+  // Poster mode has no hero WebGL to share with, so the story stays mounted throughout.
+  const mounted = lite || !warm || !heroVisible
 
   useEffect(() => {
     const zones = Array.from(document.querySelectorAll('[data-3d-zone]'))

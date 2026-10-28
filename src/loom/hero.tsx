@@ -45,13 +45,19 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   // frame test, then fades in. If it is too slow, or WebGL is lost, the still stays and three.js is let go.
   const [live, setLive] = useState(gfx.live)
   const tested = useRef(gfx.mode === 'live')
-  const posterDone = useCallback(() => homeGate?.done('loom'), [])
+  // Machines that may run the live loom keep the preloader up until it is drawn, so the page opens once, on the live
+  // scene (opening on the poster and fading to the live loom read as two transitions). Poster-only machines open
+  // on the poster.
+  const posterDone = useCallback(() => {
+    if (!gfx.live) homeGate?.done('loom')
+  }, [])
   useEffect(() => {
     const t = window.setTimeout(posterDone, POSTER_WAIT_MS)
     return () => window.clearTimeout(t)
   }, [posterDone])
   const onSceneReady = useCallback(async () => {
-    const settled = wait(CAMERA_SETTLE_MS)
+    // Under the preloader the camera's glide is hidden anyway; only a swap in view waits for it to settle.
+    const settled = homeGate && !homeGate.isReady() ? Promise.resolve() : wait(CAMERA_SETTLE_MS)
     if (!tested.current) {
       const ms = await measureFrames()
       tested.current = true
