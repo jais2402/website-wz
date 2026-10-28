@@ -102,10 +102,11 @@ void main() {
 `
 
 export const strandFragment = /* glsl */ `
+uniform float uGain;      // brightness: 1 on the site; the video studio raises it for sharper renders
 varying vec3 vColor;
 varying float vAlpha;
 void main() {
-  gl_FragColor = vec4(vColor, vAlpha);
+  gl_FragColor = vec4(vColor * uGain, vAlpha);
   // Screen colour space: a no-op into the post-processing pass's linear target; converts if ever drawn straight
   // to the canvas, so the colours stay right either way.
   #include <colorspace_fragment>
@@ -137,13 +138,14 @@ void main() {
 `
 
 export const particleFragment = /* glsl */ `
+uniform float uGain;
 varying vec3 vColor;
 varying float vAlpha;
 void main() {
   float r = length(gl_PointCoord - 0.5);
   if (r > 0.5) discard;
   float glow = pow(smoothstep(0.5, 0.0, r), 1.8);
-  gl_FragColor = vec4(vColor, glow * vAlpha);
+  gl_FragColor = vec4(vColor * uGain, glow * vAlpha);
   // Screen colour space: a no-op into the post-processing pass's linear target; converts if ever drawn straight
   // to the canvas, so the colours stay right either way.
   #include <colorspace_fragment>

@@ -1,0 +1,38 @@
+{
+  "hero": {
+    "desktop": {
+      "avif": "/posters/hero-desktop.avif",
+      "webp": "/posters/hero-desktop.webp",
+      "width": 1920,
+      "height": 1080,
+      "placeholder": "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAABwAwCdASoYAA4APu1orU6ppiSiMAgBMB2JYwAAW9IKp9NWyJgA/uxVl5VGBbv/CCW/ruESIc3Vy/Q7COsj2qrmZcrAAA==",
+      "mouth": {
+        "x": 0.5548,
+        "y": 0.3976
+      },
+      "video": {
+        "webm": "/posters/hero-desktop.webm",
+        "mp4": "/posters/hero-desktop.mp4",
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    "mobile": {
+      "avif": "/posters/hero-mobile.avif",
+      "webp": "/posters/hero-mobile.webp",
+      "width": 780,
+      "height": 1688,
+      "placeholder": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACQBACdASoYADQAPu1ur1CppqQirBqoATAdiWcA0UQQ79/zGsD16cHTIB7f8gAA/vQYumQdxXLpZd6eNGpogjfZjqgbikr9T9mbEzMmey50AAAA",
+      "mouth": {
+        "x": -0.0941,
+        "y": 0.385
+      },
+      "video": {
+        "webm": "/posters/hero-mobile.webm",
+        "mp4": "/posters/hero-mobile.mp4",
+        "width": 780,
+        "height": 1688
+      }
+    }
+  }
+}

@@ -5,6 +5,8 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { buildParticles, buildStrands } from '@/lib/loom'
 import { useBudgetDpr } from '@/hooks/useBudgetDpr'
+import { scaleCount, threadGain } from '@/lib/studio'
+import { sceneTime, studio } from './studio'
 import { useDocumentVisible } from '@/hooks/useDocumentVisible'
 import { damp } from '@/lib/math'
 import { glowFragment, glowVertex, particleFragment, particleVertex, strandFragment, strandVertex } from './shaders'
@@ -83,6 +85,7 @@ function makeCommonUniforms(v: VariantConfig) {
     uWoven: { value: new THREE.Color(...v.woven) },
     uFray: { value: v.fray },
     uSpread: { value: 1 },
+    uGain: { value: 1 },
   }
 }
 
@@ -95,12 +98,15 @@ function Threads({
   view,
   v,
   spread = 1,
+  gain = 1,
 }: {
   quality: Quality
   reducedMotion: boolean
   view: LoomView
   /** Tangle reach (shader uSpread): below 1 gathers the threads toward the middle. */
   spread?: number
+  /** Thread brightness (shader uGain): 1 on the site, raised by the video studio for sharper renders. */
+  gain?: number
   v: VariantConfig
 }) {
   const strandMat = useRef<THREE.ShaderMaterial>(null)
@@ -135,7 +141,7 @@ function Threads({
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05)
-    const time = reducedMotion ? 6 : state.clock.elapsedTime
+    const time = reducedMotion ? 6 : sceneTime(state.clock.elapsedTime)
     // Pointer on the z=0 plane, eased so threads part smoothly instead of snapping.
     pointer.current.x = damp(
       pointer.current.x,
@@ -145,13 +151,15 @@ function Threads({
     )
     pointer.current.y = damp(pointer.current.y, (state.pointer.y * viewport.height) / 2, 6, dt)
     // The contact canvas sits under the page copy and gets no pointer events, so no thread parting there.
-    const strength = reducedMotion || view !== 'hero' ? 0 : 1
+    // The video studio records without a cursor, so its preview ignores the pointer too.
+    const strength = reducedMotion || view !== 'hero' || studio ? 0 : 1
     // Through the live materials (CLAUDE.md rule 4), including the variant's fray amount.
     for (const m of [strandMat.current, particleMat.current]) {
       if (!m) continue
       writeCommon(m.uniforms, time, pointer.current, strength)
       m.uniforms.uFray.value = v.fray
       m.uniforms.uSpread.value = spread
+      m.uniforms.uGain.value = gain
     }
   })
 
@@ -228,8 +236,9 @@ function Loom({ reducedMotion, variant, v }: { reducedMotion: boolean; variant: 
 
   useFrame((_, delta) => {
     if (reducedMotion) return
-    if (cage.current) cage.current.rotation.x += delta * 0.18
-    if (dish.current) dish.current.rotation.x -= delta * (frayed ? 0.06 : 0.35)
+    const d = sceneTime(delta)
+    if (cage.current) cage.current.rotation.x += d * 0.18
+    if (dish.current) dish.current.rotation.x -= d * (frayed ? 0.06 : 0.35)
   })
 
   const metal = <meshStandardMaterial color="#2b3042" metalness={0.9} roughness={0.32} emissive="#0c0f1a" />
@@ -321,7 +330,7 @@ function Glow({
     [color, opacity],
   )
   useFrame(({ clock }) => {
-    if (mat.current) mat.current.uniforms.uTime.value = clock.elapsedTime
+    if (mat.current) mat.current.uniforms.uTime.value = sceneTime(clock.elapsedTime)
   })
   return (
     <Billboard position={position}>
@@ -356,7 +365,7 @@ function ContactRig({ reducedMotion, variant }: { reducedMotion: boolean; varian
   }, [])
   useFrame(({ camera, clock, size }, delta) => {
     const dt = Math.min(delta, 0.05)
-    const sway = reducedMotion ? 0 : Math.sin(clock.elapsedTime * 0.12)
+    const sway = reducedMotion ? 0 : Math.sin(sceneTime(clock.elapsedTime) * 0.12)
     const narrow = size.width < 640
     // Inner-page hero card (640–800px canvas): a little closer and centred on the loom.
     const card = !narrow && size.width < 800
@@ -393,8 +402,10 @@ function CameraRig() {
     const baseZ = portrait ? 24 : 14
     // Landscape starts further left so the loom mouth sits clear of the intro panel's right edge (it used to
     // glow under the glass corner); the end of the scroll (p = 1) frames exactly as before.
-    const tx = (portrait ? 0.4 + p * 2.8 : -3.6 + p * 5.2) + pointer.x * 0.8
-    const ty = 0.6 - p * 0.3 + pointer.y * 0.5
+    const px = studio ? 0 : pointer.x
+    const py = studio ? 0 : pointer.y
+    const tx = (portrait ? 0.4 + p * 2.8 : -3.6 + p * 5.2) + px * 0.8
+    const ty = 0.6 - p * 0.3 + py * 0.5
     const tz = baseZ - p * (portrait ? 11 : 6.5)
     camera.position.x = damp(camera.position.x, tx, 2.2, dt)
     camera.position.y = damp(camera.position.y, ty, 2.2, dt)
@@ -423,20 +434,18 @@ type SceneProps = {
   variant?: LoomVariant
 }
 
-export function LoomScene({
-  reducedMotion,
-  active,
-  onReady,
-  view = 'hero',
-  variant = 'classic',
-}: SceneProps) {
+export function LoomScene({ reducedMotion, active, onReady, view = 'hero', variant = 'classic' }: SceneProps) {
   const v = VARIANTS[variant]
   const quality = useMemo<Quality>(() => {
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
-    return small ? { strands: 420, points: 110, particles: 2600 } : { strands: 800, points: 140, particles: 5600 }
+    const q = small ? { strands: 420, points: 110, particles: 2600 } : { strands: 800, points: 140, particles: 5600 }
+    // The video studio (dev only) can thin the threads and riders out for its recordings.
+    if (!studio) return q
+    return { ...q, strands: scaleCount(q.strands, studio.threads), particles: scaleCount(q.particles, studio.threads) }
   }, [])
 
-  const dpr = useBudgetDpr()
+  const budgetDpr = useBudgetDpr()
+  const dpr = studio?.dpr ?? budgetDpr
   const visible = useDocumentVisible()
   const running = active && visible
 
@@ -460,7 +469,13 @@ export function LoomScene({
       <group rotation={v.rotation}>
         <Glow position={[-0.25, 0, 0]} scale={2.8} color={v.mouthGlow} opacity={0.9} />
         <Glow position={[-0.4, 0, 0]} scale={9} color={v.haloGlow} opacity={0.22} />
-        <Threads quality={quality} reducedMotion={reducedMotion} view={view} v={v} />
+        <Threads
+          quality={quality}
+          reducedMotion={reducedMotion}
+          view={view}
+          v={v}
+          gain={threadGain(studio, budgetDpr)}
+        />
         <Loom reducedMotion={reducedMotion} variant={variant} v={v} />
       </group>
       {/* Ready = shaders compiled and the first frames drawn, not just the context created. */}

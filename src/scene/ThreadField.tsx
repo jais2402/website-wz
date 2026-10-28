@@ -13,6 +13,8 @@ type Props = {
   reducedMotion: boolean
   /** Thread brightness multiplier (1 = as designed). */
   boost?: number
+  /** Shape size multiplier (1 = as designed; smaller fills fewer pixels on slower machines). */
+  size?: number
 }
 
 const STAGES = 4
@@ -36,7 +38,7 @@ function makeUniforms(extra: Record<string, THREE.IUniform> = {}) {
  * The pinned story in the loom's language: loose threads (stage 0) weave into a panel (Simplify), climb a helix
  * cone (Scale) and wrap a sphere round a glowing core (Secure). Particles ride the threads.
  */
-export function ThreadField({ quality, reducedMotion, boost = 1 }: Props) {
+export function ThreadField({ quality, reducedMotion, boost = 1, size = 1 }: Props) {
   const group = useRef<THREE.Group>(null)
   const centre = useRef(new THREE.Vector3())
   const threadMat = useRef<THREE.ShaderMaterial>(null)
@@ -110,7 +112,7 @@ export function ThreadField({ quality, reducedMotion, boost = 1 }: Props) {
       : 0
     // On phones the copy card sits at the bottom, so lift the shape into the top half once the story starts.
     group.current.position.y = sideBySide ? 0 : (1 - weights[0]) * viewport.height * 0.2
-    group.current.scale.setScalar(Math.min(1, viewport.width / 11) * (sideBySide ? 1 : 0.85))
+    group.current.scale.setScalar(Math.min(1, viewport.width / 11) * (sideBySide ? 1 : 0.85) * size)
 
     // The woven panel faces the viewer like a dashboard; the cone and sphere turn slowly.
     if (!reducedMotion) spin.current += dt * 0.16

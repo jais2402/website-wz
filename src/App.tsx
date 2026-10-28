@@ -20,6 +20,7 @@ import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
 import { Work } from '@/components/Work'
 import { useHashScroll, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
+import { gfx } from '@/gfx/gfxMode'
 import { webgl } from '@/lib/webgl'
 import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
@@ -71,7 +72,8 @@ export default function App() {
       <div className="grain" aria-hidden="true" />
       <Cursor />
       <Nav />
-      {webgl && built && <GuideLight active={ready} />}
+      {/* The glow rides on the live loom's mouth: with the hero poster alone it would float over nothing. */}
+      {webgl && gfx.live && built && <GuideLight active={ready} />}
       {/* Before <main> in the DOM so keyboard and screen-reader users reach it early (it is fixed bottom-left).
           Held back until the preloader has finished. */}
       <CookieBanner ready={ready} />

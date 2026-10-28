@@ -8,6 +8,7 @@ import { canvasSlot } from '@/lib/canvasSlot'
 import { homeGate } from '@/lib/loadGate'
 import { sceneStore } from '@/lib/sceneStore'
 import { Dust } from './Dust'
+import { gfx } from '@/gfx/gfxMode'
 import { Globe } from './Globe'
 import { ThreadField } from './ThreadField'
 import { Warmup } from './Warmup'
@@ -45,7 +46,11 @@ function useIsMobile() {
  */
 export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   const mobile = useIsMobile()
-  const dpr = useBudgetDpr()
+  const budgetDpr = useBudgetDpr()
+  // Poster mode (no live hero loom: a weak GPU, or ?gfx=poster) keeps the story scenes but lighter: at most 1x
+  // pixels, half the threads and riders, and smaller shapes. The live mode is unchanged.
+  const lite = !gfx.live
+  const dpr = lite ? Math.min(1, budgetDpr) : budgetDpr
   const [active, setActive] = useState(true)
   // Keeps rendering until the shaders are compiled and drawn once, even before a 3D zone is on screen.
   const [warm, setWarm] = useState(false)
@@ -93,7 +98,16 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
             <CameraRig />
             <Dust count={mobile ? 425 : 1190} />
             <ThreadField
-              quality={mobile ? { strands: 320, points: 90, riders: 1600 } : { strands: 640, points: 120, riders: 3000 }}
+              quality={
+                lite
+                  ? mobile
+                    ? { strands: 150, points: 80, riders: 600 }
+                    : { strands: 300, points: 100, riders: 1200 }
+                  : mobile
+                    ? { strands: 320, points: 90, riders: 1600 }
+                    : { strands: 640, points: 120, riders: 3000 }
+              }
+              size={lite ? 0.78 : 1}
               reducedMotion={reducedMotion}
             />
             <Globe dots={mobile ? 1400 : 2600} reducedMotion={reducedMotion} />

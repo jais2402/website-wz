@@ -33,3 +33,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Local renders: hero captures and video studio recordings (scripts/capture-*.mjs, /studio.html)
+captures/

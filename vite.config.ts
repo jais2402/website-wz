@@ -6,11 +6,13 @@ import { defineConfig } from 'vite'
 import { seo } from './scripts/vite-seo.ts'
 import { snapshotPlugin } from './scripts/vite-snapshot.ts'
 import { pagePreloadPlugin } from './scripts/vite-page-preload.ts'
+import { studioPlugin } from './scripts/vite-studio.ts'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
 const page = (path: string) => fileURLToPath(new URL(`./${path}`, import.meta.url))
 
-// Every shipped page. loom.html (concept B) is internal only: served by `npm run dev`, not built.
+// Every shipped page. loom.html (concept B) and studio.html (the hero video studio) are internal only: served by
+// `npm run dev`, not built.
 const SYSTEMS = ['people', 'revenue', 'operations', 'ecommerce', 'finance', 'industry']
 const INPUTS = {
   main: page('index.html'),
@@ -43,6 +45,8 @@ export default defineConfig({
     snapshotPlugin(),
     // Inner pages: preload the page's own chunk with the shared entry instead of after it.
     pagePreloadPlugin(),
+    // /studio.html records the hero poster video (dev server only).
+    studioPlugin(),
     {
       // Clean URLs in dev and preview, matching Vercel's cleanUrls: /contact-us → /contact-us.html,
       // /systems/people → /systems/people.html. Only rewrites when that .html page exists.
