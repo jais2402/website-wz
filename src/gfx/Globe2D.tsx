@@ -3,31 +3,23 @@ import { countries, reach } from '@/content/site'
 import { arcPoints, facingRotationY } from '@/lib/geo'
 import { damp } from '@/lib/math'
 import { sceneStore } from '@/lib/sceneStore'
-import { latLonToVec3, stageWeights } from '@/lib/shapes'
-import { place, project, type Seed, strandSeeds, threadColor, threadPos, type V3, VIEW_HEIGHT } from '@/lib/story2d'
+import { latLonToVec3 } from '@/lib/shapes'
+import { place, project, strandSeeds, type V3, VIEW_HEIGHT } from '@/lib/story2d'
 
-// Same placement as the WebGL story (scene/ThreadField.tsx, scene/Globe.tsx): keep in sync.
-const STAGE_OFFSET_X = [0.08, 0.2, 0.22, 0.22]
+// Same placement as the WebGL globe (scene/Globe.tsx): keep in sync.
 const GLOBE_R = 1.9
 // The canvas is plain 2D (often drawn on the CPU): at most 30 frames a second and about 2M pixels.
 const FPS = 30
 const MAX_PIXELS = 2_000_000
 
-// Woven threads are drawn paler than their raw colour: the 3D threads read muted once thousands overlap.
-const PALE: V3 = [0.8, 0.8, 0.92]
-const muted = (c: V3, k: number): V3 => [0, 1, 2].map((i) => c[i] + (PALE[i] - c[i]) * 0.45 * k) as V3
-
-const rgba = (c: V3, a: number) =>
-  `rgba(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)},${Math.min(1, a).toFixed(3)})`
-
 /**
- * The story scenes and the countries globe for browsers without WebGL, drawn on a 2D canvas behind the page in
- * the same place as the WebGL canvas (and with its .canvas-root background). The same threads as the 3D story,
- * fewer of them: additive light, riders running along them, and a soft glow pass in place of the bloom. Follows
- * the scroll through sceneStore (stage, globe) like the 3D scenes; renders only while a [data-3d-zone] is on
- * screen, and holds still under reduced motion.
+ * The countries globe for browsers without WebGL, drawn on a 2D canvas behind the page in the same place as the
+ * WebGL canvas (and with its .canvas-root background): dot shell, latitude rings, routes from Chennai with
+ * travelling pulses, pins, and a soft glow pass in place of the bloom. Follows sceneStore.globe (written by
+ * Countries.tsx); renders only while a [data-3d-zone] is on screen, and holds still under reduced motion.
+ * The story itself is a plain section without WebGL (StoryStatic.tsx).
  */
-export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
+export function Globe2D({ reducedMotion }: { reducedMotion: boolean }) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const [active, setActive] = useState(false)
 
@@ -54,9 +46,6 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
     const ctx = el?.getContext('2d')
     if (!el || !ctx || !active) return
     const small = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches
-    const seeds: Seed[] = strandSeeds(small ? 200 : 420)
-    const POINTS = small ? 64 : 96
-    const riders = seeds.map((s, i) => ({ s, phase: (i * 0.618) % 1, speed: 0.04 + s[3] * 0.05 }))
     const dust = strandSeeds(small ? 70 : 160, 7)
 
     // Globe geometry, built once in the globe's own space.
@@ -106,10 +95,8 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
     fit()
     window.addEventListener('resize', fit)
 
-    let stage = sceneStore.stage
     let globe = sceneStore.globe
     let draw = sceneStore.globe > 0.5 ? 1 : 0
-    let spin = 0
     let time = 0
     let last = 0
     let raf = 0
@@ -121,9 +108,7 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
       last = now
       if (!reducedMotion) {
         time += dt
-        spin += dt * 0.16
       }
-      stage = reducedMotion ? sceneStore.stage : damp(stage, sceneStore.stage, 3, dt)
       globe = reducedMotion ? sceneStore.globe : damp(globe, sceneStore.globe, 4, dt)
       draw = reducedMotion ? 1 : sceneStore.globe > 0.5 ? damp(draw, 1, 1.4, dt) : damp(draw, 0, 6, dt)
 
@@ -139,88 +124,6 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
       for (const d of dust) {
         ctx.fillStyle = `rgba(170,180,230,${(0.12 + d[2] * 0.25).toFixed(3)})`
         ctx.fillRect(d[0] * w, d[1] * h, 1 + d[3], 1 + d[3])
-      }
-
-      const fade = 1 - globe
-      if (fade > 0.01) {
-        const weights = stageWeights(stage, 4)
-        const at: V3 = [
-          side ? weights.reduce((a, wt, i) => a + wt * STAGE_OFFSET_X[i], 0) * vw : 0,
-          side ? 0 : (1 - weights[0]) * vh * 0.23,
-          0,
-        ]
-        const scale = side ? Math.min(1, vw / 11) : Math.min(1, vw / 6.2)
-        const turning = weights[2] + weights[3]
-        const rotY = spin * turning - weights[1] * 0.18
-        const rotX = 0.12 * weights[1] + 0.22 * weights[2] + 0.15 * weights[3]
-        const screen = (p: V3) => project(place(p, scale, rotX, rotY, at), w, h)
-
-        // Haze inside the cone and sphere, like the bloom on the 3D shapes.
-        const solid = weights[2] + weights[3]
-        if (solid > 0.01) {
-          const c = screen([0, 0, 0])
-          if (c) {
-            const rad = (h / VIEW_HEIGHT) * scale * 2
-            const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, rad)
-            g.addColorStop(0, `rgba(150,140,220,${(0.22 * solid * fade).toFixed(3)})`)
-            g.addColorStop(1, 'rgba(150,140,220,0)')
-            ctx.fillStyle = g
-            ctx.fillRect(c.x - rad, c.y - rad, rad * 2, rad * 2)
-          }
-        }
-        // Many fine, faint threads (as in the 3D story) rather than a few bright ones: thin lines read as woven.
-        const boost = small ? 1.15 : 1
-        ctx.lineWidth = small ? 0.7 : 0.6
-        for (const s of seeds) {
-          let loose = 0
-          ctx.beginPath()
-          for (let i = 0; i < POINTS; i++) {
-            const t = i / (POINTS - 1)
-            const r = threadPos(t, s, stage, time)
-            loose = r.loose
-            const q = screen(r.p)
-            if (!q) continue
-            if (i === 0) ctx.moveTo(q.x, q.y)
-            else ctx.lineTo(q.x, q.y)
-          }
-          const alpha = (loose * 0.07 + (1 - loose) * 0.2) * (0.55 + s[3] * 0.9) * fade * boost
-          ctx.strokeStyle = rgba(muted(threadColor(s, loose), 1 - loose), alpha)
-          ctx.stroke()
-        }
-        // Riders: small lights running along the threads.
-        for (const r of riders) {
-          const t = (r.phase + time * r.speed) % 1
-          const tp = threadPos(t, r.s, stage, time)
-          const q = screen(tp.p)
-          if (!q) continue
-          const c = threadColor(r.s, tp.loose)
-          const lit: V3 = [c[0] * 0.55 + 0.45, c[1] * 0.55 + 0.45, c[2] * 0.55 + 0.45]
-          const size = (small ? 1.2 : 1.4) * (1 + r.s[3] * 0.6)
-          ctx.fillStyle = rgba(lit, (0.35 + r.s[3] * 0.35) * fade)
-          ctx.fillRect(q.x - size / 2, q.y - size / 2, size, size)
-        }
-        // The glowing core inside the Secure sphere.
-        if (weights[3] > 0.01) {
-          const c = screen([0, 0, 0])
-          if (c) {
-            // A solid white core with a soft edge, as in the 3D sphere.
-            const rad = (h / VIEW_HEIGHT) * scale * (0.75 + Math.sin(time * 2) * 0.03)
-            const a = weights[3] * fade
-            const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, rad)
-            g.addColorStop(0, `rgba(255,255,255,${a.toFixed(3)})`)
-            g.addColorStop(0.36, `rgba(255,255,255,${a.toFixed(3)})`)
-            g.addColorStop(0.42, `rgba(235,232,255,${(0.35 * a).toFixed(3)})`)
-            g.addColorStop(1, 'rgba(200,190,255,0)')
-            ctx.fillStyle = g
-            ctx.fillRect(c.x - rad, c.y - rad, rad * 2, rad * 2)
-          }
-        }
-        // Where the guide light and any later overlay look for the shape's centre.
-        const centre = screen([0, 0, 0])
-        if (centre) {
-          sceneStore.core.x = centre.x / w
-          sceneStore.core.y = centre.y / h
-        }
       }
 
       if (globe > 0.01) {
@@ -303,7 +206,7 @@ export function Story2D({ reducedMotion }: { reducedMotion: boolean }) {
   }, [active, reducedMotion])
 
   return (
-    <div className={`canvas-root story-2d${active ? '' : ' is-paused'}`} aria-hidden="true">
+    <div className={`canvas-root globe-2d${active ? '' : ' is-paused'}`} aria-hidden="true">
       <canvas ref={canvas} />
     </div>
   )

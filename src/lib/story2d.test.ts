@@ -6,6 +6,7 @@ import {
   type Seed,
   sphereWrap,
   stageWeight,
+  stillPaths,
   strandSeeds,
   threadColor,
   threadPos,
@@ -76,5 +77,22 @@ describe('strandSeeds', () => {
     const a = strandSeeds(20)
     expect(a).toEqual(strandSeeds(20))
     expect(a.flat().every((v) => v >= 0 && v < 1)).toBe(true)
+  })
+})
+
+describe('stillPaths', () => {
+  it('draws every strand inside the view box', () => {
+    for (const stage of [1, 2, 3] as const) {
+      const paths = stillPaths(stage, 400, 300, 20, 16)
+      expect(paths).toHaveLength(20)
+      for (const { d } of paths) {
+        expect(d.startsWith('M')).toBe(true)
+        const nums = d.match(/-?\d+(\.\d+)?/g)!.map(Number)
+        nums.forEach((n, i) => {
+          expect(n).toBeGreaterThanOrEqual(0)
+          expect(n).toBeLessThanOrEqual(i % 2 ? 300 : 400)
+        })
+      }
+    }
   })
 })

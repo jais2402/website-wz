@@ -1,4 +1,5 @@
-// The story threads for browsers without WebGL, drawn on a 2D canvas (src/gfx/Story2D.tsx). The shapes are the
+// The story threads for browsers without WebGL, drawn as stills (stillPaths → components/StoryStatic.tsx; the
+// projection also places the 2D globe, gfx/Globe2D.tsx). The shapes are the
 // story shader's (scene/threadShaders.ts: tangle → woven panel → helix cone → woven sphere), ported to plain
 // maths so both read as the same threads; keep the two in sync. Pure: no React, no canvas.
 
@@ -148,4 +149,32 @@ export function strandSeeds(count: number, seed = 31): Seed[] {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
   return Array.from({ length: count }, () => [rng(), rng(), rng(), rng()] as Seed)
+}
+
+export type StillPath = { d: string; color: V3; alpha: number }
+
+// The pose each shape is drawn in as a still (no-WebGL principles cards): a slight tilt so the depth reads.
+const STILL_POSE: Record<1 | 2 | 3, { rotX: number; rotY: number }> = {
+  1: { rotX: 0.12, rotY: -0.18 },
+  2: { rotX: 0.22, rotY: 0.5 },
+  3: { rotX: 0.15, rotY: 0.4 },
+}
+
+/**
+ * SVG paths for one settled story shape (1 woven panel, 2 cone, 3 sphere) on a `width`×`height` view box,
+ * `strands` threads of `points` points each, scaled by `scale` round the centre.
+ */
+export function stillPaths(stage: 1 | 2 | 3, width: number, height: number, strands = 140, points = 64, scale = 1.2) {
+  const { rotX, rotY } = STILL_POSE[stage]
+  const paths: StillPath[] = []
+  for (const s of strandSeeds(strands, 31 + stage)) {
+    let d = ''
+    for (let i = 0; i < points; i++) {
+      const q = project(place(threadPos(i / (points - 1), s, stage, 0).p, scale, rotX, rotY, [0, 0, 0]), width, height)
+      if (!q) continue
+      d += `${d ? 'L' : 'M'}${q.x.toFixed(1)} ${q.y.toFixed(1)}`
+    }
+    paths.push({ d, color: threadColor(s, 0), alpha: 0.18 + s[3] * 0.3 })
+  }
+  return paths
 }

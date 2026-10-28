@@ -59,7 +59,7 @@ export const navA11y = { skip: 'Skip to content', menu: 'Menu', closeMenu: 'Clos
 export const sampleDataLabel = 'Sample data'
 
 // Section headings and labels that several components (and the crawlable snapshot in lib/snapshot.ts) share.
-export const storySection = { kicker: 'How a Wezigns system feels' }
+export const storySection = { kicker: 'How a Wezigns system feels', title: 'Systems that grow with you.' }
 export const proofSection = { toolsLabel: 'Tools we build with', title: 'Building software for growing businesses since 2012.' }
 export const areasSection = { kicker: 'The systems we build', title: 'Every corner of the business, connected.' }
 export const faqSection = { title: 'Straight answers.' }
