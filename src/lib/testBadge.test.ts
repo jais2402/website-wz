@@ -23,6 +23,7 @@ describe('heroView', () => {
     expect(heroView({ onScreen: true, live3d: false, videoPlaying: true })).toBe('Video')
     expect(heroView({ onScreen: true, live3d: false, videoPlaying: false })).toBe('Still')
     expect(heroView({ onScreen: false, live3d: true, videoPlaying: false })).toBe('Off screen')
+    expect(heroView({ onScreen: true, live3d: false, videoPlaying: true, videoLight: true })).toBe('Video H.264')
   })
 })
 

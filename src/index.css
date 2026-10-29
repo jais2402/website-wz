@@ -372,6 +372,22 @@ main,
   animation: grain 1.2s steps(6) infinite;
 }
 
+/* Drawn without a graphics chip (gfx/gfxMode.ts: no WebGL, a software renderer, or a GPU that proved too slow): the
+   processor composites the page, so live blurs (re-run on every frame of the video behind them) and the moving grain
+   would make everything stutter. The glass becomes a darker tint and the grain holds still. */
+html:is([data-gfx='software'], [data-gfx='none']) * {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html:is([data-gfx='software'], [data-gfx='none']) :is(.loom-intro, .loom-phase, .hero-glass, .story-copy, .glass-card) {
+  background-color: rgba(6, 7, 16, 0.78);
+}
+
+html:is([data-gfx='software'], [data-gfx='none']) .grain {
+  animation: none;
+}
+
 .cursor {
   position: fixed;
   left: -18px;

@@ -33,6 +33,7 @@ function readHero() {
     onScreen: !!r && r.bottom > 0 && r.top < window.innerHeight,
     live3d: !!document.querySelector('.loom-canvas.is-ready canvas'),
     videoPlaying: !!document.querySelector('.loom-hero .scene-video.is-playing'),
+    videoLight: !!document.querySelector('.loom-hero .scene-video.is-light'),
   })
 }
 
@@ -63,7 +64,7 @@ export function TestBadge() {
   return (
     <div className="test-badge mono" role="status" aria-live="off">
       <span>
-        Hero <b data-v={hero === 'Off screen' ? seen : hero}>{heroText}</b>
+        Hero <b data-v={(hero === 'Off screen' ? seen : hero)?.split(' ')[0]}>{heroText}</b>
       </span>
       <span>
         Story/globe <b data-v={story}>{story}</b>

@@ -30,8 +30,12 @@ export function allowsLive(mode: GfxMode, tier: GfxTier): boolean {
   return tier === 'low' || tier === 'high'
 }
 
-/** Frames the live scene must keep up with before it replaces its poster: median frame time at or under this. */
-export const FRAME_BUDGET_MS = 30
+/**
+ * Frames the live scene must keep up with before it replaces its poster: median frame time at or under this. Above
+ * 33.3 ms on purpose: Chrome's Energy Saver (on by default on battery below 20%) caps every page at 30 fps, and a
+ * steady 30 fps loom looks fine.
+ */
+export const FRAME_BUDGET_MS = 36
 
 /**
  * After the live scene is showing, it keeps being watched: a median frame time above this (under ~25 fps), for

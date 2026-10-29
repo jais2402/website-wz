@@ -99,6 +99,16 @@ export const gfx = {
   },
 }
 
+/**
+ * Whether this page is drawn without a graphics chip (no WebGL, a software renderer, or a GPU that proved too slow):
+ * then the processor also decodes the video and composites the page, so the hero gets its light video and the CSS
+ * drops blur and moving grain (`html[data-gfx]` in index.css).
+ */
+export function drawsInSoftware() {
+  const tier = document.documentElement.dataset.gfx
+  return tier === 'software' || tier === 'none'
+}
+
 /** `gfx.live`, re-rendering when it turns off. */
 export function useGfxLive() {
   return useSyncExternalStore(gfx.subscribe, () => gfx.live)

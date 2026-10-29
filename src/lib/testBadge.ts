@@ -16,13 +16,19 @@ export function badgeChoice(
   return { show: build.dev || build.vercelEnv === 'preview', store: null }
 }
 
-export type HeroView = '3D' | 'Video' | 'Still' | 'Off screen'
+export type HeroView = '3D' | 'Video' | 'Video H.264' | 'Still' | 'Off screen'
 
-/** What the hero is showing right now, from what is on the page. */
-export function heroView(s: { onScreen: boolean; live3d: boolean; videoPlaying: boolean }): HeroView {
+/** What the hero is showing right now, from what is on the page. `videoLight`: the H.264 file, for software drawing. */
+export function heroView(s: {
+  onScreen: boolean
+  live3d: boolean
+  videoPlaying: boolean
+  videoLight?: boolean
+}): HeroView {
   if (!s.onScreen) return 'Off screen'
   if (s.live3d) return '3D'
-  return s.videoPlaying ? 'Video' : 'Still'
+  if (!s.videoPlaying) return 'Still'
+  return s.videoLight ? 'Video H.264' : 'Video'
 }
 
 /** A GPU name short enough for the badge: "ANGLE (Apple, ANGLE Metal Renderer: Apple M4, …)" → "Apple M4". */
