@@ -138,3 +138,16 @@ describe('ga helpers', () => {
     ])
   })
 })
+
+describe('which GA4 property', () => {
+  it('uses the explicit setting first, else the Wezigns property on production and preview deployments', async () => {
+    const { resolveGaId, PRODUCTION_GA_ID, validId } = await import('./ga')
+    expect(PRODUCTION_GA_ID).toBe('G-J9S3WBWTLN')
+    expect(validId(PRODUCTION_GA_ID)).toBe(true)
+    expect(resolveGaId('G-TEST1234', 'production')).toBe('G-TEST1234')
+    expect(resolveGaId('', 'production')).toBe('G-J9S3WBWTLN')
+    expect(resolveGaId('', 'preview')).toBe('G-J9S3WBWTLN')
+    expect(resolveGaId('', 'development')).toBe('')
+    expect(resolveGaId('', '')).toBe('')
+  })
+})

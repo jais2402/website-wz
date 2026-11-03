@@ -13,6 +13,12 @@ Nothing from Google loads before the visitor clicks **Accept**: no script, no re
 
 ## Configure
 
+The Wezigns property **`G-J9S3WBWTLN`** is built in (`PRODUCTION_GA_ID` in `src/lib/ga.ts`) and is on for every
+Vercel deployment, **production and preview** (client decision, 2026-11-04), always behind the consent banner.
+Local `npm run dev` stays off. `VITE_GA_MEASUREMENT_ID` still overrides it, e.g. to point at a test property.
+
+### Overriding the ID
+
 1. In GA4: **Admin → Data streams → Web**, create a stream for `https://wezigns.com` and copy the measurement ID
    (`G-XXXXXXXXXX`).
 2. In Vercel: **Project → Settings → Environment Variables**, add `VITE_GA_MEASUREMENT_ID` = `G-XXXXXXXXXX`.

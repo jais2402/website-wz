@@ -1,6 +1,7 @@
 // Google Analytics 4 behind Google Consent Mode v2, basic mode: no Google script, request or cookie until the
 // visitor accepts. Ads storage is always denied (the site runs no ads). Every page load is one page view (MPA).
-// Without VITE_GA_MEASUREMENT_ID nothing here runs at all.
+// The ID: VITE_GA_MEASUREMENT_ID when set, else Wezigns' property on Vercel deployments, production and preview
+// (client decision, so the testing site is measured too). Local dev stays off. Without an ID nothing here runs at all.
 import { setAnalyticsSink, track, type TrackParams } from './analytics'
 import { getConsent, onConsentChange } from './consent'
 
@@ -11,7 +12,14 @@ declare global {
   }
 }
 
-const ENV_ID = String(import.meta.env.VITE_GA_MEASUREMENT_ID ?? '').trim()
+/** Wezigns' GA4 property (public by nature: it appears in every page that loads it). */
+export const PRODUCTION_GA_ID = 'G-J9S3WBWTLN'
+
+/** The ID to use: an explicit setting wins; otherwise Wezigns' property on production and preview deployments. */
+export const resolveGaId = (envId: string, vercelEnv: string) =>
+  envId.trim() || (vercelEnv === 'production' || vercelEnv === 'preview' ? PRODUCTION_GA_ID : '')
+
+const ENV_ID = resolveGaId(String(import.meta.env.VITE_GA_MEASUREMENT_ID ?? ''), String(import.meta.env.VITE_VERCEL_ENV ?? ''))
 
 /** Only a well-formed GA4 ID counts, so a typo can never inject an odd script URL. */
 export const validId = (id: string) => /^G-[A-Z0-9]{4,16}$/.test(id)
