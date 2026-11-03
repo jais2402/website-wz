@@ -53,21 +53,76 @@
   transition: visibility 0s linear 0.6s;
 }
 
-/* The 2D "chaos to system" hero (ChaosHero.tsx), for machines that can't run the live loom: a canvas over a dark
-   haze, warm on the tangled side and cool blue on the ordered side, like the Before/After section. */
+/* The 2D "chaos to system" hero (ChaosHero.tsx), for machines that can't run the live loom: the Before/After
+   section's two backgrounds side by side, the warm "before" on the tangle blending into the cool "after" round the
+   dashboard. */
 .chaos-hero {
   position: absolute;
   inset: 0;
+  overflow: hidden;
   background:
-    radial-gradient(35% 50% at 86% 50%, rgba(77, 159, 255, 0.1), transparent 70%),
-    radial-gradient(60% 70% at 22% 40%, rgba(120, 44, 72, 0.22), transparent 70%),
-    linear-gradient(180deg, #0b0910, #07070c);
+    radial-gradient(40% 55% at 26% 40%, rgba(255, 71, 99, 0.16), transparent 70%),
+    radial-gradient(35% 45% at 48% 74%, rgba(139, 123, 255, 0.14), transparent 70%),
+    radial-gradient(34% 50% at 84% 42%, rgba(77, 159, 255, 0.12), transparent 70%),
+    radial-gradient(30% 40% at 76% 82%, rgba(140, 196, 255, 0.08), transparent 70%),
+    linear-gradient(90deg, #120d14 0%, #120d14 48%, #0b0f0c 76%, #0b0f0c 100%);
 }
 
 .chaos-hero canvas {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* The "after" dashboard the single thread runs into: placed by ChaosHero (left, top, width), level with the knot. */
+.chaos-hero .chaos-app {
+  position: absolute;
+  max-width: none;
+  transform: translateY(-50%);
+  box-shadow:
+    0 0 0 1px rgba(140, 196, 255, 0.08),
+    0 0 60px -20px rgba(77, 159, 255, 0.35),
+    0 40px 80px -30px rgba(0, 0, 0, 0.8);
+}
+
+.chaos-hero .chaos-app.is-portrait {
+  transform: none;
+}
+
+.chaos-app .ba-rows li {
+  transition:
+    background 0.6s var(--ease-out),
+    box-shadow 0.6s var(--ease-out);
+}
+
+/* A problem has just arrived down the thread: its row lights up. */
+.chaos-app .ba-rows li.is-live {
+  background: rgba(77, 159, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(140, 196, 255, 0.35);
+  transition-duration: 0.15s;
+}
+
+/* Phones: a compact window under the knot. */
+.chaos-app.is-portrait .ba-app-body {
+  padding: 10px;
+  gap: 8px;
+}
+
+.chaos-app.is-portrait .ba-kpis b {
+  padding: 8px;
+  font-size: 1rem;
+}
+
+.chaos-app.is-portrait .ba-chart,
+.chaos-app.is-portrait .ba-rows li:nth-child(n + 4) {
+  display: none;
+}
+
+.chaos-app.is-portrait .ba-rows li {
+  padding: 7px 10px;
+  font-size: 0.75rem;
 }
 
 /* The still and its thread flow move together (scroll drift). */

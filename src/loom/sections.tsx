@@ -5,8 +5,9 @@ import { EnquiryForm } from '@/components/EnquiryForm'
 import { BuildArt, ConnectArt, RunArt } from '@/components/Illustrations'
 import { Marquee } from '@/components/Proof'
 import { SplitReveal } from '@/components/Reveal'
-import { brand, loom, office, process, sampleDataLabel, services, stats, tools, work } from '@/content/site'
+import { brand, loom, office, process, services, stats, tools, work } from '@/content/site'
 import { gsap, scrollToTarget } from '@/hooks/motion'
+import { SystemApp } from './SystemApp'
 
 /** Mounts children only once the element scrolls into view, so count-ups start when seen. */
 function useInView<T extends Element>(threshold = 0.35) {
@@ -170,39 +171,7 @@ export function BeforeAfter() {
 
           {/* After: one system */}
           <div className="ba-layer ba-after" aria-hidden="true">
-            <div className="ba-app">
-              <div className="win-bar">
-                <i />
-                <i />
-                <i />
-                <span className="mono">{loom.beforeAfter.app.url}</span>
-                <span className="mono win-sample">{sampleDataLabel}</span>
-              </div>
-              <div className="ba-app-body">
-                <div className="ba-kpis">
-                  {loom.beforeAfter.app.kpis.map((k) => (
-                    <b key={k.label}>
-                      <small>{k.label}</small>
-                      {k.value}
-                    </b>
-                  ))}
-                </div>
-                <svg className="ba-chart" viewBox="0 0 300 80" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M0 64 L40 58 L80 60 L120 44 L160 46 L200 30 L240 26 L300 12" />
-                  <path
-                    d="M0 64 L40 58 L80 60 L120 44 L160 46 L200 30 L240 26 L300 12 L300 80 L0 80 Z"
-                    className="fill"
-                  />
-                </svg>
-                <ul className="ba-rows">
-                  {loom.beforeAfter.app.rows.map((r) => (
-                    <li key={r.label}>
-                      {r.label} <em>{r.status}</em>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            <SystemApp />
           </div>
 
           <span className="ba-tag ba-tag-before mono">Before</span>

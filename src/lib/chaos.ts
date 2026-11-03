@@ -1,19 +1,38 @@
 // The "chaos to system" hero (loom/ChaosHero.tsx), drawn on a 2D canvas for machines that can't run the live loom.
-// In the style of the Before/After section: on the left, slow tangled threads and the everyday problems; each thread
-// runs into its own small glowing circle (the "gate"), and out of it comes straight and evenly spaced: the system.
-// Problem cards drift into the gate and vanish. Pure maths here: no DOM, no canvas.
+// In the style of the Before/After section: on the left, slow tangled threads and the everyday problems; the threads
+// all run into one glowing knot (a ball of thread), and out of it comes a single line into the "after" dashboard.
+// Problem cards drift into the knot and vanish. Pure maths here: no DOM, no canvas.
 
 export type Pt = { x: number; y: number }
 export type Rect = { x: number; y: number; w: number; h: number }
-/** The column of glowing circles: at `x`, spread from `top` to `bottom`. `r` is a circle's radius. */
+/** Where the threads arrive: at `x`, spread from `top` to `bottom` (the knot's mouth). `r`: the knot's radius. */
 export type Gate = { x: number; top: number; bottom: number; r: number }
 
-/** Where the gate sits: right of the hero copy (landscape), or right and above the middle (phones). */
-export function chaosGate(w: number, h: number): Gate {
-  return h > w
-    ? // Phones: above the middle, clear of the scroll copy card that sits low on the screen.
-      { x: w * 0.7, top: h * 0.2, bottom: h * 0.5, r: 3.5 }
-    : { x: w * 0.74, top: h * 0.27, bottom: h * 0.73, r: 4.5 }
+/**
+ * The scene's layout. Landscape: the knot just right of the hero copy, the dashboard to its right, level with it,
+ * the line running across. Phones: the knot top right, the dashboard under it (above the scroll copy card that sits
+ * low on the screen), the line running down. `app`: the dashboard's top-left corner and width. `link`: the line.
+ */
+export function chaosScene(w: number, h: number) {
+  const portrait = h > w
+  if (portrait) {
+    const r = Math.min(26, Math.max(16, w * 0.05))
+    const knot = { x: w * 0.78, y: h * 0.15, r }
+    const app = { x: w * 0.07, y: h * 0.22, w: w * 0.86 }
+    return { portrait, knot, app, link: { from: { x: knot.x, y: knot.y + r }, to: { x: knot.x, y: app.y } } }
+  }
+  const r = Math.min(34, Math.max(20, h * 0.036))
+  const knot = { x: w * 0.64, y: h * 0.52, r }
+  const app = { x: w * 0.705, y: h * 0.52, w: Math.min(460, w * 0.27) }
+  return { portrait, knot, app, link: { from: { x: knot.x + r, y: knot.y }, to: { x: app.x, y: knot.y } } }
+}
+
+export type Scene = ReturnType<typeof chaosScene>
+
+/** The threads' destination: the knot's mouth, a little narrower than the knot. */
+export function knotGate(scene: Scene): Gate {
+  const { x, y, r } = scene.knot
+  return { x, top: y - r * 0.45, bottom: y + r * 0.45, r }
 }
 
 /** A stable pseudo-random number in [0, 1) for an integer seed (same thread, same shape on every frame). */
@@ -24,15 +43,15 @@ export function hash(n: number): number {
 
 const smooth = (t: number) => t * t * (3 - 2 * t)
 
-/** The height of thread `i` of `n` at the gate, and all the way to the right edge after it. */
+/** The height at which thread `i` of `n` enters the knot. */
 export function nodeY(i: number, n: number, gate: Gate): number {
   return gate.top + (gate.bottom - gate.top) * (n > 1 ? i / (n - 1) : 0.5)
 }
 
 /**
- * A point on the tangled part of thread `i` (t 0 off the left edge, 1 at its circle in the gate). Long, slow waves
+ * A point on the tangled part of thread `i` (t 0 off the left edge, 1 in the knot). Long, slow waves
  * like the Before/After tangle. `time` in seconds moves them; `chaos` (0..1) scales how wild they are (scrolling
- * through the hero calms them). The waves die away into the gate, so each thread arrives level.
+ * through the hero calms them). The waves die away into the knot, so the threads gather into it.
  */
 export function strandPoint(i: number, n: number, t: number, time: number, chaos: number, w: number, h: number, gate: Gate): Pt {
   const a = hash(i)
@@ -52,14 +71,14 @@ export function strandPoint(i: number, n: number, t: number, time: number, chaos
   return { x, y }
 }
 
-/** Share of a card's life spent floating where it appeared before the gate pulls it in. */
+/** Share of a card's life spent floating where it appeared before the knot pulls it in. */
 export const CARD_HOLD = 0.45
 
 export type CardPose = { x: number; y: number; rot: number; scale: number; alpha: number }
 
 /**
  * A problem card at life `t` (0..1): fades in where it appeared (`from`, its centre) and bobs, then is pulled into
- * its circle in the gate (`to`) faster and faster, straightening, shrinking and fading as it goes in.
+ * the knot (`to`) faster and faster, straightening, shrinking and fading as it goes in.
  */
 export function cardPose(t: number, from: Pt, to: Pt, rot0: number, seed = 0): CardPose {
   const bob = Math.sin(t * 9 + seed * 6.28) * 4
@@ -69,7 +88,7 @@ export function cardPose(t: number, from: Pt, to: Pt, rot0: number, seed = 0): C
   }
   const u = Math.min(1, (t - CARD_HOLD) / (1 - CARD_HOLD))
   const e = u * u * u
-  // A slight arc rather than a straight line: it swings towards the circle's height first.
+  // A slight arc rather than a straight line: it swings towards the knot's height first.
   const cx = from.x + (to.x - from.x) * 0.35
   const cy = to.y + (from.y - to.y) * 0.25
   const k = 1 - e
@@ -78,18 +97,12 @@ export function cardPose(t: number, from: Pt, to: Pt, rot0: number, seed = 0): C
   return { x, y, rot: rot0 * (1 - e), scale: 1 - 0.82 * e, alpha: 1 - smooth(Math.max(0, (u - 0.78) / 0.22)) }
 }
 
-/** The thread whose circle is nearest to height `y` (where a card at that height is pulled in). */
-export function nearestThread(y: number, n: number, gate: Gate): number {
-  const u = (y - gate.top) / Math.max(1, gate.bottom - gate.top)
-  return Math.min(n - 1, Math.max(0, Math.round(u * (n - 1))))
-}
-
 const overlaps = (a: Rect, b: Rect, pad: number) =>
   a.x < b.x + b.w + pad && b.x < a.x + a.w + pad && a.y < b.y + b.h + pad && b.y < a.y + a.h + pad
 
 /**
- * Where a card of size `size` should appear (its centre): in the tangle left of the gate, clear of `blockers` (the
- * hero copy, the nav) and of the cards already showing (`others`, their rects). `rand` returns [0, 1). Null when
+ * Where a card of size `size` should appear (its centre): in the tangle left of the knot, clear of `blockers` (the
+ * hero copy, the nav, the dashboard) and of the cards already showing (`others`, their rects). `rand` returns [0, 1). Null when
  * none of 80 tries is clear: a card under the copy panel shows through its glass as a smudge, so it waits instead.
  */
 export function pickSpawn(
@@ -102,7 +115,7 @@ export function pickSpawn(
   others: Rect[],
 ): Pt | null {
   const minX = w * 0.03
-  const maxX = Math.max(minX, gate.x - 40 - size.w)
+  const maxX = Math.max(minX, gate.x - gate.r - 30 - size.w)
   const minY = h * 0.1
   const maxY = Math.max(minY, h * 0.95 - size.h)
   for (let k = 0; k < 80; k++) {
