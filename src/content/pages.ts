@@ -389,6 +389,9 @@ export const servicesPage = {
   modulesLabel: 'Modules',
   servicesTitle: 'What we do for every system',
   servicesIntro: 'The same three jobs, whichever system you start with.',
+  // The ring beside it (services/JobsLoop.tsx).
+  loopCore: 'Your system',
+  loopCoreTitle: 'Grows round by round',
   workLink: { label: 'See systems we have built', href: '/portfolio' },
 }
 

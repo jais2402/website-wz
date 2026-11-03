@@ -75,6 +75,23 @@ export const office = { label: 'Head office, Chennai', short: 'Head office', map
 // Both enquiry forms and the contact page header share one submit label.
 export const enquiryCopy = { submit: 'Send message', sending: 'Sending…' }
 
+// The panel after a form is sent ({name} is the visitor's first name). `sent`: it reached us. `mailto`: the backend
+// was not reachable, so the visitor's email app opened with the message ready and they still have to press Send.
+export const enquirySent = {
+  sent: {
+    title: 'Thanks, {name}. Your message is with us.',
+    body: 'Someone on our team in Chennai reads it today and replies within one working day.',
+    nextTitle: 'What happens next',
+    next: ['We read your message and reply', 'A short call to understand how the work runs today', 'Scope, price and timeline in writing, before anything is built'],
+  },
+  mailto: {
+    title: 'Almost there, {name}.',
+    body: 'Your email app has opened with your message ready. Press Send there and we reply within one working day.',
+    fallback: 'Nothing opened? Email {email} or call {phone}.',
+  },
+  again: 'Send another message',
+}
+
 // The AI demo on the home page. Vendors and amounts are invented, and the window carries `sampleDataLabel`.
 export const aiDemo = {
   window: 'Purchase approvals',

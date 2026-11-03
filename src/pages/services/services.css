@@ -285,7 +285,6 @@
   padding: clamp(22px, 2.6vw, 32px);
   border-radius: var(--radius);
   border: 1px solid var(--line);
-  border-top: 2px solid var(--tone);
   background: var(--ink-3);
 }
 
@@ -364,5 +363,138 @@
 @media print {
   .so {
     display: none;
+  }
+}
+
+/* ---- The three jobs as one cycle (JobsLoop, beside "What we do for every system") ---- */
+.jl {
+  position: relative;
+  width: min(360px, 100%);
+  aspect-ratio: 320 / 300;
+}
+
+.jl-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.jl-track {
+  fill: none;
+  stroke: rgba(20, 20, 26, 0.08);
+  stroke-width: 10;
+}
+
+.jl-arc {
+  fill: none;
+  stroke: url(#jl-grad);
+  stroke-width: 2;
+  stroke-dasharray: 2 3;
+  transform: rotate(-90deg);
+  transform-origin: 160px 160px;
+}
+
+/* A pulse riding the ring, only while the section is on screen (shell.tsx sets is-on). */
+.jl-pulse {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 0 4px rgba(31, 111, 224, 0.18),
+    0 0 18px 4px rgba(106, 85, 240, 0.45);
+  offset-path: circle(39.4% at 50% 53.3%);
+  offset-rotate: 0deg;
+  offset-distance: 0%;
+}
+
+.pg-section.is-on .jl-pulse {
+  animation: jlRide 7s linear infinite;
+}
+
+@keyframes jlRide {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+.jl-core {
+  position: absolute;
+  left: 50%;
+  top: 53.3%;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 46%;
+  padding: 18px 12px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid rgba(20, 20, 26, 0.08);
+  box-shadow: 0 30px 60px -30px rgba(20, 20, 26, 0.35);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.jl-core span {
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4d4d58;
+}
+
+.jl-core b {
+  font-family: var(--f-display);
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  color: var(--cream-ink);
+}
+
+.jl-node {
+  --tone: var(--lime);
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 7px;
+  border-radius: 99px;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--tone) 35%, transparent);
+  box-shadow: 0 14px 30px -18px rgba(20, 20, 26, 0.45);
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cream-ink);
+}
+
+.jl-node.tone-violet {
+  --tone: var(--violet);
+}
+
+.jl-node.tone-coral {
+  --tone: var(--coral);
+}
+
+.jl-node i {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--tone);
+  color: #fff;
+  font: 700 0.72rem/1 var(--f-mono);
+  font-style: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-section.is-on .jl-pulse {
+    animation: none;
   }
 }

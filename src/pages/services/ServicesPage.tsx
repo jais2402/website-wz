@@ -5,6 +5,7 @@ import { servicesPage as p, systemPages } from '@/content/pages'
 import { ctas, navSystems, services } from '@/content/site'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
+import { JobsLoop } from './JobsLoop'
 import { SystemsOrbit } from './SystemsOrbit'
 import './services.css'
 
@@ -58,7 +59,7 @@ export function ServicesPage() {
         </ul>
       </PageSection>
 
-      <PageSection title={p.servicesTitle} intro={p.servicesIntro} className="sv-services" tone="light">
+      <PageSection title={p.servicesTitle} intro={p.servicesIntro} className="sv-services" tone="light" aside={<JobsLoop />}>
         <ul className="sv-jobs">
           {services.map((s) => (
             <li key={s.key} className={`sv-job tone-${s.tone}`} data-reveal data-spot>

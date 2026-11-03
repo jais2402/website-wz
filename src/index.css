@@ -4957,7 +4957,9 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   .aip-way-visual,
   .aip-tool,
   .tech-group,
-  .pf-case.is-lead
+  .pf-case.is-lead,
+  .wd-case,
+  .offer-card
 ) {
   position: relative;
 }
@@ -4992,7 +4994,9 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   .aip-way-visual,
   .aip-tool,
   .tech-group,
-  .pf-case.is-lead
+  .pf-case.is-lead,
+  .wd-case,
+  .offer-card
 )::after {
   content: '';
   position: absolute;

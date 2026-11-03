@@ -21,9 +21,11 @@ export function ContactPage() {
 
   useGSAP(
     () => {
+      // No entrance under reduced motion: the cards and the form are simply there.
+      if (reducedMotion) return
       gsap.from('.cp-card, .cp-form', { y: 30, opacity: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08, delay: 0.2 })
     },
-    { scope: root },
+    { scope: root, dependencies: [reducedMotion] },
   )
 
   return (

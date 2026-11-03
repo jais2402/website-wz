@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { ctas } from '@/content/site'
 import { notFoundPage as p } from '@/content/pages'
 import { track } from '@/lib/analytics'
@@ -7,6 +7,8 @@ import { LoomContact } from '@/loom/sections'
 import { HeroLoom } from '../HeroLoom'
 import { PageHero, PageSection, PageShell } from '../shell'
 import './notfound.css'
+
+const noSubscribe = () => () => {}
 
 /** The address the visitor asked for, or null on /404 itself (and in the build-time prerender). */
 function missingPath(): string | null {
@@ -29,13 +31,12 @@ function referrerHost(): string {
  * string, which can carry personal data) goes to Analytics as 'page_not_found' once the visitor has accepted it.
  */
 export function NotFoundPage() {
-  // Read after mount: the prerendered HTML is the same for every missing address.
-  const [path, setPath] = useState<string | null>(null)
+  // The address never changes on this page; the server snapshot (null) keeps the prerendered HTML the same for every
+  // missing address, and the browser reads the real one.
+  const path = useSyncExternalStore(noSubscribe, missingPath, () => null)
   useEffect(() => {
-    const missing = missingPath()
-    setPath(missing)
-    if (missing) track('page_not_found', { page_path: missing.slice(0, 100), referrer: referrerHost() })
-  }, [])
+    if (path) track('page_not_found', { page_path: path.slice(0, 100), referrer: referrerHost() })
+  }, [path])
   const suggestion = path ? suggestPage(path, p.suggest) : null
 
   return (

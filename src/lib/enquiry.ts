@@ -171,3 +171,11 @@ export async function submitEnquiry(e: Enquiry, config = enquiryConfig, opts: Su
   if (res.status === 413) return { ok: false, error: `Your message is too long. Please keep it under ${LIMITS.message} characters.` }
   return { ok: false, error: `We could not send your message just now (error ${res.status}).` }
 }
+
+/** The first name, tidied when typed in all capitals or all lower case ('JAIS' → 'Jais'); 'there' when empty. */
+export function firstName(name: string): string {
+  const first = name.trim().split(/\s+/)[0] || ''
+  if (!first) return 'there'
+  const oneCase = first === first.toUpperCase() || first === first.toLowerCase()
+  return oneCase ? first.charAt(0).toUpperCase() + first.slice(1).toLowerCase() : first
+}

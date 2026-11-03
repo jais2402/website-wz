@@ -469,29 +469,12 @@
   scroll-margin-top: 96px;
 }
 
-/* A short line in the case's tone, where the row starts. */
-.pf-case::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 0;
-  width: clamp(64px, 10vw, 140px);
-  height: 2px;
-  background: var(--tone);
-  box-shadow: 0 0 14px var(--tone);
-}
-
 .pf-case.is-flip {
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 }
 
 .pf-case.is-flip .pf-case-copy {
   order: 2;
-}
-
-.pf-case.is-flip::before {
-  left: auto;
-  right: 0;
 }
 
 .pf-case-copy {
@@ -576,10 +559,6 @@
     radial-gradient(60% 70% at 0% 100%, rgba(139, 123, 255, 0.1), transparent 70%), var(--ink-2);
 }
 
-.pf-case.is-lead::before {
-  left: clamp(32px, 5vw, 72px);
-}
-
 .pf-case.is-lead h3 {
   font-size: clamp(2rem, 4vw, 3.4rem);
 }
@@ -594,10 +573,6 @@
 
 .pf-case.is-lead + .pf-case {
   border-top: 0;
-}
-
-.pf-case.is-lead + .pf-case::before {
-  display: none;
 }
 
 /* ---- Earlier systems: a lighter ledger, no numbers ---- */
@@ -826,10 +801,6 @@
     order: 0;
   }
 
-  .pf-case.is-flip::before {
-    left: 0;
-    right: auto;
-  }
 
   .pf-past-item {
     grid-template-columns: minmax(0, 1fr);
@@ -857,10 +828,6 @@
 
   .pf-case.is-lead {
     padding: 28px 20px;
-  }
-
-  .pf-case.is-lead::before {
-    left: 20px;
   }
 
   .pf-metrics dt,

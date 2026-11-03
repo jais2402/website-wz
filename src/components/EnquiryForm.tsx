@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useId, useRef, useState } from 'react'
-import { brand, enquiryCopy, enquiryTopics, marketingOptIn, privacyNotice } from '@/content/site'
-import { type Enquiry, type EnquiryErrors, LIMITS, submitEnquiry, trackLead, validateEnquiry } from '@/lib/enquiry'
+import { brand, enquiryCopy, enquirySent, enquiryTopics, marketingOptIn, privacyNotice } from '@/content/site'
+import { type Enquiry, type EnquiryErrors, firstName, LIMITS, submitEnquiry, trackLead, validateEnquiry } from '@/lib/enquiry'
 import './enquiry.css'
 
 export type SendStatus =
@@ -9,7 +9,20 @@ export type SendStatus =
   | { kind: 'sent'; via: 'endpoint' | 'mailto' }
   | { kind: 'error'; message: string }
 
-const firstName = (name: string) => name.trim().split(/\s+/)[0] || 'there'
+/** "Nothing opened? Email {email} or call {phone}." with both as links. */
+function Fallback() {
+  const [before, rest] = enquirySent.mailto.fallback.split('{email}')
+  const [middle, after] = rest.split('{phone}')
+  return (
+    <p className="ef-done-alt">
+      {before}
+      <a href={`mailto:${brand.email}`}>{brand.email}</a>
+      {middle}
+      <a href={brand.phoneHref}>{brand.phone}</a>
+      {after}
+    </p>
+  )
+}
 
 /** Success panel shared by both enquiry forms. Takes focus so keyboard and screen-reader users land on it. */
 export function EnquirySent({
@@ -31,19 +44,26 @@ export function EnquirySent({
         ✓
       </span>
       <Heading ref={ref} tabIndex={-1}>
-        Thanks, {firstName(name)}.
+        {(via === 'endpoint' ? enquirySent.sent.title : enquirySent.mailto.title).replace('{name}', firstName(name))}
       </Heading>
       {via === 'endpoint' ? (
-        <p>Your message is with us. We reply within one working day.</p>
+        <>
+          <p>{enquirySent.sent.body}</p>
+          <p className="mono ef-done-next-title">{enquirySent.sent.nextTitle}</p>
+          <ol className="ef-done-next">
+            {enquirySent.sent.next.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+        </>
       ) : (
-        <p>
-          Your email app should have opened with your message ready. Press send there and we reply within one working
-          day. If nothing opened, write to <a href={`mailto:${brand.email}`}>{brand.email}</a> or call{' '}
-          <a href={brand.phoneHref}>{brand.phone}</a>.
-        </p>
+        <>
+          <p>{enquirySent.mailto.body}</p>
+          <Fallback />
+        </>
       )}
       <button type="button" className="btn btn-ghost" onClick={onReset}>
-        Send another message
+        {enquirySent.again}
       </button>
     </div>
   )
@@ -197,7 +217,7 @@ export function EnquiryForm() {
   const sending = status.kind === 'sending'
 
   return (
-    <form ref={formRef} className="composer ef" noValidate onSubmit={onSubmit} aria-busy={sending}>
+    <form ref={formRef} className="composer ef" noValidate onSubmit={onSubmit} aria-busy={sending} data-clarity-mask="true">
       <fieldset>
         <legend className="mono">I need help with</legend>
         <div className="chip-row">

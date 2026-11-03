@@ -15,7 +15,7 @@ const address = brand.address.join(', ')
 const privacyEmail = brand.email
 
 export const legalMeta = {
-  updated: '2026-10-20',
+  updated: '2026-11-04',
   // The visible draft notice is off (client decision, 2026-10-20). Placeholders such as [CIN] stay until the
   // details arrive; set a note here again to show it on every legal page.
   reviewNote: '',
@@ -42,7 +42,7 @@ export const privacyPolicy: LegalDoc = {
         'Replying to your enquiry. Our forms ask for your name, email address, the topics you need help with and your message. Company and phone number are optional. We also record which page the form was sent from. We use these details to reply to you by email or phone about your enquiry, to understand what you need and, if you ask, to prepare a proposal. We do not use your phone number for sales or promotional calls. Legal basis: you give us this information yourself for this purpose (Digital Personal Data Protection Act 2023, section 7(a)); under the GDPR and UK GDPR, taking steps at your request before a contract and our legitimate interest in answering business enquiries.',
         'If you then talk to us by email or phone. We keep that correspondence with your enquiry, for the same purpose and on the same basis.',
         `Marketing emails, only if you ask. Each form has a separate box: "${marketingOptIn.label}" It is optional and unticked. Your enquiry is sent whether you tick it or not. If you tick it, we add your email address to our mailing list and send you occasional news about our work and services. We send these by email only, never by phone call or SMS. Every email has an unsubscribe link. We keep a record of when you agreed and the words you agreed to. Legal basis: your consent (Digital Personal Data Protection Act 2023, section 6; GDPR and UK GDPR, Article 6(1)(a); in the UK, also the Privacy and Electronic Communications Regulations). You can withdraw it at any time with the unsubscribe link or by emailing ${privacyEmail}.`,
-        'Website analytics, only if you accept. If you accept analytics cookies in our cookie banner, we use Google Analytics 4 to see how the site is used, so we can improve it. It records the pages you visit, events such as button clicks and forms being sent, your approximate location (such as country and city, worked out from your IP address), and your device, browser, operating system and screen size. We do not send your name, email address, phone number or message to Google Analytics. When a form is sent, it records only that a form was sent, which form, and whether the marketing box was ticked. Google signals and all advertising features are turned off. Legal basis: your consent (Digital Personal Data Protection Act 2023, section 6; GDPR and UK GDPR, Article 6(1)(a), and the EU and UK cookie rules). If you reject, or do not choose, Google Analytics does not load and nothing is sent to Google. You can change your choice at any time with the "Cookie settings" link in the footer.',
+        'Website analytics, only if you accept. If you accept analytics cookies in our cookie banner, we use Google Analytics 4 to see how the site is used, so we can improve it. It records the pages you visit, events such as button clicks and forms being sent, your approximate location (such as country and city, worked out from your IP address), and your device, browser, operating system and screen size. We do not send your name, email address, phone number or message to Google Analytics. When a form is sent, it records only that a form was sent, which form, and whether the marketing box was ticked. Google signals and all advertising features are turned off. Legal basis: your consent (Digital Personal Data Protection Act 2023, section 6; GDPR and UK GDPR, Article 6(1)(a), and the EU and UK cookie rules). If you accept, we also use Microsoft Clarity to see how pages are used: where people click and scroll, and replays of visits with every form field masked, so what you type is never recorded. If you reject, or do not choose, neither Google Analytics nor Microsoft Clarity loads and nothing is sent to Google or Microsoft. You can change your choice at any time with the "Cookie settings" link in the footer.',
         'When you visit any page. Our hosting provider keeps standard server logs: your IP address, browser type, the page requested and the time. These are used only to deliver the site, keep it secure and fix faults. Legal basis: our duty to keep data secure and our legitimate interest in running a safe, reliable website.',
         'Each form also contains a hidden field that people cannot see. It catches automated spam and holds no personal data.',
       ],
@@ -63,8 +63,10 @@ export const privacyPolicy: LegalDoc = {
       heading: 'Who handles your data for us',
       body: [
         'Vercel Inc. (United States) hosts this website and runs the small server function that receives your enquiry. It serves the site through a global network, so a request may be handled in a data centre near you. It keeps the server logs described above.',
-        `Resend Inc. (United States) sends your enquiry to our mailbox (${brand.email}). The enquiry is not stored in a database. It lives in our email.`,
+        `Resend Inc. (United States) sends your enquiry to our mailbox (${brand.email}).`,
+        'Google provides Google Workspace, where each enquiry is also saved as a row in our private enquiries spreadsheet, so none is lost if an email goes astray. Only our team can open it.',
         'Google provides Google Analytics: Google Ireland Limited for visitors in the European Economic Area and the United Kingdom, and Google LLC (United States) elsewhere. It runs only if you accept analytics cookies. Google processes the analytics data for us under its data processing terms.',
+        'Microsoft Corporation (United States) provides Microsoft Clarity. It runs only if you accept analytics cookies, and processes the usage data for us under its data processing terms.',
         'If we use a separate service to send marketing emails, we will name it here before we start using it. It will act only on our instructions.',
         'If the form cannot reach our server, it opens your own email app with your message filled in. You then send it yourself, through your own email provider.',
         'These providers act only on our instructions, under data processing terms that require them to keep the data secure and confidential.',
@@ -96,7 +98,8 @@ export const privacyPolicy: LegalDoc = {
       body: [
         'Enquiries and related emails: 24 months from our last contact with you, then deleted. If you become a client, we keep them as part of the client record for as long as our contract and the law require.',
         'Marketing list: until you unsubscribe or ask us to remove you. After that, we keep only your email address on a suppression list, so that we never email you again by mistake. We keep the record of your consent with it, so we can show when and how you agreed.',
-        'Analytics: Google Analytics keeps the event data for 14 months, then deletes it. Reports made only of totals do not identify anyone.',
+        'Analytics: Google Analytics keeps the event data for 14 months, then deletes it. Microsoft Clarity keeps visit replays for 30 days and heatmap totals for 13 months. Reports made only of totals do not identify anyone.',
+        'Enquiries in our spreadsheet: kept for the same period as enquiry emails, then deleted.',
         'Your cookie choice: kept in your browser for 12 months. See our Cookie Policy.',
         'Server logs: kept by Vercel for a short period, for running and securing the site.',
         'You can ask us to delete your data sooner. See "Your rights" below.',
@@ -261,7 +264,7 @@ export const termsOfUse: LegalDoc = {
 
 export const cookieStatement: LegalDoc = {
   title: 'Cookie Policy',
-  lead: 'We store one small item in your browser to remember your cookie choice. Google Analytics cookies are set only if you accept them. Saying no makes no difference to how you can use the site.',
+  lead: 'We store one small item in your browser to remember your cookie choice. Google Analytics and Microsoft Clarity cookies are set only if you accept them. Saying no makes no difference to how you can use the site.',
   sections: [
     {
       id: 'what-we-use',
@@ -291,11 +294,20 @@ export const cookieStatement: LegalDoc = {
       ],
     },
     {
+      id: 'clarity',
+      heading: 'Analytics: Microsoft Clarity, only if you accept',
+      body: [
+        'Name: _clck. Type: cookie. Set by: Microsoft Clarity, on our domain. Purpose: tells one browser\'s visits apart from another\'s. Kept for: 1 year.',
+        'Name: _clsk. Type: cookie. Set by: Microsoft Clarity, on our domain. Purpose: joins the pages of one visit together. Kept for: 1 day.',
+        'Clarity shows us where people click and scroll, and replays of visits with every form field masked, so what you type is never recorded. These cookies are set only after you accept; until then, and if you reject, Clarity does not load and nothing is sent to Microsoft.',
+      ],
+    },
+    {
       id: 'your-choice',
       heading: 'Accepting, rejecting or changing your choice',
       body: [
         'When you first visit, a banner asks whether you accept analytics cookies. You can accept or reject them. Nothing optional is set before you choose.',
-        'You can change your mind at any time with the "Cookie settings" link in the footer of every page. If you withdraw your consent, Google Analytics stops loading from then on.',
+        'You can change your mind at any time with the "Cookie settings" link in the footer of every page. If you withdraw your consent, Google Analytics and Microsoft Clarity stop from then on and their cookies are deleted.',
         'Rejecting analytics cookies makes no difference to how you can use the site. Every page, form and link works the same.',
         'You can also block or delete cookies and local storage in your browser settings. If you clear the wz-consent item, we will ask for your choice again.',
       ],

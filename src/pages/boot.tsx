@@ -1,12 +1,14 @@
 import { StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { initAnalytics } from '@/lib/ga'
+import { initClarity } from '@/lib/clarity'
 import { loadPage } from './PageRouter'
 
 // The inner pages' app, imported by main.tsx once the prerendered first screen has painted.
 
 // Consent-gated GA: no script or cookie until the visitor accepts; nothing at all without an ID.
 initAnalytics()
+initClarity()
 
 // Each HTML file names its page in <body data-page="…">. The page's chunk loads first; the prerendered markup and the
 // HTML snapshot in #root stay until React replaces them.
