@@ -60,7 +60,7 @@ export function TechnologyPage() {
 
       <CtaStrip {...ctas.technology} />
 
-      <PageSection title={p.aiTitle} className="tech-ai">
+      <PageSection title={p.aiTitle} className="tech-ai" tone="light">
         {/* A pipeline, not cards: your data → the right model → a person approves, on one thread with a moving pulse. */}
         <ol className="tech-flow">
           <span className="tech-flow-line" aria-hidden="true">

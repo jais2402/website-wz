@@ -36,3 +36,6 @@ dist-ssr
 
 # Local renders: hero captures and video studio recordings (scripts/capture-*.mjs, /studio.html)
 captures/
+
+# Agent worktrees
+.claude/worktrees/

@@ -15,6 +15,7 @@ import { Pricing } from '@/components/Pricing'
 import { Process } from '@/components/Process'
 import { Proof } from '@/components/Proof'
 import { SectionBoundary } from '@/components/SectionBoundary'
+import { Offer } from '@/components/Offer'
 import { Services } from '@/components/Services'
 import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
@@ -103,6 +104,9 @@ export default function App() {
             </SectionBoundary>
             <SectionBoundary name="Proof">
               <Proof />
+            </SectionBoundary>
+            <SectionBoundary name="Offer">
+              <Offer />
             </SectionBoundary>
             <SectionBoundary name="Services">
               <Services />

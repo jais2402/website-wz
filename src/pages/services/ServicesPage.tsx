@@ -1,4 +1,5 @@
 import { CtaStrip } from '@/components/CtaStrip'
+import { Offer } from '@/components/Offer'
 import { servicesPage as p, systemPages } from '@/content/pages'
 import { ctas, navSystems, services } from '@/content/site'
 import { LoomContact } from '@/loom/sections'
@@ -27,6 +28,8 @@ export function ServicesPage() {
         visual={<SystemsOrbit />}
       />
 
+      <Offer className="offer-in-page" />
+
       <PageSection title={p.systemsTitle} intro={p.systemsIntro} className="sv-systems">
         <ul className="sv-grid">
           {systemPages.map((s, i) => (
@@ -51,7 +54,7 @@ export function ServicesPage() {
         </ul>
       </PageSection>
 
-      <PageSection title={p.servicesTitle} intro={p.servicesIntro} className="sv-services">
+      <PageSection title={p.servicesTitle} intro={p.servicesIntro} className="sv-services" tone="light">
         <ul className="sv-jobs">
           {services.map((s) => (
             <li key={s.key} className={`sv-job tone-${s.tone}`} data-reveal>

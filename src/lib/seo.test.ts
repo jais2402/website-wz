@@ -1,9 +1,11 @@
 import { brand, countries, faq, pastWork, work } from '@/content/site'
 import { pages, seoData, site } from '@/content/seo'
+import { pricingPage } from '@/content/pages'
 import {
   absoluteUrl,
   applyHead,
   escapeHtml,
+  faqFor,
   headTags,
   jsonLd,
   llmsTxt,
@@ -60,11 +62,11 @@ describe('page data', () => {
     }
   })
 
-  it('keeps titles ≤ 60 and descriptions 140–160 characters on indexable pages', () => {
+  it('keeps titles ≤ 60 and descriptions 140–155 characters on indexable pages', () => {
     for (const p of indexable) {
       expect(p.title.length, p.id).toBeLessThanOrEqual(60)
       expect(p.description.length, p.id).toBeGreaterThanOrEqual(140)
-      expect(p.description.length, p.id).toBeLessThanOrEqual(160)
+      expect(p.description.length, p.id).toBeLessThanOrEqual(155)
     }
   })
 
@@ -221,6 +223,62 @@ describe('jsonLd', () => {
     expect((faqNode.mainEntity as unknown[]).length).toBe(faq.length)
   })
 
+  it('every node id a page references (isPartOf, publisher, breadcrumb, mainEntity) is defined in its own graph', () => {
+    for (const p of pages.filter((p) => p.indexable)) {
+      const g = graphOf(p.id)
+      const defined = new Set(g.map((n) => n['@id']))
+      const webPage = g.find((n) => n['@id'] === `${absoluteUrl(site.origin, p.path)}#webpage`)!
+      const refs = [webPage.isPartOf, webPage.publisher, webPage.breadcrumb, webPage.mainEntity]
+        .flat()
+        .filter(Boolean)
+        .map((r) => (r as { '@id': string })['@id'])
+      for (const r of refs) expect(defined.has(r), `${p.id} → ${r}`).toBe(true)
+    }
+  })
+
+  it('states the key company facts on the Organization: slogan, founding place, map and services with URLs', () => {
+    const org = graphOf('about').find((n) => typeIn(n, 'Organization'))!
+    expect(org.slogan).toBe('Systems that grow with you.')
+    expect(org.foundingLocation).toEqual({ '@type': 'Place', name: 'Chennai, Tamil Nadu, India' })
+    expect(org.hasMap).toBe(brand.mapsHref)
+    const offers = (org.hasOfferCatalog as { itemListElement: { itemOffered: { name: string; url: string } }[] })
+      .itemListElement
+    expect(offers).toHaveLength(3 + seoData.systems.length + seoData.ai.ways.length)
+    expect(offers.slice(0, 3).map((o) => o.itemOffered.name)).toEqual([
+      'Website development',
+      'Custom software development',
+      'Software product development',
+    ])
+    expect(offers[3].itemOffered.url).toBe(`https://www.wezigns.com/systems/${seoData.systems[0].slug}`)
+    expect(offers.at(-1)!.itemOffered.url).toBe('https://www.wezigns.com/ai')
+  })
+
+  it('names websites, custom software and software products in the home and services titles and descriptions', () => {
+    for (const id of ['home', 'services']) {
+      const { title, description } = page(id)
+      expect(title, id).toMatch(/Websites/)
+      expect(title, id).toMatch(/Custom Software/)
+      expect(title, id).toMatch(/SaaS/)
+      expect(description, id).toMatch(/website/i)
+      expect(description, id).toMatch(/custom software/i)
+      expect(description, id).toMatch(/SaaS/)
+    }
+    expect(site.knowsAbout).toEqual(expect.arrayContaining(['Website development', 'Custom software development']))
+  })
+
+  it('marks up the cost questions on /pricing as a FAQPage, and no FAQ on pages without one', () => {
+    expect(faqFor(page('pricing'), seoData).map((f) => f.q)).toEqual(pricingPage.faq)
+    const faqNode = graphOf('pricing').find((n) => typeIn(n, 'FAQPage'))!
+    const qs = faqNode.mainEntity as { name: string; acceptedAnswer: { text: string } }[]
+    expect(qs.map((q) => q.name)).toEqual(pricingPage.faq)
+    for (const q of qs) expect(q.acceptedAnswer.text).toBe(faq.find((f) => f.q === q.name)!.a)
+    for (const id of ['about', 'people', 'contact', 'technology'])
+      expect(
+        graphOf(id).some((n) => typeIn(n, 'FAQPage')),
+        id,
+      ).toBe(false)
+  })
+
   it('system pages have a Service with their modules and a three-step breadcrumb', () => {
     const g = graphOf('people')
     const service = g.find((n) => typeIn(n, 'Service'))!
@@ -338,6 +396,20 @@ describe('llmsTxt', () => {
     expect(txt).not.toContain('/404')
     expect(txt).toContain('+91 44 2364 3252')
   })
+
+  it('states the key facts plainly: founding year, city, country count, pricing and the FAQ answers', () => {
+    const txt = llmsTxt(pages, site, seoData)
+    expect(txt).toContain('- Founded: 2012, in Chennai, India')
+    expect(txt).toContain('- Countries served (11): India, United States')
+    expect(txt).toContain(`- How we price: ${site.pricing}`)
+    expect(txt).toContain(
+      '- What we build: website development, custom software development, software product development',
+    )
+    expect(txt).toContain('  - Software product development: SaaS products, MVPs and apps')
+    for (const f of faq) expect(txt).toContain(`- ${f.q} ${f.a}`)
+    // The free-form facts come before the first H2 section (llmstxt.org shape).
+    expect(txt.indexOf('Common questions:')).toBeLessThan(txt.indexOf('\n## '))
+  })
 })
 
 describe('social profiles', () => {
@@ -374,6 +446,8 @@ describe('social profiles', () => {
       },
     }
     expect(orgOf(filled).sameAs).toEqual(['https://www.linkedin.com/company/wezigns'])
-    expect(headTags(page('home'), filled, seoData).join('\n')).toContain('<meta name="twitter:site" content="@wezigns" />')
+    expect(headTags(page('home'), filled, seoData).join('\n')).toContain(
+      '<meta name="twitter:site" content="@wezigns" />',
+    )
   })
 })

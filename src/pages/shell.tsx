@@ -102,6 +102,7 @@ export function PageSection({
   intro,
   children,
   className = '',
+  tone,
 }: {
   id?: string
   kicker?: string
@@ -109,9 +110,11 @@ export function PageSection({
   intro?: string
   children: ReactNode
   className?: string
+  /** 'light': the cream panel from the landing page's AI section, one per page to break up the dark. */
+  tone?: 'light'
 }) {
   return (
-    <section id={id} className={`pg-section ${className}`}>
+    <section id={id} className={`pg-section ${tone === 'light' ? 'pg-light ' : ''}${className}`}>
       <div className="wrap">
         <header className="pg-section-head">
           {kicker && <p className="mono label">{kicker}</p>}

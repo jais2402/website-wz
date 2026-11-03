@@ -135,12 +135,34 @@ export function jsonLd(page: SeoPage, site: SeoSite, data: SeoData): Json {
     },
     image: absoluteUrl(site.origin, '/og/home.png'),
     description: site.summary,
+    slogan: site.slogan,
     foundingDate: site.foundingDate,
+    foundingLocation: { '@type': 'Place', name: site.foundingLocation },
     email: site.email,
     telephone: site.telephone,
     address: { '@type': 'PostalAddress', ...site.address },
+    hasMap: site.mapUrl,
     areaServed,
     knowsAbout: site.knowsAbout,
+    // What the company sells, each linked to its page: websites, custom software and software products, then the six
+    // systems and AI (GEO: one place listing the services).
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Websites, custom software and software products',
+      itemListElement: [
+        ...site.offerings,
+        ...data.systems.map((s) => ({ name: s.title, description: s.intro, path: `/systems/${s.slug}` })),
+        ...data.ai.ways.map((w) => ({ name: w.title, description: w.text, path: '/ai' })),
+      ].map((s) => ({
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: s.name,
+          description: s.description,
+          url: absoluteUrl(site.origin, s.path),
+        },
+      })),
+    },
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'sales',
@@ -152,17 +174,16 @@ export function jsonLd(page: SeoPage, site: SeoSite, data: SeoData): Json {
     ...(site.sameAs.length ? { sameAs: site.sameAs } : {}),
   })
 
-  if (page.id === 'home') {
-    graph.push({
-      '@type': 'WebSite',
-      '@id': id.website,
-      url: absoluteUrl(site.origin, '/'),
-      name: site.name,
-      description: page.description,
-      inLanguage: site.language,
-      publisher: org,
-    })
-  }
+  // On every page, so each page's `isPartOf` resolves inside its own graph.
+  graph.push({
+    '@type': 'WebSite',
+    '@id': id.website,
+    url: absoluteUrl(site.origin, '/'),
+    name: site.name,
+    description: site.summary,
+    inLanguage: site.language,
+    publisher: org,
+  })
 
   const services = serviceNodes(page, site, data)
   const pageType = page.schema === 'Service' ? 'WebPage' : page.schema
@@ -199,12 +220,13 @@ export function jsonLd(page: SeoPage, site: SeoSite, data: SeoData): Json {
     })
   }
 
-  if (page.id === 'home' && data.faq.length) {
+  const questions = faqFor(page, data)
+  if (questions.length) {
     graph.push({
       '@type': 'FAQPage',
       '@id': `${url}#faq`,
       isPartOf: { '@id': `${url}#webpage` },
-      mainEntity: data.faq.map((f) => ({
+      mainEntity: questions.map((f) => ({
         '@type': 'Question',
         name: f.q,
         acceptedAnswer: { '@type': 'Answer', text: f.a },
@@ -264,6 +286,13 @@ export function jsonLd(page: SeoPage, site: SeoSite, data: SeoData): Json {
   return { '@context': 'https://schema.org', '@graph': graph }
 }
 
+/** The questions a page shows (and so may mark up as FAQPage): all of them on home, the cost ones on /pricing. */
+export function faqFor(page: SeoPage, data: SeoData): { q: string; a: string }[] {
+  if (page.id === 'home') return data.faq
+  if (page.id === 'pricing') return data.pricingFaq
+  return []
+}
+
 function offerCatalog(name: string, items: { name: string; description: string }[]): Json {
   return {
     '@type': 'OfferCatalog',
@@ -316,7 +345,11 @@ function serviceNodes(page: SeoPage, site: SeoSite, data: SeoData): Json[] {
  * without one gets no <lastmod>: stamping every URL with the build date would mark the whole site changed on each
  * deploy, and Google ignores lastmod once it proves inaccurate.
  */
-export function sitemapXml(pages: SeoPage[], site: SeoSite, lastmod: (p: SeoPage) => string | undefined = () => undefined) {
+export function sitemapXml(
+  pages: SeoPage[],
+  site: SeoSite,
+  lastmod: (p: SeoPage) => string | undefined = () => undefined,
+) {
   const urls = pages
     .filter((p) => p.indexable)
     .map((p) => {
@@ -346,11 +379,18 @@ export function llmsTxt(pages: SeoPage[], site: SeoSite, data: SeoData) {
     `- Head office: ${address}`,
     `- Phone: ${site.telephone}`,
     `- Email: ${site.email}`,
-    `- Countries served: ${site.areaServed.join(', ')}`,
-    `- What we build: custom business systems (${data.systems.map((s) => s.title).join(', ')}), plus AI workflows and custom AI solutions`,
+    `- Countries served (${site.areaServed.length}): ${site.areaServed.join(', ')}`,
+    `- What we build: ${site.offerings.map((o) => o.name.toLowerCase()).join(', ')}`,
+    ...site.offerings.map((o) => `  - ${o.name}: ${o.description}`),
+    `- Business systems for SMEs: custom business systems (${data.systems.map((s) => s.title).join(', ')}), plus AI workflows and custom AI solutions`,
     `- How we price: ${site.pricing}`,
     `- Website: ${absoluteUrl(site.origin, '/')}`,
   ]
+  // The site's FAQ as plain text (llmstxt.org allows free-form lists before the first H2).
+  if (data.faq.length) {
+    lines.push('', 'Common questions:', '')
+    for (const f of data.faq) lines.push(`- ${f.q} ${f.a}`)
+  }
   for (const section of LLMS_SECTIONS) {
     const items = pages.filter((p) => p.indexable && p.llms?.section === section)
     if (!items.length) continue

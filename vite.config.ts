@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 import { existsSync } from 'node:fs'
 import { defineConfig } from 'vite'
+import { configDefaults } from 'vitest/config'
 import { seo } from './scripts/vite-seo.ts'
 import { snapshotPlugin } from './scripts/vite-snapshot.ts'
 import { pagePreloadPlugin } from './scripts/vite-page-preload.ts'
@@ -86,5 +87,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: [fileURLToPath(new URL('./src/test/setup.ts', import.meta.url))],
+    // Agent worktrees live under .claude/worktrees; their tests belong to their own checkouts.
+    exclude: [...configDefaults.exclude, '.claude/**'],
   },
 })

@@ -60,6 +60,63 @@
   padding: clamp(64px, 9vw, 130px) 0;
 }
 
+/* The cream panel (the landing page's AI section), one per page to break up the dark. The colour tokens are
+   re-pointed inside it, so text, rules and chips built on them turn dark on their own; page CSS handles the rest. */
+.pg-light {
+  --text: var(--cream-ink);
+  --muted: #4d4d58;
+  --line: rgba(20, 20, 26, 0.1);
+  --line-2: rgba(20, 20, 26, 0.18);
+  --field-line: rgba(20, 20, 26, 0.4);
+  /* Card fills turn white; the accents darken a step so small coloured labels stay readable on white. */
+  --ink-2: #fff;
+  --ink-3: #fff;
+  --lime: #1f6fe0;
+  --violet: #6a55f0;
+  --coral: #d9532f;
+  position: relative;
+  z-index: 1;
+  margin: clamp(24px, 4vw, 56px) clamp(0px, 1vw, 12px);
+  border-radius: 40px;
+  background: var(--cream);
+  color: var(--cream-ink);
+  box-shadow: 0 -30px 80px -30px rgba(0, 0, 0, 0.6);
+}
+
+.pg-light :focus-visible {
+  outline-color: #1d4ed8;
+}
+
+.pg-light .label::before {
+  background: var(--cream-ink);
+}
+
+.pg-light .pg-h2,
+.pg-light h3 {
+  color: var(--cream-ink);
+}
+
+/* Cards on the cream get a soft lift instead of the dark edge. */
+.pg-light .sv-job,
+.pg-light .sy-bubble blockquote {
+  box-shadow: 0 24px 50px -30px rgba(20, 20, 26, 0.35);
+}
+
+.pg-light .pr-after-note {
+  color: #1d4ed8;
+}
+
+/* Glass cards turn into the white app windows of the AI section. */
+.pg-light .glass-card {
+  background: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-color: rgba(20, 20, 26, 0.08);
+  box-shadow:
+    0 40px 80px -40px rgba(20, 20, 26, 0.3),
+    0 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
 .pg-section-head {
   display: grid;
   gap: 14px;
@@ -101,4 +158,10 @@
     radial-gradient(40% 40% at 85% 55%, rgba(140, 196, 255, 0.08), transparent 70%), transparent;
   border-top: 0;
   box-shadow: none;
+}
+
+/* The home page's "What we build" block on a sub-page: no panel fill, the page's own background shows. */
+.offer-in-page {
+  background: transparent;
+  padding: clamp(48px, 6vw, 90px) 0;
 }

@@ -31,7 +31,7 @@ export function AboutPage() {
         visual={<HeroLoom variant="spindle" />}
       />
 
-      <PageSection title={p.whyTitle} className="ab-why">
+      <PageSection title={p.whyTitle} className="ab-why" tone="light">
         {/* Three statements read as rows, each with a thread that lights up on hover, rather than three boxes. */}
         <ul className="ab-why-list">
           {p.why.map((w) => (

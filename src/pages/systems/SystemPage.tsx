@@ -75,7 +75,7 @@ function System({ page }: { page: Page }) {
         visual={<Dashboard area={area} />}
       />
 
-      <PageSection title={copy.painsTitle} className="sy-pains">
+      <PageSection title={copy.painsTitle} className="sy-pains" tone="light">
         <div className="sy-bubbles">
           {page.pains.map((p) => (
             <figure key={p.quote} className={`sy-bubble ${voiceClass(p.who)}`} data-reveal>

@@ -80,7 +80,7 @@ export function PortfolioPage() {
         </ol>
       </PageSection>
 
-      <PageSection kicker={p.pastKicker} title={p.pastTitle} intro={p.pastIntro} className="pf-earlier">
+      <PageSection kicker={p.pastKicker} title={p.pastTitle} intro={p.pastIntro} className="pf-earlier" tone="light">
         <ul className="pf-past">
           {pastWork.map((c) => (
             <li key={c.id} id={c.id} className={`pf-past-item tone-${c.tone}`} data-reveal>

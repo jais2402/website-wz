@@ -153,6 +153,43 @@ export const stats = [
   { value: 2012, suffix: '', label: 'Building since', plain: true },
 ]
 
+// ---- What we build (Offer section, home + /our-services) ----------------------------------------------------
+// The three kinds of work people come to us for. `visual` picks the code-drawn picture in components/Offer.tsx.
+export const offer = {
+  kicker: 'What we build',
+  title: 'Websites, custom software and software products.',
+  body: 'Three kinds of work, one team that designs, builds and runs all of it, from Chennai since 2012.',
+  items: [
+    {
+      key: 'web',
+      kicker: 'Websites',
+      title: 'Websites that bring in work.',
+      for: 'For businesses that need a fast site customers can find, trust and act on.',
+      items: ['Company and marketing websites', 'Ecommerce stores', 'Landing pages for campaigns', 'Search, speed and analytics set up from day one'],
+      cta: { label: 'Talk about a website', href: '/contact-us' },
+      tone: 'lime',
+    },
+    {
+      key: 'software',
+      kicker: 'Custom software',
+      title: 'Software built around how your team works.',
+      for: 'For teams that have outgrown spreadsheets, chat groups and manual work.',
+      items: ['Business systems and dashboards', 'Customer and partner portals', 'Integrations and automation', 'AI inside your own systems'],
+      cta: { label: 'See the systems we build', href: '/our-services' },
+      tone: 'violet',
+    },
+    {
+      key: 'product',
+      kicker: 'Software products',
+      title: 'Your product idea, built and launched.',
+      for: 'For founders and companies turning an idea into a SaaS platform, web app or mobile app.',
+      items: ['Discovery and product design', 'A first version in weeks, then releases in stages', 'SaaS platforms, web and mobile apps', 'Hosting, support and new versions after launch'],
+      cta: { label: 'Talk about your product', href: '/contact-us' },
+      tone: 'coral',
+    },
+  ],
+} as const
+
 export const servicesSection = {
   title: 'A technology partner for every part of your business.',
   body: 'Operations, sales, finance, HR. We design, build, host and maintain the software behind each of them, from the first workshop to years after launch.',
@@ -610,7 +647,15 @@ export const integrations = [
 export const faq = [
   {
     q: 'What does Wezigns do?',
-    a: 'We design, build, host and maintain custom software, from the first workshop to years after launch.',
+    a: 'We design, build, host and maintain websites, custom software and software products, from the first workshop to years after launch.',
+  },
+  {
+    q: 'Do you build websites?',
+    a: 'Yes. Company websites, ecommerce stores and landing pages, fast and set up for search, and connected to the systems behind them when you need that.',
+  },
+  {
+    q: 'Can you build our software product from scratch?',
+    a: 'Yes. A short discovery agrees what the first version must do. We build it in stages, launch it, then stay on to host it, support it and ship the next versions.',
   },
   {
     q: 'How do you handle security?',
@@ -635,6 +680,7 @@ export const enquiryTopics = [
   'Fixing a process',
   'Connecting tools',
   'A website',
+  'A software product',
   'Hosting & support',
   'A vendor review',
 ]
@@ -698,7 +744,7 @@ export const footer = [
       ['Industry systems', '/systems/industry'],
     ],
   },
-  { title: 'Capabilities', links: [['Custom software', '#build'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
+  { title: 'Capabilities', links: [['Websites', '/#offer'], ['Custom software', '/#offer'], ['Software products', '/#offer'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
   { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
@@ -728,16 +774,16 @@ export const preloaderCopy = { label: 'Loading', home: 'Untangling the threads' 
 
 // Second page: the time-loom concept (loom.html).
 export const loom = {
-  eyebrow: 'Custom business software since 2012',
+  eyebrow: 'Websites, software and products since 2012',
   title: ['Every loose thread,', 'woven into', 'one system.'],
-  sub: 'We design, build and run custom software for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
+  sub: 'We design, build and run websites, custom software and software products for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
   // Links straight to the system pages, which convert best (docs/audience-study/summary.md).
   systemsLine: 'Systems we build',
   // Hero copy chosen by the simulated 5-second persona test (see docs/concept-study.md, "Hero copy test").
   phases: [
-    { kicker: 'We map it', title: 'Start with a clear map of how work runs.', body: 'We map every spreadsheet, chat group and workaround your team relies on before we write a line of code.' },
+    { kicker: 'What we build', title: 'From custom software to web development, one team.' },
     { kicker: 'We build it', title: 'One system, built around your workflow.', body: 'Orders, people, approvals and reports in one place, connected to the tools you already use, with security built in from day one.' },
-    { kicker: 'We run it', title: 'We stay on after launch.', body: 'We host, monitor and maintain what we build, and keep improving it as your business grows.' },
+    { kicker: 'We run it', title: 'We host, maintain and keep improving what we build.' },
   ],
   // The hero for machines that can't run the live loom (loom/ChaosHero.tsx): everyday problems drift in from the
   // tangle and are pulled through the glowing ring, coming out as one ordered line. `badge`: a red counter or "!".

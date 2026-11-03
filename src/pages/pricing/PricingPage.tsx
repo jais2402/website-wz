@@ -138,7 +138,7 @@ export function PricingPage() {
         </div>
       </PageSection>
 
-      <PageSection kicker={p.afterKicker} title={p.afterTitle} intro={p.afterIntro} className="pr-after">
+      <PageSection kicker={p.afterKicker} title={p.afterTitle} intro={p.afterIntro} className="pr-after" tone="light">
         <div className="pr-after-grid">
           <dl className="pr-ledger glass-card" data-reveal>
             {p.after.map((x) => (

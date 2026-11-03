@@ -46,6 +46,7 @@ import {
   processSection,
   proofSection,
   reach,
+  offer,
   services,
   servicesSection,
   stack,
@@ -75,6 +76,19 @@ export type SnapshotPage =
 type Link = { label: string; href: string }
 
 const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
+
+/** "What we build": websites, custom software, software products (home and /our-services). */
+function offerSection() {
+  return section(
+    p(offer.kicker) +
+      h2(offer.title) +
+      p(offer.body) +
+      offer.items
+        .map((o) => tag('article', p(o.kicker) + h3(o.title) + p(o.for) + ul(o.items) + tag('p', a(o.cta.href, o.cta.label))))
+        .join(''),
+    'offer',
+  )
+}
 
 export function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (c) => ESC[c])
@@ -213,7 +227,7 @@ function home(): string {
         p(loom.systemsLine) + ulHtml(navSystems.map((s) => a(s.href, s.label))),
         ` aria-label="${t(loom.systemsLine)}"`,
       ) +
-      loom.phases.map((ph) => tag('article', p(ph.kicker) + h2(ph.title) + p(ph.body))).join(''),
+      loom.phases.map((ph) => tag('article', p(ph.kicker) + h2(ph.title) + (ph.body ? p(ph.body) : ''))).join(''),
     'top',
   )
 
@@ -234,6 +248,8 @@ function home(): string {
       ulHtml(stats.map((s) => `${tag('strong', t(`${s.value}${s.suffix}`))} ${t(s.label)}`)),
     'stats',
   )
+
+  const offerHtml = offerSection()
 
   const servicesHtml = section(
     h2(servicesSection.title) +
@@ -333,6 +349,7 @@ function home(): string {
       weave +
       story +
       proof +
+      offerHtml +
       servicesHtml +
       explorer +
       beforeAfter +
@@ -352,6 +369,7 @@ function servicesPageHtml(): string {
   const s = servicesPage
   return page(
     hero(s.kicker, line(s.title), s.lead, [ctas.contact, s.workLink]) +
+      offerSection() +
       section(
         h2(s.systemsTitle) +
           p(s.systemsIntro) +

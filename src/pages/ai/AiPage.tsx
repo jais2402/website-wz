@@ -365,7 +365,7 @@ function How() {
   )
 
   return (
-    <PageSection id="how" kicker={aiPage.howKicker} title={aiPage.howTitle}>
+    <PageSection id="how" kicker={aiPage.howKicker} title={aiPage.howTitle} tone="light">
       <div ref={root} className="aip-how">
         <div className="aip-how-track" aria-hidden="true">
           <span className="aip-how-fill" />
