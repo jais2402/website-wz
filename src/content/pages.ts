@@ -458,6 +458,10 @@ export const websitePage = {
     pass: 'Pass',
     enquiry: { label: 'New enquiry', text: 'Redesign for our clinic website', to: 'Sent to email and Google Sheet' },
   },
+  // Side visuals beside the section headings (decorative; the lists below say the same in text).
+  kindsLabels: ['Company site', 'Store', 'Landing page', 'Portal', 'Redesign'],
+  gauges: ['Speed', 'Accessible', 'Best practice', 'Search'],
+  gaugeChecks: ['Sitemap', 'Schema', 'llms.txt', 'Consent'],
   buildKicker: 'What we build',
   buildTitle: 'Five kinds of website, one team.',
   buildIntro: 'From a company site that explains what you do to a portal your customers log in to. We design it, build it and keep it running.',

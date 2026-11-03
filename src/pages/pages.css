@@ -428,3 +428,37 @@
   background: transparent;
   padding: clamp(48px, 6vw, 90px) 0;
 }
+
+/* A section heading with a visual beside it (PageSection `aside`): the empty space right of the heading. */
+.pg-section-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: center;
+  margin-bottom: clamp(32px, 4vw, 56px);
+}
+
+.pg-section-top .pg-section-head {
+  margin-bottom: 0;
+}
+
+.pg-section-aside {
+  position: relative;
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+}
+
+@media (max-width: 899px) {
+  .pg-section-top {
+    display: block;
+  }
+
+  .pg-section-top .pg-section-head {
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+
+  .pg-section-aside {
+    display: none;
+  }
+}

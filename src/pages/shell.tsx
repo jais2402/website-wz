@@ -160,6 +160,7 @@ export function PageSection({
   children,
   className = '',
   tone,
+  aside,
 }: {
   id?: string
   kicker?: string
@@ -169,18 +170,34 @@ export function PageSection({
   className?: string
   /** 'light': the cream panel from the landing page's AI section, one per page to break up the dark. */
   tone?: 'light'
+  /** A decorative visual beside the heading, in the space right of it (tablet and up; hidden on phones). */
+  aside?: ReactNode
 }) {
   return (
     <section id={id} className={`pg-section ${tone === 'light' ? 'pg-light ' : ''}${className}`}>
       {/* A soft light pool and a dot field behind the section; side and colour alternate down the page. */}
       <span className="pg-glow" aria-hidden="true" />
       <div className="wrap">
-        <header className="pg-section-head">
-          <SectionMark />
-          {kicker && <p className="mono label">{kicker}</p>}
-          <SplitReveal as="h2" className="display pg-h2" text={title} />
-          {intro && <p className="lead pg-section-intro">{intro}</p>}
-        </header>
+        {(() => {
+          const head = (
+            <header className="pg-section-head">
+              <SectionMark />
+              {kicker && <p className="mono label">{kicker}</p>}
+              <SplitReveal as="h2" className="display pg-h2" text={title} />
+              {intro && <p className="lead pg-section-intro">{intro}</p>}
+            </header>
+          )
+          return aside ? (
+            <div className="pg-section-top">
+              {head}
+              <div className="pg-section-aside" aria-hidden="true">
+                {aside}
+              </div>
+            </div>
+          ) : (
+            head
+          )
+        })()}
         {children}
       </div>
     </section>
