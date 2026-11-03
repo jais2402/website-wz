@@ -21,6 +21,11 @@ const PAGE_MODULES: Record<string, string[]> = {
   system: ['pages/systems/SystemPage.tsx'],
 }
 
+// Each entry (src/main.tsx, src/pages/main.tsx, src/contact/main.tsx) only waits for the first paint and then imports
+// its app (boot.tsx), so the app's chunks are hinted here too: they download with the HTML's stylesheets and run once
+// the page has painted.
+const BOOT = { inner: 'pages/boot.tsx', home: 'boot.tsx', contact: 'contact/boot.tsx' }
+
 type Chunk = {
   type: 'chunk'
   fileName: string
@@ -36,10 +41,16 @@ export function pagePreloadPlugin(): Plugin {
     transformIndexHtml: {
       order: 'post',
       handler(html, ctx) {
+        if (!ctx.bundle) return html
         const page = html.match(/<body[^>]*\sdata-page="([^"]+)"/)?.[1]
-        if (!page || !ctx.bundle) return html
-        const modules = PAGE_MODULES[page.split(':')[0]]
-        if (!modules) return html
+        let modules: string[]
+        // The home page paints its preloader from the HTML, so its scripts can yield to the stylesheets and fonts
+        // (the prerendered pages get the same in scripts/vite-prerender.ts).
+        const home = !page && /(^|\/)index\.html$/.test(ctx.filename)
+        if (page) modules = [BOOT.inner, ...(PAGE_MODULES[page.split(':')[0]] ?? [])]
+        else if (home) modules = [BOOT.home]
+        else if (/contact-us\.html$/.test(ctx.filename)) modules = [BOOT.contact]
+        else return html
         const chunks = Object.values(ctx.bundle).filter((c) => c.type === 'chunk') as unknown as Chunk[]
         const byName = new Map(chunks.map((c) => [c.fileName, c]))
         const js = new Set<string>()
@@ -63,7 +74,14 @@ export function pagePreloadPlugin(): Plugin {
         return [
           ...[...js].filter(fresh).map((f) => ({
             tag: 'link',
-            attrs: { rel: 'modulepreload', crossorigin: true, href: `/${f}` },
+            // data-app marks the app's chunks (as opposed to the entry's own imports) for scripts/vite-prerender.ts.
+            attrs: {
+              rel: 'modulepreload',
+              crossorigin: true,
+              href: `/${f}`,
+              'data-app': true,
+              ...(home && { fetchpriority: 'low' }),
+            },
             injectTo: 'head' as const,
           })),
           ...[...css].filter(fresh).map((f) => ({

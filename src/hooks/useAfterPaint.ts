@@ -14,15 +14,23 @@ export function useAfterPaint({ idle = true, timeoutMs = 1200 }: { idle?: boolea
   useEffect(() => {
     let handle = 0
     let timer = 0
-    // rAF fires just before the next paint; the timeout queued from it runs after that paint.
-    const raf = requestAnimationFrame(() => {
-      timer = window.setTimeout(() => {
+    let raf = 0
+    // rAF fires just before the next paint; the timeout queued from it runs after that paint. Two frames: a frame is
+    // presented asynchronously, so the first one may still be on its way to the screen when the next work starts
+    // (the home hero's text would then compete with the three.js download it does not need).
+    const afterFrame = (then: () => void) => {
+      raf = requestAnimationFrame(() => {
+        timer = window.setTimeout(then, 0)
+      })
+    }
+    afterFrame(() =>
+      afterFrame(() => {
         // A transition, so React builds whatever this unlocks in small slices instead of one long task.
         const go = () => startTransition(() => setReady(true))
         if (idle && 'requestIdleCallback' in window) handle = window.requestIdleCallback(go, { timeout: timeoutMs })
         else go()
-      }, 0)
-    })
+      }),
+    )
     return () => {
       cancelAnimationFrame(raf)
       window.clearTimeout(timer)

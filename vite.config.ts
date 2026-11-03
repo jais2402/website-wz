@@ -7,6 +7,7 @@ import { seo } from './scripts/vite-seo.ts'
 import { snapshotPlugin } from './scripts/vite-snapshot.ts'
 import { pagePreloadPlugin } from './scripts/vite-page-preload.ts'
 import { studioPlugin } from './scripts/vite-studio.ts'
+import { prerenderPlugin } from './scripts/vite-prerender.ts'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
 const page = (path: string) => fileURLToPath(new URL(`./${path}`, import.meta.url))
@@ -45,6 +46,21 @@ export default defineConfig({
     snapshotPlugin(),
     // Inner pages: preload the page's own chunk with the shared entry instead of after it.
     pagePreloadPlugin(),
+    // Inner pages and contact: their first screen as real HTML, so it paints before the scripts have run.
+    prerenderPlugin([
+      'contact',
+      'about',
+      'services',
+      'ai',
+      'technology',
+      'portfolio',
+      'pricing',
+      'notfound',
+      'legal:privacy',
+      'legal:terms',
+      'legal:cookies',
+      ...SYSTEMS.map((s) => `system:${s}`),
+    ]),
     // /studio.html records the hero poster video (dev server only).
     studioPlugin(),
     {
@@ -65,10 +81,14 @@ export default defineConfig({
     rolldownOptions: {
       input: INPUTS,
       // GSAP, ScrollTrigger and Lenis get their own cacheable 'motion' chunk instead of riding in whichever
-      // shared chunk imports them first (they were bundled as "EnquiryForm").
+      // shared chunk imports them first (they were bundled as "EnquiryForm"). React gets the same.
       output: {
         codeSplitting: {
-          groups: [{ name: 'motion', test: /node_modules[\\/](gsap|@gsap|lenis)[\\/]/ }],
+          groups: [
+            { name: 'motion', test: /node_modules[\\/](gsap|@gsap|lenis)[\\/]/ },
+            // React and React DOM: one long-cached chunk under its own name (it was bundled as "ga" or "preload-helper").
+            { name: 'react', test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/, priority: 1 },
+          ],
         },
       },
     },
