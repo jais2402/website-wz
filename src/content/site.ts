@@ -409,7 +409,7 @@ export const work = [
     title: 'One dashboard for hundreds of people running one event.',
     body: 'An operations dashboard and participant platform for a large annual engineering event, on AWS.',
     metrics: [
-      { value: 'Hundreds', label: 'people coordinated live' },
+      { value: 'Hundreds', label: 'of people coordinated live' },
       { value: 'AWS', label: 'high-availability set-up' },
     ],
     tags: ['Real-time', 'High concurrency', 'AWS'],
