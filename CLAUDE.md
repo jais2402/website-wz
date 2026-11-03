@@ -48,7 +48,7 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   `scene/Warmup.tsx` (shaders compiled + first frames drawn). It opens after 12 s regardless.
 - Machines that can't run the live loom (no WebGL, a software renderer, or a GPU that fails the frame test or
   drops under ~25 fps: `gfx/gfxMode.ts`, `gfx/frameTest.ts`; `?gfx=live|poster|auto` forces it) get the 2D
-  "chaos to system" hero instead (`loom/ChaosHero.tsx`, maths in `lib/chaos.ts`, problem cards in `loom.chaos`
+  "chaos to system" hero instead (`loom/ChaosHero.tsx`, Before/After style: tangle + problem cards → one glowing circle per thread → straight lines; maths in `lib/chaos.ts`, cards in `loom.chaos`
   in site.ts), the lighter story scene, and no blur or moving grain (`html[data-gfx]` in index.css). A testing
   badge (`?badge=1`, on by default in dev and preview) shows which version a device gets.
   `lib/webgl.ts` checks whether a WebGL context can be created; without one the 3D scenes are not mounted

@@ -54,14 +54,14 @@
 }
 
 /* The 2D "chaos to system" hero (ChaosHero.tsx), for machines that can't run the live loom: a canvas over a dark
-   haze, warmer on the tangled side and blue round the ring. */
+   haze, warm on the tangled side and cool blue on the ordered side, like the Before/After section. */
 .chaos-hero {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(40% 55% at 80% 50%, rgba(77, 159, 255, 0.14), transparent 70%),
-    radial-gradient(55% 60% at 25% 45%, rgba(140, 60, 90, 0.16), transparent 70%),
-    var(--ink);
+    radial-gradient(35% 50% at 86% 50%, rgba(77, 159, 255, 0.1), transparent 70%),
+    radial-gradient(60% 70% at 22% 40%, rgba(120, 44, 72, 0.22), transparent 70%),
+    linear-gradient(180deg, #0b0910, #07070c);
 }
 
 .chaos-hero canvas {
