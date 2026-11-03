@@ -40,7 +40,7 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   `src/pages/glyphs.tsx` (order per list in `glyphNames.ts`).
   Every hero has a visual: a 3D loom variant (`pages/HeroLoom.tsx` → `LoomScene variant`: `classic` for contact,
   `spindle` (diagonal, blue, orbit rings) for About, `frayed` (broken, coral) for 404), the live dashboard (systems), the
-  animated SVG (AI), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`; each system page's tool groups are in `src/content/systemTools.ts`, research in `docs/tools-research.md`). System pages print as
+  AI chat window (AI, a CSS 3D stage looping on the timeline in `lib/aiHero.ts`), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`; each system page's tool groups are in `src/content/systemTools.ts`, research in `docs/tools-research.md`). System pages print as
   a one-page summary (`src/pages/print.css` + print rules in `system.css`).
 - `api/enquiry.ts`: Vercel Function that emails enquiries through Resend and adds each one as a row in a Google Sheet
   (`api/_sheets.ts`, `GOOGLE_SHEETS_*` / `GOOGLE_SHEET_*`; success when either took it). `npm run dev` serves it from

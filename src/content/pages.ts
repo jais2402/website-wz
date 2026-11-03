@@ -245,10 +245,48 @@ export const aiPage = {
   kicker: 'AI',
   title: ['AI that does', 'real work', 'for your business.'],
   heroLink: 'See the two ways',
-  heroVisualLabel: 'A record is read by AI, which flags it, drafts the next step and waits for a person to approve.',
+  // Hero visual: a chat with an AI assistant over the company's own records. Decorative (the hero copy explains it);
+  // the sample data is illustrative and matches the landing page's AI demo (aiDemo in site.ts).
+  chat: {
+    title: 'Ask your data',
+    status: 'Your records',
+    placeholder: 'Ask about your records…',
+    question: 'Which orders are running late this week?',
+    // The answer streams in word by word; `strong` parts are set in bold.
+    answer: [
+      { text: '3 orders are late.', strong: true },
+      { text: 'PO-2231 from Apex Industrial is the oldest,' },
+      { text: '4 days past due.', strong: true },
+    ],
+    sourcesLabel: 'Sources',
+    sources: ['orders.xlsx', 'Supplier emails'],
+    actionLabel: 'Suggested next step',
+    action: 'Email Apex Industrial for a new delivery date',
+    approve: 'Approve',
+    edit: 'Edit',
+    signOff: 'A person signs off',
+    sent: 'Sent ✓ · logged',
+    // Floating notes around the window.
+    toast: { title: 'Invoice #0193 matched', meta: 'Finance · just now' },
+    message: { from: 'Apex Industrial', text: 'New date: Friday, 10 am' },
+  },
   waysTitle: 'Two ways to use AI',
   waysLink: 'See how',
   howKicker: 'How we build it',
+  // Beside the "How we build" heading: a test run of the AI against the client's own past cases. No scores or
+  // accuracy figures: the rows tick through one by one.
+  testRun: {
+    title: 'Test run',
+    meta: 'Past cases',
+    rows: [
+      { id: 'Invoice #0188', result: 'Matched', tone: 'ok' },
+      { id: 'Invoice #0189', result: 'Matched', tone: 'ok' },
+      { id: 'Invoice #0191', result: 'Flagged for review', tone: 'flag' },
+      { id: 'Invoice #0193', result: 'Approved by a person', tone: 'person' },
+    ],
+    running: 'Checking against past work…',
+    done: 'Run complete · every result logged',
+  },
   lead: 'Two ways to put AI to work: inside the systems you already run, or as a custom AI solution built around one job. Either way, a person signs off and your data stays yours.',
   ways: [
     {
