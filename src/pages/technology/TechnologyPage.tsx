@@ -4,6 +4,8 @@ import { ctas, stack, technologyPage as p } from '@/content/site'
 import { ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { CtaStrip } from '@/components/CtaStrip'
 import { LoomContact } from '@/loom/sections'
+import { stackGlyphs } from '../glyphNames'
+import { Glyph } from '../glyphs'
 import { PageHero, PageSection, PageShell } from '../shell'
 import { StackVisual } from './StackVisual'
 import '../print.css'
@@ -39,9 +41,15 @@ export function TechnologyPage() {
 
       <PageSection id="stack" title={p.stackTitle} intro={p.stackIntro} className="tech-stack">
         <ul className="tech-groups">
-          {stack.map((g) => (
-            <li key={g.group} className="tech-group" data-reveal>
-              <h3 className="mono tech-group-label">{g.group}</h3>
+          {stack.map((g, i) => (
+            <li key={g.group} className="tech-group" data-reveal data-spot>
+              <div className="tech-group-head">
+                <Glyph name={stackGlyphs[i]} className="tech-group-glyph" />
+                <h3 className="mono tech-group-label">{g.group}</h3>
+                <span className="mono tech-group-count" aria-hidden="true">
+                  {String(g.items.length).padStart(2, '0')}
+                </span>
+              </div>
               <ul className="chip-row">
                 {g.items.map((t) => (
                   <li key={t} className="chip">

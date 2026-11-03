@@ -1,5 +1,5 @@
 import { useGSAP } from '@gsap/react'
-import { Fragment, type ReactNode, useRef } from 'react'
+import { Fragment, type ReactNode, type RefObject, useEffect, useRef } from 'react'
 import { CookieBanner } from '@/components/CookieBanner'
 import { Cursor } from '@/components/Cursor'
 import { Footer } from '@/components/Footer'
@@ -7,8 +7,9 @@ import { Nav } from '@/components/Nav'
 import { SplitReveal } from '@/components/Reveal'
 import { StickyCall } from '@/components/StickyCall'
 import { nav } from '@/content/site'
-import { gsap, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
+import { gsap, ScrollTrigger, usePrefersReducedMotion, useSmoothScroll } from '@/hooks/motion'
 import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
+import { spotVars } from '@/lib/spotlight'
 
 // Shared building blocks for the inner pages. Styles in pages.css (classes prefixed `pg-`).
 
@@ -41,6 +42,25 @@ export function PageShell({ children, className = '' }: { children: ReactNode; c
     { scope: root, dependencies: [reducedMotion] },
   )
 
+  // Each section: `is-on` while it is on screen (thread flow and knot pulse run only then), `is-in` once it has
+  // entered (the section mark's thread draws in). `is-armed` on <main> hides the undrawn state until then, so
+  // without JS, in the HTML snapshot and under reduced motion everything shows fully drawn and still.
+  useGSAP(
+    () => {
+      const main = root.current
+      if (reducedMotion || !main) return
+      main.classList.add('is-armed')
+      gsap.utils.toArray<HTMLElement>('.pg-section').forEach((el) => {
+        ScrollTrigger.create({ trigger: el, start: 'top bottom', end: 'bottom top', toggleClass: 'is-on' })
+        ScrollTrigger.create({ trigger: el, start: 'top 82%', once: true, onEnter: () => el.classList.add('is-in') })
+      })
+      return () => main.classList.remove('is-armed')
+    },
+    { scope: root, dependencies: [reducedMotion] },
+  )
+
+  useSpotlight(root, !reducedMotion)
+
   return (
     <>
       <div className="grain" aria-hidden="true" />
@@ -55,6 +75,43 @@ export function PageShell({ children, className = '' }: { children: ReactNode; c
       <StickyCall />
     </>
   )
+}
+
+/**
+ * Pointer spotlight on every `[data-spot]` card inside the page, plus a slight 3D tilt on `[data-spot="tilt"]`
+ * (styles in pages.css). One delegated listener; fine pointers only, off under reduced motion.
+ */
+function useSpotlight(root: RefObject<HTMLElement | null>, enabled: boolean) {
+  useEffect(() => {
+    const main = root.current
+    if (!enabled || !main || !window.matchMedia('(pointer: fine)').matches) return
+    let card: HTMLElement | null = null
+    const reset = (el: HTMLElement) => {
+      el.classList.remove('is-spot')
+      el.style.setProperty('--rx', '0deg')
+      el.style.setProperty('--ry', '0deg')
+    }
+    const move = (e: PointerEvent) => {
+      const next = (e.target as Element | null)?.closest<HTMLElement>('[data-spot]') ?? null
+      if (card && card !== next) reset(card)
+      card = next
+      if (!card) return
+      const vars = spotVars(e.clientX, e.clientY, card.getBoundingClientRect())
+      for (const [k, v] of Object.entries(vars)) card.style.setProperty(k, v)
+      card.classList.add('is-spot')
+    }
+    const leave = () => {
+      if (card) reset(card)
+      card = null
+    }
+    main.addEventListener('pointermove', move, { passive: true })
+    main.addEventListener('pointerleave', leave)
+    return () => {
+      main.removeEventListener('pointermove', move)
+      main.removeEventListener('pointerleave', leave)
+      leave()
+    }
+  }, [root, enabled])
 }
 
 /** Page opening: label, a headline whose last line is set in the serif accent, lead, actions and an optional visual. */
@@ -115,8 +172,11 @@ export function PageSection({
 }) {
   return (
     <section id={id} className={`pg-section ${tone === 'light' ? 'pg-light ' : ''}${className}`}>
+      {/* A soft light pool and a dot field behind the section; side and colour alternate down the page. */}
+      <span className="pg-glow" aria-hidden="true" />
       <div className="wrap">
         <header className="pg-section-head">
+          <SectionMark />
           {kicker && <p className="mono label">{kicker}</p>}
           <SplitReveal as="h2" className="display pg-h2" text={title} />
           {intro && <p className="lead pg-section-intro">{intro}</p>}
@@ -124,5 +184,23 @@ export function PageSection({
         {children}
       </div>
     </section>
+  )
+}
+
+/**
+ * The section's index (a CSS counter, so it always follows page order) and a short twisted thread ending in a
+ * glowing knot. The thread draws in as the section enters; the knot breathes while it is on screen.
+ */
+function SectionMark() {
+  return (
+    <div className="pg-mark" aria-hidden="true">
+      <span className="mono pg-mark-num" />
+      <svg className="pg-mark-thread" viewBox="0 0 160 20" focusable="false">
+        <path pathLength={1} d="M2 10 C24 1 42 19 64 10 S106 1 128 10 S148 13 152 10" />
+        <path pathLength={1} className="is-alt" d="M2 10 C24 19 42 1 64 10 S106 19 128 10 S148 7 152 10" />
+        <circle className="pg-mark-knot" cx="152" cy="10" r="4" />
+      </svg>
+      <span className="pg-mark-rule" />
+    </div>
   )
 }

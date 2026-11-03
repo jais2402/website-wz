@@ -6,6 +6,8 @@ import { pricingPage as p } from '@/content/pages'
 import { ctas, faq, pricing, process } from '@/content/site'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
 import { LoomContact } from '@/loom/sections'
+import { setGlyphs } from '../glyphNames'
+import { Glyph } from '../glyphs'
 import { PageHero, PageSection, PageShell } from '../shell'
 import { PriceTie } from './PriceTie'
 import './pricing.css'
@@ -83,9 +85,14 @@ export function PricingPage() {
           <div className="pr-sets-col">
             <p className="mono pr-group">{p.setsLabel}</p>
             <ul className="pr-sets-list">
-              {pricing.sets.map((s) => (
+              {pricing.sets.map((s, i) => (
                 <li key={s.name} className="pr-set" data-reveal>
-                  <h3>{s.name}</h3>
+                  <div className="pr-set-name">
+                    <span className="pg-glyph-tile pr-set-glyph">
+                      <Glyph name={setGlyphs[i]} />
+                    </span>
+                    <h3>{s.name}</h3>
+                  </div>
                   <div>
                     <p className="pr-set-text">{s.text}</p>
                     {p.setsDetail[s.name] && <p className="pr-set-detail">{p.setsDetail[s.name]}</p>}
@@ -94,7 +101,7 @@ export function PricingPage() {
               ))}
             </ul>
           </div>
-          <div className="pr-never" data-reveal>
+          <div className="pr-never" data-reveal data-spot>
             <p className="mono pr-group">{p.doesntLabel}</p>
             <ul className="pr-never-list">
               {pricing.doesnt.map((d, i) => (

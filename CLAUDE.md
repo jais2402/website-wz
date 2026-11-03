@@ -32,6 +32,10 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   `/sitemap.xml` (and `llms.txt`) are generated at build by `scripts/vite-seo.ts` from `src/content/seo.ts`; the
   footer's "Sitemap" link points to it and `/sitemap` redirects there (`vercel.json`). Shared shell, hero, section
   and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
+  Every `PageSection` gets a light pool + dot field (`.pg-glow`), a numbered thread-and-knot mark that draws in on
+  entry (`SectionMark`, CSS counter) and `is-on`/`is-in` classes; cards opt in to a pointer spotlight with `data-spot`
+  (`data-spot="tilt"` also tilts; not on `data-reveal` elements, GSAP owns their transform). Small list glyphs:
+  `src/pages/glyphs.tsx` (order per list in `glyphNames.ts`).
   Every hero has a visual: a 3D loom variant (`pages/HeroLoom.tsx` → `LoomScene variant`: `classic` for contact,
   `spindle` (diagonal, blue, orbit rings) for About, `frayed` (broken, coral) for 404), the live dashboard (systems), the
   animated SVG (AI), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`; each system page's tool groups are in `src/content/systemTools.ts`, research in `docs/tools-research.md`). System pages print as

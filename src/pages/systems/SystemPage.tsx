@@ -93,7 +93,7 @@ function System({ page }: { page: Page }) {
       <PageSection id="build" title={copy.buildTitle} className="sy-build">
         <ul className="sy-modules">
           {buildModules(page).map((m) => (
-            <li key={m.name} className="sy-module" data-reveal>
+            <li key={m.name} className="sy-module" data-reveal data-spot>
               <span className="sy-glyph" aria-hidden="true">
                 <Glyph kind={m.kind} />
               </span>
@@ -167,7 +167,7 @@ function System({ page }: { page: Page }) {
           <ul>
             {otherSystems(page.slug).map((s) => (
               <li key={s.slug} data-reveal>
-                <a className="sy-more-card" href={`/systems/${s.slug}`}>
+                <a className="sy-more-card" href={`/systems/${s.slug}`} data-spot>
                   <span className="sy-more-name">{s.title}</span>
                   <span className="sy-more-promise">{s.promise}</span>
                   <span className="sy-more-arrow" aria-hidden="true">

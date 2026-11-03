@@ -288,10 +288,51 @@
 
 /* ---- Earlier systems: a lighter ledger, no numbers ---- */
 .pf-past {
+  position: relative;
   margin: 0;
   padding: 0;
   list-style: none;
   border-bottom: 1px solid var(--line);
+}
+
+/* One thread strung through every project's knot, drawn down the list as the section enters. */
+.pf-past::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: calc(clamp(24px, 3vw, 36px) + 14px);
+  bottom: 48px;
+  left: 4px;
+  width: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--lime), var(--violet) 55%, var(--coral));
+  opacity: 0.55;
+  transform-origin: top;
+  transition: transform 1.8s var(--ease-out);
+  pointer-events: none;
+}
+
+.pg.is-armed .pg-section:not(.is-in) .pf-past::before {
+  transform: scaleY(0);
+}
+
+.pf-past-sector {
+  position: relative;
+  z-index: 1;
+}
+
+/* The knot hides the thread behind it, so the thread reads as strung through. */
+.pf-past-knot {
+  background: var(--ink);
+}
+
+.pg-light .pf-past-knot {
+  background: var(--cream);
+}
+
+.pf-past-item,
+.pf-case {
+  --spot: var(--tone);
 }
 
 .pf-past-item {
@@ -481,6 +522,10 @@
     gap: 12px;
   }
 
+  .pf-past::before {
+    display: none;
+  }
+
   .pf-past-item .pf-tags {
     justify-content: flex-start;
     padding-top: 0;
@@ -512,5 +557,11 @@
   /* Labels at the line ends would be too small to read on a phone. */
   .pf-weave-label {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-past::before {
+    transition: none;
   }
 }
