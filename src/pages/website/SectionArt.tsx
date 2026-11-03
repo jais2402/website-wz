@@ -2,14 +2,15 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { websitePage as p } from '@/content/pages'
 import { pastWork } from '@/content/site'
 
-/** Adds `is-in` while the element is on screen, so its CSS can play (and pause again off screen). */
+/** Adds `is-in` the first time the element comes on screen, so its CSS entrance plays once. */
 function InView({ className, children }: { className: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
   const [inView, setInView] = useState(false)
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.2 })
+    // Once in, stays in: the entrance plays once and does not replay when the visitor scrolls back up.
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setInView(true), { threshold: 0.2 })
     io.observe(el)
     return () => io.disconnect()
   }, [])

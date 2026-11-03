@@ -711,6 +711,10 @@
 
 .kf.is-in .kf-win {
   --spread: 1;
+}
+
+/* The float runs only while the section is on screen (shell.tsx sets is-on). */
+.pg-section.is-on .kf.is-in .kf-win {
   animation: kfFloat 6s ease-in-out infinite;
   animation-delay: calc(var(--i) * -1.1s);
 }

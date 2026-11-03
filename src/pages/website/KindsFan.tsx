@@ -80,7 +80,8 @@ export function KindsFan() {
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.2 })
+    // Once in, stays in: the entrance plays once and does not replay when the visitor scrolls back up.
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setInView(true), { threshold: 0.2 })
     io.observe(el)
     return () => io.disconnect()
   }, [])
