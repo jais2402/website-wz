@@ -34,6 +34,7 @@ function readHero() {
     live3d: !!document.querySelector('.loom-canvas.is-ready canvas'),
     videoPlaying: !!document.querySelector('.loom-hero .scene-video.is-playing'),
     videoLight: !!document.querySelector('.loom-hero .scene-video.is-light'),
+    chaos: !!document.querySelector('.loom-hero .chaos-hero'),
   })
 }
 

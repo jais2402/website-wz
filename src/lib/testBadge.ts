@@ -16,7 +16,7 @@ export function badgeChoice(
   return { show: build.dev || build.vercelEnv === 'preview', store: null }
 }
 
-export type HeroView = '3D' | 'Video' | 'Video H.264' | 'Still' | 'Off screen'
+export type HeroView = '3D' | '2D chaos' | 'Video' | 'Video H.264' | 'Still' | 'Off screen'
 
 /** What the hero is showing right now, from what is on the page. `videoLight`: the H.264 file, for software drawing. */
 export function heroView(s: {
@@ -24,9 +24,11 @@ export function heroView(s: {
   live3d: boolean
   videoPlaying: boolean
   videoLight?: boolean
+  chaos?: boolean
 }): HeroView {
   if (!s.onScreen) return 'Off screen'
   if (s.live3d) return '3D'
+  if (s.chaos) return '2D chaos'
   if (!s.videoPlaying) return 'Still'
   return s.videoLight ? 'Video H.264' : 'Video'
 }

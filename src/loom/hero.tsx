@@ -19,6 +19,7 @@ import posters from '@/generated/posters.json'
 import { measureFrames, watchFrames } from '@/gfx/frameTest'
 import { gfx } from '@/gfx/gfxMode'
 import { ScenePoster } from '@/gfx/ScenePoster'
+import { ChaosHero } from './ChaosHero'
 import { FRAME_BUDGET_MS } from '@/lib/gfx'
 import { gsap, ScrollTrigger, scrollToTarget } from '@/hooks/motion'
 import { loomStore } from './store'
@@ -29,9 +30,6 @@ import { studio } from './studio'
 
 const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.LoomScene })))
 const progress = () => loomStore.progress
-/** Longest the preloader waits for the hero poster and its video, once the poster is what the hero will show. */
-const POSTER_WAIT_MS = 5000
-const saveData = () => !!(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
 /** The camera glides into its resting framing (the poster's) over ~2 s after the scene mounts: fade in after. */
 const CAMERA_SETTLE_MS = 2000
 const wait = (ms: number) => new Promise((r) => window.setTimeout(r, ms))
@@ -42,26 +40,16 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   const [phase, setPhase] = useState(-1)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
-  // Poster first: the still shows at once; the live loom loads under it (if this machine may run it), passes a
-  // frame test, then fades in. If it is too slow, or WebGL is lost, the still stays and three.js is let go.
+  // Machines that may run it load the live loom under its poster; it passes a frame test, then fades in. Machines
+  // that can't (no WebGL, a software renderer, a GPU too slow for it, or WebGL lost) get the 2D "chaos to system"
+  // hero instead (ChaosHero), and three.js is let go.
   const [live, setLive] = useState(gfx.live)
   const tested = useRef(gfx.mode === 'live')
-  // The page opens once, on the hero as it will stay: machines that may run the live loom keep the preloader up until
-  // it is drawn; the others until the loom's video is playing (or, where it will not play, the still has loaded).
-  // Opening on the still and then fading to the live loom or the video read as two transitions.
-  const videoWanted = !reducedMotion && !saveData()
-  const showsPoster = !live
-  const posterLoaded = useCallback(() => {
-    if (!gfx.live && !videoWanted) homeGate?.done('loom')
-  }, [videoWanted])
-  const videoPlaying = useCallback((on: boolean) => {
-    if (on && !gfx.live) homeGate?.done('loom')
+  // The page opens once, on the hero as it will stay: the preloader stays up until the live loom is drawn, or the
+  // 2D hero's first frame.
+  const chaosDrawn = useCallback(() => {
+    if (!gfx.live) homeGate?.done('loom')
   }, [])
-  useEffect(() => {
-    if (!showsPoster) return
-    const t = window.setTimeout(() => homeGate?.done('loom'), POSTER_WAIT_MS)
-    return () => window.clearTimeout(t)
-  }, [showsPoster])
   const onSceneReady = useCallback(async () => {
     // Under the preloader the camera's glide is hidden anyway; only a swap in view waits for it to settle.
     const settled = homeGate && !homeGate.isReady() ? Promise.resolve() : wait(CAMERA_SETTLE_MS)
@@ -69,7 +57,7 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
       const ms = await measureFrames()
       tested.current = true
       if (ms > FRAME_BUDGET_MS) {
-        // The poster and its video take over; the preloader opens once the video plays.
+        // The 2D hero takes over; the preloader opens once it has drawn.
         gfx.markSlow()
         setLive(false)
         return
@@ -79,8 +67,8 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
     setReady(true)
     homeGate?.done('loom')
   }, [])
-  // Still watched once showing: a machine that passed the test but cannot keep the loom smooth gets the poster (and
-  // its video) instead. Not when ?gfx=live forces the live scene.
+  // Still watched once showing: a machine that passed the test but cannot keep the loom smooth gets the 2D hero
+  // instead. Not when ?gfx=live forces the live scene.
   useEffect(() => {
     if (!ready || !live || !active || reducedMotion || gfx.mode === 'live') return
     // From when the page is revealed: under the preloader the story scene is still compiling alongside.
@@ -99,7 +87,7 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
       stop()
     }
   }, [ready, live, active, reducedMotion])
-  // WebGL lost (driver reset, GPU process crash, or forced): back to the poster.
+  // WebGL lost (driver reset, GPU process crash, or forced): the 2D hero takes over.
   useEffect(() => {
     if (!ready) return
     const canvas = root.current?.querySelector('.loom-canvas canvas')
@@ -170,18 +158,12 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   return (
     <section id="top" ref={root} className="loom-hero" aria-label={loom.title.join(' ')}>
       <div className="loom-sticky">
-        <ScenePoster
-          poster={posters.hero}
-          priority
-          hidden={ready}
-          drift={{ progress, active: !live && active }}
-          // Light runs into the loom on the opening view; once the intro panel scrolls away the drift takes over.
-          flow={active && phase < 0}
-          // Machines that show the poster instead of the live loom get its looping video while the hero is on screen.
-          video={!live && active}
-          onLoad={posterLoaded}
-          onVideo={videoPlaying}
-        />
+        {live ? (
+          // Shown while the live loom loads under it (and whenever it is re-drawn after the hero comes back).
+          <ScenePoster poster={posters.hero} priority hidden={ready} flow={active && phase < 0} />
+        ) : (
+          <ChaosHero active={active} reducedMotion={reducedMotion} progress={progress} onReady={chaosDrawn} />
+        )}
         <div className={`loom-canvas has-poster${ready ? ' is-ready' : ''}`} aria-hidden="true">
           {
             // Mounted only while the hero is on screen: one WebGL context at a time on the page.

@@ -46,9 +46,13 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   (contact over the particle globe). They are not rendered.
 - The home preloader waits for `homeGate` (`lib/loadGate.ts`): fonts, window load, and both canvases reporting via
   `scene/Warmup.tsx` (shaders compiled + first frames drawn). It opens after 12 s regardless.
-- One version for everyone (client decision): no lite or static tier, no GPU detection, no `?perf=` switch.
-  `lib/webgl.ts` only checks whether a WebGL context can be created; without one the 3D scenes are not mounted
-  (their areas stay empty) and the home preloader does not wait for them. One WebGL canvas at a time
+- Machines that can't run the live loom (no WebGL, a software renderer, or a GPU that fails the frame test or
+  drops under ~25 fps: `gfx/gfxMode.ts`, `gfx/frameTest.ts`; `?gfx=live|poster|auto` forces it) get the 2D
+  "chaos to system" hero instead (`loom/ChaosHero.tsx`, maths in `lib/chaos.ts`, problem cards in `loom.chaos`
+  in site.ts), the lighter story scene, and no blur or moving grain (`html[data-gfx]` in index.css). A testing
+  badge (`?badge=1`, on by default in dev and preview) shows which version a device gets.
+  `lib/webgl.ts` checks whether a WebGL context can be created; without one the 3D scenes are not mounted
+  and the home preloader does not wait for them. One WebGL canvas at a time
   (`lib/canvasSlot.ts`). `npm run build && npm run perf:audit` measures frame rates with the GPU and with SwiftShader.
 - 3D render budget (`lib/render.ts`, `hooks/useBudgetDpr.ts`): each canvas renders at most ~1.6M pixels and
   the browser scales it up; bloom runs at half resolution. Built for laptops without a dedicated GPU: keep it.
