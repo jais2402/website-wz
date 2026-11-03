@@ -1,6 +1,37 @@
 import { describe, expect, it } from 'vitest'
+import { portfolioPage } from '@/content/pages'
 import { archiveSectors, pastWork, portfolioArchive, work } from '@/content/site'
-import { countLabel, filterBySector, nameBreaks, sectorCounts } from './portfolio'
+import { countLabel, filterBySector, nameBreaks, sectorCounts, stackSlot } from './portfolio'
+
+describe('stackSlot', () => {
+  it('puts the active screen at the front and the one before it at the back', () => {
+    expect(stackSlot(2, 2, 5)).toBe(0)
+    expect(stackSlot(3, 2, 5)).toBe(1)
+    expect(stackSlot(1, 2, 5)).toBe(4)
+  })
+
+  it('gives every screen its own slot', () => {
+    for (let active = 0; active < 5; active++) {
+      const slots = [0, 1, 2, 3, 4].map((i) => stackSlot(i, active, 5)).sort()
+      expect(slots).toEqual([0, 1, 2, 3, 4])
+    }
+  })
+
+  it('moves the front screen to the back on the next step', () => {
+    expect(stackSlot(0, 0, 4)).toBe(0)
+    expect(stackSlot(0, 1, 4)).toBe(3)
+    expect(stackSlot(0, 0, 0)).toBe(0)
+  })
+})
+
+describe('portfolio hero showcase', () => {
+  it('shows only real cases, each once', () => {
+    const ids: string[] = [...work, ...pastWork].map((c) => c.id)
+    const shown = portfolioPage.showcase.screens.map((s) => s.id)
+    for (const id of shown) expect(ids).toContain(id)
+    expect(new Set(shown).size).toBe(shown.length)
+  })
+})
 
 const items: { id: string; sector: string }[] = [
   { id: 'a', sector: 'Retail' },

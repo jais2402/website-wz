@@ -30,3 +30,12 @@ export function nameBreaks(name: string): string[] {
   if (/\s/.test(name) || !name.includes('.')) return [name]
   return name.split(/(?=\.)/)
 }
+
+/**
+ * Hero showcase: where screen `i` sits in a stack of `n` when screen `active` is at the front. 0 is the front, n - 1
+ * the back; each rotation moves the front screen to the back and every other screen one step forward.
+ */
+export function stackSlot(i: number, active: number, n: number): number {
+  if (n <= 0) return 0
+  return (((i - active) % n) + n) % n
+}
