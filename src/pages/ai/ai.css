@@ -122,6 +122,9 @@ body:has(main.aip) .grain {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   padding-right: 0.06em;
+  /* The gradient paints only inside the box: pad it past the descenders (the y) and pull the spacing back. */
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
 }
 
 .aip .label {
