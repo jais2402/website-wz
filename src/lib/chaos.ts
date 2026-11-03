@@ -61,7 +61,7 @@ export function nodeY(i: number, n: number, gate: Gate): number {
  * through the hero calms them). The waves die away into the knot, so the threads gather into it, and every point is
  * kept inside the funnel (eased in at its edges, so a thread brushing the edge bends along it rather than clipping).
  */
-export function strandPoint(i: number, n: number, t: number, time: number, chaos: number, w: number, h: number, gate: Gate): Pt {
+export function strandPoint(i: number, n: number, t: number, time: number, chaos: number, w: number, _h: number, gate: Gate): Pt {
   const a = hash(i)
   const b = hash(i + 101)
   const c = hash(i + 202)
@@ -82,12 +82,7 @@ export function strandPoint(i: number, n: number, t: number, time: number, chaos
     amp *
       (Math.sin(t * (2 + b * 2.5) + a * 6.28 + time * (0.12 + c * 0.18)) +
         0.35 * Math.sin(t * (4.5 + c * 3) + b * 6.28 - time * (0.2 + a * 0.2)))
-  // About half the threads curl back on themselves in a loop or two, like a scribble, out in the open tangle (the
-  // curl is strongest mid-way and gone by the knot).
-  const curl = hash(i + 303) < 0.55 ? Math.min(w, h) * 0.1 * chaos * Math.sin(Math.PI * Math.min(1, t * 1.25)) : 0
-  const spin = t * (18 + b * 12) + c * 6.28 + time * (0.25 + a * 0.3)
-  y += curl * Math.cos(spin)
-  const x = -0.08 * w + (gate.x + 0.08 * w) * t + curl * Math.sin(spin)
+  const x = -0.08 * w + (gate.x + 0.08 * w) * t
   return { x, y: mid + half * Math.tanh((y - mid) / half) }
 }
 

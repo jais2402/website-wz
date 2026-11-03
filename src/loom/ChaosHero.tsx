@@ -18,13 +18,13 @@ type Problem = (typeof loom.chaos.problems)[number]
 type Card = { el: HTMLElement; box: Rect; start: number; dur: number } | { retry: number }
 type Pulse = { start: number; strong: boolean }
 
-// Enough points per thread to draw its loops smoothly.
-const SEGMENTS = 110
+const SEGMENTS = 64
 const PULSE_S = 1.6
 const LOOPS = 16
 // The Before/After tangle's colours (loom.css, .ba-tangle).
 const TANGLE = ['255,120,150', '139,123,255', '47,208,255']
-const TANGLE_ALPHA = [0.38, 0.44, 0.34]
+// Solid threads: near-opaque, as the client asked.
+const TANGLE_ALPHA = [0.85, 0.85, 0.8]
 
 /** One problem card as the Before/After notes are written (.ba-note, .ba-sticky): real text, so it stays sharp. */
 function cardElement(p: Problem): HTMLElement {
@@ -182,7 +182,7 @@ export function ChaosHero({
       scene = chaosScene(w, h)
       gate = knotGate(scene)
       small = w < 700
-      n = small ? 16 : 28
+      n = small ? 14 : 24
       // The dashboard: level with the knot (landscape) or under it (phones). The line ends at its edge.
       app.style.left = `${scene.app.x}px`
       app.style.width = `${scene.app.w}px`
@@ -213,12 +213,12 @@ export function ChaosHero({
       ctx.lineWidth = small ? 1.1 : 1.4
       for (let i = 0; i < n; i++) {
         const k = i % TANGLE.length
-        const a = TANGLE_ALPHA[k] + hash(i + 7) * 0.12
+        const a = TANGLE_ALPHA[k] + hash(i + 7) * 0.1
         const g = ctx.createLinearGradient(0, 0, knot.x, 0)
         g.addColorStop(0, `rgba(${TANGLE[k]},0)`)
-        g.addColorStop(0.2, `rgba(${TANGLE[k]},${a})`)
+        g.addColorStop(0.12, `rgba(${TANGLE[k]},${a})`)
         g.addColorStop(0.85, `rgba(${TANGLE[k]},${a})`)
-        g.addColorStop(1, `rgba(210,230,255,${a + 0.25})`)
+        g.addColorStop(1, 'rgba(230,240,255,1)')
         ctx.strokeStyle = g
         ctx.beginPath()
         for (let s = 0; s <= SEGMENTS; s++) {
@@ -227,6 +227,20 @@ export function ChaosHero({
           else ctx.moveTo(p.x, p.y)
         }
         ctx.stroke()
+      }
+
+      // Light flowing along every thread into the knot: everything moves to the centre.
+      if (!reducedMotion) {
+        ctx.globalCompositeOperation = 'lighter'
+        for (let i = 0; i < n; i++) {
+          const u = (time * (0.07 + hash(i + 41) * 0.05) + hash(i + 17)) % 1
+          const p = strandPoint(i, n, u, time, chaos, w, h, gate)
+          const s = small ? 9 : 12
+          ctx.globalAlpha = Math.min(1, u * 4) * (0.5 + 0.5 * u)
+          ctx.drawImage(glow, p.x - s / 2, p.y - s / 2, s, s)
+        }
+        ctx.globalAlpha = 1
+        ctx.globalCompositeOperation = 'source-over'
       }
 
       // Cards: each sits still where it appeared, then fades out (solved): the knot flares and a light runs to the
