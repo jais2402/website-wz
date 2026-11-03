@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CARD_HOLD, cardPose, chaosScene, knotGate, nodeY, pickSpawn, strandPoint } from './chaos'
+import { chaosScene, knotGate, nodeY, pickSpawn, strandPoint } from './chaos'
 
 const W = 1440
 const H = 900
@@ -33,35 +33,25 @@ describe('threads', () => {
     expect(start.x).toBeLessThan(0)
     const end = strandPoint(3, 14, 1, 1.2, 1, W, H, gate)
     expect(end.x).toBeCloseTo(gate.x)
-    expect(end.y).toBeCloseTo(nodeY(3, 14, gate))
+    expect(end.y).toBeCloseTo(nodeY(3, 14, gate), 0)
   })
   it('enter the knot in order', () => {
     expect(nodeY(0, 14, gate)).toBe(gate.top)
     expect(nodeY(13, 14, gate)).toBe(gate.bottom)
     expect(nodeY(4, 14, gate)).toBeLessThan(nodeY(5, 14, gate))
   })
+  it('stay inside the funnel: its full height at the left edge, narrowing into the knot', () => {
+    for (let i = 0; i < 28; i++)
+      for (let s = 0; s <= 40; s++) {
+        const t = s / 40
+        const p = strandPoint(i, 28, t, 3.7, 1, W, H, gate)
+        expect(p.y).toBeGreaterThanOrEqual(gate.spanTop - 0.01)
+        expect(p.y).toBeLessThanOrEqual(gate.spanBottom + 0.01)
+      }
+    expect(gate.spanTop).toBeGreaterThan(H * 0.1)
+  })
   it('stop moving when chaos is 0', () => {
     expect(strandPoint(7, 14, 0.3, 0, 0, W, H, gate)).toEqual(strandPoint(7, 14, 0.3, 5, 0, W, H, gate))
-  })
-})
-
-describe('cardPose', () => {
-  const from = { x: 300, y: 200 }
-  const to = { x: scene.knot.x, y: scene.knot.y }
-  it('fades in where it appeared, tilted', () => {
-    expect(cardPose(0, from, to, 0.1).alpha).toBe(0)
-    const p = cardPose(CARD_HOLD * 0.8, from, to, 0.1)
-    expect(p.alpha).toBe(1)
-    expect(p.x).toBe(from.x)
-    expect(p.rot).toBe(0.1)
-  })
-  it('ends in the knot, straight, small and gone', () => {
-    const p = cardPose(1, from, to, 0.1)
-    expect(p.x).toBeCloseTo(to.x)
-    expect(p.y).toBeCloseTo(to.y)
-    expect(p.rot).toBeCloseTo(0)
-    expect(p.scale).toBeLessThan(0.3)
-    expect(p.alpha).toBeCloseTo(0)
   })
 })
 
@@ -69,7 +59,7 @@ describe('pickSpawn', () => {
   it('keeps clear of the hero copy when there is room, left of the knot', () => {
     let s = 1
     const rand = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646
-    const copy = { x: 100, y: 200, w: 760, h: 600 }
+    const copy = { x: 100, y: 320, w: 600, h: 500 }
     const size = { w: 220, h: 44 }
     for (let k = 0; k < 20; k++) {
       const c = pickSpawn(rand, W, H, size, gate, [copy], [])

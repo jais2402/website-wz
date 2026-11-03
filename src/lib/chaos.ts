@@ -1,17 +1,21 @@
 // The "chaos to system" hero (loom/ChaosHero.tsx), drawn on a 2D canvas for machines that can't run the live loom.
 // In the style of the Before/After section: on the left, slow tangled threads and the everyday problems; the threads
 // all run into one glowing knot (a ball of thread), and out of it comes a single line into the "after" dashboard.
-// Problem cards drift into the knot and vanish. Pure maths here: no DOM, no canvas.
+// Problem cards appear in the tangle and fade out in turn. Pure maths here: no DOM, no canvas.
 
 export type Pt = { x: number; y: number }
 export type Rect = { x: number; y: number; w: number; h: number }
-/** Where the threads arrive: at `x`, spread from `top` to `bottom` (the knot's mouth). `r`: the knot's radius. */
-export type Gate = { x: number; top: number; bottom: number; r: number }
+/**
+ * Where the threads arrive: at `x`, spread from `top` to `bottom` (the knot's mouth); `r` is the knot's radius. They
+ * stay inside a funnel that is `spanTop`..`spanBottom` high at the left edge and narrows into the knot.
+ */
+export type Gate = { x: number; top: number; bottom: number; r: number; spanTop: number; spanBottom: number }
 
 /**
  * The scene's layout. Landscape: the knot just right of the hero copy, the dashboard to its right, level with it,
  * the line running across. Phones: the knot top right, the dashboard under it (above the scroll copy card that sits
  * low on the screen), the line running down. `app`: the dashboard's top-left corner and width. `link`: the line.
+ * `span`: how high the threads' funnel is at the left edge.
  */
 export function chaosScene(w: number, h: number) {
   const portrait = h > w
@@ -19,20 +23,23 @@ export function chaosScene(w: number, h: number) {
     const r = Math.min(26, Math.max(16, w * 0.05))
     const knot = { x: w * 0.78, y: h * 0.15, r }
     const app = { x: w * 0.07, y: h * 0.22, w: w * 0.86 }
-    return { portrait, knot, app, link: { from: { x: knot.x, y: knot.y + r }, to: { x: knot.x, y: app.y } } }
+    const span = { top: h * 0.08, bottom: h * 0.21 }
+    return { portrait, knot, app, span, link: { from: { x: knot.x, y: knot.y + r }, to: { x: knot.x, y: app.y } } }
   }
   const r = Math.min(34, Math.max(20, h * 0.036))
   const knot = { x: w * 0.64, y: h * 0.52, r }
   const app = { x: w * 0.705, y: h * 0.52, w: Math.min(460, w * 0.27) }
-  return { portrait, knot, app, link: { from: { x: knot.x + r, y: knot.y }, to: { x: app.x, y: knot.y } } }
+  // Clear of the nav at the top and of the bottom of the screen.
+  const span = { top: h * 0.14, bottom: h * 0.88 }
+  return { portrait, knot, app, span, link: { from: { x: knot.x + r, y: knot.y }, to: { x: app.x, y: knot.y } } }
 }
 
 export type Scene = ReturnType<typeof chaosScene>
 
-/** The threads' destination: the knot's mouth, a little narrower than the knot. */
+/** The threads' destination: they all converge on the knot's centre (a hair apart, so they keep their order). */
 export function knotGate(scene: Scene): Gate {
   const { x, y, r } = scene.knot
-  return { x, top: y - r * 0.45, bottom: y + r * 0.45, r }
+  return { x, top: y - r * 0.06, bottom: y + r * 0.06, r, spanTop: scene.span.top, spanBottom: scene.span.bottom }
 }
 
 /** A stable pseudo-random number in [0, 1) for an integer seed (same thread, same shape on every frame). */
@@ -51,57 +58,44 @@ export function nodeY(i: number, n: number, gate: Gate): number {
 /**
  * A point on the tangled part of thread `i` (t 0 off the left edge, 1 in the knot). Long, slow waves
  * like the Before/After tangle. `time` in seconds moves them; `chaos` (0..1) scales how wild they are (scrolling
- * through the hero calms them). The waves die away into the knot, so the threads gather into it.
+ * through the hero calms them). The waves die away into the knot, so the threads gather into it, and every point is
+ * kept inside the funnel (eased in at its edges, so a thread brushing the edge bends along it rather than clipping).
  */
 export function strandPoint(i: number, n: number, t: number, time: number, chaos: number, w: number, h: number, gate: Gate): Pt {
   const a = hash(i)
   const b = hash(i + 101)
   const c = hash(i + 202)
-  const startY = (a * 1.4 - 0.2) * h
+  // The funnel at this point: full height at the left edge, narrowing into the knot's mouth.
+  const k = smooth(t)
+  const top = gate.spanTop + (gate.top - gate.spanTop) * k
+  const bottom = gate.spanBottom + (gate.bottom - gate.spanBottom) * k
+  const mid = (top + bottom) / 2
+  const half = Math.max(0.5, (bottom - top) / 2)
+  const half0 = (gate.spanBottom - gate.spanTop) / 2
+  const startY = (gate.spanTop + gate.spanBottom) / 2 + (a * 2 - 1) * half0 * 0.85
   const endY = nodeY(i, n, gate)
   const fade = Math.pow(1 - t, 1.4)
-  const amp = h * 0.24 * chaos * fade
-  const y =
+  const amp = half0 * 0.6 * chaos * fade
+  let y =
     startY +
-    (endY - startY) * smooth(t) +
+    (endY - startY) * k +
     amp *
       (Math.sin(t * (2 + b * 2.5) + a * 6.28 + time * (0.12 + c * 0.18)) +
         0.35 * Math.sin(t * (4.5 + c * 3) + b * 6.28 - time * (0.2 + a * 0.2)))
-  const x = -0.08 * w + (gate.x + 0.08 * w) * t
-  return { x, y }
-}
-
-/** Share of a card's life spent floating where it appeared before the knot pulls it in. */
-export const CARD_HOLD = 0.45
-
-export type CardPose = { x: number; y: number; rot: number; scale: number; alpha: number }
-
-/**
- * A problem card at life `t` (0..1): fades in where it appeared (`from`, its centre) and bobs, then is pulled into
- * the knot (`to`) faster and faster, straightening, shrinking and fading as it goes in.
- */
-export function cardPose(t: number, from: Pt, to: Pt, rot0: number, seed = 0): CardPose {
-  const bob = Math.sin(t * 9 + seed * 6.28) * 4
-  if (t < CARD_HOLD) {
-    const alpha = smooth(Math.min(1, t / 0.1))
-    return { x: from.x, y: from.y + bob, rot: rot0, scale: 0.92 + 0.08 * alpha, alpha }
-  }
-  const u = Math.min(1, (t - CARD_HOLD) / (1 - CARD_HOLD))
-  const e = u * u * u
-  // A slight arc rather than a straight line: it swings towards the knot's height first.
-  const cx = from.x + (to.x - from.x) * 0.35
-  const cy = to.y + (from.y - to.y) * 0.25
-  const k = 1 - e
-  const x = k * k * from.x + 2 * k * e * cx + e * e * to.x
-  const y = k * k * (from.y + bob) + 2 * k * e * cy + e * e * to.y
-  return { x, y, rot: rot0 * (1 - e), scale: 1 - 0.82 * e, alpha: 1 - smooth(Math.max(0, (u - 0.78) / 0.22)) }
+  // About half the threads curl back on themselves in a loop or two, like a scribble, out in the open tangle (the
+  // curl is strongest mid-way and gone by the knot).
+  const curl = hash(i + 303) < 0.55 ? Math.min(w, h) * 0.1 * chaos * Math.sin(Math.PI * Math.min(1, t * 1.25)) : 0
+  const spin = t * (18 + b * 12) + c * 6.28 + time * (0.25 + a * 0.3)
+  y += curl * Math.cos(spin)
+  const x = -0.08 * w + (gate.x + 0.08 * w) * t + curl * Math.sin(spin)
+  return { x, y: mid + half * Math.tanh((y - mid) / half) }
 }
 
 const overlaps = (a: Rect, b: Rect, pad: number) =>
   a.x < b.x + b.w + pad && b.x < a.x + a.w + pad && a.y < b.y + b.h + pad && b.y < a.y + a.h + pad
 
 /**
- * Where a card of size `size` should appear (its centre): in the tangle left of the knot, clear of `blockers` (the
+ * Where a card of size `size` should appear (its centre): in the tangle left of the knot (inside the funnel's height), clear of `blockers` (the
  * hero copy, the nav, the dashboard) and of the cards already showing (`others`, their rects). `rand` returns [0, 1). Null when
  * none of 80 tries is clear: a card under the copy panel shows through its glass as a smudge, so it waits instead.
  */
@@ -116,8 +110,9 @@ export function pickSpawn(
 ): Pt | null {
   const minX = w * 0.03
   const maxX = Math.max(minX, gate.x - gate.r - 30 - size.w)
-  const minY = h * 0.1
-  const maxY = Math.max(minY, h * 0.95 - size.h)
+  // Within the threads' funnel, where the tangle is.
+  const minY = gate.spanTop
+  const maxY = Math.max(minY, Math.min(gate.spanBottom, h) - size.h)
   for (let k = 0; k < 80; k++) {
     const r: Rect = { x: minX + rand() * (maxX - minX), y: minY + rand() * (maxY - minY), w: size.w, h: size.h }
     if (!blockers.some((b) => overlaps(r, b, 12)) && !others.some((o) => overlaps(r, o, 18)))

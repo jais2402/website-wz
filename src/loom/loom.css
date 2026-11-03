@@ -76,6 +76,40 @@
   height: 100%;
 }
 
+/* The problem cards (the Before/After notes, placed by ChaosHero): each fades in, stays put, and fades out. */
+.chaos-cards {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.chaos-card {
+  opacity: 0;
+  animation: chaos-card 8s linear both;
+}
+
+.chaos-cards.is-still .chaos-card {
+  opacity: 1;
+  animation: none;
+}
+
+@keyframes chaos-card {
+  0% {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  12% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 /* The "after" dashboard the single thread runs into: placed by ChaosHero (left, top, width), level with the knot. */
 .chaos-hero .chaos-app {
   position: absolute;
