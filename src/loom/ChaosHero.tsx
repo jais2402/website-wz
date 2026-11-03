@@ -25,14 +25,11 @@ type Card =
 type Pulse = { start: number; strong: boolean }
 
 const SEGMENTS = 64
-const FINE_SEGMENTS = 40
 const PULSE_S = 1.6
 // The Before/After tangle's colours (loom.css, .ba-tangle).
 const TANGLE = ['255,120,150', '139,123,255', '47,208,255']
-// Solid threads: near-opaque, as the client asked.
-const TANGLE_ALPHA = [0.85, 0.85, 0.8]
-// The fine threads behind them, in the live loom's multicolour (with its gold and a white), added up as light.
-const FINE = ['255,140,170', '160,140,255', '90,210,255', '255,200,120', '235,235,255']
+// A few light threads, as in the Before/After tangle (a little brighter, so they read over the hero's haze).
+const TANGLE_ALPHA = [0.5, 0.55, 0.45]
 
 /** One problem card as the Before/After notes are written (.ba-note, .ba-sticky): real text, so it stays sharp. */
 function cardElement(p: Problem): HTMLElement {
@@ -122,7 +119,6 @@ export function ChaosHero({
     let to: Pt = scene.link.to
     let small = false
     let n = 16
-    let nFine = 90
     let dust = 70
     let cards: Card[] = []
     let pulses: Pulse[] = []
@@ -163,6 +159,7 @@ export function ChaosHero({
     // What cards keep clear of, re-read twice a second (the copy panel changes as the hero scrolls).
     let blocked: Rect[] = []
     let blockedAt = -1
+    let covered = false
 
     // A card on a thread where there is clear space; when there is none (the copy panel fills the screen), a retry
     // a little later. It fades in, rides its thread and fades out (CSS, .chaos-card); `life` starts it part-way.
@@ -227,10 +224,9 @@ export function ChaosHero({
       scene = chaosScene(w, h)
       gate = knotGate(scene)
       small = w < 700
-      n = small ? 14 : 24
-      // Fewer fine threads and specks where the processor draws everything.
-      nFine = software ? (small ? 30 : 50) : small ? 40 : 90
-      dust = software ? 30 : small ? 40 : 70
+      n = small ? 9 : 12
+      // Fewer specks where the processor draws everything.
+      dust = software ? 24 : small ? 30 : 50
       // The dashboard: level with the knot (landscape) or under it (phones). The line ends at its edge.
       app.style.left = `${scene.app.x}px`
       app.style.width = `${scene.app.w}px`
@@ -262,37 +258,12 @@ export function ChaosHero({
       pointer.x += (pointer.tx - pointer.x) * 0.06
       pointer.y += (pointer.ty - pointer.y) * 0.06
 
-      // Depth: a bundle of hair-fine threads behind, added up as light like the live loom's, one path per colour.
-      ctx.globalCompositeOperation = 'lighter'
-      ctx.lineWidth = small ? 0.5 : 0.6
-      for (let c = 0; c < FINE.length; c++) {
-        ctx.strokeStyle = `rgba(${FINE[c]},${small ? 0.2 : 0.16})`
-        ctx.beginPath()
-        for (let i = c; i < nFine; i += FINE.length) {
-          for (let s = 0; s <= FINE_SEGMENTS; s++) {
-            const p = at(i + 500, nFine, s / FINE_SEGMENTS, 10)
-            if (s) ctx.lineTo(p.x, p.y)
-            else ctx.moveTo(p.x, p.y)
-          }
-        }
-        ctx.stroke()
-      }
-
-      // The main threads: a soft bloom under a solid core, brightening to white as they gather into the knot.
+      // The threads, brightening to white as they gather into the knot.
       const paths: Pt[][] = []
       for (let i = 0; i < n; i++) {
         const pts: Pt[] = []
         for (let s = 0; s <= SEGMENTS; s++) pts.push(at(i, n, s / SEGMENTS, MAIN_DEPTH))
         paths.push(pts)
-      }
-      ctx.lineWidth = small ? 5 : 8
-      for (let k = 0; k < TANGLE.length; k++) {
-        ctx.strokeStyle = `rgba(${TANGLE[k]},0.07)`
-        ctx.beginPath()
-        for (let i = k; i < n; i += TANGLE.length) {
-          paths[i].forEach((p, s) => (s ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)))
-        }
-        ctx.stroke()
       }
       ctx.globalCompositeOperation = 'source-over'
       ctx.lineWidth = small ? 1.1 : 1.4
@@ -345,8 +316,14 @@ export function ChaosHero({
       // Cards ride their threads, then fade out (solved): the knot flares and a light runs to the dashboard, and the
       // next problem appears on another thread.
       if (now - blockedAt > 500) {
-        blocked = blockers(canvas.getBoundingClientRect())
+        const box = canvas.getBoundingClientRect()
+        blocked = blockers(box)
         blockedAt = now
+        // On screens too narrow for both, the dashboard waits until the hero copy has scrolled away.
+        const intro = document.querySelector('.loom-intro:not(.is-gone)')?.getBoundingClientRect()
+        const panel = app.getBoundingClientRect()
+        covered = !!intro && intro.right > panel.left + 8 && intro.bottom > panel.top && intro.top < panel.bottom
+        app.classList.toggle('is-covered', covered)
       }
       for (let k = 0; k < cards.length; k++) {
         const c = cards[k]
@@ -470,7 +447,7 @@ export function ChaosHero({
     <div className="chaos-hero" aria-hidden="true">
       <canvas ref={ref} />
       <div ref={cardsRef} className={`chaos-cards${reducedMotion ? ' is-still' : ''}`} />
-      <SystemApp ref={appRef} className="chaos-app" />
+      <SystemApp ref={appRef} className="chaos-app" extended />
     </div>
   )
 }

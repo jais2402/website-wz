@@ -65,14 +65,18 @@ export function strandPoint(i: number, n: number, t: number, time: number, chaos
   const a = hash(i)
   const b = hash(i + 101)
   const c = hash(i + 202)
-  // The funnel at this point: full height at the left edge, narrowing into the knot's mouth.
-  const k = smooth(t)
+  // The funnel at this point: full height at the left edge, narrowing into the knot's mouth late, so the threads
+  // cross the whole tangle loosely (like the Before/After) and only gather in the last stretch.
+  const k = smooth(Math.pow(t, 1.8))
   const top = gate.spanTop + (gate.top - gate.spanTop) * k
   const bottom = gate.spanBottom + (gate.bottom - gate.spanBottom) * k
   const mid = (top + bottom) / 2
   const half = Math.max(0.5, (bottom - top) / 2)
   const half0 = (gate.spanBottom - gate.spanTop) / 2
-  const startY = (gate.spanTop + gate.spanBottom) / 2 + (a * 2 - 1) * half0 * 0.85
+  // Starting heights spread evenly down the funnel (golden-ratio steps), in an order unlike the one they arrive in at
+  // the knot, so the threads cross on the way.
+  const spread = (i * 0.618034 + 0.31) % 1
+  const startY = gate.spanTop + (0.05 + 0.9 * spread) * half0 * 2
   const endY = nodeY(i, n, gate)
   const fade = Math.pow(1 - t, 1.4)
   const amp = half0 * 0.6 * chaos * fade

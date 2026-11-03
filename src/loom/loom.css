@@ -80,6 +80,8 @@
 .chaos-cards {
   position: absolute;
   inset: 0;
+  /* Above the hero's bottom fade (.loom-sticky::after), below its copy (z-index 2). */
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -143,6 +145,95 @@
   transition:
     background 0.6s var(--ease-out),
     box-shadow 0.6s var(--ease-out);
+}
+
+/* Above the hero's bottom fade, like the cards. Waits (faded) while the hero copy would cover it, on screens too
+   narrow for both. */
+.chaos-hero .chaos-app {
+  z-index: 1;
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.chaos-hero .chaos-app.is-covered {
+  opacity: 0;
+}
+
+.chaos-app .ba-chart {
+  height: 56px;
+}
+
+/* The hero dashboard's extras (SystemApp extended): sync status, reminders, actions. */
+.sys-sync {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+
+.sys-sync i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6ee7a0;
+  box-shadow: 0 0 10px rgba(110, 231, 160, 0.8);
+}
+
+.sys-reminders {
+  display: grid;
+  gap: 6px;
+}
+
+.sys-reminders > p {
+  margin: 0;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sys-reminders li span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sys-reminders svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: #8cc4ff;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sys-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sys-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  text-align: center;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.sys-btn.is-primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--cta-1) 0%, var(--cta-3) 55%, #1e40af 100%);
+  color: #fff;
+  box-shadow: 0 8px 24px -10px rgba(77, 159, 255, 0.7);
+}
+
+.chaos-app.is-portrait .sys-reminders,
+.chaos-app.is-portrait .sys-sync,
+.chaos-app.is-portrait .sys-actions {
+  display: none;
 }
 
 /* A problem has just arrived down the thread: its row lights up. */

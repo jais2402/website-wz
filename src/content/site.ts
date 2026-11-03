@@ -769,6 +769,16 @@ export const loom = {
       { kind: 'note', text: '5 apps. 0 answers.' },
       { kind: 'note', text: 'Payment reminder sent?', badge: '!' },
     ] as { kind: 'note' | 'sticky'; text: string; badge?: string }[],
+    // Extra panels on the hero's dashboard (the Before/After one stays simpler). Invented, like the rest of it.
+    app: {
+      sync: 'All synced · 2 min ago',
+      remindersTitle: 'Reminders',
+      reminders: [
+        { label: 'GST return due Friday', status: 'Auto-reminder on' },
+        { label: 'Invoice #0193 to Apex', status: 'Sent today' },
+      ],
+      actions: { primary: 'Approve PO-2231', secondary: 'Send reminders' },
+    },
   },
   weave: { title: 'Swap the workarounds for customised software with Wezigns.' },
   threadsIn: ['orders_FINAL_v7.xlsx', 'Ops WhatsApp group', 'Email approvals', 'Paper forms', 'Legacy database', 'Side tools', 'Manual re-entry', 'Who approved this?'],
