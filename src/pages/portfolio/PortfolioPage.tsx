@@ -54,6 +54,7 @@ export function PortfolioPage() {
               id={c.id}
               className={`pf-case tone-${c.tone}${i === 0 ? ' is-lead' : ''}${i % 2 === 0 && i > 0 ? ' is-flip' : ''}`}
               data-reveal
+              data-spot
             >
               <div className="pf-case-copy">
                 <p className="mono pf-case-tag case-card-tag">
@@ -83,7 +84,7 @@ export function PortfolioPage() {
       <PageSection kicker={p.pastKicker} title={p.pastTitle} intro={p.pastIntro} className="pf-earlier" tone="light">
         <ul className="pf-past">
           {pastWork.map((c) => (
-            <li key={c.id} id={c.id} className={`pf-past-item tone-${c.tone}`} data-reveal>
+            <li key={c.id} id={c.id} className={`pf-past-item tone-${c.tone}`} data-reveal data-spot>
               <p className="mono pf-past-sector">
                 <span className="pf-past-knot" aria-hidden="true" />
                 {c.sector}

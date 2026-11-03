@@ -10,6 +10,269 @@
     radial-gradient(45% 40% at 85% 0%, rgba(77, 159, 255, 0.12), transparent 70%),
     radial-gradient(40% 40% at 0% 30%, rgba(139, 123, 255, 0.08), transparent 70%), var(--ink);
   overflow-x: clip;
+  counter-reset: pg-section;
+}
+
+/* ---- Section dressing (shell.tsx: PageSection, SectionMark, useSpotlight) ----
+   Every PageSection gets a light pool + dot field behind it, a mono index with a twisted thread and knot above
+   its heading, and the page's cards can opt in to a pointer spotlight (data-spot) or spotlight + tilt
+   (data-spot="tilt"). All of it is drawn and still under reduced motion and before JS runs. */
+.pg-section {
+  position: relative;
+  isolation: isolate;
+  counter-increment: pg-section;
+}
+
+.pg-glow {
+  --glow: rgba(77, 159, 255, 0.11);
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(42% 46% at 92% 30%, var(--glow), transparent 72%);
+}
+
+/* The dot field: a fine grid that fades out from the glow's corner. */
+.pg-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(38% 42% at 92% 22%, #000, transparent 75%);
+  mask-image: radial-gradient(38% 42% at 92% 22%, #000, transparent 75%);
+}
+
+.pg-section:nth-child(even of .pg-section) .pg-glow {
+  --glow: rgba(139, 123, 255, 0.1);
+  background: radial-gradient(42% 46% at 6% 62%, var(--glow), transparent 72%);
+}
+
+.pg-section:nth-child(even of .pg-section) .pg-glow::after {
+  -webkit-mask-image: radial-gradient(34% 40% at 4% 78%, #000, transparent 75%);
+  mask-image: radial-gradient(34% 40% at 4% 78%, #000, transparent 75%);
+}
+
+.pg-section:nth-child(3n of .pg-section) .pg-glow {
+  --glow: rgba(255, 122, 89, 0.07);
+}
+
+/* On the cream: a warm tint and darker dots, inside the panel's rounded corners. */
+.pg-light .pg-glow {
+  --glow: rgba(77, 159, 255, 0.12);
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.pg-light .pg-glow::after {
+  background-image: radial-gradient(rgba(20, 20, 26, 0.16) 1px, transparent 1.4px);
+}
+
+.pg-mark {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 420px;
+  color: var(--lime);
+}
+
+.pg-mark-num {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.pg-mark-num::before {
+  content: counter(pg-section, decimal-leading-zero);
+}
+
+.pg-mark-thread {
+  flex: 0 0 auto;
+  width: 120px;
+  height: 16px;
+  overflow: visible;
+}
+
+.pg-mark-thread path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1.4s var(--ease-out);
+}
+
+.pg-mark-thread path.is-alt {
+  stroke: var(--violet);
+  opacity: 0.75;
+  transition-delay: 0.15s;
+}
+
+.pg-mark-knot {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+  filter: drop-shadow(0 0 5px currentColor);
+  transition:
+    opacity 0.5s 0.9s,
+    scale 0.5s 0.9s var(--ease-out);
+}
+
+.pg-mark-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line-2), transparent);
+  transform-origin: left;
+  transition: transform 1.2s 0.6s var(--ease-out);
+}
+
+/* Armed (JS, motion allowed): undrawn until the section enters. */
+.pg.is-armed .pg-section:not(.is-in) .pg-mark-thread path {
+  stroke-dashoffset: 1;
+}
+
+.pg.is-armed .pg-section:not(.is-in) .pg-mark-knot {
+  opacity: 0;
+  scale: 0.2;
+}
+
+.pg.is-armed .pg-section:not(.is-in) .pg-mark-rule {
+  transform: scaleX(0);
+}
+
+.pg-section.is-on.is-in .pg-mark-knot {
+  animation: pgKnot 2.8s 1.4s ease-in-out infinite;
+}
+
+@keyframes pgKnot {
+  50% {
+    scale: 1.35;
+    opacity: 0.7;
+  }
+}
+
+/* ---- Glyphs (glyphs.tsx) ---- */
+.pg-glyph {
+  display: block;
+  width: 48px;
+  height: 48px;
+  overflow: visible;
+  color: var(--lime);
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pg-glyph .g-base {
+  stroke: color-mix(in srgb, var(--text) 30%, transparent);
+  stroke-width: 1.4;
+  fill: color-mix(in srgb, var(--text) 3%, transparent);
+}
+
+.pg-glyph .g-line {
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.pg-glyph .g-thread {
+  stroke: var(--violet);
+  stroke-width: 1.4;
+  stroke-dasharray: 3 4;
+}
+
+.pg-glyph .g-knot {
+  fill: currentColor;
+  stroke: none;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+/* The threads flow only while the section is on screen. */
+.pg-section.is-on .pg-glyph .g-thread {
+  animation: pgFlow 1.6s linear infinite;
+}
+
+@keyframes pgFlow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+/* A tile that frames a glyph. */
+.pg-glyph-tile {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(80% 80% at 30% 20%, color-mix(in srgb, var(--lime) 16%, transparent), transparent 70%), var(--ink-2);
+  flex-shrink: 0;
+}
+
+.pg-light .pg-glyph-tile {
+  box-shadow: 0 14px 30px -18px rgba(20, 20, 26, 0.35);
+}
+
+/* ---- Pointer spotlight and tilt ---- */
+.pg [data-spot] {
+  position: relative;
+}
+
+.pg [data-spot]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    380px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--spot, var(--lime)) 14%, transparent),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.pg [data-spot].is-spot::after {
+  opacity: 1;
+}
+
+.pg [data-spot='tilt'] {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition:
+    transform 0.5s var(--ease-out),
+    translate 0.45s var(--ease-out),
+    border-color 0.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-mark-thread path,
+  .pg-mark-knot,
+  .pg-mark-rule,
+  .pg [data-spot='tilt'] {
+    transition: none;
+  }
+
+  .pg-section .pg-mark-knot,
+  .pg-section .pg-glyph .g-thread {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pg-mark-thread {
+    width: 96px;
+  }
+}
+
+@media print {
+  .pg-glow,
+  .pg-mark {
+    display: none;
+  }
 }
 
 .pg-hero {

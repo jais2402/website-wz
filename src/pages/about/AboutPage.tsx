@@ -6,6 +6,8 @@ import { ctas, process, stats } from '@/content/site'
 import { gsap } from '@/hooks/motion'
 import { CtaStrip } from '@/components/CtaStrip'
 import { LoomContact } from '@/loom/sections'
+import { processGlyphs, whyGlyphs } from '../glyphNames'
+import { Glyph } from '../glyphs'
 import { HeroLoom } from '../HeroLoom'
 import { PageHero, PageSection, PageShell } from '../shell'
 import './about.css'
@@ -34,8 +36,11 @@ export function AboutPage() {
       <PageSection title={p.whyTitle} className="ab-why" tone="light">
         {/* Three statements read as rows, each with a thread that lights up on hover, rather than three boxes. */}
         <ul className="ab-why-list">
-          {p.why.map((w) => (
-            <li className="ab-why-row" key={w.title} data-reveal>
+          {p.why.map((w, i) => (
+            <li className="ab-why-row" key={w.title} data-reveal data-spot>
+              <span className="pg-glyph-tile ab-why-glyph">
+                <Glyph name={whyGlyphs[i]} />
+              </span>
               <h3>{w.title}</h3>
               <span className="ab-why-thread" aria-hidden="true" />
               <p>{w.text}</p>
@@ -56,9 +61,10 @@ export function AboutPage() {
 
       <PageSection title={p.processTitle} className="ab-process">
         <ol className="ab-steps">
-          {process.map((s) => (
-            <li className="ab-step" key={s.title} data-reveal>
+          {process.map((s, i) => (
+            <li className="ab-step" key={s.title} data-reveal data-spot>
               <span className="ab-step-dot" aria-hidden="true" />
+              <Glyph name={processGlyphs[i]} className="ab-step-glyph" />
               <h3>{s.title}</h3>
               <p>{s.body}</p>
             </li>
@@ -176,7 +182,7 @@ function Numbers() {
   return (
     <dl ref={root} className="ab-stats">
       {stats.map((s, i) => (
-        <div className="ab-stat" key={s.label}>
+        <div className="ab-stat" key={s.label} data-spot>
           <dt className="ab-stat-label">{s.label}</dt>
           <dd className="ab-stat-value">
             {/* A year never counts up: mid-count it reads as a wrong year (1317, 2010). */}

@@ -1,5 +1,6 @@
 import { CtaStrip } from '@/components/CtaStrip'
 import { Offer } from '@/components/Offer'
+import { SysArt } from '@/components/SysArt'
 import { servicesPage as p, systemPages } from '@/content/pages'
 import { ctas, navSystems, services } from '@/content/site'
 import { LoomContact } from '@/loom/sections'
@@ -34,8 +35,11 @@ export function ServicesPage() {
         <ul className="sv-grid">
           {systemPages.map((s, i) => (
             <li key={s.slug} data-reveal>
-              <a className="sv-card" href={`/systems/${s.slug}`}>
+              <a className="sv-card" href={`/systems/${s.slug}`} data-spot="tilt">
                 <span className="mono sv-short">{navSystems[i]?.short}</span>
+                <span className="sv-art">
+                  <SysArt system={s.slug} />
+                </span>
                 <h3>{s.title}</h3>
                 <p className="sv-promise">{s.promise}</p>
                 <p className="sv-intro">{s.intro}</p>
@@ -57,7 +61,7 @@ export function ServicesPage() {
       <PageSection title={p.servicesTitle} intro={p.servicesIntro} className="sv-services" tone="light">
         <ul className="sv-jobs">
           {services.map((s) => (
-            <li key={s.key} className={`sv-job tone-${s.tone}`} data-reveal>
+            <li key={s.key} className={`sv-job tone-${s.tone}`} data-reveal data-spot>
               <span className="mono sv-job-kicker">{s.kicker}</span>
               <h3>{s.title}</h3>
               <ul>

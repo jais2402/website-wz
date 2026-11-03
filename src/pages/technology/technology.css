@@ -35,6 +35,35 @@
   border-color: var(--line-2);
 }
 
+/* Glyph, group name and how many tools it holds, on one line. */
+.tech-group-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.tech-group-glyph {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.tech-group:hover .tech-group-glyph {
+  transform: rotate(-6deg) scale(1.08);
+}
+
+.tech-group-count {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+}
+
 .tech .tech-group-label {
   font-family: var(--f-mono);
   font-weight: 500;
@@ -323,8 +352,13 @@
     animation: none;
   }
 
-  .tech-group {
+  .tech-group,
+  .tech-group-glyph {
     transition: none;
+  }
+
+  .tech-group:hover .tech-group-glyph {
+    transform: none;
   }
 }
 

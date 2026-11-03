@@ -180,7 +180,31 @@
 .sv-card:hover,
 .sv-card:focus-visible {
   border-color: rgba(77, 159, 255, 0.5);
-  transform: translateY(-4px);
+  translate: 0 -4px;
+}
+
+/* The system's scene from the home page's cards (SysArt.tsx), framed like a small app window. */
+.sv-art {
+  display: block;
+  margin: 6px 0 8px;
+  padding: 14px 16px 10px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: radial-gradient(90% 90% at 50% 40%, rgba(77, 159, 255, 0.09), transparent 70%), var(--ink);
+  transition: border-color 0.4s;
+}
+
+.sv-art .sys-art {
+  max-height: 150px;
+}
+
+.sv-card:hover .sv-art {
+  border-color: rgba(77, 159, 255, 0.3);
+}
+
+.sv-card:hover .sa-thread {
+  opacity: 1;
+  animation-duration: 0.8s;
 }
 
 .sv-short {
@@ -265,6 +289,10 @@
   background: var(--ink-3);
 }
 
+.sv-job {
+  --spot: var(--tone);
+}
+
 .sv-job.tone-violet {
   --tone: var(--violet);
 }
@@ -325,6 +353,11 @@
   .sv-card,
   .sv-explore span {
     transition: none;
+  }
+
+  .sv-card:hover,
+  .sv-card:focus-visible {
+    translate: none;
   }
 }
 
