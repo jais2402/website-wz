@@ -8,6 +8,7 @@ import {
   servicesPage,
   systemPages,
   systemsSection,
+  websitePage,
 } from '@/content/pages'
 import { legalPages } from '@/content/sitemap'
 import { brand, faq, loom, pastWork, portfolioArchive, pricing, process, proofSection, stats, work } from '@/content/site'
@@ -31,6 +32,7 @@ const PAGES = [
   '/technology',
   '/portfolio',
   '/pricing',
+  '/website-development',
   '/about-us',
   '/contact-us',
   '/privacy-policy',
@@ -232,6 +234,7 @@ describe('pageForFile', () => {
     expect(pageForFile('technology.html')).toBe('technology')
     expect(pageForFile('portfolio.html')).toBe('portfolio')
     expect(pageForFile('pricing.html')).toBe('pricing')
+    expect(pageForFile('website-development.html')).toBe('website')
     expect(pageForFile('404.html')).toBe('notFound')
     expect(pageForFile('systems/people.html')).toBe('system:people')
     expect(pageForFile('systems\\finance.html')).toBe('system:finance')
@@ -251,5 +254,38 @@ describe('pageForFile', () => {
 describe('snapshot copy style', () => {
   it('never joins items with a middle dot separator', () => {
     for (const id of snapshotPages) expect(html(id), id).not.toContain(' · ')
+  })
+})
+
+describe('website development', () => {
+  it('has one H1, every kind of site, every inclusion, the four stages and the questions', () => {
+    const s = html('website')
+    expect(h1Text(s)).toBe(websitePage.title.join(' '))
+    for (const h of [websitePage.buildTitle, websitePage.includesTitle, websitePage.stepsTitle, websitePage.priceTitle])
+      expect(s).toContain(`<h2>${escapeHtml(h)}</h2>`)
+    for (const b of websitePage.builds) expect(s).toContain(`<h3>${escapeHtml(b.title)}</h3>`)
+    for (const x of websitePage.includes) expect(s).toContain(`<dt>${escapeHtml(x.name)}</dt>`)
+    expect(websitePage.steps).toHaveLength(process.length)
+    for (const st of process) expect(s).toContain(`<h3>${escapeHtml(st.title)}</h3>`)
+    for (const f of websitePage.faq) expect(s).toContain(`<h3>${escapeHtml(f.q)}</h3><p>${escapeHtml(f.a)}</p>`)
+    expect(s).toContain('<section id="includes">')
+  })
+
+  it('links to ecommerce, the systems, pricing and each proof case on /portfolio', () => {
+    const links = hrefs(html('website'))
+    for (const href of ['/systems/ecommerce', '/our-services', '/pricing', '/portfolio']) expect(links).toContain(href)
+    for (const id of websitePage.proofCases) {
+      expect(pastWork.some((c) => c.id === id), id).toBe(true)
+      expect(links).toContain(`/portfolio#${id}`)
+    }
+  })
+
+  it('names no prices or timelines in numbers (the founding year is the only figure)', () => {
+    expect(JSON.stringify(websitePage).replaceAll('since 2012', '')).not.toMatch(/[₹$€£]|\d/)
+  })
+
+  it('is linked from every page (footer) and from the home page Websites card', () => {
+    for (const id of snapshotPages) expect(hrefs(html(id)), id).toContain('/website-development')
+    expect(count(html('home'), /href="\/website-development"/g)).toBeGreaterThanOrEqual(2)
   })
 })

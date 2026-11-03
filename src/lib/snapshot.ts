@@ -14,6 +14,7 @@ import {
   servicesPage,
   systemPages,
   systemsSection,
+  websitePage,
 } from '../content/pages.ts'
 import { type LegalKey, legalCopy, legalPages } from '../content/sitemap.ts'
 import {
@@ -68,6 +69,7 @@ export type SnapshotPage =
   | 'about'
   | 'portfolio'
   | 'pricing'
+  | 'website'
   | 'contact'
   | 'notFound'
   | `system:${string}`
@@ -611,6 +613,60 @@ function pricingPageHtml(): string {
   )
 }
 
+function websitePageHtml(): string {
+  const x = websitePage
+  const proof = x.proofCases.flatMap((id) => pastWork.filter((c) => c.id === id))
+  return page(
+    hero(x.kicker, line(x.title), x.lead, [ctas.contact, x.includesLink]) +
+      section(
+        p(x.buildKicker) +
+          h2(x.buildTitle) +
+          p(x.buildIntro) +
+          x.builds
+            .map((b) => tag('article', h3(b.title) + p(b.text) + (b.link ? tag('p', a(b.link.href, b.link.label)) : '')))
+            .join(''),
+      ) +
+      section(
+        p(x.includesKicker) +
+          h2(x.includesTitle) +
+          p(x.includesIntro) +
+          tag('dl', x.includes.map((i) => tag('dt', t(i.name)) + tag('dd', t(i.text))).join('')),
+        'includes',
+      ) +
+      section(
+        p(x.stepsKicker) +
+          h2(x.stepsTitle) +
+          p(x.stepsIntro) +
+          ulHtml(
+            process.map((s, i) => h3(s.title) + p(x.steps[i] ?? '')),
+            true,
+          ),
+      ) +
+      section(
+        p(x.priceKicker) +
+          h2(x.priceTitle) +
+          p(x.priceText) +
+          p(x.priceSetsLabel) +
+          ul(x.priceSets) +
+          tag('p', a(x.priceLink.href, x.priceLink.label)),
+      ) +
+      section(
+        p(x.proofKicker) +
+          h2(x.proofTitle) +
+          p(x.proofIntro) +
+          proof
+            .map((c) =>
+              tag('article', p(c.sector) + h3(c.title) + p(c.body) + tag('p', a(`/portfolio#${c.id}`, x.readCase))),
+            )
+            .join('') +
+          tag('p', a(x.proofLink.href, x.proofLink.label)),
+      ) +
+      section(h2(x.faqTitle) + x.faq.map((f) => h3(f.q) + p(f.a)).join(''), 'faq') +
+      ctaStrip(ctas.website) +
+      contactBlock(),
+  )
+}
+
 function contactPageHtml(): string {
   const c = contactPage
   return page(
@@ -681,6 +737,8 @@ export function snapshot(id: string): string | null {
       return portfolioPageHtml()
     case 'pricing':
       return pricingPageHtml()
+    case 'website':
+      return websitePageHtml()
     case 'contact':
       return contactPageHtml()
     case 'notFound':
@@ -722,6 +780,7 @@ export const snapshotPages: SnapshotPage[] = [
   'about',
   'portfolio',
   'pricing',
+  'website',
   'contact',
   ...legalPages.map((l) => `legal:${l.key}` as const),
   'notFound',
@@ -736,6 +795,7 @@ const FILES: Record<string, SnapshotPage> = {
   'technology.html': 'technology',
   'portfolio.html': 'portfolio',
   'pricing.html': 'pricing',
+  'website-development.html': 'website',
   '404.html': 'notFound',
   'privacy-policy.html': 'legal:privacy',
   'terms-and-conditions.html': 'legal:terms',

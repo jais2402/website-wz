@@ -15,6 +15,7 @@ const PAGE_MODULES: Record<string, string[]> = {
   technology: ['pages/technology/TechnologyPage.tsx'],
   portfolio: ['pages/portfolio/PortfolioPage.tsx'],
   pricing: ['pages/pricing/PricingPage.tsx'],
+  website: ['pages/website/WebsitePage.tsx'],
   services: ['pages/services/ServicesPage.tsx'],
   notfound: ['pages/notfound/NotFoundPage.tsx'],
   legal: ['pages/legal/LegalPage.tsx', 'content/sitemap.ts'],

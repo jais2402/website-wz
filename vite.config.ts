@@ -25,6 +25,7 @@ const INPUTS = {
   technology: page('technology.html'),
   portfolio: page('portfolio.html'),
   pricing: page('pricing.html'),
+  website: page('website-development.html'),
   notFound: page('404.html'),
   privacy: page('privacy-policy.html'),
   terms: page('terms-and-conditions.html'),

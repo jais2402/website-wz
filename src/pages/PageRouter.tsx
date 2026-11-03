@@ -5,7 +5,7 @@ import type { ReactElement } from 'react'
 
 /**
  * Loads the inner page named in
- * <body data-page="about | services | portfolio | pricing | ai | technology | notfound | system:<slug> | legal:<key>">
+ * <body data-page="about | services | portfolio | pricing | website | ai | technology | notfound | system:<slug> | legal:<key>">
  * and resolves to its element, or null for an unknown page.
  */
 export async function loadPage(page: string): Promise<ReactElement | null> {
@@ -28,6 +28,10 @@ export async function loadPage(page: string): Promise<ReactElement | null> {
   if (page === 'pricing') {
     const { PricingPage } = await import('./pricing/PricingPage')
     return <PricingPage />
+  }
+  if (page === 'website') {
+    const { WebsitePage } = await import('./website/WebsitePage')
+    return <WebsitePage />
   }
   if (page === 'services') {
     const { ServicesPage } = await import('./services/ServicesPage')
