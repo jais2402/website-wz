@@ -27,3 +27,26 @@ below are done, the forms still work: they open the visitor's email app with the
    `Origin` header) and slows down bursts from one IP, but that limit lives in each function instance. For a firm
    limit, open _Vercel → Firewall → Configure → New rule_: if _Request Path_ equals `/api/enquiry`, then
    _Rate Limit_ with a fixed window of 10 minutes and 5 requests, keyed by IP, action _Deny_ (429).
+
+## Saving enquiries to the Google Sheet
+
+Every enquiry can also be added as a row in a Google Sheet (`api/_sheets.ts`). Email and Sheet are independent:
+the visitor sees "Your message is with us" when at least one of them took the enquiry, and each failure is logged in
+Vercel as `enquiry: resend …` or `enquiry: sheet failed …` (the service's reason only, no visitor data).
+
+1. **Service account.** In Google Cloud, a service account with the Google Sheets API enabled, and a JSON key for it.
+   Share the Sheet with the service account's email as an _Editor_.
+2. **Settings** (in `.env.local` for `npm run dev`, and in Vercel → Settings → Environment Variables for Preview and
+   Production):
+   - `GOOGLE_SHEETS_CLIENT_EMAIL`: the service account email.
+   - `GOOGLE_SHEETS_PRIVATE_KEY`: the `private_key` from the JSON key, in double quotes, with its `\n` kept as they are.
+   - `GOOGLE_SHEET_ID`: the long id in the Sheet's URL (`/spreadsheets/d/<id>/edit`).
+   - `GOOGLE_SHEET_TAB_NAME` (optional): the tab to write to. Default `Contact_Form`. The tab must exist.
+3. **Columns.** On an empty tab the first enquiry writes the header row: Received (IST), Name, Email, Company, Phone,
+   Help with, Message, Marketing emails, Sent from. Values are written as plain text, so nothing a visitor types can
+   run as a formula.
+4. **Test locally.** `npm run dev` serves `/api/enquiry` with the settings from `.env.local`
+   (`scripts/vite-enquiry-dev.ts`). Send the form on http://localhost:5173/contact-us and check the Sheet. Without the
+   settings the dev API answers 503 and the form opens the email app instead, as in production.
+5. **Rotate a key that has been shared** (in chat, email or a ticket): create a new key for the service account,
+   update `.env.local` and Vercel, redeploy, then delete the old key in Google Cloud.

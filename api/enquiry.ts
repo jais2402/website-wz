@@ -1,7 +1,12 @@
-// Vercel Function: POST /api/enquiry → validates the enquiry and emails it to Wezigns through Resend.
-// Dependency-free (web-standard Request/Response/fetch). Env: RESEND_API_KEY, ENQUIRY_TO, ENQUIRY_FROM.
+// Vercel Function: POST /api/enquiry → validates the enquiry, emails it to Wezigns through Resend and adds it as a
+// row in the enquiries Google Sheet (api/_sheets.ts). Either one is enough: the visitor sees success when at least one
+// configured destination took the enquiry, so a lead is never lost to one service being down.
+// Dependency-free (web-standard Request/Response/fetch). Env: RESEND_API_KEY, ENQUIRY_TO, ENQUIRY_FROM, and the
+// GOOGLE_SHEETS_* / GOOGLE_SHEET_* settings in api/_sheets.ts.
 // Validation mirrors src/lib/enquiry.ts (duplicated on purpose: that file imports site copy through the
 // `@/` alias, which the function bundle cannot resolve). api/_enquiry.test.ts keeps the two in step.
+
+import { appendRow, sheetConfig } from './_sheets.ts'
 
 export const LIMITS = { name: 80, email: 120, company: 120, phone: 30, message: 2000, minMessage: 10, topic: 60, topics: 10, source: 60 }
 const MAX_BODY = 16 * 1024
@@ -100,6 +105,19 @@ export function enquiryEmail(e: CleanEnquiry, receivedAt = new Date()) {
   return { subject, html, text }
 }
 
+/** The enquiry as a Sheet row, in the order of SHEET_HEADER in api/_sheets.ts. */
+export const sheetRow = (e: CleanEnquiry, receivedAt: Date) => [
+  formatIst(receivedAt),
+  e.name,
+  e.email,
+  e.company,
+  e.phone,
+  e.topics.join(', '),
+  e.message,
+  marketingLine(e.marketing, receivedAt),
+  e.source,
+]
+
 // Browsers send Origin on every POST from a page. Only the site itself (any host it is served from, e.g. a Vercel
 // preview) and local development may post. This stops other sites from using the form as a mail relay.
 const ALLOWED_ORIGINS = new Set(['https://www.wezigns.com', 'https://wezigns.com'])
@@ -170,31 +188,46 @@ export async function handleEnquiry(request: Request, env: Env = process.env): P
   if (!parsed.ok) return json({ ok: false, error: 'invalid', fields: parsed.fields }, 400)
 
   const key = env.RESEND_API_KEY
-  if (!key) return json({ ok: false, error: 'not-configured' }, 503)
+  const sheet = sheetConfig(env)
+  if (!key && !sheet) return json({ ok: false, error: 'not-configured' }, 503)
 
-  const { subject, html, text } = enquiryEmail(parsed.value)
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: env.ENQUIRY_FROM || 'Wezigns website <website@wezigns.com>',
-        to: (env.ENQUIRY_TO || 'contact@wezigns.com').split(',').map((s) => s.trim()).filter(Boolean),
-        reply_to: parsed.value.email,
-        subject,
-        html,
-        text,
-      }),
-    })
-    if (!res.ok) {
+  const receivedAt = new Date()
+  const sendEmail = async () => {
+    const { subject, html, text } = enquiryEmail(parsed.value, receivedAt)
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: env.ENQUIRY_FROM || 'Wezigns website <website@wezigns.com>',
+          to: (env.ENQUIRY_TO || 'contact@wezigns.com').split(',').map((s) => s.trim()).filter(Boolean),
+          reply_to: parsed.value.email,
+          subject,
+          html,
+          text,
+        }),
+      })
+      if (res.ok) return true
       // Log the status and Resend's reason (no visitor data) for the Vercel logs.
       console.error('enquiry: resend replied', res.status, (await res.text()).slice(0, 300))
-      return json({ ok: false, error: 'send-failed' }, 502)
+    } catch (err) {
+      console.error('enquiry: resend unreachable', err instanceof Error ? err.message : err)
     }
-  } catch (err) {
-    console.error('enquiry: resend unreachable', err instanceof Error ? err.message : err)
-    return json({ ok: false, error: 'send-failed' }, 502)
+    return false
   }
+  const saveRow = async () => {
+    try {
+      await appendRow(sheet!, sheetRow(parsed.value, receivedAt))
+      return true
+    } catch (err) {
+      // Google's reason only (no visitor data), for the Vercel logs.
+      console.error('enquiry: sheet failed', err instanceof Error ? err.message : err)
+      return false
+    }
+  }
+
+  const results = await Promise.all([key ? sendEmail() : null, sheet ? saveRow() : null])
+  if (!results.some((r) => r === true)) return json({ ok: false, error: 'send-failed' }, 502)
   return json({ ok: true })
 }
 

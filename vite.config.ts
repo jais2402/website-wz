@@ -8,6 +8,7 @@ import { seo } from './scripts/vite-seo.ts'
 import { snapshotPlugin } from './scripts/vite-snapshot.ts'
 import { pagePreloadPlugin } from './scripts/vite-page-preload.ts'
 import { studioPlugin } from './scripts/vite-studio.ts'
+import { enquiryDevApi } from './scripts/vite-enquiry-dev.ts'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
 const page = (path: string) => fileURLToPath(new URL(`./${path}`, import.meta.url))
@@ -48,6 +49,8 @@ export default defineConfig({
     pagePreloadPlugin(),
     // /studio.html records the hero poster video (dev server only).
     studioPlugin(),
+    // POST /api/enquiry on the dev server, so the forms can be tested end to end (dev server only).
+    enquiryDevApi(),
     {
       // Clean URLs in dev and preview, matching Vercel's cleanUrls: /contact-us → /contact-us.html,
       // /systems/people → /systems/people.html. Only rewrites when that .html page exists.
