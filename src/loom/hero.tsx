@@ -32,6 +32,12 @@ const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.Loo
 const progress = () => loomStore.progress
 /** The camera glides into its resting framing (the poster's) over ~2 s after the scene mounts: fade in after. */
 const CAMERA_SETTLE_MS = 2000
+/**
+ * Longest the live loom may take, from when it starts loading, to be drawn and pass its frame test (~4 s on a
+ * normal machine). A slower one is treated as too slow and gets the 2D hero, so the page still opens once, on the
+ * hero it keeps, before the preloader's own 12 s limit.
+ */
+const LIVE_DEADLINE_MS = 7000
 const wait = (ms: number) => new Promise((r) => window.setTimeout(r, ms))
 
 /** Pinned hero: scroll flies the camera into the loom while the copy steps through three phases. */
@@ -55,6 +61,8 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
     const settled = homeGate && !homeGate.isReady() ? Promise.resolve() : wait(CAMERA_SETTLE_MS)
     if (!tested.current) {
       const ms = await measureFrames()
+      // Already given up on (LIVE_DEADLINE_MS): the 2D hero has taken over.
+      if (tested.current) return
       tested.current = true
       if (ms > FRAME_BUDGET_MS) {
         // The 2D hero takes over; the preloader opens once it has drawn.
@@ -105,6 +113,17 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   }, [ready])
   // The loom (three.js) starts loading once the hero copy has painted: it is under the preloader either way.
   const afterPaint = useAfterPaint({ idle: false })
+  // A machine that can't get the live loom drawn and tested in time gets the 2D hero (not when ?gfx=live forces it).
+  useEffect(() => {
+    if (!live || !active || !afterPaint || tested.current || gfx.mode === 'live') return
+    const t = window.setTimeout(() => {
+      if (tested.current) return
+      tested.current = true
+      gfx.markSlow()
+      setLive(false)
+    }, LIVE_DEADLINE_MS)
+    return () => window.clearTimeout(t)
+  }, [live, active, afterPaint])
 
   // Unmount the WebGL loom when the hero is fully off screen (and tell the fixed canvas it may mount).
   useEffect(() => {
