@@ -89,29 +89,39 @@ export function strandPoint(i: number, n: number, t: number, time: number, chaos
 const overlaps = (a: Rect, b: Rect, pad: number) =>
   a.x < b.x + b.w + pad && b.x < a.x + a.w + pad && a.y < b.y + b.h + pad && b.y < a.y + a.h + pad
 
+/** A card's box, `size` centred on `p`. */
+export function cardRect(p: Pt, size: { w: number; h: number }): Rect {
+  return { x: p.x - size.w / 2, y: p.y - size.h / 2, w: size.w, h: size.h }
+}
+
+/** Whether a box overlaps any of `rects` (with a little room round it). */
+export function overlapsAny(r: Rect, rects: Rect[], pad = 12): boolean {
+  return rects.some((b) => overlaps(r, b, pad))
+}
+
 /**
- * Where a card of size `size` should appear (its centre): in the tangle left of the knot (inside the funnel's height), clear of `blockers` (the
- * hero copy, the nav, the dashboard) and of the cards already showing (`others`, their rects). `rand` returns [0, 1). Null when
- * none of 80 tries is clear: a card under the copy panel shows through its glass as a smudge, so it waits instead.
+ * Where a problem card should sit: on one of the `n` threads (`pointAt(i, t)` is thread i at t), between `tMin` and
+ * `tMax` along it, inside `bounds`, clear of `blockers` (the hero copy, the nav, the dashboard) and of the cards
+ * already showing (`others`). `rand` returns [0, 1). Null when none of 80 tries is clear: a card under the copy panel
+ * shows through its glass as a smudge, so it waits instead.
  */
-export function pickSpawn(
+export function pickOnThread(
   rand: () => number,
-  w: number,
-  h: number,
+  n: number,
   size: { w: number; h: number },
-  gate: Gate,
+  pointAt: (i: number, t: number) => Pt,
+  bounds: Rect,
   blockers: Rect[],
   others: Rect[],
-): Pt | null {
-  const minX = w * 0.03
-  const maxX = Math.max(minX, gate.x - gate.r - 30 - size.w)
-  // Within the threads' funnel, where the tangle is.
-  const minY = gate.spanTop
-  const maxY = Math.max(minY, Math.min(gate.spanBottom, h) - size.h)
+  tMin = 0.15,
+  tMax = 0.82,
+): { i: number; t: number } | null {
   for (let k = 0; k < 80; k++) {
-    const r: Rect = { x: minX + rand() * (maxX - minX), y: minY + rand() * (maxY - minY), w: size.w, h: size.h }
-    if (!blockers.some((b) => overlaps(r, b, 12)) && !others.some((o) => overlaps(r, o, 18)))
-      return { x: r.x + size.w / 2, y: r.y + size.h / 2 }
+    const i = Math.floor(rand() * n)
+    const t = tMin + rand() * (tMax - tMin)
+    const r = cardRect(pointAt(i, t), size)
+    const inside = r.x >= bounds.x && r.y >= bounds.y && r.x + r.w <= bounds.x + bounds.w && r.y + r.h <= bounds.y + bounds.h
+    if (inside && !overlapsAny(r, blockers) && !overlapsAny(r, others, 18)) return { i, t }
   }
   return null
 }

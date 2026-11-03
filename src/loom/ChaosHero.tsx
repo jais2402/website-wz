@@ -6,7 +6,9 @@ import {
   type Gate,
   hash,
   knotGate,
-  pickSpawn,
+  cardRect,
+  overlapsAny,
+  pickOnThread,
   type Pt,
   type Rect,
   type Scene,
@@ -15,7 +17,11 @@ import {
 import { SystemApp } from './SystemApp'
 
 type Problem = (typeof loom.chaos.problems)[number]
-type Card = { el: HTMLElement; box: Rect; start: number; dur: number } | { retry: number }
+// A problem card riding on main thread `i` at `t`: `el` is its positioner (moved every frame, faded when the thread
+// carries it behind the copy), holding the note itself (faded in and out by CSS).
+type Card =
+  | { el: HTMLElement; i: number; t: number; size: { w: number; h: number }; rot: number; start: number; dur: number }
+  | { retry: number }
 type Pulse = { start: number; strong: boolean }
 
 const SEGMENTS = 64
@@ -32,6 +38,9 @@ const FINE = ['255,140,170', '160,140,255', '90,210,255', '255,200,120', '235,23
 function cardElement(p: Problem): HTMLElement {
   const el = document.createElement('span')
   el.className = p.kind === 'sticky' ? 'ba-sticky chaos-card' : 'ba-note chaos-card'
+  const pos = document.createElement('span')
+  pos.className = 'chaos-card-pos'
+  pos.append(el)
   if (p.badge) {
     const badge = document.createElement('i')
     badge.className = 'badge'
@@ -39,7 +48,7 @@ function cardElement(p: Problem): HTMLElement {
     el.append(badge, ' ')
   }
   el.append(p.text)
-  return el
+  return pos
 }
 
 /** A soft white-blue glow, drawn once and stamped round the knot and the running lights. */
@@ -139,29 +148,53 @@ export function ChaosHero({
     let seed = 7
     const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
 
-    // A card where there is clear space; when there is none (the copy panel fills the screen), a retry a little
-    // later. It fades in, stays put and fades out (CSS, .chaos-card); `life` starts it part-way through.
+    // The scene as last drawn, so cards are placed on the threads where they are now.
+    let curTime = 0
+    let curChaos = 1
+    // A point on a thread, shifted by the parallax (fading out into the knot, which stays put).
+    const at = (i: number, count: number, t: number, depth: number) => {
+      const p = strandPoint(i, count, t, curTime, curChaos, w, h, gate)
+      const k = (1 - t) * depth
+      return { x: p.x - pointer.x * k, y: p.y - pointer.y * k * 0.6 }
+    }
+    const MAIN_DEPTH = 22
+    const onThread = (c: { i: number; t: number }) => at(c.i, n, c.t, MAIN_DEPTH)
+    const placed = (c: Card) => ('retry' in c ? [] : [cardRect(onThread(c), c.size)])
+    // What cards keep clear of, re-read twice a second (the copy panel changes as the hero scrolls).
+    let blocked: Rect[] = []
+    let blockedAt = -1
+
+    // A card on a thread where there is clear space; when there is none (the copy panel fills the screen), a retry
+    // a little later. It fades in, rides its thread and fades out (CSS, .chaos-card); `life` starts it part-way.
     const spawn = (now: number, life = 0): Card => {
       const el = cardElement(problems[next % problems.length])
       el.style.visibility = 'hidden'
       layer.append(el)
       const size = { w: el.offsetWidth, h: el.offsetHeight }
-      const box = canvas.getBoundingClientRect()
-      const others = cards.flatMap((c) => ('retry' in c ? [] : [c.box]))
-      const at = pickSpawn(rand, w, h, size, gate, blockers(box), others)
-      if (!at) {
+      blocked = blockers(canvas.getBoundingClientRect())
+      blockedAt = now
+      const others = cards.flatMap(placed)
+      const bounds = { x: 8, y: gate.spanTop, w: w - 16, h: gate.spanBottom - gate.spanTop }
+      const spot = pickOnThread(rand, n, size, (i, t) => at(i, n, t, MAIN_DEPTH), bounds, blocked, others)
+      if (!spot) {
         el.remove()
         return { retry: now + 900 }
       }
       next++
       const dur = (6 + rand() * 3) * 1000
-      el.style.left = `${at.x - size.w / 2}px`
-      el.style.top = `${at.y - size.h / 2}px`
-      el.style.rotate = `${((rand() - 0.5) * 12).toFixed(1)}deg`
-      el.style.animationDuration = `${dur}ms`
-      el.style.animationDelay = `${-life * dur}ms`
+      const note = el.firstElementChild as HTMLElement
+      note.style.animationDuration = `${dur}ms`
+      note.style.animationDelay = `${-life * dur}ms`
       el.style.visibility = ''
-      return { el, box: { x: at.x - size.w / 2, y: at.y - size.h / 2, ...size }, start: now - life * dur, dur }
+      const card = { el, ...spot, size, rot: (rand() - 0.5) * 10, start: now - life * dur, dur }
+      move(card)
+      return card
+    }
+    // Keeps a card on its thread; hides it while the thread carries it behind the copy panel.
+    const move = (c: Extract<Card, { el: HTMLElement }>) => {
+      const p = onThread(c)
+      c.el.style.transform = `translate(${(p.x - c.size.w / 2).toFixed(1)}px, ${(p.y - c.size.h / 2).toFixed(1)}px) rotate(${c.rot.toFixed(1)}deg)`
+      c.el.classList.toggle('is-covered', overlapsAny(cardRect(p, c.size), blocked, 4))
     }
     const clearCards = () => {
       cards.forEach((c) => 'el' in c && c.el.remove())
@@ -217,6 +250,8 @@ export function ChaosHero({
     const draw = (now: number) => {
       const time = (now - t0) / 1000
       const chaos = 1 - 0.6 * Math.min(1, progress())
+      curTime = time
+      curChaos = chaos
       const { knot } = scene
       const from = scene.link.from
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -226,12 +261,6 @@ export function ChaosHero({
 
       pointer.x += (pointer.tx - pointer.x) * 0.06
       pointer.y += (pointer.ty - pointer.y) * 0.06
-      // A point on a thread, shifted by the parallax (fading out into the knot, which stays put).
-      const at = (i: number, count: number, t: number, depth: number) => {
-        const p = strandPoint(i, count, t, time, chaos, w, h, gate)
-        const k = (1 - t) * depth
-        return { x: p.x - pointer.x * k, y: p.y - pointer.y * k * 0.6 }
-      }
 
       // Depth: a bundle of hair-fine threads behind, added up as light like the live loom's, one path per colour.
       ctx.globalCompositeOperation = 'lighter'
@@ -253,7 +282,7 @@ export function ChaosHero({
       const paths: Pt[][] = []
       for (let i = 0; i < n; i++) {
         const pts: Pt[] = []
-        for (let s = 0; s <= SEGMENTS; s++) pts.push(at(i, n, s / SEGMENTS, 22))
+        for (let s = 0; s <= SEGMENTS; s++) pts.push(at(i, n, s / SEGMENTS, MAIN_DEPTH))
         paths.push(pts)
       }
       ctx.lineWidth = small ? 5 : 8
@@ -313,20 +342,23 @@ export function ChaosHero({
         ctx.globalCompositeOperation = 'source-over'
       }
 
-      // Cards: each sits still where it appeared, then fades out (solved): the knot flares and a light runs to the
-      // dashboard, and the next problem appears elsewhere.
-      if (!reducedMotion)
-        for (let k = 0; k < cards.length; k++) {
-          const c = cards[k]
-          if ('retry' in c) {
-            if (now >= c.retry) cards[k] = spawn(now)
-          } else if (now - c.start >= c.dur) {
-            c.el.remove()
-            flash = 1
-            pulses.push({ start: now, strong: true })
-            cards[k] = spawn(now)
-          }
-        }
+      // Cards ride their threads, then fade out (solved): the knot flares and a light runs to the dashboard, and the
+      // next problem appears on another thread.
+      if (now - blockedAt > 500) {
+        blocked = blockers(canvas.getBoundingClientRect())
+        blockedAt = now
+      }
+      for (let k = 0; k < cards.length; k++) {
+        const c = cards[k]
+        if ('retry' in c) {
+          if (now >= c.retry && !reducedMotion) cards[k] = spawn(now)
+        } else if (now - c.start >= c.dur && !reducedMotion) {
+          c.el.remove()
+          flash = 1
+          pulses.push({ start: now, strong: true })
+          cards[k] = spawn(now)
+        } else move(c)
+      }
 
       // The single line out of the knot into the dashboard: a fine core over a soft glow.
       ctx.globalCompositeOperation = 'lighter'

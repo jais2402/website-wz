@@ -83,7 +83,21 @@
   pointer-events: none;
 }
 
-.chaos-card {
+/* Positioned on its thread every frame (transform); faded while the thread carries it behind the copy panel. */
+.chaos-card-pos {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  transition: opacity 0.4s var(--ease-out);
+}
+
+.chaos-card-pos.is-covered {
+  opacity: 0;
+}
+
+.chaos-cards .chaos-card {
+  position: relative;
   opacity: 0;
   animation: chaos-card 8s linear both;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { chaosScene, knotGate, nodeY, pickSpawn, strandPoint } from './chaos'
+import { cardRect, chaosScene, knotGate, nodeY, overlapsAny, pickOnThread, strandPoint } from './chaos'
 
 const W = 1440
 const H = 900
@@ -55,23 +55,24 @@ describe('threads', () => {
   })
 })
 
-describe('pickSpawn', () => {
-  it('keeps clear of the hero copy when there is room, left of the knot', () => {
-    let s = 1
-    const rand = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646
-    const copy = { x: 100, y: 320, w: 600, h: 500 }
-    const size = { w: 220, h: 44 }
+describe('pickOnThread', () => {
+  let seed = 1
+  const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
+  const pointAt = (i: number, t: number) => strandPoint(i, 14, t, 2, 1, W, H, gate)
+  const bounds = { x: 0, y: 0, w: W, h: H }
+  const size = { w: 220, h: 44 }
+  it('puts a card on a thread, clear of the copy panel', () => {
+    const copy = { x: 100, y: 520, w: 600, h: 320 }
     for (let k = 0; k < 20; k++) {
-      const c = pickSpawn(rand, W, H, size, gate, [copy], [])
-      if (!c) throw new Error('no spot')
-      const r = { x: c.x - size.w / 2, y: c.y - size.h / 2 }
-      const hit = r.x < copy.x + copy.w && copy.x < r.x + size.w && r.y < copy.y + copy.h && copy.y < r.y + size.h
-      expect(hit).toBe(false)
-      expect(c.x + size.w / 2).toBeLessThan(gate.x)
+      const spot = pickOnThread(rand, 14, size, pointAt, bounds, [copy], [])
+      if (!spot) throw new Error('no spot')
+      const c = pointAt(spot.i, spot.t)
+      expect(overlapsAny(cardRect(c, size), [copy])).toBe(false)
+      expect(spot.t).toBeGreaterThanOrEqual(0.15)
+      expect(spot.t).toBeLessThanOrEqual(0.82)
     }
   })
   it('gives up rather than placing a card under the copy', () => {
-    const all = { x: 0, y: 0, w: W, h: H }
-    expect(pickSpawn(Math.random, W, H, { w: 220, h: 44 }, gate, [all], [])).toBeNull()
+    expect(pickOnThread(rand, 14, size, pointAt, bounds, [bounds], [])).toBeNull()
   })
 })
