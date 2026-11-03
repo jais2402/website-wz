@@ -28,6 +28,8 @@ export const socials = {
 
 // Header: every page is one click away. Questions (#faq) stays in the footer and on the home page.
 export const nav = [
+  // At 1240px (the narrowest bar before the burger) this row leaves ~70px either side.
+  { label: 'Websites', href: '/website-development' },
   { label: 'Systems', href: '/our-services' },
   { label: 'AI', href: '/ai' },
   { label: 'Technology', href: '/technology' },
@@ -166,7 +168,7 @@ export const offer = {
       title: 'Websites that bring in work.',
       for: 'For businesses that need a fast site customers can find, trust and act on.',
       items: ['Company and marketing websites', 'Ecommerce stores', 'Landing pages for campaigns', 'Search, speed and analytics set up from day one'],
-      cta: { label: 'Talk about a website', href: '/contact-us' },
+      cta: { label: 'See how we build websites', href: '/website-development' },
       tone: 'lime',
     },
     {
@@ -744,7 +746,7 @@ export const footer = [
       ['Industry systems', '/systems/industry'],
     ],
   },
-  { title: 'Capabilities', links: [['Websites', '/#offer'], ['Custom software', '/#offer'], ['Software products', '/#offer'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
+  { title: 'Capabilities', links: [['Websites', '/website-development'], ['Custom software', '/#offer'], ['Software products', '/#offer'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
   { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 
@@ -960,6 +962,11 @@ export const ctas = {
     title: 'Your system could be next.',
     body: 'Tell us what is slowing your team down. We map it with you, then agree one price and one timeline before we build.',
     secondary: { label: 'How pricing works', href: '/pricing' },
+  },
+  website: {
+    title: 'Planning a new website?',
+    body: 'Tell us what the site has to do. We map it with you, then agree one price and one timeline before we build.',
+    secondary: { label: 'See our work', href: '/portfolio' },
   },
   pricing: {
     title: 'Want a price for your system?',

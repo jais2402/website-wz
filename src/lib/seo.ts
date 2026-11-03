@@ -286,10 +286,14 @@ export function jsonLd(page: SeoPage, site: SeoSite, data: SeoData): Json {
   return { '@context': 'https://schema.org', '@graph': graph }
 }
 
-/** The questions a page shows (and so may mark up as FAQPage): all of them on home, the cost ones on /pricing. */
+/**
+ * The questions a page shows (and so may mark up as FAQPage): all of them on home, the cost ones on /pricing, the
+ * website ones on /website-development.
+ */
 export function faqFor(page: SeoPage, data: SeoData): { q: string; a: string }[] {
   if (page.id === 'home') return data.faq
   if (page.id === 'pricing') return data.pricingFaq
+  if (page.id === 'website') return data.websiteFaq
   return []
 }
 
@@ -304,7 +308,10 @@ function offerCatalog(name: string, items: { name: string; description: string }
   }
 }
 
-/** Service nodes: one per system page, two on /ai (AI in your systems, custom AI solutions). */
+/**
+ * Service nodes: one per system page, one on /website-development (with what we build as its catalogue), two on /ai
+ * (AI in your systems, custom AI solutions).
+ */
 function serviceNodes(page: SeoPage, site: SeoSite, data: SeoData): Json[] {
   if (page.schema !== 'Service') return []
   const url = absoluteUrl(site.origin, page.path)
@@ -314,6 +321,19 @@ function serviceNodes(page: SeoPage, site: SeoSite, data: SeoData): Json[] {
     provider: { '@id': id.org },
     areaServed: site.areaServed.map((name) => ({ '@type': 'Country', name })),
     url,
+  }
+  if (page.id === 'website') {
+    const name = page.serviceName ?? 'Website development'
+    return [
+      {
+        ...base,
+        '@id': `${url}#service`,
+        name,
+        serviceType: 'Website development',
+        description: data.website.description,
+        hasOfferCatalog: offerCatalog('Websites we build', data.website.offers),
+      },
+    ]
   }
   if (page.system) {
     const sys = data.systems.find((s) => s.slug === page.system)
@@ -360,7 +380,7 @@ export function sitemapXml(
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`
 }
 
-const LLMS_SECTIONS = ['Systems', 'AI', 'Company', 'Contact', 'Legal'] as const
+const LLMS_SECTIONS = ['Websites', 'Systems', 'AI', 'Company', 'Contact', 'Legal'] as const
 
 /** llms.txt (llmstxt.org): H1 name, blockquote summary, key facts, then sections of links. */
 export function llmsTxt(pages: SeoPage[], site: SeoSite, data: SeoData) {

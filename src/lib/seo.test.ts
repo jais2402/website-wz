@@ -1,6 +1,6 @@
 import { brand, countries, faq, pastWork, work } from '@/content/site'
 import { pages, seoData, site } from '@/content/seo'
-import { pricingPage } from '@/content/pages'
+import { pricingPage, websitePage } from '@/content/pages'
 import {
   absoluteUrl,
   applyHead,
@@ -353,8 +353,8 @@ describe('pricing', () => {
     expect(html).toMatch(/<link rel="preload" href="\/fonts\/[^"]+\.woff2" as="font"/)
   })
 
-  it('is the last page, so the social cards before it keep their seeds', () => {
-    expect(pages.at(-1)!.id).toBe('pricing')
+  it('comes after every older page, so their social cards keep their seeds', () => {
+    expect(pages.at(-2)!.id).toBe('pricing')
   })
 
   it('is in llms.txt', () => {
@@ -362,10 +362,61 @@ describe('pricing', () => {
   })
 })
 
+describe('website development', () => {
+  const url = 'https://www.wezigns.com/website-development'
+
+  it('is an indexable page at /website-development with a Home › Website development breadcrumb and a canonical', () => {
+    const p = page('website')
+    expect(p).toMatchObject({
+      file: 'website-development.html',
+      path: '/website-development',
+      schema: 'Service',
+      indexable: true,
+    })
+    expect(p.title).toMatch(/Website Development/)
+    expect(p.description).toMatch(/website development company in Chennai/i)
+    expect(p.breadcrumb.map((c) => c.name)).toEqual(['Home', 'Website development'])
+    const crumbs = graphOf('website').find((n) => typeIn(n, 'BreadcrumbList'))!.itemListElement as { item: string }[]
+    expect(crumbs.map((c) => c.item)).toEqual(['https://www.wezigns.com/', url])
+    expect(headTags(p, site, seoData)).toContain(`<link rel="canonical" href="${url}" />`)
+    const html = htmlFiles['../../website-development.html'] ?? ''
+    expect(html).toContain('<body data-page="website">')
+    expect(html).toMatch(/<link rel="preload" href="\/fonts\/[^"]+\.woff2" as="font"/)
+  })
+
+  it('is the last page, so the social cards before it keep their seeds', () => {
+    expect(pages.at(-1)!.id).toBe('website')
+  })
+
+  it('has one Service with what we build as its catalogue, named as the main entity', () => {
+    const g = graphOf('website')
+    const services = g.filter((n) => typeIn(n, 'Service'))
+    expect(services).toHaveLength(1)
+    expect(services[0]).toMatchObject({ '@id': `${url}#service`, name: 'Website development', url })
+    const catalog = services[0].hasOfferCatalog as { itemListElement: { itemOffered: { name: string } }[] }
+    expect(catalog.itemListElement.map((o) => o.itemOffered.name)).toEqual(websitePage.builds.map((b) => b.title))
+    expect(g.find((n) => typeIn(n, 'WebPage'))!.mainEntity).toEqual({ '@id': `${url}#service` })
+  })
+
+  it('marks up its visible questions as a FAQPage', () => {
+    expect(faqFor(page('website'), seoData)).toEqual(websitePage.faq)
+    const qs = graphOf('website').find((n) => typeIn(n, 'FAQPage'))!.mainEntity as { name: string }[]
+    expect(qs.map((q) => q.name)).toEqual(websitePage.faq.map((f) => f.q))
+  })
+
+  it('is the Website development offering in the company catalogue and in llms.txt', () => {
+    expect(site.offerings.find((o) => o.name === 'Website development')!.path).toBe('/website-development')
+    const txt = llmsTxt(pages, site, seoData)
+    expect(txt).toContain('## Websites')
+    expect(txt).toContain(`[Website development](${url}):`)
+  })
+})
+
 describe('sitemapXml', () => {
   it('lists only indexable pages with absolute www URLs, and lastmod only where a page has a date', () => {
     const xml = sitemapXml(pages, site, (p) => (p.id === 'privacy' ? '2026-10-19' : undefined))
-    expect(xml.match(/<url>/g)).toHaveLength(17)
+    expect(xml.match(/<url>/g)).toHaveLength(18)
+    expect(xml).toContain('<loc>https://www.wezigns.com/website-development</loc>')
     expect(xml).toContain('<loc>https://www.wezigns.com/portfolio</loc>')
     expect(xml).toContain('<loc>https://www.wezigns.com/pricing</loc>')
     for (const path of ['/privacy-policy', '/terms-and-conditions', '/cookie-policy'])

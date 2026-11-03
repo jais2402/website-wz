@@ -4,7 +4,7 @@
 // Rules (docs/seo/plan.md): titles ≤ 60 chars, descriptions 140–155 chars, visible H1s unchanged, no GST claims.
 import { brand, countries, faq, pastWork, socials, storySection, work } from './site.ts'
 import { heroCard } from './heroes.ts'
-import { aiPage, pricingPage, systemPages } from './pages.ts'
+import { aiPage, pricingPage, systemPages, websitePage } from './pages.ts'
 
 // Full country names for structured data; `countries` uses short labels for the globe.
 const COUNTRY_NAMES: Record<string, string> = {
@@ -32,7 +32,7 @@ export const site = {
     {
       name: 'Website development',
       description: 'Business websites and online stores, designed, built, hosted and maintained by Wezigns.',
-      path: '/our-services#offer',
+      path: '/website-development',
     },
     {
       name: 'Custom software development',
@@ -120,6 +120,7 @@ export type PageId =
   | 'cookies'
   | 'portfolio'
   | 'pricing'
+  | 'website'
 
 /** JSON-LD type of the page itself. `Service` pages get a WebPage node plus Service nodes. */
 export type PageSchema = 'WebPage' | 'CollectionPage' | 'AboutPage' | 'ContactPage' | 'Service'
@@ -147,7 +148,7 @@ export type SeoPage = {
   /** Name of the Service on a system page. */
   serviceName?: string
   /** llms.txt section and link label. */
-  llms?: { section: 'Systems' | 'AI' | 'Company' | 'Contact' | 'Legal'; label: string }
+  llms?: { section: 'Websites' | 'Systems' | 'AI' | 'Company' | 'Contact' | 'Legal'; label: string }
 }
 
 const HOME: Crumb = { name: 'Home', path: '/' }
@@ -390,6 +391,21 @@ export const pages: SeoPage[] = [
     indexable: true,
     llms: { section: 'Company', label: 'How pricing works' },
   },
+  // Added after pricing, so every card above keeps its seed.
+  {
+    id: 'website',
+    file: 'website-development.html',
+    path: '/website-development',
+    title: 'Website Development Company in Chennai | Wezigns',
+    description:
+      'Website development company in Chennai: fast, mobile-first websites, online stores and portals, found on search, then hosted and looked after since 2012.',
+    card: heroCard('website'),
+    breadcrumb: [HOME, { name: 'Website development', path: '/website-development' }],
+    schema: 'Service',
+    indexable: true,
+    serviceName: 'Website development',
+    llms: { section: 'Websites', label: 'Website development' },
+  },
 ]
 
 /** Content the JSON-LD builders read (FAQ, system modules, AI offers). */
@@ -401,6 +417,13 @@ export const seoData = {
     if (!item) throw new Error(`seo: pricing question "${q}" is not in faq`)
     return item
   }),
+  // The questions shown on /website-development, for its FAQPage.
+  websiteFaq: websitePage.faq,
+  // The Service on /website-development: what we build, as its offer catalogue.
+  website: {
+    description: websitePage.lead,
+    offers: websitePage.builds.map((b) => ({ name: b.title, description: b.text })),
+  },
   // Every case on /portfolio, in page order (case studies with results first). `id` is the case's anchor there.
   cases: [...work, ...pastWork].map((c) => ({
     id: c.id,

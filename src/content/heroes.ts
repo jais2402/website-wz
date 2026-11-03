@@ -1,7 +1,7 @@
 // Each page's hero label and headline, read from the same copy the page renders. Used for the social cards
 // (scripts/og-cards.mjs draws the lines, the last in the serif accent) and their alt text (seo.ts `card`).
 // Plain data with explicit `.ts` imports, so the build scripts can load it outside the app's `@/` alias.
-import { aboutPage, aiPage, notFoundPage, portfolioPage, pricingPage, servicesPage, systemPages, systemsSection } from './pages.ts'
+import { aboutPage, aiPage, notFoundPage, portfolioPage, pricingPage, servicesPage, systemPages, systemsSection, websitePage } from './pages.ts'
 import { contactPage, loom, technologyPage } from './site.ts'
 import { legalCopy, legalPages } from './sitemap.ts'
 
@@ -17,6 +17,7 @@ const byId: Record<string, () => Hero> = {
   technology: () => titled(technologyPage),
   portfolio: () => titled(portfolioPage),
   pricing: () => titled(pricingPage),
+  website: () => titled(websitePage),
   notFound: () => titled(notFoundPage),
   contact: () => ({ kicker: contactPage.kicker, lines: [contactPage.title] }),
 }

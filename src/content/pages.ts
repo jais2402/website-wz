@@ -413,3 +413,130 @@ export const pricingPage = {
   // Picked from `faq` in site.ts (checked in snapshot.test.ts), in this order.
   faq: ['How much does it cost?', 'Do you work with small businesses?', 'Can you take over software another company built?'],
 }
+
+// /website-development: websites for growing businesses. No prices, timelines or scores in numbers (one price and
+// one timeline are agreed in Shape, see pricingPage); proof reuses `pastWork` cases and never invents clients.
+export const websitePage = {
+  kicker: 'Website development',
+  title: ['Websites that', 'bring in', 'work.'],
+  lead: 'We design, build, host and look after websites for growing businesses, from Chennai since 2012. Fast pages that people find on search, read on their phone and act on. Every enquiry lands in your inbox and a Google Sheet.',
+  includesLink: { label: 'See what every site includes', href: '#includes' },
+  // Hero visual: a browser window putting itself together. Decorative; the same facts are in the sections below.
+  visual: {
+    url: 'yourcompany.com',
+    nav: ['Services', 'Work', 'About'],
+    headline: 'Your business, clearly.',
+    button: 'Get in touch',
+    checksTitle: 'Before launch',
+    checks: ['Core Web Vitals', 'Mobile', 'Sitemap and schema', 'Accessible'],
+    pass: 'Pass',
+    enquiry: { label: 'New enquiry', text: 'Redesign for our clinic website', to: 'Sent to email and Google Sheet' },
+  },
+  buildKicker: 'What we build',
+  buildTitle: 'Five kinds of website, one team.',
+  buildIntro: 'From a company site that explains what you do to a portal your customers log in to. We design it, build it and keep it running.',
+  builds: [
+    {
+      title: 'Company and marketing websites',
+      text: 'Say what you do, show your work and make it easy to get in touch. Built to load fast and read well on a phone.',
+    },
+    {
+      title: 'Ecommerce stores',
+      text: 'Catalogue, cart, checkout and payments, with the orders, stock and returns behind them in one admin.',
+      link: { label: 'Ecommerce systems', href: '/systems/ecommerce' },
+    },
+    {
+      title: 'Landing pages for campaigns',
+      text: 'One page for one offer, ready for your ads and emails. Each lead is tracked to the campaign that brought it in.',
+    },
+    {
+      title: 'Web apps and portals',
+      text: 'Customer and partner portals, booking and enquiry flows, and dashboards that sit behind a login.',
+      link: { label: 'Systems we build', href: '/our-services' },
+    },
+    {
+      title: 'Redesigns and migrations',
+      text: 'A new site in place of an old one, or a move off WordPress. We keep what works, move your content and redirect the old addresses.',
+    },
+  ] as { title: string; text: string; link?: { label: string; href: string } }[],
+  includesKicker: 'In every site',
+  includesTitle: 'What every site includes.',
+  includesIntro: 'The parts that get skipped are the parts that decide whether a site brings in work. They come as standard, whatever the size of the site.',
+  includes: [
+    { name: 'Speed', text: "Pages that load fast on a phone, built to pass Google's Core Web Vitals." },
+    {
+      name: 'Found on search and AI search',
+      text: 'Clear titles and descriptions, structured data, a sitemap and an llms.txt file, so search engines and AI assistants can read the site.',
+    },
+    { name: 'Mobile first', text: 'Designed for the phone first, then the laptop. Most of your visitors arrive on one.' },
+    { name: 'Accessible', text: 'Readable contrast, keyboard access and labelled forms, so everyone can use the site.' },
+    {
+      name: 'Analytics with consent',
+      text: 'See which pages bring in enquiries. Analytics loads only after a visitor accepts the cookie banner.',
+    },
+    {
+      name: 'Enquiries where you work',
+      text: 'Every form lands in your email and a Google Sheet, so no lead sits unread in a website inbox.',
+    },
+    {
+      name: 'Hosting, security and updates',
+      text: 'We host it, back it up and keep it updated after launch. You call the team that built it.',
+    },
+  ],
+  stepsKicker: 'How we build it',
+  stepsTitle: 'From the first call to years after launch.',
+  stepsIntro: 'The same four stages we use for every system, set up for a website.',
+  // One line per stage in `process` (site.ts), in the same order.
+  steps: [
+    'Who the site is for, what they need to find and what you want them to do next.',
+    'Pages, content and features, then one price and one timeline in writing.',
+    'Designs first, then working pages you can click through and review as we go.',
+    'Launch, hosting, updates and changes, from the team that built it.',
+  ],
+  priceKicker: 'Pricing',
+  priceTitle: 'One price, agreed before we build.',
+  priceText: 'We price the website you need, not the hours it takes. Once we have mapped it with you, you get one price and one timeline in writing, before any building starts.',
+  priceSetsLabel: 'What sets the price of a website',
+  priceSets: [
+    'How many pages and page types it needs',
+    'Who writes the content, and in how many languages',
+    'What it connects to: payments, bookings, your CRM',
+    'For a store, the size of the catalogue and how orders are handled',
+  ],
+  priceLink: { label: 'See how pricing works', href: '/pricing' },
+  proofKicker: 'Our work',
+  proofTitle: 'Stores and portals we have built.',
+  proofIntro: 'Online stores, education portals, job portals and fundraising sites, built for clients over the years.',
+  // Case ids in `pastWork` (site.ts), in this order. Each card links to the case on /portfolio.
+  proofCases: ['online-retail', 'education', 'recruitment', 'fundraising'],
+  proofLink: { label: 'See all our work', href: '/portfolio' },
+  readCase: 'Read the case',
+  faqTitle: 'Questions about websites.',
+  // Shown on the page and marked up as its FAQPage (lib/seo.ts faqFor).
+  faq: [
+    {
+      q: 'How much does a website cost?',
+      a: 'It depends on the pages, the features and who writes the content. We map what the site has to do with you, then give you one price and one timeline in writing before we build. We do not bill by the hour.',
+    },
+    {
+      q: 'How long does a website take?',
+      a: 'We agree the timeline with the price, before building starts. A company site is quicker than a store with a large catalogue. You see working pages as we go, not only at the end.',
+    },
+    {
+      q: 'Can we edit the website ourselves?',
+      a: 'Yes. We set up a content editor for the parts you change often, such as news, products, jobs and case studies, and show your team how to use it.',
+    },
+    {
+      q: 'Do you host the website?',
+      a: 'Yes, if you want us to. We host it, back it up, keep it updated and fix what breaks, as the team that built it. If you prefer your own hosting, we hand over everything you need.',
+    },
+    {
+      q: 'Can you redesign our existing website?',
+      a: 'Yes. We review what you have, keep what works and move your content across, including from WordPress. Old addresses are redirected to the new pages, so links and search results still reach you.',
+    },
+    {
+      q: 'Will people find the site on Google?',
+      a: 'Every site ships with the groundwork done: fast pages, clear titles, structured data, a sitemap and an llms.txt file for AI search. Rankings also depend on your content and your competition, so we never promise a position.',
+    },
+  ],
+}

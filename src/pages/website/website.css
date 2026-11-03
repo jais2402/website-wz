@@ -1,0 +1,676 @@
+/* ==========================================================================
+   Website development (/website-development, WebsitePage.tsx). Classes prefixed `wd-`.
+   Hero visual: a browser window that builds itself (SiteBuild.tsx), plain HTML and CSS. Tones: lime (accent blue),
+   violet, coral, set as --tone by .tone-*.
+   ========================================================================== */
+.wd .tone-lime {
+  --tone: var(--lime);
+}
+
+.wd .tone-violet {
+  --tone: var(--violet);
+}
+
+.wd .tone-coral {
+  --tone: var(--coral);
+}
+
+.wd h3 {
+  font-family: var(--f-display);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.wd-group {
+  color: var(--muted);
+  font-size: 0.7rem;
+  margin-bottom: 14px;
+}
+
+/* ---- Hero visual: browser window, pre-launch checks, an enquiry arriving ---- */
+.wd-build {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+  padding: 28px 0 70px;
+}
+
+.wd-browser {
+  border: 1px solid var(--line-2);
+  border-radius: 18px;
+  background: var(--ink-2);
+  overflow: hidden;
+  box-shadow:
+    0 40px 90px -40px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(140, 196, 255, 0.05),
+    0 0 60px -20px rgba(77, 159, 255, 0.35);
+}
+
+.wd-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--ink-3);
+}
+
+.wd-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.wd-dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line-2);
+}
+
+.wd-url {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.wd-url svg {
+  color: #8cc4ff;
+}
+
+.wd-site {
+  display: grid;
+  gap: 18px;
+  padding: clamp(16px, 2.4vw, 24px);
+}
+
+.wd-site-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wd-logo {
+  width: 54px;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #8cc4ff, var(--lime));
+}
+
+.wd-site-links {
+  display: flex;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.wd-site-hero {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  padding: clamp(16px, 2.4vw, 24px);
+  border-radius: 14px;
+  background:
+    radial-gradient(70% 90% at 100% 0%, rgba(139, 123, 255, 0.22), transparent 70%),
+    radial-gradient(60% 80% at 0% 100%, rgba(77, 159, 255, 0.18), transparent 70%), var(--ink-3);
+}
+
+.wd-site-title {
+  font-family: var(--f-display);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.wd-line {
+  display: block;
+  width: 78%;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.wd-line.is-short {
+  width: 52%;
+}
+
+.wd-site-btn {
+  margin-top: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--cta-2), var(--cta-3));
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.wd-site-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.wd-site-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.wd-site-card i {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--tone);
+  opacity: 0.85;
+}
+
+.wd-site-card .wd-line {
+  width: 100%;
+  height: 6px;
+}
+
+.wd-site-card .wd-line.is-short {
+  width: 60%;
+}
+
+/* Pre-launch checks, over the lower left of the window. */
+.wd-checks {
+  position: absolute;
+  left: -28px;
+  bottom: 0;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: min(300px, 72%);
+  padding: 14px 16px;
+  border-radius: 18px;
+}
+
+.wd-ring {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+}
+
+.wd-ring circle,
+.wd-ring path {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.wd-ring-track {
+  stroke: var(--line-2);
+}
+
+.wd-ring-fill {
+  stroke: #5ee6a0;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.wd-ring-tick {
+  stroke: #5ee6a0;
+  stroke-width: 3.2;
+}
+
+.wd-checks-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.wd-checks-title {
+  color: var(--muted);
+  font-size: 0.66rem;
+  margin-bottom: 6px;
+}
+
+.wd-check {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.wd-check b {
+  color: #5ee6a0;
+  font-family: var(--f-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* A new enquiry, over the top right of the window. */
+.wd-toast {
+  position: absolute;
+  right: -20px;
+  top: 0;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  width: min(270px, 66%);
+  padding: 13px 15px;
+  border-radius: 16px;
+}
+
+.wd-toast-dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #8cc4ff;
+  box-shadow: 0 0 0 4px rgba(140, 196, 255, 0.18);
+}
+
+.wd-toast-label {
+  color: #8cc4ff;
+  font-size: 0.66rem;
+}
+
+.wd-toast-text {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.wd-toast-to {
+  margin-top: 4px;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wd-in {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: wd-rise 0.8s var(--ease-out) forwards;
+    animation-delay: calc(0.25s + var(--i) * 0.16s);
+  }
+
+  .wd-checks {
+    opacity: 0;
+    animation: wd-rise 0.8s var(--ease-out) 1.05s forwards;
+  }
+
+  .wd-ring-fill {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: wd-draw 1.4s var(--ease-out) 1.25s forwards;
+  }
+
+  .wd-ring-tick {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: wd-draw 0.5s var(--ease-out) 2.55s forwards;
+  }
+
+  .wd-check b {
+    opacity: 0;
+    animation: wd-fade 0.3s ease forwards;
+    animation-delay: calc(1.4s + var(--i) * 0.28s);
+  }
+
+  .wd-toast {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+    animation: wd-drop 0.7s var(--ease-out) 2.9s forwards;
+  }
+
+  .wd-toast-dot {
+    animation: wd-pulse 2.4s ease-in-out 3.6s infinite;
+  }
+}
+
+@keyframes wd-rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wd-drop {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wd-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes wd-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wd-pulse {
+  50% {
+    box-shadow: 0 0 0 9px rgba(140, 196, 255, 0);
+  }
+}
+
+/* ---- What we build: five kinds, two wide then three ---- */
+.wd-builds {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wd-kind {
+  grid-column: span 2;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: clamp(22px, 2.6vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.wd-kind:nth-child(-n + 2) {
+  grid-column: span 3;
+}
+
+.wd-kind-num {
+  color: #8cc4ff;
+  font-size: 0.72rem;
+}
+
+.wd-kind h3 {
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+}
+
+.wd-kind p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.wd-kind-link {
+  margin-top: 4px;
+  color: #8cc4ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.wd-kind-link:hover {
+  text-decoration: underline;
+}
+
+/* ---- What every site includes (the cream section) ---- */
+.wd-includes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(24px, 5vw, 72px);
+  border-top: 1px solid var(--line);
+}
+
+.wd-include {
+  display: grid;
+  gap: 8px;
+  padding: clamp(20px, 2.6vw, 28px) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.wd-include dt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--f-display);
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.wd-include dd {
+  margin: 0;
+  padding-left: 38px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.wd-tick {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(31, 111, 224, 0.12);
+  color: var(--lime);
+}
+
+/* ---- How we build it: four stages on one line ---- */
+.wd-steps {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.wd-steps::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 9px;
+  height: 2px;
+  background: var(--loom-gradient);
+  opacity: 0.7;
+}
+
+.wd-step {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.wd-step-knot {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid #8cc4ff;
+  box-shadow: 0 0 12px rgba(140, 196, 255, 0.5);
+}
+
+.wd-step h3 {
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+}
+
+.wd-step p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ---- Pricing: the promise on the left, what sets the price on the right ---- */
+.wd-price {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+
+.wd-price-copy {
+  display: grid;
+  gap: 24px;
+  justify-items: start;
+}
+
+.wd-price-sets {
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px dashed rgba(140, 196, 255, 0.35);
+  border-radius: var(--radius);
+}
+
+.wd-price-sets ul {
+  display: grid;
+  gap: 12px;
+}
+
+.wd-price-sets li {
+  position: relative;
+  padding-left: 22px;
+  line-height: 1.5;
+}
+
+.wd-price-sets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8cc4ff;
+}
+
+/* ---- Proof: stores and portals from our work ---- */
+.wd-proof {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wd-case {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  height: 100%;
+  padding: clamp(22px, 2.6vw, 32px);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--tone);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.02);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+
+.wd-case:hover {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.wd-case-sector {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.wd-case h3 {
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+}
+
+.wd-case p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.wd-case-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wd-case-tags .chip {
+  font-size: 0.78rem;
+  padding: 6px 12px;
+}
+
+.wd-case-link {
+  color: #8cc4ff;
+  font-weight: 600;
+}
+
+.wd-proof-more {
+  margin-top: 28px;
+}
+
+@media (max-width: 1099px) {
+  .wd-builds {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wd-kind,
+  .wd-kind:nth-child(-n + 2) {
+    grid-column: auto;
+  }
+
+  .wd-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 40px;
+  }
+
+  .wd-steps::before {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .wd-build {
+    margin: 0 auto;
+  }
+
+  .wd-checks {
+    left: 0;
+  }
+
+  .wd-toast {
+    right: 0;
+  }
+
+  .wd-includes,
+  .wd-price,
+  .wd-proof {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .wd-builds,
+  .wd-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wd-build {
+    padding-top: 52px;
+    padding-bottom: 96px;
+  }
+
+  .wd-site-links span:nth-child(n + 3) {
+    display: none;
+  }
+
+  .wd-checks {
+    width: 86%;
+  }
+
+  .wd-toast {
+    width: 80%;
+  }
+}
