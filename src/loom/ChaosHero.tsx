@@ -19,12 +19,15 @@ type Card = { el: HTMLElement; box: Rect; start: number; dur: number } | { retry
 type Pulse = { start: number; strong: boolean }
 
 const SEGMENTS = 64
+const FINE_SEGMENTS = 40
 const PULSE_S = 1.6
 const LOOPS = 16
 // The Before/After tangle's colours (loom.css, .ba-tangle).
 const TANGLE = ['255,120,150', '139,123,255', '47,208,255']
 // Solid threads: near-opaque, as the client asked.
 const TANGLE_ALPHA = [0.85, 0.85, 0.8]
+// The fine threads behind them, in the live loom's multicolour (with its gold and a white), added up as light.
+const FINE = ['255,140,170', '160,140,255', '90,210,255', '255,200,120', '235,235,255']
 
 /** One problem card as the Before/After notes are written (.ba-note, .ba-sticky): real text, so it stays sharp. */
 function cardElement(p: Problem): HTMLElement {
@@ -111,6 +114,8 @@ export function ChaosHero({
     let to: Pt = scene.link.to
     let small = false
     let n = 16
+    let nFine = 90
+    let dust = 70
     let cards: Card[] = []
     let pulses: Pulse[] = []
     let next = 0
@@ -121,6 +126,14 @@ export function ChaosHero({
     let ambient = 0
     let drawn = false
     const timers = new Set<number>()
+    // Parallax: the tangle shifts a little with the pointer (desktop), the fine threads less than the main ones.
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0 }
+    const parallax = window.matchMedia('(pointer: fine)').matches && !reducedMotion
+    const onPointer = (e: PointerEvent) => {
+      pointer.tx = (e.clientX / window.innerWidth) * 2 - 1
+      pointer.ty = (e.clientY / window.innerHeight) * 2 - 1
+    }
+    if (parallax) window.addEventListener('pointermove', onPointer, { passive: true })
     const glow = glowSprite()
     const problems = loom.chaos.problems
     const t0 = performance.now()
@@ -183,6 +196,9 @@ export function ChaosHero({
       gate = knotGate(scene)
       small = w < 700
       n = small ? 14 : 24
+      // Fewer fine threads and specks where the processor draws everything.
+      nFine = software ? (small ? 30 : 50) : small ? 40 : 90
+      dust = software ? 30 : small ? 40 : 70
       // The dashboard: level with the knot (landscape) or under it (phones). The line ends at its edge.
       app.style.left = `${scene.app.x}px`
       app.style.width = `${scene.app.w}px`
@@ -209,7 +225,48 @@ export function ChaosHero({
       ctx.lineCap = 'round'
       ctx.imageSmoothingQuality = 'high'
 
-      // The tangle: fades in from the left edge, brightens as it gathers into the knot.
+      pointer.x += (pointer.tx - pointer.x) * 0.06
+      pointer.y += (pointer.ty - pointer.y) * 0.06
+      // A point on a thread, shifted by the parallax (fading out into the knot, which stays put).
+      const at = (i: number, count: number, t: number, depth: number) => {
+        const p = strandPoint(i, count, t, time, chaos, w, h, gate)
+        const k = (1 - t) * depth
+        return { x: p.x - pointer.x * k, y: p.y - pointer.y * k * 0.6 }
+      }
+
+      // Depth: a bundle of hair-fine threads behind, added up as light like the live loom's, one path per colour.
+      ctx.globalCompositeOperation = 'lighter'
+      ctx.lineWidth = small ? 0.5 : 0.6
+      for (let c = 0; c < FINE.length; c++) {
+        ctx.strokeStyle = `rgba(${FINE[c]},${small ? 0.2 : 0.16})`
+        ctx.beginPath()
+        for (let i = c; i < nFine; i += FINE.length) {
+          for (let s = 0; s <= FINE_SEGMENTS; s++) {
+            const p = at(i + 500, nFine, s / FINE_SEGMENTS, 10)
+            if (s) ctx.lineTo(p.x, p.y)
+            else ctx.moveTo(p.x, p.y)
+          }
+        }
+        ctx.stroke()
+      }
+
+      // The main threads: a soft bloom under a solid core, brightening to white as they gather into the knot.
+      const paths: Pt[][] = []
+      for (let i = 0; i < n; i++) {
+        const pts: Pt[] = []
+        for (let s = 0; s <= SEGMENTS; s++) pts.push(at(i, n, s / SEGMENTS, 22))
+        paths.push(pts)
+      }
+      ctx.lineWidth = small ? 5 : 8
+      for (let k = 0; k < TANGLE.length; k++) {
+        ctx.strokeStyle = `rgba(${TANGLE[k]},0.07)`
+        ctx.beginPath()
+        for (let i = k; i < n; i += TANGLE.length) {
+          paths[i].forEach((p, s) => (s ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)))
+        }
+        ctx.stroke()
+      }
+      ctx.globalCompositeOperation = 'source-over'
       ctx.lineWidth = small ? 1.1 : 1.4
       for (let i = 0; i < n; i++) {
         const k = i % TANGLE.length
@@ -221,12 +278,26 @@ export function ChaosHero({
         g.addColorStop(1, 'rgba(230,240,255,1)')
         ctx.strokeStyle = g
         ctx.beginPath()
-        for (let s = 0; s <= SEGMENTS; s++) {
-          const p = strandPoint(i, n, s / SEGMENTS, time, chaos, w, h, gate)
-          if (s) ctx.lineTo(p.x, p.y)
-          else ctx.moveTo(p.x, p.y)
-        }
+        paths[i].forEach((p, s) => (s ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)))
         ctx.stroke()
+      }
+
+      // Dust: fine specks of light drifting through the tangle towards the knot, twinkling.
+      if (!reducedMotion) {
+        ctx.globalCompositeOperation = 'lighter'
+        for (let d = 0; d < dust; d++) {
+          const u = (time * (0.02 + hash(d + 900) * 0.03) + hash(d + 700)) % 1
+          const e = u * u
+          const sx = hash(d + 800) * knot.x * 0.9
+          const sy = gate.spanTop + hash(d + 600) * (gate.spanBottom - gate.spanTop)
+          const x = sx + (knot.x - sx) * e + Math.sin(time * 0.5 + d) * 6 - pointer.x * 30 * (1 - e)
+          const y = sy + (knot.y - sy) * e + Math.cos(time * 0.4 + d * 1.3) * 6 - pointer.y * 18 * (1 - e)
+          const size = (2 + hash(d + 500) * 4) * (small ? 0.8 : 1)
+          ctx.globalAlpha = Math.min(1, u * 5) * (1 - e) * (0.35 + 0.35 * Math.sin(time * 2 + d * 2.1) ** 2)
+          ctx.drawImage(glow, x - size, y - size, size * 2, size * 2)
+        }
+        ctx.globalAlpha = 1
+        ctx.globalCompositeOperation = 'source-over'
       }
 
       // Light flowing along every thread into the knot: everything moves to the centre.
@@ -298,7 +369,7 @@ export function ChaosHero({
       // The knot: a solid white ball the threads converge into, in a soft glow, with faint thread loops turning on
       // its surface. It swells and flares as it takes a card in.
       flash = Math.max(0, flash - 0.035)
-      const halo = knot.r * (6.5 + flash * 2.5)
+      const halo = knot.r * (9 + flash * 3)
       ctx.globalAlpha = 0.6 + flash * 0.35 + 0.06 * Math.sin(time * 1.6)
       ctx.drawImage(glow, knot.x - halo / 2, knot.y - halo / 2, halo, halo)
       ctx.globalAlpha = 1
@@ -324,6 +395,15 @@ export function ChaosHero({
         ctx.stroke()
       }
       ctx.restore()
+      // A lens streak through the knot, like light caught by a film camera: wide and thin, breathing with the glow.
+      ctx.globalCompositeOperation = 'lighter'
+      const streak = 0.5 + 0.15 * Math.sin(time * 1.2) + flash * 0.4
+      ctx.globalAlpha = streak * 0.55
+      ctx.drawImage(glow, knot.x - knot.r * 16, knot.y - knot.r * 0.7, knot.r * 32, knot.r * 1.4)
+      ctx.globalAlpha = streak * 0.35
+      ctx.drawImage(glow, knot.x - knot.r * 30, knot.y - knot.r * 0.22, knot.r * 60, knot.r * 0.44)
+      ctx.globalAlpha = 1
+      ctx.globalCompositeOperation = 'source-over'
       ctx.globalCompositeOperation = 'source-over'
 
       if (!drawn) {
@@ -360,6 +440,7 @@ export function ChaosHero({
       alive = false
       cancelAnimationFrame(raf)
       ro.disconnect()
+      window.removeEventListener('pointermove', onPointer)
       clearCards()
       timers.forEach((t) => window.clearTimeout(t))
     }
