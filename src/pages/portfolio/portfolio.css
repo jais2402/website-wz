@@ -14,107 +14,421 @@
   --tone: var(--coral);
 }
 
-/* ---- Hero visual: every case's tangle through one knot, out as ordered lines ---- */
-.pf-weave {
+/* ---- Hero visual: a 3D stack of case screens (CaseShowcase.tsx); the front one sinks to the back ---- */
+.pf-show {
+  --px: 0;
+  --py: 0;
   position: relative;
   width: 100%;
-  max-width: 620px;
+  max-width: 640px;
   margin-left: auto;
+  perspective: 1500px;
+  perspective-origin: 40% 30%;
+  /* Room above and right of the front screen for the ones behind it. */
+  padding: 21% 17% 6% 0;
 }
 
-.pf-weave svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  overflow: visible;
+.pf-show-stage {
+  position: relative;
+  aspect-ratio: 16 / 11;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(8deg - var(--py) * 7deg)) rotateY(calc(-16deg + var(--px) * 10deg));
+  transition: transform 0.6s var(--ease-out);
 }
 
-.pf-weave path {
-  fill: none;
-  stroke: var(--tone);
-  stroke-linecap: round;
+.pf-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 80% at 0% 0%, color-mix(in srgb, var(--tone) 16%, transparent), transparent 60%),
+    linear-gradient(160deg, #15151f, #0b0b12 70%);
+  box-shadow:
+    0 30px 60px -20px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  font-size: clamp(7.5px, 2.3vw, 13px);
+  transform: translate3d(calc(var(--s) * 7%), calc(var(--s) * -8.5%), calc(var(--s) * -90px));
+  opacity: calc(1 - var(--s) * 0.08);
+  transition:
+    transform 1.1s var(--ease-out),
+    opacity 1.1s var(--ease-out),
+    border-color 1.1s ease;
+  backface-visibility: hidden;
 }
 
-.pf-weave-in {
-  stroke-width: 1.3;
-  opacity: 0.55;
+/* Screens further back are dimmed by a solid veil, not made see-through, so their UI never shows through. */
+.pf-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: #07070c;
+  opacity: calc(var(--s) * 0.16);
+  pointer-events: none;
+  transition: opacity 1.1s var(--ease-out);
 }
 
-.pf-weave-out {
-  stroke-width: 1.8;
-  opacity: 0.95;
+.pf-screen.is-front {
+  border-color: color-mix(in srgb, var(--tone) 45%, transparent);
+  box-shadow:
+    0 40px 80px -24px rgba(0, 0, 0, 0.9),
+    0 0 50px -18px var(--tone),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-.pf-weave-loose {
-  fill: var(--tone);
-  opacity: 0.5;
+.pf-screen-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  padding: 0.8em 1.1em;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
 }
 
-.pf-weave-end {
-  fill: var(--ink);
-  stroke: var(--tone);
-  stroke-width: 2;
+.pf-screen-dots {
+  display: flex;
+  gap: 0.4em;
 }
 
-.pf-weave-label {
-  font-family: var(--f-mono);
-  font-size: 11px;
+.pf-screen-dots i {
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  background: var(--line-2);
+}
+
+.pf-screen-tag {
+  padding: 0.25em 0.7em;
+  border: 1px solid color-mix(in srgb, var(--tone) 45%, transparent);
+  border-radius: 99px;
+  color: var(--tone);
+  font-size: 0.85em;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  fill: var(--muted);
+  white-space: nowrap;
 }
 
-.pf-weave-knot {
-  fill: #eaf4ff;
-  filter: drop-shadow(0 0 10px #8cc4ff) drop-shadow(0 0 22px rgba(77, 159, 255, 0.6));
+.pf-screen-app {
+  margin-left: auto;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.pf-screen-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1em;
+  min-height: 0;
+  padding: 1.1em 1.1em 3.6em; /* room for the result chip */
+}
+
+.pf-screen-chip {
+  position: absolute;
+  right: 1em;
+  bottom: 1em;
+  margin: 0;
+  padding: 0.55em 1em;
+  border: 1px solid color-mix(in srgb, var(--tone) 55%, transparent);
+  border-radius: 99px;
+  background: rgba(7, 7, 12, 0.88);
+  color: var(--text);
+  font-size: 1.05em;
+  white-space: nowrap;
+  box-shadow: 0 0 24px -6px var(--tone);
+}
+
+.pf-screen-chip b {
+  color: var(--tone);
+  font-family: var(--f-display);
+  font-weight: 700;
+}
+
+/* Drawn UI pieces, shared by the screens. */
+.pf-ui-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7em;
+}
+
+.pf-ui-kpi {
+  display: grid;
+  gap: 0.7em;
+  padding: 0.8em;
+  border: 1px solid var(--line);
+  border-radius: 0.7em;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pf-ui-kpi .mono,
+.pf-ui-chart .mono,
+.pf-ui-cart .mono {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.82em;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pf-ui-bar,
+.pf-ui-skel {
+  display: block;
+  height: 0.5em;
+  border-radius: 99px;
+  background: var(--line-2);
+}
+
+.pf-ui-bar {
+  width: var(--w);
+  background: linear-gradient(90deg, var(--tone), color-mix(in srgb, var(--tone) 30%, transparent));
+}
+
+.pf-ui-skel {
+  width: var(--w, 70%);
+}
+
+.pf-ui-split {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) 24%;
+  gap: 1em;
+  align-items: center;
+}
+
+.pf-ui-ring {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(var(--tone) 0 78%, var(--line-2) 0);
+}
+
+.pf-ui-ring span {
+  width: 72%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #0f0f17;
+}
+
+.pf-ui-rows {
+  display: grid;
+  gap: 0.45em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pf-ui-rows li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1.3fr) minmax(0, 1fr) auto;
+  gap: 0.8em;
+  align-items: center;
+  padding: 0.55em 0.7em;
+  border-radius: 0.6em;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.pf-ui-avatar {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--tone) 70%, #fff), var(--tone));
+  opacity: 0.8;
+}
+
+.pf-ui-name {
+  overflow: hidden;
+  color: #e6e6ee;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pf-ui-pill {
+  padding: 0.2em 0.65em;
+  border-radius: 99px;
+  background: var(--line);
+  color: var(--muted);
+  font-size: 0.8em;
+}
+
+.pf-ui-pill.is-on {
+  background: color-mix(in srgb, var(--tone) 22%, transparent);
+  color: var(--tone);
+}
+
+.pf-ui-chart {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.5em;
+  min-height: 0;
+  padding: 0.8em;
+  border: 1px solid var(--line);
+  border-radius: 0.7em;
+}
+
+/* Takes whatever height the rows leave, so the screen never overflows into the result chip. */
+.pf-ui-chart svg {
+  display: block;
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 1.5em;
+}
+
+.pf-ui-line {
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.pf-ui-area {
+  fill: color-mix(in srgb, var(--tone) 18%, transparent);
+}
+
+.pf-ui-live {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0;
+  color: var(--tone);
+  font-size: 0.85em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pf-ui-live i {
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 8px var(--tone);
+}
+
+.pf-ui-heat {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.35em;
+}
+
+.pf-ui-heat span {
+  height: 1.1em;
+  border-radius: 0.3em;
+  background: color-mix(in srgb, var(--tone) calc(12% + var(--h) * 70%), #15151f);
+}
+
+.pf-ui-shop {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) 30%;
+  gap: 1em;
+}
+
+.pf-ui-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6em;
+}
+
+.pf-ui-product,
+.pf-ui-course {
+  display: grid;
+  gap: 0.45em;
+  padding: 0.5em;
+  border: 1px solid var(--line);
+  border-radius: 0.6em;
+  font-size: 0.9em;
+}
+
+.pf-ui-thumb {
+  display: block;
+  aspect-ratio: 4 / 3;
+  border-radius: 0.45em;
+  background:
+    radial-gradient(40% 50% at 50% 55%, color-mix(in srgb, var(--tone) 70%, #fff) 0 40%, transparent 42%),
+    linear-gradient(160deg, color-mix(in srgb, var(--tone) 30%, #1b1b26), #12121a);
+}
+
+.pf-ui-product.p1 .pf-ui-thumb {
+  background:
+    linear-gradient(transparent 30%, var(--coral) 30% 75%, transparent 75%) 50% 50% / 40% 100% no-repeat,
+    linear-gradient(160deg, color-mix(in srgb, var(--coral) 25%, #1b1b26), #12121a);
+}
+
+.pf-ui-product.p2 .pf-ui-thumb {
+  background:
+    linear-gradient(var(--violet), var(--violet)) 50% 52% / 60% 14% no-repeat,
+    linear-gradient(160deg, color-mix(in srgb, var(--violet) 25%, #1b1b26), #12121a);
+}
+
+.pf-ui-cart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  padding: 0.8em;
+  border: 1px solid var(--line);
+  border-radius: 0.7em;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pf-ui-btn {
+  height: 2em;
+  margin-top: auto;
+  border-radius: 0.5em;
+  background: linear-gradient(90deg, var(--tone), color-mix(in srgb, var(--tone) 60%, #fff));
+}
+
+.pf-ui-courses {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6em;
+}
+
+.pf-ui-course .pf-ui-thumb {
+  aspect-ratio: 16 / 7;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--tone) 55%, #1b1b26), #14141d 80%);
+}
+
+.pf-show-floor {
+  position: absolute;
+  right: 12%;
+  bottom: 0;
+  left: 0;
+  height: 18%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(77, 159, 255, 0.22), transparent 70%);
+  filter: blur(18px);
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .pf-weave-in,
-  .pf-weave-out {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: pf-draw 1.6s var(--ease-out) forwards;
-  }
-
-  .pf-weave-in {
-    animation-delay: calc(var(--i) * 70ms);
-  }
-
-  .pf-weave-out {
-    animation-delay: calc(0.9s + var(--i) * 70ms);
-  }
-
-  .pf-weave-end,
-  .pf-weave-label {
-    opacity: 0;
-    animation: pf-fade 0.6s ease forwards;
-    animation-delay: calc(1.5s + var(--i) * 70ms);
-  }
-
-  .pf-weave-halo {
-    animation: pf-breathe 4.5s ease-in-out infinite;
-    transform-origin: center;
-    transform-box: fill-box;
+  .pf-screen.is-sinking {
+    animation: pf-sink 1.1s var(--ease-out);
   }
 }
 
-@keyframes pf-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes pf-fade {
-  to {
+/* Leaving the front: drops and fades, then settles in at the back. */
+@keyframes pf-sink {
+  0% {
     opacity: 1;
   }
+  35% {
+    opacity: 0;
+  }
+  100% {
+    opacity: calc(1 - var(--s) * 0.08);
+  }
 }
 
-@keyframes pf-breathe {
-  50% {
-    transform: scale(1.18);
-    opacity: 0.7;
+@media (prefers-reduced-motion: reduce) {
+  .pf-show-stage,
+  .pf-screen {
+    transition: none;
   }
 }
 
@@ -496,7 +810,7 @@
 
 /* ---- Tablets and phones: one column ---- */
 @media (max-width: 899px) {
-  .pf-weave {
+  .pf-show {
     max-width: 560px;
     margin: 0 auto;
   }
@@ -554,8 +868,8 @@
     font-size: clamp(2rem, 10vw, 2.6rem);
   }
 
-  /* Labels at the line ends would be too small to read on a phone. */
-  .pf-weave-label {
+  /* Narrow screens: the app name in the window bar would crowd the sector tag. */
+  .pf-screen-app {
     display: none;
   }
 }

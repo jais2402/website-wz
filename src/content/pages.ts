@@ -361,6 +361,52 @@ export const portfolioPage = {
   title: ['Systems we have built', 'for growing', 'businesses.'],
   lead: 'Training platforms, event dashboards, marketplaces, stores and portals that replaced spreadsheets, email threads and manual work. Case studies name the sector, not the client; the full project list uses the names first published on our earlier website.',
   systemsLink: { label: 'See the systems we build', href: '/our-services' },
+  // Hero visual: a 3D stack of drawn screens, one per case (ids from `work` / `pastWork` in site.ts). The result chip
+  // is that case's first metric, so only cases with published results get one. Labels only: no figures in here.
+  showcase: {
+    screens: [
+      {
+        id: 'safety-training',
+        app: 'Training admin',
+        tone: 'lime',
+        labels: ['Registrations', 'Trainer schedule', 'Compliance'],
+        rows: ['Fire safety', 'First aid', 'Working at height'],
+        status: ['Booked', 'Certified', 'Due'],
+      },
+      {
+        id: 'marketplace',
+        app: 'Seller hub',
+        tone: 'violet',
+        labels: ['Active sellers', 'Onboarding', 'Catalogue sync'],
+        rows: ['Industrial supplies', 'Packaging', 'Office goods'],
+        status: ['Live', 'Verified', 'Syncing'],
+      },
+      {
+        id: 'engineering-event',
+        app: 'Event operations',
+        tone: 'coral',
+        labels: ['Live floor', 'Check-in', 'Halls'],
+        rows: ['Hall A', 'Hall B', 'Main stage'],
+        status: ['Live', 'Open', 'On time'],
+      },
+      {
+        id: 'online-retail',
+        app: 'Store admin',
+        tone: 'lime',
+        labels: ['Catalogue', 'Cart', 'Orders'],
+        rows: ['Linen shirt', 'Canvas tote', 'Leather belt'],
+        status: ['Paid', 'Packed', 'Shipped'],
+      },
+      {
+        id: 'education',
+        app: 'Admissions portal',
+        tone: 'violet',
+        labels: ['Courses', 'Enquiries', 'Enrolment'],
+        rows: ['Maths tutoring', 'Science lab', 'Exam prep'],
+        status: ['New', 'Replied', 'Enrolled'],
+      },
+    ],
+  },
   featuredKicker: 'Case studies',
   featuredTitle: 'What changed for our clients.',
   featuredIntro: 'Four systems, what each one replaced and the numbers it moved.',

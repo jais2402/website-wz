@@ -7,7 +7,7 @@ import { scrollToTarget } from '@/hooks/motion'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
 import { PortfolioArchive } from './PortfolioArchive'
-import { PortfolioWeave } from './PortfolioWeave'
+import { CaseShowcase } from './CaseShowcase'
 import './portfolio.css'
 
 /**
@@ -43,7 +43,7 @@ export function PortfolioPage() {
             </a>
           </>
         }
-        visual={<PortfolioWeave />}
+        visual={<CaseShowcase />}
       />
 
       <PageSection kicker={p.featuredKicker} title={p.featuredTitle} intro={p.featuredIntro} className="pf-featured">
