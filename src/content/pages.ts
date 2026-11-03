@@ -427,14 +427,20 @@ export const pricingPage = {
   title: ['One price.', 'One timeline.', 'Agreed first.'],
   lead: 'We price the system you need, not the hours it takes. You get one price and one timeline in writing at the end of the Shape stage, before any building starts.',
   stagesLink: { label: 'See how a price is agreed', href: '#agreed' },
-  // Hero visual: the three setters tie into one price; the two that never count are cut loose.
-  ticket: {
-    head: 'Your price',
-    stamp: 'Agreed before build',
+  // Hero visual: a proposal sheet. The three setters fill in as line items, the two that never count are struck out,
+  // then the price and timeline fields fill, it is signed and stamped. Words only: never put amounts or dates here.
+  proposal: {
+    from: 'Wezigns',
+    title: 'Proposal',
+    stage: 'Shape stage',
+    setsLabel: 'Priced on',
+    neverLabel: 'Not priced on',
     priceLabel: 'Price',
     price: 'One number',
     timelineLabel: 'Timeline',
     timeline: 'One date',
+    sign: 'Signed by both sides',
+    stamp: 'Agreed before build',
   },
   setsKicker: 'What sets the price',
   setsTitle: 'Three things set the price. Two never do.',
@@ -472,7 +478,21 @@ export const pricingPage = {
     { name: 'Support and maintenance', text: 'Kept up to date and working as your business runs on it.' },
     { name: 'Changes', text: 'Improved after launch, and extended without a rewrite when you are ready for the next part.' },
   ],
-  afterNote: 'Tell us what you need after launch when we shape the system, so it is part of the plan from the start.',
+  // Beside the ledger: the system's status window after launch. Illustrative, and in words: this page has no digits
+  // at all (snapshot.test.ts), so no uptime figures, version numbers or "2h ago".
+  afterLive: {
+    title: 'Your system, after launch',
+    status: 'All running',
+    pulse: 'Live',
+    logLabel: 'Activity',
+    log: [
+      { icon: 'backup', text: 'Nightly backup', state: 'done', when: 'This morning' },
+      { icon: 'shield', text: 'Security update', state: 'applied', when: 'Yesterday' },
+      { icon: 'spark', text: 'New report added', state: 'live', when: 'This week' },
+      { icon: 'chat', text: 'Support request', state: 'answered', when: 'Last week' },
+    ],
+  },
+  afterNote:'Tell us what you need after launch when we shape the system, so it is part of the plan from the start.',
   faqTitle: 'Questions about cost.',
   // Picked from `faq` in site.ts (checked in snapshot.test.ts), in this order.
   faq: ['How much does it cost?', 'Do you work with small businesses?', 'Can you take over software another company built?'],

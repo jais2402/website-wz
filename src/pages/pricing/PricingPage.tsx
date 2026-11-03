@@ -9,16 +9,17 @@ import { LoomContact } from '@/loom/sections'
 import { setGlyphs } from '../glyphNames'
 import { Glyph } from '../glyphs'
 import { PageHero, PageSection, PageShell } from '../shell'
-import { PriceTie } from './PriceTie'
+import { AfterLive } from './AfterLive'
+import { ProposalSheet } from './ProposalSheet'
 import './pricing.css'
 
 // The cost questions, in the order the page lists them. A question missing from `faq` is dropped (and fails a test).
 const questions = p.faq.flatMap((q) => faq.filter((f) => f.q === q))
 
 /**
- * /pricing: how a price is set and agreed, with no figures. Hero (three setters tied into one price), what sets
- * the price and what never does, the four stages with the point where the price is agreed, what continues after
- * launch, then the cost questions, a call to action and the contact block.
+ * /pricing: how a price is set and agreed, with no figures. Hero (a proposal sheet that fills in, is signed and
+ * stamped), what sets the price and what never does, the four stages with the point where the price is agreed, what
+ * continues after launch (ledger beside a status window), then the cost questions, a call to action and the contact block.
  */
 export function PricingPage() {
   const reducedMotion = usePrefersReducedMotion()
@@ -77,7 +78,7 @@ export function PricingPage() {
             </a>
           </>
         }
-        visual={<PriceTie />}
+        visual={<ProposalSheet />}
       />
 
       <PageSection kicker={p.setsKicker} title={p.setsTitle} intro={p.setsIntro} className="pr-sets">
@@ -155,9 +156,12 @@ export function PricingPage() {
               </div>
             ))}
           </dl>
-          <p className="pr-after-note" data-reveal>
-            {p.afterNote}
-          </p>
+          <div className="pr-after-side">
+            <AfterLive />
+            <p className="pr-after-note" data-reveal>
+              {p.afterNote}
+            </p>
+          </div>
         </div>
       </PageSection>
 
