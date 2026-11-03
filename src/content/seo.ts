@@ -386,9 +386,9 @@ export const pages: SeoPage[] = [
     id: 'pricing',
     file: 'pricing.html',
     path: '/pricing',
-    title: 'How Our Pricing Works: One Price, Agreed First | Wezigns',
+    title: 'Fixed Price Software Development in India | Wezigns',
     description:
-      'How Wezigns prices custom software: on outcomes, not hours. Scope, integrations and process change set one price and one timeline, agreed before we build.',
+      'Fixed price software development from Wezigns in Chennai. Scope, integrations and process change set one price and one timeline, agreed before we build.',
     card: { kicker: 'How pricing works', title: 'One price and one timeline, agreed before we build.' },
     breadcrumb: [HOME, { name: 'How pricing works', path: '/pricing' }],
     schema: 'WebPage',

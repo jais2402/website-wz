@@ -719,7 +719,7 @@ export const reach = {
 export const contactPage = {
   kicker: 'Contact',
   title: 'Tell us what is not working.',
-  lead: 'We reply within one working day. You get scope, price and timeline in writing before anything is built.',
+  lead: 'Our team in Chennai replies within one working day. You get scope, price and timeline in writing before anything is built.',
   phoneNote: 'Head office, Chennai',
   emailNote: 'For enquiries and quotes.',
   whatsappNote: 'Message us on WhatsApp.',
@@ -774,9 +774,9 @@ export const preloaderCopy = { label: 'Loading', home: 'Untangling the threads' 
 
 // Second page: the time-loom concept (loom.html).
 export const loom = {
-  eyebrow: 'Websites, software and products since 2012',
+  eyebrow: 'Software and websites since 2012',
   title: ['Every loose thread,', 'woven into', 'one system.'],
-  sub: 'We design, build and run websites, custom software and software products for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
+  sub: 'From Chennai, we design, build and run websites, custom software and software products for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
   // Links straight to the system pages, which convert best (docs/audience-study/summary.md).
   systemsLine: 'Systems we build',
   // Hero copy chosen by the simulated 5-second persona test (see docs/concept-study.md, "Hero copy test").
