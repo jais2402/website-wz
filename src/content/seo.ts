@@ -3,6 +3,7 @@
 // and what it imports stay plain data (no React, no DOM) and use explicit `.ts` imports for Node.
 // Rules (docs/seo/plan.md): titles ≤ 60 chars, descriptions 140–155 chars, visible H1s unchanged, no GST claims.
 import { brand, countries, faq, pastWork, socials, storySection, work } from './site.ts'
+import { heroCard } from './heroes.ts'
 import { aiPage, pricingPage, systemPages } from './pages.ts'
 
 // Full country names for structured data; `countries` uses short labels for the globe.
@@ -135,7 +136,7 @@ export type SeoPage = {
   description: string
   ogTitle?: string
   ogDescription?: string
-  /** Text on the 1200×630 social card (public/og/<id>.png). */
+  /** Text on the 1200×630 social card (public/og/<id>.png): the page's hero (content/heroes.ts), also its alt text. */
   card: { kicker: string; title: string }
   /** Home → … → this page. Empty for home and noindex pages. */
   breadcrumb: Crumb[]
@@ -154,7 +155,7 @@ const SERVICES: Crumb = { name: 'Our services', path: '/our-services' }
 
 function systemPage(
   slug: string,
-  p: Pick<SeoPage, 'id' | 'title' | 'description' | 'serviceName'> & { cardTitle: string },
+  p: Pick<SeoPage, 'id' | 'title' | 'description' | 'serviceName'>,
 ): SeoPage {
   const sys = systemPages.find((s) => s.slug === slug)
   if (!sys) throw new Error(`seo: no system page "${slug}"`)
@@ -165,7 +166,7 @@ function systemPage(
     path,
     title: p.title,
     description: p.description,
-    card: { kicker: `Systems: ${sys.title}`, title: p.cardTitle },
+    card: heroCard(sys.slug),
     breadcrumb: [HOME, SERVICES, { name: sys.title, path }],
     schema: 'Service',
     indexable: true,
@@ -183,7 +184,7 @@ export const pages: SeoPage[] = [
     title: 'Custom Software, Websites and SaaS in Chennai | Wezigns',
     description:
       'Wezigns builds websites, custom software and software products (SaaS, MVPs, apps) for SMEs: HR, CRM, inventory and finance. Chennai, India, since 2012.',
-    card: { kicker: 'Custom business software', title: 'Systems that grow with you.' },
+    card: heroCard('home'),
     breadcrumb: [],
     schema: 'WebPage',
     indexable: true,
@@ -196,7 +197,7 @@ export const pages: SeoPage[] = [
     title: 'Websites, Custom Software and SaaS for SMEs | Wezigns',
     description:
       'Website development, custom software and SaaS products, plus six business systems for SMEs: people, revenue, operations, ecommerce, finance, industry.',
-    card: { kicker: 'Our services', title: 'Custom software for every part of your business.' },
+    card: heroCard('services'),
     breadcrumb: [HOME, SERVICES],
     schema: 'CollectionPage',
     indexable: true,
@@ -208,7 +209,6 @@ export const pages: SeoPage[] = [
     description:
       'HR, payroll, attendance, appraisals, training and hiring in one custom system, built around how your team works. For SMEs and MSMEs in India and abroad.',
     serviceName: 'Custom HR and payroll software',
-    cardTitle: 'Custom HR and payroll software for growing teams.',
   }),
   systemPage('revenue', {
     id: 'revenue',
@@ -217,7 +217,6 @@ export const pages: SeoPage[] = [
     description:
       'A custom CRM with quotations, billing, renewals, a support desk and partner portals. For SMEs that have outgrown spreadsheets and generic CRMs.',
     serviceName: 'Custom CRM and billing software',
-    cardTitle: 'Custom CRM, quotations and billing in one system.',
   }),
   systemPage('operations', {
     id: 'operations',
@@ -225,7 +224,6 @@ export const pages: SeoPage[] = [
     description:
       'Custom inventory, warehouse, procurement, production and asset tracking for SMEs and MSMEs, connected to your store and accounts. Built and run by Wezigns.',
     serviceName: 'Custom inventory and supply chain software',
-    cardTitle: 'Inventory and supply chain software, built for your operation.',
   }),
   systemPage('ecommerce', {
     id: 'ecommerce',
@@ -233,7 +231,6 @@ export const pages: SeoPage[] = [
     description:
       'Online stores with the orders, payments, catalogue, returns and fulfilment behind them. Custom ecommerce for brands in India, UAE, UK and Singapore.',
     serviceName: 'Ecommerce development',
-    cardTitle: 'The store and the orders behind it.',
   }),
   systemPage('finance', {
     id: 'finance',
@@ -241,7 +238,6 @@ export const pages: SeoPage[] = [
     description:
       'Accounts, expenses, approvals, audit trails and live dashboards in one custom finance system for SMEs. Month-end gets shorter and every number has a trail.',
     serviceName: 'Finance, approvals and reporting software',
-    cardTitle: 'Finance, approvals and reporting with a trail.',
   }),
   systemPage('industry', {
     id: 'industry',
@@ -249,7 +245,6 @@ export const pages: SeoPage[] = [
     description:
       'Custom systems for clinics, schools, hotels and property, lenders, retail POS and logistics. Industry software for SMEs in 11 countries, built since 2012.',
     serviceName: 'Industry software',
-    cardTitle: 'Industry systems for healthcare, education, lending and more.',
   }),
   {
     id: 'ai',
@@ -258,7 +253,7 @@ export const pages: SeoPage[] = [
     title: 'AI Automation for SMEs: Documents, WhatsApp | Wezigns',
     description:
       'AI inside your own systems: document processing, back-office agents and customer chat on web and WhatsApp. Someone on your team approves each key decision.',
-    card: { kicker: 'AI', title: 'AI that does real work for your business.' },
+    card: heroCard('ai'),
     breadcrumb: [HOME, { name: 'AI', path: '/ai' }],
     schema: 'Service',
     indexable: true,
@@ -271,7 +266,7 @@ export const pages: SeoPage[] = [
     title: 'Technology, Hosting and Security | Wezigns',
     description:
       'The stack, hosting and security behind every Wezigns system: modern web frameworks, AWS and Google Cloud hosting, backups, monitoring and ongoing support.',
-    card: { kicker: 'Technology', title: 'The stack behind the systems we build.' },
+    card: heroCard('technology'),
     breadcrumb: [HOME, { name: 'Technology', path: '/technology' }],
     schema: 'WebPage',
     indexable: true,
@@ -284,7 +279,7 @@ export const pages: SeoPage[] = [
     title: 'About Wezigns: Chennai Software Studio Since 2012',
     description:
       'Wezigns is a Chennai studio building websites, custom software and software products for SMEs and MSMEs since 2012. Our story, how we price and work.',
-    card: { kicker: 'About Wezigns', title: 'From small business to enterprise systems.' },
+    card: heroCard('about'),
     breadcrumb: [HOME, { name: 'About us', path: '/about-us' }],
     schema: 'AboutPage',
     indexable: true,
@@ -297,7 +292,7 @@ export const pages: SeoPage[] = [
     title: 'Contact Wezigns: Custom Software, Chennai',
     description:
       'Call +91 44 2364 3252 or email contact@wezigns.com. Tell us what is slowing your team down. We reply within one working day with next steps in writing.',
-    card: { kicker: 'Contact', title: 'Tell us what is not working.' },
+    card: heroCard('contact'),
     breadcrumb: [HOME, { name: 'Contact us', path: '/contact-us' }],
     schema: 'ContactPage',
     indexable: true,
@@ -309,7 +304,7 @@ export const pages: SeoPage[] = [
     path: '/404',
     title: 'Page not found | Wezigns',
     description: 'This page could not be found. Go back to the Wezigns home page or contact us.',
-    card: { kicker: 'Page not found', title: 'This thread leads nowhere.' },
+    card: heroCard('notFound'),
     breadcrumb: [],
     schema: 'WebPage',
     indexable: false,
@@ -335,7 +330,7 @@ export const pages: SeoPage[] = [
     title: 'Privacy Policy: How Wezigns Handles Your Data',
     description:
       'How Wezigns handles the details you send through our enquiry forms: what we collect, who processes it, how long we keep it, and how to use your rights.',
-    card: { kicker: 'Legal', title: 'What we collect, and what we do not.' },
+    card: heroCard('privacy'),
     breadcrumb: [HOME, { name: 'Privacy policy', path: '/privacy-policy' }],
     schema: 'WebPage',
     indexable: true,
@@ -348,7 +343,7 @@ export const pages: SeoPage[] = [
     title: 'Website Terms and Conditions | Wezigns',
     description:
       'The terms for using the Wezigns website: acceptable use, intellectual property, case studies and sample figures, our liability and Indian governing law.',
-    card: { kicker: 'Legal', title: 'The terms for using this website.' },
+    card: heroCard('terms'),
     breadcrumb: [HOME, { name: 'Terms and conditions', path: '/terms-and-conditions' }],
     schema: 'WebPage',
     indexable: true,
@@ -361,7 +356,7 @@ export const pages: SeoPage[] = [
     title: 'Cookie Policy: Your Choice, Your Control | Wezigns',
     description:
       'The cookies and browser storage on the Wezigns website: one item that remembers your choice, and Google Analytics only if you accept. How to change it.',
-    card: { kicker: 'Legal', title: 'Analytics only if you say yes.' },
+    card: heroCard('cookies'),
     breadcrumb: [HOME, { name: 'Cookie policy', path: '/cookie-policy' }],
     schema: 'WebPage',
     indexable: true,
@@ -375,7 +370,7 @@ export const pages: SeoPage[] = [
     title: 'Our Work: Case Studies and Systems Built | Wezigns',
     description:
       'Wezigns case studies: a training system that cut admin work by 80%, a marketplace that grew from 300 to 4,500 sellers, and more systems built since 2012.',
-    card: { kicker: 'Our work', title: 'Systems we have built for growing businesses.' },
+    card: heroCard('portfolio'),
     breadcrumb: [HOME, { name: 'Our work', path: '/portfolio' }],
     schema: 'CollectionPage',
     indexable: true,
@@ -389,7 +384,7 @@ export const pages: SeoPage[] = [
     title: 'Fixed Price Software Development in India | Wezigns',
     description:
       'Fixed price software development from Wezigns in Chennai. Scope, integrations and process change set one price and one timeline, agreed before we build.',
-    card: { kicker: 'How pricing works', title: 'One price and one timeline, agreed before we build.' },
+    card: heroCard('pricing'),
     breadcrumb: [HOME, { name: 'How pricing works', path: '/pricing' }],
     schema: 'WebPage',
     indexable: true,

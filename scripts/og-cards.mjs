@@ -1,10 +1,12 @@
 // Renders the social cards (1200×630 PNG per page) and the logo/touch icon (plus public/favicon.ico) into public/og/ from code-drawn SVG.
-// Copy comes from src/content/seo.ts (Node strips its types). Run `npm run og` after changing a card title, then
-// commit the PNGs. The page itself stays raster-free; these files are only for link previews and JSON-LD.
+// Each card shows its page's hero: the hero label and headline, with the last line in the serif accent as on the page
+// (src/content/heroes.ts reads the same content files the pages render). Pages without a hero fall back to `card` in seo.ts.
+// Run `npm run og` after changing a hero or card, then commit the PNGs. The page itself stays raster-free; these files are only for link previews and JSON-LD.
 import { Resvg } from '@resvg/resvg-js'
 import UPNG from 'upng-js'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
+import { heroFor } from '../src/content/heroes.ts'
 import { pages, site } from '../src/content/seo.ts'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
@@ -16,6 +18,16 @@ const H = 630
 // Satoshi, the site's typeface (TTF copy for rendering only; the site serves the woff2 in public/fonts).
 const FONT = 'Satoshi, Helvetica Neue, Helvetica, Arial, sans-serif'
 const MONO = 'JetBrains Mono, SF Mono, Menlo, monospace'
+const SERIF = 'Instrument Serif, Georgia, serif'
+
+// The largest size at which the headline fits in four lines of the left column (chars per line from the width).
+function layoutTitle(lines) {
+  for (const [size, max] of [[78, 19], [68, 22], [58, 26], [50, 30]]) {
+    const wrapped = lines.map((l, i) => ({ text: wrap(l, i === lines.length - 1 && lines.length > 1 ? Math.round(max * 1.3) : max), accent: i === lines.length - 1 && lines.length > 1 }))
+    const flat = wrapped.flatMap((w) => w.text.map((text) => ({ text, accent: w.accent })))
+    if (flat.length <= 4 || size === 50) return { size, rows: flat.slice(0, 5) }
+  }
+}
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
@@ -58,12 +70,17 @@ function threads(seed) {
 
 function card(page, i) {
   const { d, knot } = threads(7 + i * 31)
-  const title = page.card.title
-  const size = title.length > 44 ? 64 : 76
-  const lines = wrap(title, size === 64 ? 24 : 21).slice(0, 4)
-  const lineH = Math.round(size * 1.08)
-  const top = 430 - (lines.length - 1) * lineH
-  const text = lines.map((l, n) => `<tspan x="80" y="${top + n * lineH}">${esc(l)}</tspan>`).join('')
+  const hero = heroFor(page.id) ?? { kicker: page.card.kicker, lines: [page.card.title] }
+  const { size, rows } = layoutTitle(hero.lines)
+  const lineH = Math.round(size * 1.06)
+  const top = 470 - (rows.length - 1) * lineH
+  const text = rows
+    .map((r, n) =>
+      r.accent
+        ? `<text x="80" y="${top + n * lineH}" font-family="${SERIF}" font-style="italic" font-size="${Math.round(size * 1.08)}" fill="#8cc4ff">${esc(r.text)}</text>`
+        : `<text x="80" y="${top + n * lineH}" font-family="${FONT}" font-size="${size}" font-weight="700" letter-spacing="-2" fill="#f2efe6">${esc(r.text)}</text>`,
+    )
+    .join('')
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
     <radialGradient id="halo" cx="${knot.x}" cy="${knot.y}" r="420" gradientUnits="userSpaceOnUse">
@@ -91,9 +108,9 @@ function card(page, i) {
     <circle cx="16" cy="12" r="3" fill="#4d9fff"/>
   </g>
   <text x="146" y="108" font-family="${FONT}" font-size="34" font-weight="700" letter-spacing="-0.5" fill="#f2efe6">${esc(site.name)}</text>
-  <text x="80" y="${top - lineH - 6}" font-family="${MONO}" font-size="22" letter-spacing="3" fill="#8cc4ff">${esc(page.card.kicker.toUpperCase())}</text>
-  <text font-family="${FONT}" font-size="${size}" font-weight="700" letter-spacing="-2" fill="#f2efe6">${text}</text>
-  <text x="80" y="560" font-family="${MONO}" font-size="20" letter-spacing="2" fill="#9a9aae">WEZIGNS.COM, CHENNAI, SINCE ${site.foundingDate}</text>
+  <text x="80" y="${top - lineH - 4}" font-family="${MONO}" font-size="22" letter-spacing="3" fill="#8cc4ff">${esc(hero.kicker.toUpperCase())}</text>
+  ${text}
+  <text x="80" y="582" font-family="${MONO}" font-size="20" letter-spacing="2" fill="#9a9aae">WEZIGNS.COM, CHENNAI, SINCE ${site.foundingDate}</text>
 </svg>`
 }
 
@@ -101,7 +118,8 @@ function card(page, i) {
 function toPng(svg, width) {
   const img = new Resvg(svg, {
     fitTo: { mode: 'width', value: width },
-    font: { fontFiles: [new URL('./fonts/Satoshi-Variable.ttf', import.meta.url).pathname], loadSystemFonts: true, defaultFontFamily: 'Satoshi' },
+    font: { // fileURLToPath, not .pathname: the project path has spaces, which .pathname leaves as %20.
+    fontFiles: ['./fonts/Satoshi-Variable.ttf', './fonts/InstrumentSerif-Italic.ttf'].map((f) => fileURLToPath(new URL(f, import.meta.url))), loadSystemFonts: true, defaultFontFamily: 'Satoshi' },
   }).render()
   const rgba = Uint8Array.from(img.pixels)
   return Buffer.from(UPNG.encode([rgba.buffer], img.width, img.height, 256))
