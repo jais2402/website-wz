@@ -212,8 +212,18 @@
   flex-shrink: 0;
 }
 
+/* On the cream sections the tiles stay dark (ink with the dark theme's colours), so the icons pop off the cream. */
 .pg-light .pg-glyph-tile {
-  box-shadow: 0 14px 30px -18px rgba(20, 20, 26, 0.35);
+  --ink-2: #0d0d15;
+  --text: #ededf3;
+  --line: rgba(255, 255, 255, 0.1);
+  --lime: #4d9fff;
+  --violet: #8b7bff;
+  --coral: #ff7a59;
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 18px 34px -16px rgba(20, 20, 26, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* ---- Pointer spotlight and tilt ---- */

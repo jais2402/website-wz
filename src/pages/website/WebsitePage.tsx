@@ -5,6 +5,8 @@ import { ctas, pastWork, process } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
+import { KindsFan } from './KindsFan'
+import { IncludesGauges, WorkStack } from './SectionArt'
 import { SiteBuild } from './SiteBuild'
 import './website.css'
 
@@ -42,7 +44,7 @@ export function WebsitePage() {
         visual={<SiteBuild />}
       />
 
-      <PageSection kicker={p.buildKicker} title={p.buildTitle} intro={p.buildIntro} className="wd-builds-section">
+      <PageSection kicker={p.buildKicker} title={p.buildTitle} intro={p.buildIntro} className="wd-builds-section" aside={<KindsFan />}>
         <ul className="wd-builds">
           {p.builds.map((b, i) => (
             <li key={b.title} className="wd-kind" data-reveal>
@@ -64,6 +66,7 @@ export function WebsitePage() {
         kicker={p.includesKicker}
         title={p.includesTitle}
         intro={p.includesIntro}
+        aside={<IncludesGauges />}
         className="wd-includes-section"
         tone="light"
       >
@@ -121,7 +124,7 @@ export function WebsitePage() {
         </div>
       </PageSection>
 
-      <PageSection kicker={p.proofKicker} title={p.proofTitle} intro={p.proofIntro} className="wd-proof-section">
+      <PageSection kicker={p.proofKicker} title={p.proofTitle} intro={p.proofIntro} className="wd-proof-section" aside={<WorkStack />}>
         <ul className="wd-proof">
           {proof.map((c) => (
             <li key={c.id} data-reveal>
