@@ -1,16 +1,13 @@
 import { useGSAP } from '@gsap/react'
-import { type MouseEvent, type ReactNode, lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, type MouseEvent, type ReactNode, useEffect, useRef } from 'react'
 import { aiPage } from '@/content/pages'
-import { useGfxLive } from '@/gfx/gfxMode'
-import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
+import { CHAT_FINAL, CHAT_FLAGS, chatFlagsAt, testRunAt, typedChars } from '@/lib/aiHero'
 import { damp, pointerOffset, tiltAngles } from '@/lib/tilt'
-import { webgl } from '@/lib/webgl'
 import { CtaStrip } from '@/components/CtaStrip'
 import { ctas } from '@/content/site'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
-import { coreStore } from './coreStore'
 import './ai.css'
 
 // The AI page: AI inside the systems you run, and custom AI solutions. Styles in ai.css (classes prefixed `aip-`,
@@ -51,40 +48,19 @@ export function AiPage() {
   )
 }
 
-/* ---------- Hero: a record is read, threads carry it into the AI core, three outputs come out ----------
-   A CSS 3D stage: floor, threads, core, record and outputs sit at different depths and turn together toward the
-   pointer (fine pointers only) and tip back as the hero scrolls away. The core is real WebGL (AiCore, lazy) when this
-   machine runs the live 3D and motion is allowed; otherwise the CSS core (a pearl with three 3D orbit rings) stays. */
+/* ---------- Hero: an AI chat over your own records ----------
+   A white app window floats in a CSS 3D stage with two notes at other depths; the stage turns toward the pointer
+   (fine pointers only) and tips back as the hero scrolls away. A ten-second story loops inside it (timeline in
+   lib/aiHero.ts): the question types in, the AI answers with its sources, suggests a step, and a person approves it.
+   The markup is the finished conversation, which is what reduced motion and the prerendered page show. */
 
-const AiCore = lazy(() => import('./AiCore').then((m) => ({ default: m.AiCore })))
-
-const docLines = [0, 1, 2, 3, 4, 5]
-const inY = [130, 190, 250]
-const outs = [
-  { y: 110, label: 'Flag', tone: 'coral' },
-  { y: 190, label: 'Draft', tone: 'violet' },
-  { y: 270, label: 'Approve ✓', tone: 'blue' },
-]
+const chat = aiPage.chat
 
 function HeroVisual() {
   const reducedMotion = usePrefersReducedMotion()
-  const live = useGfxLive()
-  const afterPaint = useAfterPaint()
   const stage = useRef<HTMLDivElement>(null)
-  const [inView, setInView] = useState(true)
-  const [coreReady, setCoreReady] = useState(false)
-
-  // The live core is mounted only while the hero is on screen: its WebGL context goes as soon as the hero does.
-  useEffect(() => {
-    const el = stage.current
-    if (!el || typeof IntersectionObserver === 'undefined') return
-    const io = new IntersectionObserver(([e]) => {
-      setInView(e.isIntersecting)
-      if (!e.isIntersecting) setCoreReady(false)
-    })
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
+  const win = useRef<HTMLDivElement>(null)
+  const typed = useRef<HTMLSpanElement>(null)
 
   // Pointer: the stage turns toward it, eased every frame through CSS variables (never React state).
   useEffect(() => {
@@ -100,11 +76,9 @@ function HeroVisual() {
       last = t
       now.x = damp(now.x, target.x, 5, dt)
       now.y = damp(now.y, target.y, 5, dt)
-      const { rx, ry } = tiltAngles(now, 9)
+      const { rx, ry } = tiltAngles(now, 7)
       el.style.setProperty('--rx', rx.toFixed(3))
       el.style.setProperty('--ry', ry.toFixed(3))
-      coreStore.px = now.x
-      coreStore.py = now.y
       const settled = Math.abs(now.x - target.x) + Math.abs(now.y - target.y) < 0.001
       raf = settled ? 0 : requestAnimationFrame(loop)
       if (settled) last = 0
@@ -128,12 +102,10 @@ function HeroVisual() {
       cancelAnimationFrame(raf)
       hero.removeEventListener('pointermove', move)
       hero.removeEventListener('pointerleave', leave)
-      coreStore.px = 0
-      coreStore.py = 0
     }
   }, [reducedMotion])
 
-  // Scroll: as the hero leaves, the stage tips back and lifts; the core spins on.
+  // Scroll: as the hero leaves, the stage tips back and lifts.
   useGSAP(
     () => {
       const el = stage.current
@@ -142,118 +114,297 @@ function HeroVisual() {
       gsap.to(state, {
         p: 1,
         ease: 'none',
-        onUpdate: () => {
-          el.style.setProperty('--sp', state.p.toFixed(4))
-          coreStore.scroll = state.p
-        },
+        onUpdate: () => el.style.setProperty('--sp', state.p.toFixed(4)),
         scrollTrigger: { trigger: el, start: 'top 20%', end: 'bottom top', scrub: 0.5 },
       })
-      return () => {
-        coreStore.scroll = 0
-      }
     },
     { scope: stage, dependencies: [reducedMotion] },
   )
 
-  const showLive = webgl && live && !reducedMotion && afterPaint && inView
+  // The story loop: classes on the window follow the timeline; it runs only while the hero is on screen and starts
+  // from the top each time it comes back. Under reduced motion the finished conversation stays.
+  useEffect(() => {
+    const el = win.current
+    const input = typed.current
+    if (!el || !input || reducedMotion) return
+    let raf = 0
+    let start = 0
+    let lastTyped = -1
+    const frame = (now: number) => {
+      if (!start) start = now
+      const t = now - start
+      const on = chatFlagsAt(t)
+      for (const flag of CHAT_FLAGS) el.classList.toggle(`is-${flag}`, on.has(flag))
+      const n = typedChars(t, chat.question.length)
+      if (n !== lastTyped) {
+        input.textContent = chat.question.slice(0, n)
+        el.classList.toggle('is-typing', n > 0)
+        lastTyped = n
+      }
+      raf = requestAnimationFrame(frame)
+    }
+    const play = () => {
+      if (raf) return
+      start = 0
+      raf = requestAnimationFrame(frame)
+    }
+    const stop = () => {
+      cancelAnimationFrame(raf)
+      raf = 0
+    }
+    const io =
+      typeof IntersectionObserver === 'undefined'
+        ? null
+        : new IntersectionObserver(([e]) => (e.isIntersecting ? play() : stop()))
+    if (io) io.observe(el)
+    else play()
+    return () => {
+      stop()
+      io?.disconnect()
+      // Back to the finished conversation.
+      for (const flag of CHAT_FLAGS) el.classList.toggle(`is-${flag}`, CHAT_FINAL.includes(flag))
+      el.classList.remove('is-typing')
+      input.textContent = ''
+    }
+  }, [reducedMotion])
+
+  let word = 0
+  return (
+    <div ref={stage} className="aip-stage" aria-hidden="true">
+      <div className="aip-stage-inner">
+        <span className="aip-stage-shadow" />
+
+        <div ref={win} className={`aip-chat ${CHAT_FINAL.map((f) => `is-${f}`).join(' ')}`}>
+          <div className="aip-chat-bar">
+            <span className="aip-chat-lights">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span className="aip-chat-title">
+              <span className="aip-ai-dot" />
+              {chat.title}
+            </span>
+            <span className="aip-chat-status">
+              <b />
+              {chat.status}
+            </span>
+          </div>
+
+          <div className="aip-chat-body">
+            <p className="aip-msg-q">{chat.question}</p>
+
+            <div className="aip-msg-a">
+              <span className="aip-ai-dot is-avatar" />
+              <div className="aip-msg-a-body">
+                <span className="aip-thinking">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <p className="aip-answer">
+                  {chat.answer.map((part, p) =>
+                    part.text.split(' ').map((w, i) => (
+                      <span
+                        key={`${p}-${i}`}
+                        className={`aip-word${part.strong ? ' is-strong' : ''}`}
+                        style={{ '--i': word++ } as CSSProperties}
+                      >
+                        {w}{' '}
+                      </span>
+                    )),
+                  )}
+                </p>
+                <div className="aip-sources">
+                  <span className="mono aip-sources-label">{chat.sourcesLabel}</span>
+                  {chat.sources.map((s, i) => (
+                    <span key={s} className="aip-source" style={{ '--i': i } as CSSProperties}>
+                      <svg viewBox="0 0 12 12">
+                        {i === 0 ? (
+                          <>
+                            <rect x="1.5" y="1.5" width="9" height="9" rx="1.5" />
+                            <path d="M1.5 4.5 H10.5 M5 4.5 V10.5" />
+                          </>
+                        ) : (
+                          <>
+                            <rect x="1" y="2.5" width="10" height="7" rx="1.5" />
+                            <path d="M1.5 3.5 L6 6.8 L10.5 3.5" />
+                          </>
+                        )}
+                      </svg>
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="aip-action">
+              <p className="mono aip-action-label">
+                <span className="aip-ai-dot" />
+                {chat.actionLabel}
+              </p>
+              <p className="aip-action-text">{chat.action}</p>
+              <div className="aip-action-row">
+                <span className="aip-btn is-approve">
+                  <span className="aip-btn-label">{chat.approve}</span>
+                  <span className="aip-btn-label is-sent">{chat.sent}</span>
+                  <svg className="aip-cursor" viewBox="0 0 16 20">
+                    <path d="M2 1.5 L2 15.5 L5.6 12.2 L8.2 18 L10.6 17 L8 11.3 L13 11.1 Z" />
+                  </svg>
+                </span>
+                <span className="aip-btn is-edit">{chat.edit}</span>
+                <span className="aip-signoff">
+                  <svg viewBox="0 0 16 16">
+                    <circle cx="8" cy="5.2" r="2.7" />
+                    <path d="M2.8 14 C 2.8 9.6, 13.2 9.6, 13.2 14" />
+                  </svg>
+                  {chat.signOff}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="aip-chat-input">
+            <span className="aip-input-field">
+              <span className="aip-input-ph">{chat.placeholder}</span>
+              <span ref={typed} className="aip-input-text" />
+              <span className="aip-caret" />
+            </span>
+            <span className="aip-send">
+              <svg viewBox="0 0 16 16">
+                <path d="M8 13 V3.5 M3.8 7.6 L8 3.4 L12.2 7.6" />
+              </svg>
+            </span>
+          </div>
+
+          {/* Notes at other depths: one floats behind the window's corner, the reply comes in front. */}
+          <div className="aip-note is-toast">
+            <span className="aip-note-icon">
+              <svg viewBox="0 0 16 16">
+                <path d="M4 8.4 L6.8 11 L12 5.4" />
+              </svg>
+            </span>
+            <span>
+              <b>{chat.toast.title}</b>
+              <small>{chat.toast.meta}</small>
+            </span>
+          </div>
+          <div className="aip-note is-reply">
+            <span className="aip-note-icon is-msg">
+              <svg viewBox="0 0 16 16">
+                <path d="M8 2.2 a5.8 5.8 0 0 0 -5 8.7 L2.3 13.7 L5.2 13 A5.8 5.8 0 1 0 8 2.2 Z" />
+              </svg>
+            </span>
+            <span>
+              <b>{chat.message.from}</b>
+              <small>{chat.message.text}</small>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Beside the How heading: a test run against past cases ----------
+   The rows tick through one by one when the section scrolls in (paused off screen); the markup is the finished run,
+   which reduced motion and the prerendered page show. */
+
+const run = aiPage.testRun
+
+function TestRun() {
+  const reducedMotion = usePrefersReducedMotion()
+  const root = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = root.current
+    if (!el || reducedMotion || typeof IntersectionObserver === 'undefined') return
+    const rows = Array.from(el.querySelectorAll<HTMLElement>('.aip-run-row'))
+    let elapsed = 0
+    let last = 0
+    let raf = 0
+    const paint = () => {
+      const { index, progress, complete } = testRunAt(elapsed, rows.length)
+      rows.forEach((r, i) => {
+        r.classList.toggle('is-done', i < index)
+        r.classList.toggle('is-checking', i === index && !complete)
+      })
+      el.style.setProperty('--run', progress.toFixed(4))
+      el.classList.toggle('is-complete', complete)
+      return complete
+    }
+    const frame = (now: number) => {
+      elapsed += last ? Math.min(100, now - last) : 0
+      last = now
+      raf = paint() ? 0 : requestAnimationFrame(frame)
+    }
+    paint()
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting && !raf && !el.classList.contains('is-complete')) {
+          last = 0
+          raf = requestAnimationFrame(frame)
+        } else if (!e.isIntersecting) {
+          cancelAnimationFrame(raf)
+          raf = 0
+        }
+      },
+      { threshold: 0.5 },
+    )
+    io.observe(el)
+    return () => {
+      cancelAnimationFrame(raf)
+      io.disconnect()
+      rows.forEach((r) => {
+        r.classList.add('is-done')
+        r.classList.remove('is-checking')
+      })
+      el.style.removeProperty('--run')
+      el.classList.add('is-complete')
+    }
+  }, [reducedMotion])
 
   return (
-    <div ref={stage} className="aip-stage">
-      <div className="aip-stage-inner" role="img" aria-label={aiPage.heroVisualLabel}>
-        {/* Floor: a soft shadow and two orbit lines under the core */}
-        <svg className="aip-layer aip-floor" viewBox="0 0 520 380" aria-hidden="true">
-          <defs>
-            <radialGradient id="aip-floor-shadow">
-              <stop offset="0%" stopColor="#3b3a8f" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#3b3a8f" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <ellipse cx="270" cy="322" rx="110" ry="18" fill="url(#aip-floor-shadow)" />
-          <ellipse cx="270" cy="322" rx="170" ry="30" className="aip-floor-ring" />
-          <ellipse cx="270" cy="322" rx="235" ry="44" className="aip-floor-ring is-far" />
-        </svg>
-
-        {/* Threads: record → core → outputs */}
-        <svg className="aip-layer aip-threads" viewBox="0 0 520 380" aria-hidden="true">
-          {inY.map((y, i) => (
-            <path
-              key={`i${i}`}
-              className={`aip-thread is-${i}`}
-              d={`M164 ${y} C 215 ${y}, 225 190, 270 190`}
-              style={{ animationDelay: `${i * -0.4}s` }}
-            />
-          ))}
-          {outs.map((o, i) => (
-            <path
-              key={`o${i}`}
-              className="aip-thread is-out"
-              d={`M270 190 C 315 190, 320 ${o.y}, 352 ${o.y}`}
-              style={{ animationDelay: `${i * -0.3}s` }}
-            />
-          ))}
-        </svg>
-
-        {/* The AI core */}
-        <div className={`aip-core${coreReady ? ' is-live' : ''}`} aria-hidden="true">
-          <div className="aip-core-css">
-            <span className="aip-orb">
-              <span className="aip-orb-flow" />
-            </span>
-            {[0, 1, 2].map((i) => (
-              <span key={i} className={`aip-ring is-${i}`}>
-                <b />
-              </span>
-            ))}
-          </div>
-          {showLive && (
-            <Suspense fallback={null}>
-              <AiCore onReady={() => setCoreReady(true)} />
-            </Suspense>
-          )}
-        </div>
-
-        {/* The record */}
-        <div className="aip-rec" aria-hidden="true">
-          <span className="aip-rec-head" />
-          <span className="aip-rec-tag" />
-          <span className="aip-rec-lines">
-            {docLines.map((i) => (
-              <span
-                key={i}
-                className="aip-rec-line"
-                style={{ width: `${i % 3 === 1 ? 50 : i % 2 ? 60 : 74}%`, animationDelay: `${0.35 + i * 0.28}s` }}
-              />
-            ))}
-          </span>
-          <span className="aip-scan" />
-        </div>
-
-        {/* Outputs, in turn; the last one waits for a person */}
-        {outs.map((o, i) => {
-          const last = i === outs.length - 1
-          return (
-            <span
-              key={o.label}
-              className={`aip-out is-${o.tone}${last ? ' is-wait' : ''}`}
-              style={{ top: `${((o.y - 19) / 380) * 100}%`, animationDelay: `${i * 0.7}s` }}
-              aria-hidden="true"
-            >
-              <span className="aip-out-dot" />
-              <span className="aip-out-text">{o.label}</span>
-              {last && (
-                <svg className="aip-person" viewBox="-12 -16 26 28">
-                  <circle cx="0" cy="-6" r="5" />
-                  <path d="M-9 10 C -9 2, 9 2, 9 10" />
-                  <g className="aip-person-check">
-                    <circle cx="9" cy="-9" r="6" />
-                    <path d="M6.4 -9 L8.4 -7 L11.8 -11" />
-                  </g>
-                </svg>
-              )}
-            </span>
-          )
-        })}
+    <div ref={root} className="aip-run is-complete">
+      <div className="aip-run-bar">
+        <span className="aip-run-title">
+          <span className="aip-ai-dot" />
+          {run.title}
+        </span>
+        <span className="mono aip-run-meta">{run.meta}</span>
       </div>
+      <span className="aip-run-progress">
+        <i />
+      </span>
+      <ul className="aip-run-rows">
+        {run.rows.map((r) => (
+          <li key={r.id} className={`aip-run-row is-done is-${r.tone}`}>
+            <span className="aip-run-id">{r.id}</span>
+            <span className="aip-run-result">
+              <span className="aip-run-spin" />
+              <span className="aip-run-text">{r.result}</span>
+              <svg className="aip-run-mark" viewBox="0 0 16 16">
+                {r.tone === 'flag' ? (
+                  <path d="M4.5 13.5 V2.8 M4.5 3.2 H12 L10.2 5.8 L12 8.4 H4.5" />
+                ) : r.tone === 'person' ? (
+                  <>
+                    <circle cx="6.5" cy="5" r="2.4" />
+                    <path d="M2 13 C 2 9, 11 9, 11 13" />
+                    <path d="M10.2 6.4 L11.8 8 L14.6 5" />
+                  </>
+                ) : (
+                  <path d="M3.5 8.4 L6.6 11.2 L12.6 4.8" />
+                )}
+              </svg>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="aip-run-foot">
+        <span className="aip-run-foot-text is-running">{run.running}</span>
+        <span className="aip-run-foot-text is-done">{run.done}</span>
+      </p>
     </div>
   )
 }
@@ -380,12 +531,14 @@ const icons: ReactNode[] = [
     <rect x="16" y="11" width="12" height="16" rx="2" />
     <path d="M19 19 l2.5 2.5 L26 17" />
   </>,
-  // Reorder: a box with a cycle arrow
+  // Reorder: a package with a round "repeat" badge on its corner (the badge's fill hides the box edges behind it)
   <>
-    <path d="M5 12 L14 7 L23 12 L14 17 Z" />
-    <path d="M5 12 V21 L14 26 V17" />
-    <path d="M27 18 a5 5 0 1 1 -2 -4" />
-    <path d="M25 11 V14.5 H28.5" />
+    <path d="M3 9.5 L12 5 L21 9.5 V19.5 L12 24 L3 19.5 Z" />
+    <path d="M3 9.5 L12 14 L21 9.5 M12 14 V24" />
+    <path d="M7.5 7.2 L16.5 11.7" />
+    <circle className="aip-icon-badge" cx="23.5" cy="22.5" r="6.5" />
+    <path d="M26.1 21.2 A2.9 2.9 0 1 0 26.1 23.8" />
+    <path d="M26.4 18.9 L26.1 21.2 L23.9 20.8" />
   </>,
   // CV screening: a person and a shortlist
   <>
@@ -511,7 +664,7 @@ function How() {
   )
 
   return (
-    <PageSection id="how" kicker={aiPage.howKicker} title={aiPage.howTitle} tone="light">
+    <PageSection id="how" kicker={aiPage.howKicker} title={aiPage.howTitle} tone="light" aside={<TestRun />}>
       <div ref={root} className="aip-how">
         <div className="aip-how-track" aria-hidden="true">
           <span className="aip-how-fill" />
