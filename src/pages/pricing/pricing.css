@@ -1,7 +1,6 @@
 /* ==========================================================================
    How pricing works (/pricing, PricingPage.tsx). Classes prefixed `pr-`.
-   The ticket in the hero reuses the home pricing card's head, stamp and total (.price-card-head, .price-stamp,
-   .price-total in index.css). Tones: lime (accent blue), violet, coral, set as --tone by .tone-*.
+   Tones: lime (accent blue), violet, coral, set as --tone by .tone-*.
    ========================================================================== */
 .pr .tone-lime {
   --tone: var(--lime);
@@ -21,173 +20,603 @@
   margin-bottom: 14px;
 }
 
-/* ---- Hero visual: three threads tied into one price, two cut short ---- */
-.pr-tie {
-  width: 100%;
-  max-width: 560px;
-  margin-left: auto;
-}
-
-.pr-tie-field {
+/* ---- Hero visual: the proposal sheet (ProposalSheet.tsx) ----
+   Base styles are the finished sheet (what reduced motion shows). The sequence is in the no-preference block below:
+   paused until the sheet first scrolls in (.is-on) and whenever it is off screen (no .is-visible). */
+.pr-doc {
+  --lead: clamp(26px, 4.4vw, 60px); /* room on the left for the threads coming in */
+  --reach: 0px; /* how far past that room they start: into the hero's column gap on desktop */
+  --tx: 0;
+  --ty: 0;
+  container: prdoc / inline-size;
   position: relative;
-  aspect-ratio: 4 / 3;
+  width: 100%;
+  max-width: 540px;
+  margin-left: auto;
+  padding: 14px 8px 40px var(--lead);
+  perspective: 1500px;
 }
 
-.pr-tie-field svg {
+@media (min-width: 900px) {
+  .pr-doc {
+    --reach: clamp(16px, 2.6vw, 40px);
+  }
+}
+
+.pr-doc-tilt {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(7deg - var(--ty) * 9deg)) rotateY(calc(-10deg + var(--tx) * 14deg)) rotateZ(0.8deg);
+  transition: transform 0.7s var(--ease-out);
+}
+
+/* Soft contact shadow and a second sheet behind, for depth. */
+.pr-doc-shadow {
+  position: absolute;
+  left: 10%;
+  right: 4%;
+  bottom: -34px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.75), transparent);
+  filter: blur(14px);
+  transform: translateZ(-80px);
+}
+
+.pr-doc-back {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(160deg, rgba(139, 123, 255, 0.12), rgba(255, 255, 255, 0.02));
+  transform: translateZ(-40px) translate(16px, 14px) rotate(2.2deg);
 }
 
-.pr-tie-field path {
-  fill: none;
-  stroke-linecap: round;
+.pr-doc-sheet {
+  --pad: clamp(18px, 6.5cqi, 34px);
+  position: relative;
+  padding: var(--pad);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background:
+    repeating-linear-gradient(180deg, transparent 0 27px, rgba(255, 255, 255, 0.018) 27px 28px),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03) 42%, rgba(77, 159, 255, 0.06)),
+    rgba(16, 17, 28, 0.82);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 30px 70px -30px rgba(0, 0, 0, 0.9),
+    0 0 60px -20px rgba(77, 159, 255, 0.25);
 }
 
-.pr-tie-set {
-  stroke: var(--tone);
-  stroke-width: 2;
-  opacity: 0.9;
-}
-
-.pr-tie-never path {
-  stroke: var(--coral);
-  stroke-width: 1.4;
-  stroke-dasharray: 4 5;
-  opacity: 0.55;
-}
-
-.pr-tie-never .pr-tie-cut {
-  stroke-dasharray: none;
-  stroke-width: 2;
-  opacity: 0.9;
-}
-
-.pr-tie-out {
-  stroke-width: 3;
-}
-
-.pr-tie-knot {
-  fill: #eaf4ff;
-  filter: drop-shadow(0 0 10px #8cc4ff) drop-shadow(0 0 22px rgba(77, 159, 255, 0.6));
-}
-
-/* Labels at the thread ends, centred on their point. Opaque so the threads start behind them. */
-.pr-tie-chip {
+/* Sheen that follows the pointer. */
+.pr-doc-sheet::before {
+  content: '';
   position: absolute;
-  transform: translate(-50%, -50%);
-  max-width: 30%;
-  padding: 7px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--tone, var(--line-2));
-  background: var(--ink-2);
-  font-family: var(--f-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-align: center;
-  line-height: 1.3;
-  color: var(--text);
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    60% 50% at calc(30% + var(--tx) * 80%) calc(10% + var(--ty) * 60%),
+    rgba(255, 255, 255, 0.09),
+    transparent 70%
+  );
 }
 
-.pr-tie-chip.is-never {
-  max-width: 28%;
-  border-style: dashed;
-  border-color: rgba(255, 122, 89, 0.5);
+.pr-doc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.pr-doc-from,
+.pr-doc-stage {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
   color: var(--muted);
 }
 
-.pr-tie-chip s {
-  text-decoration-color: var(--coral);
+.pr-doc-from {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
 }
 
-/* The single line from the knot ends on the ticket's top edge. */
-.pr-ticket {
+.pr-doc-mark {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #eaf4ff, #4d9fff 60%, #8b7bff);
+  box-shadow: 0 0 10px rgba(77, 159, 255, 0.8);
+}
+
+.pr-doc-stage {
+  padding: 4px 9px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+}
+
+.pr-doc-title {
+  margin: clamp(10px, 3cqi, 16px) 0 clamp(14px, 4cqi, 22px);
+  padding-bottom: clamp(12px, 3cqi, 16px);
+  border-bottom: 1px solid var(--line-2);
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: clamp(1.9rem, 10cqi, 2.9rem);
+  line-height: 1;
+  color: var(--text);
+}
+
+.pr-doc-label {
+  margin-bottom: 6px;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Line items: knot, name (and its line on wider sheets), tick. The thread runs in from outside the sheet. */
+.pr-doc-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pr-doc-item {
   position: relative;
-  padding: clamp(20px, 2.6vw, 30px);
-  border-color: rgba(140, 196, 255, 0.35);
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) 16px;
+  gap: 14px;
+  align-items: center;
+  padding: clamp(9px, 2.6cqi, 12px) 0;
+  border-bottom: 1px dashed var(--line-2);
 }
 
-.pr-ticket .price-card-head {
-  margin-bottom: 16px;
-  padding-bottom: 16px;
+.pr-doc-thread {
+  position: absolute;
+  top: 50%;
+  right: calc(100% - 6px);
+  width: calc(var(--lead) + var(--reach) + var(--pad) + 6px);
+  height: 40px;
+  margin-top: -20px;
+  overflow: visible;
+  pointer-events: none;
 }
 
-/* The head already has the dashed rule. */
-.pr-ticket .price-total {
-  padding-top: 0;
-  border-top: 0;
+.pr-doc-thread path {
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px var(--tone));
+}
+
+.pr-doc-thread .pr-doc-pulse {
+  stroke: #fff;
+  stroke-width: 2.2;
+  stroke-dasharray: 0.1 0.9;
+  opacity: 0;
+}
+
+.pr-doc-knot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, var(--tone) 65%);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.06),
+    0 0 14px var(--tone);
+}
+
+.pr-doc-item-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pr-doc-item-body b {
+  font-family: var(--f-display);
+  font-size: clamp(0.95rem, 4.2cqi, 1.1rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.pr-doc-item-text {
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.pr-doc-tick {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+
+/* What never sets the price: faint chips, struck out, dropped. */
+.pr-doc-never {
+  margin-top: clamp(14px, 4cqi, 20px);
+}
+
+.pr-doc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pr-doc-chip {
+  --rot: -2.5deg;
+  position: relative;
+  padding: 5px 11px;
+  border: 1px dashed rgba(255, 122, 89, 0.55);
+  border-radius: 999px;
+  font-size: 0.74rem;
+  white-space: nowrap;
+  color: var(--muted);
+  opacity: 0.5;
+  transform: translateY(5px) rotate(var(--rot));
+}
+
+.pr-doc-chip:nth-child(2) {
+  --rot: 2deg;
+}
+
+.pr-doc-chip span::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 1.5px;
+  background: var(--coral);
+  transform-origin: left;
+}
+
+/* Summary: two filled fields. Words only. */
+.pr-doc-total {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: clamp(16px, 4.5cqi, 24px) 0 0;
+  padding-top: clamp(14px, 4cqi, 18px);
+  border-top: 1px solid var(--line-2);
+}
+
+.pr-doc-total dt {
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pr-doc-total dd {
+  position: relative;
+  margin: 6px 0 0;
+  padding-bottom: 6px;
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: clamp(1.35rem, 7cqi, 1.9rem);
+  line-height: 1.1;
+  white-space: nowrap;
+  color: #8cc4ff;
+}
+
+.pr-doc-total dd::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(140, 196, 255, 0.7), rgba(140, 196, 255, 0.05));
+  transform-origin: left;
+}
+
+/* Signature and stamp. */
+.pr-doc-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 14px;
+  margin-top: clamp(16px, 4.5cqi, 24px);
+}
+
+.pr-doc-sign {
+  flex: 1 1 120px;
+  min-width: 0;
+  max-width: 190px;
+}
+
+.pr-doc-sign svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.pr-doc-sign path {
+  fill: none;
+  stroke: #eaf4ff;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+
+.pr-doc-sign .mono {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.pr-doc-stamp {
+  position: relative;
+  flex: none;
+  margin-left: auto;
+  padding: 9px 14px;
+  border: 1.5px solid #8cc4ff;
+  border-radius: 9px;
+  background: rgba(77, 159, 255, 0.1);
+  box-shadow:
+    0 0 26px rgba(77, 159, 255, 0.28),
+    inset 0 0 12px rgba(77, 159, 255, 0.15);
+  color: #cfe5ff;
+}
+
+.pr-doc-stamp::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(140, 196, 255, 0.4);
+  border-radius: 6px;
+}
+
+.pr-doc-stamp .mono {
+  display: block;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Narrow sheets (phones, and the stacked tablet layout at small widths): no item lines, smaller stamp. */
+@container prdoc (max-width: 440px) {
+  .pr-doc-item-text {
+    display: none;
+  }
+
+  .pr-doc-stamp {
+    padding: 8px 10px;
+  }
+
+  .pr-doc-stamp .mono {
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .pr-tie-set,
-  .pr-tie-out {
+  /* Held until first seen, and whenever off screen. !important: each `animation` shorthand below resets it. */
+  .pr-doc:not(.is-on.is-visible) *,
+  .pr-doc:not(.is-on.is-visible) *::after,
+  .pr-live:not(.is-on.is-visible) *,
+  .pr-live:not(.is-on.is-visible) *::after {
+    animation-play-state: paused !important;
+  }
+
+  .pr-doc-tilt {
+    animation:
+      pr-doc-in 1s var(--ease-out) both,
+      pr-doc-float 6s ease-in-out 1.2s infinite alternate;
+  }
+
+  .pr-doc-thread path:first-child {
     stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: pr-draw 1.4s var(--ease-out) forwards;
+    animation: pr-doc-draw 0.75s cubic-bezier(0.5, 0, 0.3, 1) both;
+    animation-delay: calc(0.7s + var(--i) * 0.55s);
   }
 
-  .pr-tie-set {
-    animation-delay: calc(0.2s + var(--i) * 0.12s);
+  .pr-doc-thread .pr-doc-pulse {
+    animation: pr-doc-flow 3.2s linear infinite;
+    animation-delay: calc(3.2s + var(--i) * 0.7s);
   }
 
-  .pr-tie-out {
-    animation-delay: 1.2s;
+  .pr-doc-knot {
+    animation: pr-doc-pop 0.5s var(--ease-out) both;
+    animation-delay: calc(1.35s + var(--i) * 0.55s);
   }
 
-  .pr-tie-never {
-    opacity: 0;
-    animation: pr-fade 0.8s ease forwards;
-    animation-delay: calc(0.7s + var(--i) * 0.12s);
+  .pr-doc-item-body {
+    animation: pr-doc-wipe 0.6s var(--ease-out) both;
+    animation-delay: calc(1.45s + var(--i) * 0.55s);
   }
 
-  .pr-tie-knot {
-    opacity: 0;
-    animation: pr-fade 0.5s ease 1.1s forwards;
+  .pr-doc-tick path {
+    animation: pr-doc-draw 0.35s ease-out both;
+    animation-delay: calc(1.8s + var(--i) * 0.55s);
   }
 
-  .pr-tie-halo {
-    animation: pr-breathe 4.5s ease-in-out infinite;
-    transform-origin: center;
-    transform-box: fill-box;
+  .pr-doc-never .pr-doc-label {
+    animation: pr-doc-fade 0.4s ease both 3.1s;
   }
 
-  .pr-ticket .price-stamp {
-    opacity: 0;
-    animation: pr-stamp 0.5s var(--ease-out) 1.9s forwards;
+  .pr-doc-chip {
+    animation: pr-doc-chip 1.9s ease both;
+    animation-delay: calc(3.2s + var(--i) * 0.18s);
+  }
+
+  .pr-doc-chip span::after {
+    animation: pr-doc-strike 0.3s ease-out both;
+    animation-delay: calc(3.75s + var(--i) * 0.18s);
+  }
+
+  .pr-doc-total dd::after {
+    animation: pr-doc-strike 0.5s var(--ease-out) both;
+  }
+
+  .pr-doc-total div:first-child dd::after {
+    animation-delay: 4.9s;
+  }
+
+  .pr-doc-total div:last-child dd::after {
+    animation-delay: 5.25s;
+  }
+
+  .pr-doc-total dd {
+    animation: pr-doc-wipe 0.7s var(--ease-out) both;
+    animation-delay: calc(5s + var(--i) * 0.35s);
+  }
+
+  .pr-doc-sign path {
+    animation: pr-doc-draw 1.2s cubic-bezier(0.45, 0, 0.35, 1) both 5.9s;
+  }
+
+  .pr-doc-stamp {
+    animation: pr-doc-stamp 0.6s cubic-bezier(0.3, 0, 0.2, 1) both 7s;
   }
 }
 
-@keyframes pr-draw {
+@keyframes pr-doc-in {
+  from {
+    opacity: 0;
+    scale: 0.94;
+  }
+}
+
+@keyframes pr-doc-float {
+  to {
+    translate: 0 -10px;
+  }
+}
+
+@keyframes pr-doc-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+
   to {
     stroke-dashoffset: 0;
   }
 }
 
-@keyframes pr-fade {
+@keyframes pr-doc-flow {
+  0% {
+    stroke-dashoffset: 0.1;
+    opacity: 0;
+  }
+
+  15%,
+  80% {
+    opacity: 0.85;
+  }
+
+  100% {
+    stroke-dashoffset: -1;
+    opacity: 0;
+  }
+}
+
+@keyframes pr-doc-pop {
+  0% {
+    scale: 0;
+  }
+
+  60% {
+    scale: 1.45;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes pr-doc-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
   to {
-    opacity: 1;
+    clip-path: inset(0 0 0 0);
   }
 }
 
-@keyframes pr-breathe {
-  50% {
-    transform: scale(1.18);
-    opacity: 0.7;
-  }
-}
-
-@keyframes pr-stamp {
+@keyframes pr-doc-fade {
   from {
     opacity: 0;
-    transform: rotate(-3deg) scale(1.4);
+  }
+}
+
+@keyframes pr-doc-chip {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) rotate(0deg);
+  }
+
+  18%,
+  55% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+
+  80% {
+    opacity: 0.3;
+    transform: translateY(10px) rotate(var(--rot));
+  }
+
+  100% {
+    opacity: 0.5;
+    transform: translateY(5px) rotate(var(--rot));
+  }
+}
+
+@keyframes pr-doc-strike {
+  from {
+    transform: scaleX(0);
   }
 
   to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pr-doc-stamp {
+  0% {
+    opacity: 0;
+    scale: 1.9;
+    box-shadow: 0 0 0 rgba(77, 159, 255, 0);
+  }
+
+  55% {
     opacity: 1;
-    transform: rotate(-3deg) scale(1);
+    scale: 0.93;
+  }
+
+  78% {
+    scale: 1.04;
+  }
+
+  100% {
+    opacity: 1;
+    scale: 1;
   }
 }
 
@@ -413,14 +842,265 @@
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
   gap: clamp(28px, 4vw, 64px);
-  align-items: end;
+  align-items: stretch;
 }
 
+/* Right column: the status window on top, the note under it; together as tall as the ledger. */
+.pr-after-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(20px, 3vw, 36px);
+  min-width: 0;
+}
+
+/* ---- After launch: the status window (AfterLive.tsx), a white app window on the cream ---- */
+.pr-live {
+  --ok: #12a150;
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.pr-live-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(20, 20, 26, 0.07);
+  background: #f7f6f2;
+}
+
+.pr-live-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.pr-live-dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(20, 20, 26, 0.14);
+}
+
+.pr-live-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--cream-ink);
+}
+
+.pr-live-body {
+  padding: clamp(14px, 1.8vw, 20px) clamp(16px, 2vw, 22px) clamp(10px, 1.4vw, 14px);
+}
+
+.pr-live-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.pr-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 999px;
+  background: rgba(18, 161, 80, 0.1);
+  color: #0b7a3b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pr-live-pill i {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.pr-live-pill i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ok);
+  opacity: 0;
+}
+
+.pr-live-tag,
+.pr-live-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(20, 20, 26, 0.5);
+}
+
+.pr-live-beat {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 6px 0 8px;
+  overflow: visible;
+}
+
+.pr-live-beat path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pr-live-base {
+  stroke: rgba(20, 20, 26, 0.08);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.pr-live-line {
+  stroke: var(--ok);
+  stroke-width: 1.8;
+  stroke-dasharray: 1;
+}
+
+.pr-live-scan {
+  stroke: #1d4ed8;
+  stroke-width: 2.4;
+  stroke-dasharray: 0.08 0.92;
+  opacity: 0;
+}
+
+.pr-live-label {
+  margin-bottom: 4px;
+}
+
+.pr-live-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pr-live-log li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(20, 20, 26, 0.06);
+}
+
+.pr-live-log li:first-child {
+  border-top: 0;
+}
+
+.pr-live-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(29, 78, 216, 0.08);
+  color: #1d4ed8;
+}
+
+.pr-live-icon.is-shield {
+  background: rgba(18, 161, 80, 0.1);
+  color: #0b7a3b;
+}
+
+.pr-live-icon.is-spark {
+  background: rgba(139, 123, 255, 0.14);
+  color: #5b4bd6;
+}
+
+.pr-live-icon.is-chat {
+  background: rgba(255, 122, 89, 0.14);
+  color: #c94b2b;
+}
+
+.pr-live-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pr-live-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--cream-ink);
+}
+
+.pr-live-text em {
+  font-style: normal;
+  color: rgba(20, 20, 26, 0.5);
+}
+
+.pr-live-when {
+  font-size: 0.6rem;
+  white-space: nowrap;
+  color: rgba(20, 20, 26, 0.45);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pr-live-line {
+    animation: pr-doc-draw 1.6s cubic-bezier(0.45, 0, 0.35, 1) both 0.2s;
+  }
+
+  .pr-live-scan {
+    animation: pr-doc-flow 3.6s linear infinite 1.9s;
+  }
+
+  .pr-live-pill i::after {
+    animation: pr-live-ping 2.2s ease-out infinite 0.6s;
+  }
+
+  .pr-live-log li {
+    animation: pr-live-row 0.55s var(--ease-out) both;
+    animation-delay: calc(0.7s + var(--i) * 0.45s);
+  }
+}
+
+@keyframes pr-live-ping {
+  0% {
+    opacity: 0.6;
+    scale: 1;
+  }
+
+  100% {
+    opacity: 0;
+    scale: 2.8;
+  }
+}
+
+@keyframes pr-live-row {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+/* As tall as the column beside it; the rows share the height. */
 .pr-ledger {
+  display: flex;
+  flex-direction: column;
   padding: clamp(8px, 1.5vw, 14px) clamp(22px, 3vw, 36px);
 }
 
 .pr-ledger-row {
+  flex: 1 1 auto;
+  align-content: center;
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
   gap: 8px 28px;
@@ -440,6 +1120,7 @@
 }
 
 .pr-ledger dd {
+  margin: 0;
   color: var(--muted);
   line-height: 1.5;
 }
@@ -485,7 +1166,7 @@
 }
 
 @media (max-width: 899px) {
-  .pr-tie {
+  .pr-doc {
     margin: 0 auto;
   }
 
@@ -542,9 +1223,12 @@
     height: 24px;
   }
 
-  .pr-tie-chip {
-    padding: 6px 8px;
-    font-size: 0.6rem;
-    letter-spacing: 0.02em;
+  /* A gentler angle on phones, and the sheet behind kept inside the screen. */
+  .pr-doc-tilt {
+    transform: rotateX(5deg) rotateY(-6deg) rotateZ(0.6deg);
+  }
+
+  .pr-doc-back {
+    transform: translateZ(-30px) translate(6px, 12px) rotate(1.6deg);
   }
 }
