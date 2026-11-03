@@ -184,7 +184,7 @@ export const offer = {
       title: 'Your product idea, built and launched.',
       for: 'For founders and companies turning an idea into a SaaS platform, web app or mobile app.',
       items: ['Discovery and product design', 'A first version in weeks, then releases in stages', 'SaaS platforms, web and mobile apps', 'Hosting, support and new versions after launch'],
-      cta: { label: 'Talk about your product', href: '/contact-us' },
+      cta: { label: 'See the products we build', href: '/our-services' },
       tone: 'coral',
     },
   ],

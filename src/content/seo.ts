@@ -42,7 +42,7 @@ export const site = {
     {
       name: 'Software product development',
       description: 'SaaS products, MVPs and apps, from the first version to hosting and growth after launch.',
-      path: '/our-services#offer',
+      path: '/our-services',
     },
   ],
   // Head office, split for PostalAddress. Same NAP as `brand.address` (checked in seo.test.ts).
