@@ -372,9 +372,10 @@ main,
   animation: grain 1.2s steps(6) infinite;
 }
 
-/* Drawn without a graphics chip (gfx/gfxMode.ts: no WebGL, a software renderer, or a GPU that proved too slow): the
-   processor composites the page, so live blurs (re-run on every frame of the video behind them) and the moving grain
-   would make everything stutter. The glass becomes a darker tint and the grain holds still. */
+/* Drawn without a graphics chip (gfx/gfxMode.ts: no WebGL, or a software renderer): the processor composites the
+   page, so live blurs (re-run on every frame of the animated hero behind them) and the moving grain would make
+   everything stutter. The glass becomes a darker tint and the grain holds still. A GPU that is merely too slow for
+   the live 3D ('slow') keeps the blur: the GPU composites it cheaply. */
 html:is([data-gfx='software'], [data-gfx='none']) * {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;

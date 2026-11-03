@@ -36,7 +36,7 @@ describe('classifyTier', () => {
   })
   it('remembers a GPU that failed the frame test', () => {
     const r = 'ANGLE (Intel, Intel(R) UHD Graphics 620 Direct3D11)'
-    expect(classifyTier(gpu(r), r)).toBe('software')
+    expect(classifyTier(gpu(r), r)).toBe('slow')
     expect(classifyTier(gpu(r), 'some other GPU')).toBe('low')
   })
 })
@@ -46,6 +46,7 @@ describe('allowsLive', () => {
     expect(allowsLive('auto', 'high')).toBe(true)
     expect(allowsLive('auto', 'low')).toBe(true)
     expect(allowsLive('auto', 'software')).toBe(false)
+    expect(allowsLive('auto', 'slow')).toBe(false)
     expect(allowsLive('auto', 'none')).toBe(false)
   })
   it('live forces it whenever a context exists; poster never loads it', () => {

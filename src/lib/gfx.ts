@@ -2,7 +2,9 @@
 // The browser probe and storage live in src/gfx/gfxMode.ts.
 
 export type GfxMode = 'auto' | 'live' | 'poster'
-export type GfxTier = 'none' | 'software' | 'low' | 'high'
+// 'software': no graphics chip (the processor draws everything). 'slow': a real GPU that proved too slow for the live
+// 3D; it gets the same 2D scenes but keeps GPU-cheap effects like the glass blur.
+export type GfxTier = 'none' | 'software' | 'slow' | 'low' | 'high'
 
 const SOFTWARE = /swiftshader|llvmpipe|softpipe|software|basic render|warp/i
 const INTEGRATED = /intel|uhd|iris|mali|adreno|powervr|apple gpu|apple m\d/i
@@ -18,7 +20,7 @@ export function classifyTier(
 ): GfxTier {
   if (!probe.context) return 'none'
   if (!probe.caveat || SOFTWARE.test(probe.renderer)) return 'software'
-  if (slow && slow === probe.renderer) return 'software'
+  if (slow && slow === probe.renderer) return 'slow'
   return INTEGRATED.test(probe.renderer) ? 'low' : 'high'
 }
 

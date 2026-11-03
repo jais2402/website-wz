@@ -86,7 +86,8 @@ export const gfx = {
    */
   markSlow() {
     if (resolved.renderer) write(SLOW_KEY, resolved.renderer)
-    document.documentElement.dataset.gfx = 'software'
+    // Still a GPU: it keeps the glass blur and full-resolution 2D (only 'software' and 'none' drop them).
+    if (gfx.tier !== 'software' && gfx.tier !== 'none') document.documentElement.dataset.gfx = 'slow'
     if (!gfx.live) return
     gfx.live = false
     listeners.forEach((l) => l())
@@ -100,7 +101,7 @@ export const gfx = {
 }
 
 /**
- * Whether this page is drawn without a graphics chip (no WebGL, a software renderer, or a GPU that proved too slow):
+ * Whether this page is drawn without a graphics chip (no WebGL, or a software renderer):
  * then the processor also decodes the video and composites the page, so the hero gets its light video and the CSS
  * drops blur and moving grain (`html[data-gfx]` in index.css).
  */
