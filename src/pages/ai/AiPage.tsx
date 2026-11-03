@@ -1,11 +1,16 @@
 import { useGSAP } from '@gsap/react'
-import { type MouseEvent, type ReactNode, useRef } from 'react'
+import { type MouseEvent, type ReactNode, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { aiPage } from '@/content/pages'
+import { useGfxLive } from '@/gfx/gfxMode'
+import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
+import { damp, pointerOffset, tiltAngles } from '@/lib/tilt'
+import { webgl } from '@/lib/webgl'
 import { CtaStrip } from '@/components/CtaStrip'
 import { ctas } from '@/content/site'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
+import { coreStore } from './coreStore'
 import './ai.css'
 
 // The AI page: AI inside the systems you run, and custom AI solutions. Styles in ai.css (classes prefixed `aip-`,
@@ -46,7 +51,12 @@ export function AiPage() {
   )
 }
 
-/* ---------- Hero: a record is read, threads carry it into the AI knot, three outputs come out ---------- */
+/* ---------- Hero: a record is read, threads carry it into the AI core, three outputs come out ----------
+   A CSS 3D stage: floor, threads, core, record and outputs sit at different depths and turn together toward the
+   pointer (fine pointers only) and tip back as the hero scrolls away. The core is real WebGL (AiCore, lazy) when this
+   machine runs the live 3D and motion is allowed; otherwise the CSS core (a pearl with three 3D orbit rings) stays. */
+
+const AiCore = lazy(() => import('./AiCore').then((m) => ({ default: m.AiCore })))
 
 const docLines = [0, 1, 2, 3, 4, 5]
 const inY = [130, 190, 250]
@@ -57,110 +67,225 @@ const outs = [
 ]
 
 function HeroVisual() {
-  return (
-    <svg
-      className="aip-hero-svg"
-      viewBox="0 0 520 380"
-      role="img"
-      aria-label={aiPage.heroVisualLabel}
-    >
-      <defs>
-        <radialGradient id="aip-knot-glow">
-          <stop offset="0%" stopColor="#8cc4ff" stopOpacity="0.9" />
-          <stop offset="45%" stopColor="#8b7bff" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#8b7bff" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id="aip-scan" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4d9fff" stopOpacity="0" />
-          <stop offset="80%" stopColor="#4d9fff" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="#8cc4ff" stopOpacity="0.9" />
-        </linearGradient>
-        <clipPath id="aip-doc-clip">
-          <rect x="24" y="70" width="140" height="240" rx="14" />
-        </clipPath>
-      </defs>
+  const reducedMotion = usePrefersReducedMotion()
+  const live = useGfxLive()
+  const afterPaint = useAfterPaint()
+  const stage = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(true)
+  const [coreReady, setCoreReady] = useState(false)
 
-      {/* Threads: record → knot → outputs */}
-      {inY.map((y, i) => (
-        <path
-          key={`i${i}`}
-          className="aip-thread"
-          d={`M164 ${y} C 215 ${y}, 225 190, 270 190`}
-          style={{ animationDelay: `${i * -0.4}s` }}
-        />
-      ))}
-      {outs.map((o, i) => (
-        <path
-          key={`o${i}`}
-          className="aip-thread is-out"
-          d={`M270 190 C 315 190, 320 ${o.y}, 352 ${o.y}`}
-          style={{ animationDelay: `${i * -0.3}s` }}
-        />
-      ))}
+  // The live core is mounted only while the hero is on screen: its WebGL context goes as soon as the hero does.
+  useEffect(() => {
+    const el = stage.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(([e]) => {
+      setInView(e.isIntersecting)
+      if (!e.isIntersecting) setCoreReady(false)
+    })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
 
-      {/* The record */}
-      <g className="aip-doc">
-        <rect x="24" y="70" width="140" height="240" rx="14" className="aip-doc-card" />
-        <rect x="42" y="90" width="58" height="8" rx="4" className="aip-doc-head" />
-        <rect x="128" y="88" width="20" height="12" rx="3" className="aip-doc-tag" />
-        {docLines.map((i) => (
-          <rect
-            key={i}
-            x="42"
-            y={122 + i * 28}
-            width={i % 3 === 1 ? 70 : i % 2 ? 84 : 104}
-            height="6"
-            rx="3"
-            className="aip-doc-line"
-            style={{ animationDelay: `${0.35 + i * 0.28}s` }}
-          />
-        ))}
-        <g clipPath="url(#aip-doc-clip)">
-          <rect x="24" y="30" width="140" height="44" className="aip-scan" fill="url(#aip-scan)" />
-        </g>
-      </g>
+  // Pointer: the stage turns toward it, eased every frame through CSS variables (never React state).
+  useEffect(() => {
+    const el = stage.current
+    if (!el || reducedMotion || !window.matchMedia('(pointer: fine)').matches) return
+    const hero = el.closest('.pg-hero') ?? el
+    const target = { x: 0, y: 0 }
+    const now = { x: 0, y: 0 }
+    let raf = 0
+    let last = 0
+    const loop = (t: number) => {
+      const dt = last ? Math.min(0.1, (t - last) / 1000) : 1 / 60
+      last = t
+      now.x = damp(now.x, target.x, 5, dt)
+      now.y = damp(now.y, target.y, 5, dt)
+      const { rx, ry } = tiltAngles(now, 9)
+      el.style.setProperty('--rx', rx.toFixed(3))
+      el.style.setProperty('--ry', ry.toFixed(3))
+      coreStore.px = now.x
+      coreStore.py = now.y
+      const settled = Math.abs(now.x - target.x) + Math.abs(now.y - target.y) < 0.001
+      raf = settled ? 0 : requestAnimationFrame(loop)
+      if (settled) last = 0
+    }
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(loop)
+    }
+    const move = (e: Event) => {
+      const p = e as PointerEvent
+      Object.assign(target, pointerOffset(p.clientX, p.clientY, hero.getBoundingClientRect()))
+      kick()
+    }
+    const leave = () => {
+      target.x = 0
+      target.y = 0
+      kick()
+    }
+    hero.addEventListener('pointermove', move)
+    hero.addEventListener('pointerleave', leave)
+    return () => {
+      cancelAnimationFrame(raf)
+      hero.removeEventListener('pointermove', move)
+      hero.removeEventListener('pointerleave', leave)
+      coreStore.px = 0
+      coreStore.py = 0
+    }
+  }, [reducedMotion])
 
-      {/* The AI knot */}
-      <g className="aip-knot">
-        <circle cx="270" cy="190" r="62" fill="url(#aip-knot-glow)" className="aip-knot-glow" />
-        {/* Three tilted orbits, each turning at its own pace */}
-        {[0, 60, -60].map((tilt, i) => (
-          <g key={tilt} transform={`rotate(${tilt} 270 190)`}>
-            <ellipse cx="270" cy="190" rx="26" ry="11" className={`aip-knot-ring is-${i}`} />
-          </g>
-        ))}
-        <circle cx="270" cy="190" r="8" className="aip-knot-core" />
-      </g>
-
-      {/* Outputs, in turn; the last one waits for a person */}
-      {outs.map((o, i) => {
-        const last = i === outs.length - 1
-        return (
-          <g
-            key={o.label}
-            className={`aip-out is-${o.tone}${last ? ' is-wait' : ''}`}
-            style={{ animationDelay: `${i * 0.7}s` }}
-          >
-            <rect x="352" y={o.y - 19} width={last ? 148 : 104} height="38" rx="19" className="aip-out-pill" />
-            <circle cx="372" cy={o.y} r="5" className="aip-out-dot" />
-            <text x="386" y={o.y + 5} className="aip-out-text">
-              {o.label}
-            </text>
-            {last && (
-              <g className="aip-person" transform={`translate(468 ${o.y})`}>
-                <circle cx="0" cy="-6" r="5" />
-                <path d="M-9 10 C -9 2, 9 2, 9 10" />
-                <g className="aip-person-check">
-                  <circle cx="9" cy="-9" r="6" />
-                  <path d="M6.4 -9 L8.4 -7 L11.8 -11" />
-                </g>
-              </g>
-            )}
-          </g>
-        )
-      })}
-    </svg>
+  // Scroll: as the hero leaves, the stage tips back and lifts; the core spins on.
+  useGSAP(
+    () => {
+      const el = stage.current
+      if (reducedMotion || !el) return
+      const state = { p: 0 }
+      gsap.to(state, {
+        p: 1,
+        ease: 'none',
+        onUpdate: () => {
+          el.style.setProperty('--sp', state.p.toFixed(4))
+          coreStore.scroll = state.p
+        },
+        scrollTrigger: { trigger: el, start: 'top 20%', end: 'bottom top', scrub: 0.5 },
+      })
+      return () => {
+        coreStore.scroll = 0
+      }
+    },
+    { scope: stage, dependencies: [reducedMotion] },
   )
+
+  const showLive = webgl && live && !reducedMotion && afterPaint && inView
+
+  return (
+    <div ref={stage} className="aip-stage">
+      <div className="aip-stage-inner" role="img" aria-label={aiPage.heroVisualLabel}>
+        {/* Floor: a soft shadow and two orbit lines under the core */}
+        <svg className="aip-layer aip-floor" viewBox="0 0 520 380" aria-hidden="true">
+          <defs>
+            <radialGradient id="aip-floor-shadow">
+              <stop offset="0%" stopColor="#3b3a8f" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#3b3a8f" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <ellipse cx="270" cy="322" rx="110" ry="18" fill="url(#aip-floor-shadow)" />
+          <ellipse cx="270" cy="322" rx="170" ry="30" className="aip-floor-ring" />
+          <ellipse cx="270" cy="322" rx="235" ry="44" className="aip-floor-ring is-far" />
+        </svg>
+
+        {/* Threads: record → core → outputs */}
+        <svg className="aip-layer aip-threads" viewBox="0 0 520 380" aria-hidden="true">
+          {inY.map((y, i) => (
+            <path
+              key={`i${i}`}
+              className={`aip-thread is-${i}`}
+              d={`M164 ${y} C 215 ${y}, 225 190, 270 190`}
+              style={{ animationDelay: `${i * -0.4}s` }}
+            />
+          ))}
+          {outs.map((o, i) => (
+            <path
+              key={`o${i}`}
+              className="aip-thread is-out"
+              d={`M270 190 C 315 190, 320 ${o.y}, 352 ${o.y}`}
+              style={{ animationDelay: `${i * -0.3}s` }}
+            />
+          ))}
+        </svg>
+
+        {/* The AI core */}
+        <div className={`aip-core${coreReady ? ' is-live' : ''}`} aria-hidden="true">
+          <div className="aip-core-css">
+            <span className="aip-orb">
+              <span className="aip-orb-flow" />
+            </span>
+            {[0, 1, 2].map((i) => (
+              <span key={i} className={`aip-ring is-${i}`}>
+                <b />
+              </span>
+            ))}
+          </div>
+          {showLive && (
+            <Suspense fallback={null}>
+              <AiCore onReady={() => setCoreReady(true)} />
+            </Suspense>
+          )}
+        </div>
+
+        {/* The record */}
+        <div className="aip-rec" aria-hidden="true">
+          <span className="aip-rec-head" />
+          <span className="aip-rec-tag" />
+          <span className="aip-rec-lines">
+            {docLines.map((i) => (
+              <span
+                key={i}
+                className="aip-rec-line"
+                style={{ width: `${i % 3 === 1 ? 50 : i % 2 ? 60 : 74}%`, animationDelay: `${0.35 + i * 0.28}s` }}
+              />
+            ))}
+          </span>
+          <span className="aip-scan" />
+        </div>
+
+        {/* Outputs, in turn; the last one waits for a person */}
+        {outs.map((o, i) => {
+          const last = i === outs.length - 1
+          return (
+            <span
+              key={o.label}
+              className={`aip-out is-${o.tone}${last ? ' is-wait' : ''}`}
+              style={{ top: `${((o.y - 19) / 380) * 100}%`, animationDelay: `${i * 0.7}s` }}
+              aria-hidden="true"
+            >
+              <span className="aip-out-dot" />
+              <span className="aip-out-text">{o.label}</span>
+              {last && (
+                <svg className="aip-person" viewBox="-12 -16 26 28">
+                  <circle cx="0" cy="-6" r="5" />
+                  <path d="M-9 10 C -9 2, 9 2, 9 10" />
+                  <g className="aip-person-check">
+                    <circle cx="9" cy="-9" r="6" />
+                    <path d="M6.4 -9 L8.4 -7 L11.8 -11" />
+                  </g>
+                </svg>
+              )}
+            </span>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Cards that turn toward a fine pointer (CSS variables --tx/--ty in degrees; the CSS eases them). Nothing on touch
+ * screens or under reduced motion.
+ */
+function useTilt<T extends HTMLElement>(maxDeg = 6) {
+  const ref = useRef<T>(null)
+  const reducedMotion = usePrefersReducedMotion()
+  useEffect(() => {
+    const el = ref.current
+    if (!el || reducedMotion || !window.matchMedia('(pointer: fine)').matches) return
+    const move = (e: PointerEvent) => {
+      const { rx, ry } = tiltAngles(pointerOffset(e.clientX, e.clientY, el.getBoundingClientRect()), maxDeg)
+      el.style.setProperty('--tx', `${rx.toFixed(2)}deg`)
+      el.style.setProperty('--ty', `${ry.toFixed(2)}deg`)
+    }
+    const leave = () => {
+      el.style.removeProperty('--tx')
+      el.style.removeProperty('--ty')
+    }
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerleave', leave)
+    return () => {
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerleave', leave)
+      leave()
+    }
+  }, [reducedMotion, maxDeg])
+  return ref
 }
 
 /* ---------- Two ways to use AI ---------- */
@@ -170,20 +295,32 @@ function Ways() {
     <PageSection id="ways" title={aiPage.waysTitle}>
       <div className="aip-ways">
         {aiPage.ways.map((w) => (
-          <article key={w.key} className={`aip-way glass-card is-${w.key}`} data-reveal>
-            <div className="aip-way-visual" aria-hidden="true">
-              {w.key === 'inside' ? <SystemWindow /> : <ToolCard />}
-            </div>
-            <p className="mono aip-way-label">{w.label}</p>
-            <h3 className="aip-way-title">{w.title}</h3>
-            <p className="aip-way-text">{w.text}</p>
-            <a className="aip-way-link" href={w.key === 'inside' ? '#inside' : '#solutions'} onClick={jump}>
-              {aiPage.waysLink} <span aria-hidden="true">↓</span>
-            </a>
-          </article>
+          <WayCard key={w.key} way={w} />
         ))}
       </div>
     </PageSection>
+  )
+}
+
+function WayCard({ way: w }: { way: (typeof aiPage.ways)[number] }) {
+  const tilt = useTilt<HTMLDivElement>(8)
+  return (
+    <article className={`aip-way glass-card is-${w.key}`} data-reveal>
+      {/* A small 3D scene: the window floats over its ghost and shadow, and turns toward the pointer. */}
+      <div ref={tilt} className="aip-way-visual" aria-hidden="true">
+        <div className="aip-way-scene">
+          <span className="aip-way-shadow" />
+          <span className="aip-way-ghost" />
+          {w.key === 'inside' ? <SystemWindow /> : <ToolCard />}
+        </div>
+      </div>
+      <p className="mono aip-way-label">{w.label}</p>
+      <h3 className="aip-way-title">{w.title}</h3>
+      <p className="aip-way-text">{w.text}</p>
+      <a className="aip-way-link" href={w.key === 'inside' ? '#inside' : '#solutions'} onClick={jump}>
+        {aiPage.waysLink} <span aria-hidden="true">↓</span>
+      </a>
+    </article>
   )
 }
 
@@ -276,21 +413,30 @@ const icons: ReactNode[] = [
   </>,
 ]
 
+function InsideCard({ item, icon }: { item: (typeof aiPage.inside)[number]; icon: ReactNode }) {
+  const tilt = useTilt<HTMLElement>(5)
+  return (
+    <article ref={tilt} className="aip-inside-card" data-reveal>
+      <div className="aip-inside-top">
+        <span className="mono aip-sys">{item.system}</span>
+        <span className="aip-icon-tile">
+          <svg className="aip-icon" viewBox="0 0 32 32" aria-hidden="true">
+            {icon}
+          </svg>
+        </span>
+      </div>
+      <h3 className="aip-card-title">{item.title}</h3>
+      <p className="aip-card-text">{item.text}</p>
+    </article>
+  )
+}
+
 function Inside() {
   return (
     <PageSection id="inside" kicker={aiPage.ways[0].label} title={aiPage.insideTitle}>
       <div className="aip-inside">
         {aiPage.inside.map((item, i) => (
-          <article key={item.title} className="aip-inside-card" data-reveal>
-            <div className="aip-inside-top">
-              <span className="mono aip-sys">{item.system}</span>
-              <svg className="aip-icon" viewBox="0 0 32 32" aria-hidden="true">
-                {icons[i]}
-              </svg>
-            </div>
-            <h3 className="aip-card-title">{item.title}</h3>
-            <p className="aip-card-text">{item.text}</p>
-          </article>
+          <InsideCard key={item.title} item={item} icon={icons[i]} />
         ))}
       </div>
     </PageSection>

@@ -1,156 +1,492 @@
 /* ==========================================================================
    AI page (pages/ai/AiPage.tsx). Prefixed `aip-`: the home page AI section owns `ai-`.
-   Every animated element is drawn complete by default; keyframes only run when motion is allowed.
+   The whole page is light (the landing page's cream AI section, with white app windows), down to the contact block,
+   which stays dark like the footer. Every animated element is drawn complete by default; keyframes only run when
+   motion is allowed.
    ========================================================================== */
 
-/* ---------- Hero visual ---------- */
-.aip-hero-svg {
-  display: block;
+/* ---------- Light page: the colour tokens are re-pointed, so shared blocks built on them turn dark-on-light ---------- */
+.pg.aip {
+  --text: var(--cream-ink);
+  --muted: #4d4d58;
+  --line: rgba(20, 20, 26, 0.09);
+  --line-2: rgba(20, 20, 26, 0.17);
+  --field-line: rgba(20, 20, 26, 0.4);
+  --ink: #f4f2ec;
+  --ink-2: #fff;
+  --ink-3: #fff;
+  /* Accents a step darker, so small coloured labels stay readable on white (4.5:1 or more). */
+  --lime: #1f6fe0;
+  --violet: #6a55f0;
+  --coral: #d9532f;
+  --shadow-tint: 30, 30, 80;
+  color-scheme: light;
+  color: var(--cream-ink);
+  background:
+    radial-gradient(55% 40% at 88% 0%, rgba(77, 159, 255, 0.16), transparent 70%),
+    radial-gradient(40% 30% at 0% 18%, rgba(139, 123, 255, 0.12), transparent 70%),
+    radial-gradient(50% 30% at 100% 55%, rgba(47, 208, 255, 0.07), transparent 70%),
+    linear-gradient(180deg, #f8f7f2, var(--cream) 30%, #f4f2ec);
+}
+
+/* The default blue ring is under 3:1 on cream; a deep blue keeps it above. */
+.pg.aip :focus-visible {
+  outline-color: #1d4ed8;
+}
+
+.pg.aip ::selection {
+  background: #1f6fe0;
+  color: #fff;
+}
+
+/* The nav keeps its dark glass pill from the top of the page (transparent, its white links would vanish on cream). */
+body:has(main.aip) .nav {
+  background: rgba(13, 13, 21, 0.78);
+  border-color: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+}
+
+/* Grain is tuned for ink; on cream half as much reads the same. */
+body:has(main.aip) .grain {
+  opacity: 0.035;
+}
+
+/* The two dark blocks on the page: the mid-page call to action and the closing contact block get the ink tokens
+   back, so everything inside them (form, buttons, serif accent) is exactly as on every other page. */
+.pg.aip .cta-strip,
+.pg.aip .loom-contact {
+  --ink: #07070c;
+  --ink-2: #0d0d15;
+  --ink-3: #15151f;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.14);
+  --field-line: rgba(255, 255, 255, 0.38);
+  --text: #ededf3;
+  --muted: #9a9cb0;
+  --lime: #4d9fff;
+  --violet: #8b7bff;
+  --coral: #ff7a59;
+  color-scheme: dark;
+  color: var(--text);
+}
+
+.pg.aip .cta-strip :focus-visible,
+.pg.aip .loom-contact :focus-visible {
+  outline-color: #4d9fff;
+}
+
+/* The call to action: a dark band floating on the cream, like a device on a desk. */
+.pg.aip .cta-strip-card {
+  border-color: rgba(77, 159, 255, 0.3);
+  background:
+    radial-gradient(70% 140% at 100% 50%, rgba(37, 99, 235, 0.32), transparent 70%),
+    radial-gradient(50% 120% at 0% 100%, rgba(139, 123, 255, 0.18), transparent 70%), #0d0d15;
+  box-shadow:
+    0 50px 90px -40px rgba(var(--shadow-tint), 0.55),
+    0 0 0 8px rgba(255, 255, 255, 0.55);
+}
+
+/* The contact block: the page's dark close, with rounded shoulders where it leaves the cream. */
+.pg.aip .loom-contact {
+  margin-top: clamp(32px, 5vw, 72px);
+  border-radius: 40px 40px 0 0;
+  background:
+    radial-gradient(50% 60% at 20% 100%, rgba(139, 123, 255, 0.22), transparent 70%),
+    radial-gradient(40% 50% at 90% 10%, rgba(140, 196, 255, 0.1), transparent 70%), #07070c;
+}
+
+/* ---------- Hero copy ---------- */
+.aip .pg-hero {
+  position: relative;
+}
+
+/* A fine dot grid behind the hero, fading out toward the edges. */
+.aip .pg-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 calc(var(--gutter) * -1);
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(20, 20, 26, 0.13) 1px, transparent 1.3px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(60% 70% at 70% 45%, #000, transparent 75%);
+  mask-image: radial-gradient(60% 70% at 70% 45%, #000, transparent 75%);
+}
+
+.aip .pg-title-line.serif {
+  /* Blue into violet; both ends are above 4.5:1 on cream. */
+  color: #1f6fe0;
+  background: linear-gradient(100deg, #1f6fe0 10%, #5b4ee8 60%, #6a55f0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-right: 0.06em;
+}
+
+.aip .label {
+  color: #4d4d58;
+}
+
+.aip .label::before {
+  background: var(--cream-ink);
+}
+
+.aip .pg-hero .btn-ghost {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(20, 20, 26, 0.14);
+  box-shadow: 0 10px 30px -18px rgba(var(--shadow-tint), 0.4);
+}
+
+.aip .pg-hero .btn-ghost:hover {
+  background: #fff;
+}
+
+/* ---------- Hero visual: a CSS 3D stage ---------- */
+.aip-stage {
+  --rx: 0;
+  --ry: 0;
+  --sp: 0;
+  position: relative;
   width: 100%;
-  max-width: 620px;
+  max-width: 640px;
   margin-inline: auto;
-  height: auto;
+  aspect-ratio: 520 / 380;
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+  container-type: inline-size;
+}
+
+.aip-stage-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  /* A resting three-quarter view; the pointer and scroll add to it. */
+  transform: translateY(calc(var(--sp) * -8%)) rotateX(calc((var(--rx) + 6 + var(--sp) * 22) * 1deg))
+    rotateY(calc((var(--ry) - 9) * 1deg));
+}
+
+.aip-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   overflow: visible;
 }
 
-.aip-scan,
-.aip-knot-glow,
-.aip-knot-ring,
-.aip-out,
-.aip-person-check {
-  transform-box: fill-box;
-  transform-origin: center;
+.aip-floor {
+  transform: translateZ(-80px);
+}
+
+.aip-floor-ring {
+  fill: none;
+  stroke: rgba(31, 111, 224, 0.22);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+}
+
+.aip-floor-ring.is-far {
+  stroke: rgba(106, 85, 240, 0.14);
+}
+
+.aip-threads {
+  transform: translateZ(0);
 }
 
 .aip-thread {
   fill: none;
-  stroke: var(--violet);
-  stroke-width: 1.5;
+  stroke: #6a55f0;
+  stroke-width: 1.6;
+  stroke-linecap: round;
   stroke-dasharray: 6 8;
-  opacity: 0.8;
+  opacity: 0.75;
   animation: aip-dash 1.2s linear infinite;
 }
 
-.aip-thread:nth-of-type(2) {
-  stroke: #2fd0ff;
+.aip-thread.is-1 {
+  stroke: #0e9fc4;
+}
+
+.aip-thread.is-2 {
+  stroke: #1f6fe0;
 }
 
 .aip-thread.is-out {
-  stroke: var(--lime);
-  opacity: 0.6;
+  stroke: #1f6fe0;
+  opacity: 0.55;
 }
 
-.aip-doc-card {
-  fill: var(--ink-3);
-  stroke: var(--line-2);
+/* The core: CSS pearl and rings by default; the WebGL core fades in over it when ready. */
+.aip-core {
+  position: absolute;
+  left: 51.92%;
+  top: 50%;
+  width: 44%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  transform: translateZ(40px);
+  transform-style: preserve-3d;
 }
 
-.aip-doc-head {
-  fill: rgba(237, 237, 243, 0.55);
+.aip-core-css {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: opacity 0.9s var(--ease-out);
 }
 
-.aip-doc-tag {
-  fill: rgba(255, 122, 89, 0.25);
-  stroke: var(--coral);
-  stroke-width: 1;
-}
-
-.aip-doc-line {
-  fill: rgba(255, 255, 255, 0.14);
-  animation: aip-read 6s var(--ease-out) infinite both;
-}
-
-.aip-scan {
+.aip-core.is-live .aip-core-css {
   opacity: 0;
-  animation: aip-scan 6s ease-in-out infinite both;
 }
 
-.aip-knot-glow {
-  animation: aip-pulse 3s ease-in-out infinite;
+.aip-core-canvas {
+  position: absolute;
+  /* A little larger than the box, so the rings' beads are never clipped at the canvas edge. */
+  inset: -6%;
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-out);
 }
 
-.aip-knot-ring {
-  fill: none;
-  stroke: #8cc4ff;
-  stroke-width: 1.2;
-  opacity: 0.75;
+.aip-core.is-live .aip-core-canvas {
+  opacity: 1;
+}
+
+.aip-orb {
+  position: absolute;
+  left: 23.5%;
+  top: 23.5%;
+  width: 53%;
+  height: 53%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, #fbfbff 0 28%, #dfe6ff 70%);
+  box-shadow:
+    inset -1cqw -1.4cqw 3cqw rgba(70, 60, 200, 0.4),
+    inset 0.8cqw 1cqw 2.4cqw rgba(255, 255, 255, 0.95),
+    0 3cqw 6cqw -2cqw rgba(60, 70, 200, 0.4);
+}
+
+.aip-orb-flow {
+  position: absolute;
+  inset: -20%;
+  background: conic-gradient(from 0deg, #4d9fff, #8b7bff, #2fd0ff, #ff9a7a, #4d9fff);
+  filter: blur(10px);
+  opacity: 0.85;
+  -webkit-mask-image: radial-gradient(circle, transparent 16%, #000 60%);
+  mask-image: radial-gradient(circle, transparent 16%, #000 60%);
+  animation: aip-spin 14s linear infinite;
+}
+
+/* The highlight sits on top of the flowing colour. */
+.aip-orb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.95) 0 6%, transparent 22%),
+    radial-gradient(circle at 50% 50%, transparent 58%, rgba(255, 255, 255, 0.35) 70%, transparent 72%);
+}
+
+.aip-ring {
+  --tilt: 12deg;
+  position: absolute;
+  inset: 10.5%;
+  border-radius: 50%;
+  border: 1.5px solid rgba(31, 111, 224, 0.55);
+  transform-style: preserve-3d;
+  transform: rotateZ(var(--tilt)) rotateX(68deg);
+}
+
+.aip-ring.is-1 {
+  --tilt: 132deg;
+  border-color: rgba(106, 85, 240, 0.5);
+}
+
+.aip-ring.is-2 {
+  --tilt: -108deg;
+  border-color: rgba(14, 159, 196, 0.5);
+}
+
+/* The bead's orbit: a turning frame in the ring's plane with the bead at its top. */
+.aip-ring b {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
   animation: aip-spin 9s linear infinite;
 }
 
-.aip-knot-ring.is-1 {
-  stroke: var(--violet);
+.aip-ring.is-1 b {
   animation-duration: 12s;
   animation-direction: reverse;
 }
 
-.aip-knot-ring.is-2 {
-  stroke: #2fd0ff;
+.aip-ring.is-2 b {
   animation-duration: 15s;
 }
 
-.aip-knot-core {
-  fill: #fff;
-  filter: drop-shadow(0 0 10px rgba(77, 159, 255, 0.95));
+.aip-ring b::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2.2cqw;
+  height: 2.2cqw;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, #1f6fe0 60%);
+  box-shadow: 0 0 1.4cqw rgba(31, 111, 224, 0.6);
 }
 
+.aip-ring.is-1 b::before {
+  background: radial-gradient(circle at 35% 30%, #fff, #6a55f0 60%);
+  box-shadow: 0 0 1.4cqw rgba(106, 85, 240, 0.6);
+}
+
+.aip-ring.is-2 b::before {
+  background: radial-gradient(circle at 35% 30%, #fff, #0e9fc4 60%);
+  box-shadow: 0 0 1.4cqw rgba(14, 159, 196, 0.6);
+}
+
+/* The record: a white app card nearest the viewer on the left. */
+.aip-rec {
+  position: absolute;
+  left: 4.62%;
+  top: 18.42%;
+  width: 26.92%;
+  height: 63.16%;
+  overflow: hidden;
+  border-radius: 2.8cqw;
+  background: #fff;
+  border: 1px solid rgba(20, 20, 26, 0.08);
+  box-shadow:
+    0 4cqw 8cqw -3cqw rgba(var(--shadow-tint), 0.3),
+    0 0 0 0.9cqw rgba(255, 255, 255, 0.55);
+  transform: translateZ(70px);
+}
+
+.aip-rec-head {
+  position: absolute;
+  left: 3.4cqw;
+  top: 3.9cqw;
+  width: 11cqw;
+  height: 1.5cqw;
+  border-radius: 1cqw;
+  background: #2a2a36;
+  opacity: 0.8;
+}
+
+.aip-rec-tag {
+  position: absolute;
+  right: 3.2cqw;
+  top: 3.4cqw;
+  width: 3.8cqw;
+  height: 2.4cqw;
+  border-radius: 0.6cqw;
+  border: 1px solid #d9532f;
+  background: rgba(217, 83, 47, 0.14);
+}
+
+.aip-rec-lines {
+  position: absolute;
+  left: 3.4cqw;
+  right: 3.4cqw;
+  top: 10cqw;
+  display: grid;
+  gap: 4.2cqw;
+}
+
+.aip-rec-line {
+  display: block;
+  height: 1.2cqw;
+  border-radius: 1cqw;
+  background: #e6e4ee;
+  animation: aip-read 6s var(--ease-out) infinite both;
+}
+
+.aip-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8.5cqw;
+  height: 8.5cqw;
+  opacity: 0;
+  background: linear-gradient(180deg, rgba(77, 159, 255, 0), rgba(77, 159, 255, 0.22) 80%, rgba(31, 111, 224, 0.75));
+  animation: aip-scan 6s ease-in-out infinite both;
+}
+
+/* Outputs: white pills nearest the viewer on the right. `translate`/`scale` animate; `transform` holds the depth. */
 .aip-out {
-  --tone: var(--lime);
+  --tone: #1f6fe0;
+  position: absolute;
+  left: 67.69%;
+  height: 10%;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.6cqw;
+  padding: 0 2.8cqw 0 2.4cqw;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(20, 20, 26, 0.08);
+  box-shadow: 0 2.4cqw 5cqw -2cqw rgba(var(--shadow-tint), 0.32);
+  color: var(--cream-ink);
+  font-family: var(--f-display);
+  font-size: max(11px, 2.9cqw);
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translateZ(100px);
   animation: aip-out 6s var(--ease-out) infinite both;
 }
 
 .aip-out.is-coral {
-  --tone: var(--coral);
+  --tone: #d9532f;
 }
 
 .aip-out.is-violet {
-  --tone: var(--violet);
+  --tone: #6a55f0;
 }
 
-.aip-out-pill {
-  fill: var(--ink-3);
-  stroke: var(--line-2);
-}
-
-.aip-out.is-wait .aip-out-pill {
-  stroke: rgba(77, 159, 255, 0.55);
-  stroke-dasharray: 4 4;
+.aip-out.is-wait {
+  border: 1px dashed rgba(31, 111, 224, 0.6);
 }
 
 .aip-out-dot {
-  fill: var(--tone);
-  filter: drop-shadow(0 0 6px var(--tone));
-}
-
-.aip-out-text {
-  fill: var(--text);
-  font-family: var(--f-display);
-  font-size: 15px;
-  font-weight: 500;
+  flex: none;
+  width: 1.8cqw;
+  height: 1.8cqw;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 0 0.6cqw color-mix(in srgb, var(--tone) 18%, transparent);
 }
 
 .aip-person {
+  flex: none;
+  width: 4.8cqw;
+  height: auto;
+  margin-left: 0.6cqw;
+  overflow: visible;
   fill: none;
-  stroke: var(--muted);
+  stroke: #4d4d58;
   stroke-width: 1.5;
   stroke-linecap: round;
 }
 
+.aip-person-check {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: aip-approve 6s var(--ease-out) infinite both;
+  animation-delay: 1.4s;
+}
+
 .aip-person-check circle {
-  fill: var(--lime);
-  stroke: var(--ink-3);
-  stroke-width: 1.5;
+  fill: #1f6fe0;
+  stroke: #fff;
 }
 
 .aip-person-check path {
-  stroke: var(--ink);
+  stroke: #fff;
   stroke-width: 1.6;
   stroke-linejoin: round;
-}
-
-/* The person approves a beat after the chip arrives. */
-.aip-person-check {
-  animation: aip-approve 6s var(--ease-out) infinite both;
-  animation-delay: inherit;
 }
 
 @keyframes aip-dash {
@@ -162,52 +498,52 @@
 @keyframes aip-scan {
   0% {
     opacity: 0;
-    transform: translateY(0);
+    translate: 0 0;
   }
   6% {
     opacity: 1;
   }
   38% {
     opacity: 1;
-    transform: translateY(270px);
+    translate: 0 56cqw;
   }
   44%,
   100% {
     opacity: 0;
-    transform: translateY(270px);
+    translate: 0 56cqw;
   }
 }
 
 @keyframes aip-read {
   0%,
   4% {
-    fill: rgba(255, 255, 255, 0.14);
+    background-color: #e6e4ee;
   }
   8%,
   80% {
-    fill: rgba(140, 196, 255, 0.6);
+    background-color: rgba(31, 111, 224, 0.5);
   }
   92%,
   100% {
-    fill: rgba(255, 255, 255, 0.14);
+    background-color: #e6e4ee;
   }
 }
 
 @keyframes aip-pulse {
   0%,
   100% {
-    transform: scale(0.92);
-    opacity: 0.75;
+    scale: 0.92;
+    opacity: 0.8;
   }
   50% {
-    transform: scale(1.06);
+    scale: 1.06;
     opacity: 1;
   }
 }
 
 @keyframes aip-spin {
   to {
-    transform: rotate(360deg);
+    rotate: 360deg;
   }
 }
 
@@ -215,17 +551,20 @@
   0%,
   38% {
     opacity: 0;
-    transform: translateX(-14px) scale(0.92);
+    translate: -2.6cqw 0;
+    scale: 0.92;
   }
   46%,
   86% {
     opacity: 1;
-    transform: none;
+    translate: 0 0;
+    scale: 1;
   }
   94%,
   100% {
     opacity: 0;
-    transform: none;
+    translate: 0 0;
+    scale: 1;
   }
 }
 
@@ -246,6 +585,30 @@
   }
 }
 
+/* ---------- Cards on the cream: the white app windows of the landing page's AI section ---------- */
+.aip .pg-section .glass-card,
+html:is([data-gfx='software'], [data-gfx='none']) .aip .pg-section .glass-card {
+  background-color: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: 1px solid rgba(20, 20, 26, 0.07);
+  box-shadow:
+    0 40px 80px -44px rgba(var(--shadow-tint), 0.35),
+    0 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+/* The site's running outline light (index.css) travels in blue and violet here: its lime end is too faint on white. */
+.aip .pg-section :is(.glass-card, .aip-inside-card, .aip-way-visual, .aip-tool)::after {
+  background: conic-gradient(
+    from var(--wz-run),
+    transparent 0deg,
+    transparent 230deg,
+    rgba(31, 111, 224, 0.75) 290deg,
+    rgba(106, 85, 240, 0.85) 345deg,
+    transparent 360deg
+  );
+}
+
 /* ---------- Two ways ---------- */
 .aip-ways {
   display: grid;
@@ -257,34 +620,83 @@
   display: grid;
   align-content: start;
   gap: 12px;
-  padding: clamp(24px, 3vw, 40px);
+  padding: clamp(20px, 2.6vw, 34px);
 }
 
-.aip-way.is-inside {
-  background: radial-gradient(70% 60% at 0% 0%, rgba(77, 159, 255, 0.16), transparent 70%), rgba(14, 14, 24, 0.55);
+.aip .pg-section .aip-way.is-inside {
+  background: radial-gradient(70% 50% at 0% 0%, rgba(77, 159, 255, 0.1), transparent 70%), #fff;
 }
 
-.aip-way.is-solution {
-  background: radial-gradient(70% 60% at 100% 0%, rgba(139, 123, 255, 0.18), transparent 70%), rgba(14, 14, 24, 0.55);
+.aip .pg-section .aip-way.is-solution {
+  background: radial-gradient(70% 50% at 100% 0%, rgba(139, 123, 255, 0.12), transparent 70%), #fff;
 }
 
+/* The little 3D scene at the top of each card. */
 .aip-way-visual {
+  --tx: 0deg;
+  --ty: 0deg;
+  position: relative;
   display: grid;
   place-items: center;
-  height: 190px;
-  margin-bottom: 12px;
+  height: 230px;
+  margin-bottom: 14px;
   border-radius: 20px;
-  border: 1px solid var(--line);
-  background: rgba(7, 7, 12, 0.5);
+  border: 1px solid rgba(20, 20, 26, 0.06);
+  background:
+    radial-gradient(60% 70% at 50% 100%, rgba(77, 159, 255, 0.12), transparent 70%),
+    linear-gradient(180deg, #f9f8f4, #efece3);
   overflow: hidden;
+  perspective: 900px;
+}
+
+.is-solution .aip-way-visual {
+  background:
+    radial-gradient(60% 70% at 50% 100%, rgba(139, 123, 255, 0.14), transparent 70%),
+    linear-gradient(180deg, #f9f8f4, #efece3);
+}
+
+.aip-way-scene {
+  position: relative;
+  width: min(300px, 80%);
+  transform-style: preserve-3d;
+  transform: rotateX(calc(16deg + var(--tx))) rotateY(calc(-18deg + var(--ty))) rotateZ(2deg);
+  transition: transform 0.7s var(--ease-out);
+}
+
+.is-solution .aip-way-scene {
+  width: min(260px, 74%);
+  transform: rotateX(calc(16deg + var(--tx))) rotateY(calc(18deg + var(--ty))) rotateZ(-2deg);
+}
+
+.aip-way-shadow {
+  position: absolute;
+  inset: 30% 6% -22% 6%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(var(--shadow-tint), 0.3), transparent);
+  filter: blur(8px);
+  transform: translateZ(-70px);
+}
+
+.aip-way-ghost {
+  position: absolute;
+  inset: 14% -7% -12% 9%;
+  border-radius: 14px;
+  border: 1px solid rgba(20, 20, 26, 0.06);
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 20px 40px -24px rgba(var(--shadow-tint), 0.3);
+  transform: translateZ(-34px);
+}
+
+.is-solution .aip-way-ghost {
+  inset: 14% 9% -12% -7%;
 }
 
 .aip-way-label {
-  color: var(--lime);
+  color: #1f6fe0;
 }
 
 .is-solution .aip-way-label {
-  color: var(--violet);
+  color: #6a55f0;
 }
 
 .aip-way-title {
@@ -314,17 +726,20 @@
 
 .aip-way-link:hover,
 .aip-way-link:focus-visible {
-  color: #8cc4ff;
+  color: #1f6fe0;
   border-color: currentColor;
 }
 
-/* System window with AI working in one row */
+/* System window with AI working in one row; the AI row lifts out of the window toward the viewer. */
 .aip-win {
-  width: min(300px, 82%);
+  position: relative;
+  width: 100%;
   border-radius: 12px;
-  border: 1px solid var(--line-2);
-  background: var(--ink-3);
-  overflow: hidden;
+  border: 1px solid rgba(20, 20, 26, 0.08);
+  background: #fff;
+  box-shadow: 0 30px 50px -28px rgba(var(--shadow-tint), 0.4);
+  transform-style: preserve-3d;
+  transform: translateZ(0);
 }
 
 .aip-win-bar {
@@ -332,14 +747,14 @@
   align-items: center;
   gap: 5px;
   padding: 8px 10px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(20, 20, 26, 0.07);
 }
 
 .aip-win-bar i {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--line-2);
+  background: #e3e0d6;
 }
 
 .aip-win-tab {
@@ -347,12 +762,13 @@
   width: 64px;
   height: 7px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #ecebf2;
 }
 
 .aip-win-body {
   display: grid;
   grid-template-columns: 54px 1fr;
+  transform-style: preserve-3d;
 }
 
 .aip-win-side {
@@ -360,32 +776,35 @@
   align-content: start;
   gap: 8px;
   padding: 12px 10px;
-  border-right: 1px solid var(--line);
+  border-right: 1px solid rgba(20, 20, 26, 0.07);
 }
 
 .aip-win-side span,
 .aip-win-rows span {
   height: 6px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.08);
+  background: #ecebf2;
 }
 
 .aip-win-rows {
   display: grid;
   gap: 10px;
   padding: 12px;
+  transform-style: preserve-3d;
 }
 
 .aip-win-rows span {
   height: 18px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
+  background: #f3f2f7;
 }
 
 .aip-win-rows span.is-ai {
   position: relative;
-  border: 1px solid rgba(77, 159, 255, 0.5);
-  background: linear-gradient(90deg, rgba(77, 159, 255, 0.22), rgba(77, 159, 255, 0.04));
+  border: 1px solid rgba(31, 111, 224, 0.45);
+  background: linear-gradient(90deg, #e8f0ff, #fff);
+  box-shadow: 0 14px 22px -12px rgba(31, 111, 224, 0.55);
+  transform: translateZ(26px) scale(1.04);
   animation: aip-row 3.2s ease-in-out infinite;
 }
 
@@ -396,31 +815,33 @@
   translate: 0 -50%;
   padding: 1px 7px;
   border-radius: 999px;
-  background: var(--lime);
-  color: var(--ink);
+  background: #1f6fe0;
+  color: #fff;
   font-family: var(--f-mono);
   font-size: 0.6rem;
   font-weight: 700;
   line-height: 1.5;
-  box-shadow: 0 0 14px rgba(77, 159, 255, 0.7);
+  box-shadow: 0 4px 12px -2px rgba(31, 111, 224, 0.6);
 }
 
 @keyframes aip-row {
   50% {
-    box-shadow: 0 0 18px rgba(77, 159, 255, 0.35);
+    box-shadow: 0 18px 28px -12px rgba(31, 111, 224, 0.7);
   }
 }
 
-/* Standalone AI tool */
+/* Standalone AI tool: the answer card lifts toward the viewer. */
 .aip-tool {
+  position: relative;
   display: grid;
   gap: 10px;
-  width: min(250px, 78%);
+  width: 100%;
   padding: 14px;
   border-radius: 16px;
-  border: 1px solid rgba(139, 123, 255, 0.4);
-  background: var(--ink-3);
-  box-shadow: 0 0 40px rgba(139, 123, 255, 0.15);
+  border: 1px solid rgba(106, 85, 240, 0.25);
+  background: #fff;
+  box-shadow: 0 30px 50px -28px rgba(106, 85, 240, 0.45);
+  transform-style: preserve-3d;
 }
 
 .aip-tool-head {
@@ -433,8 +854,8 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fff, #8cc4ff 30%, var(--violet) 75%);
-  box-shadow: 0 0 14px rgba(139, 123, 255, 0.8);
+  background: radial-gradient(circle at 35% 35%, #fff, #8cc4ff 30%, #6a55f0 75%);
+  box-shadow: 0 4px 12px rgba(106, 85, 240, 0.5);
   animation: aip-pulse 3s ease-in-out infinite;
 }
 
@@ -442,7 +863,7 @@
   width: 70px;
   height: 7px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.14);
+  background: #ecebf2;
 }
 
 .aip-bubble {
@@ -455,19 +876,22 @@
   justify-self: end;
   width: 62%;
   height: 22px;
-  background: rgba(77, 159, 255, 0.22);
+  background: #dfe9ff;
 }
 
 .aip-bubble.is-a {
-  width: 84%;
+  width: 88%;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(20, 20, 26, 0.06);
+  background: #faf9fd;
+  box-shadow: 0 16px 24px -14px rgba(106, 85, 240, 0.45);
+  transform: translateZ(24px);
 }
 
 .aip-bubble.is-a i {
   height: 6px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.14);
+  background: #e4e2ee;
 }
 
 .aip-bubble.is-a i + i {
@@ -478,7 +902,8 @@
   width: 52px;
   height: 12px;
   border-radius: 999px;
-  border: 1px solid rgba(139, 123, 255, 0.6);
+  border: 1px solid rgba(106, 85, 240, 0.6);
+  background: rgba(106, 85, 240, 0.08);
 }
 
 /* ---------- Inside your systems ---------- */
@@ -486,24 +911,35 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(14px, 1.6vw, 22px);
+  perspective: 1400px;
 }
 
 .aip-inside-card {
+  --tx: 0deg;
+  --ty: 0deg;
   display: grid;
   align-content: start;
   gap: 12px;
   padding: clamp(22px, 2.4vw, 32px);
   border-radius: 22px;
-  border: 1px solid var(--line);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 60%), var(--ink-2);
+  border: 1px solid rgba(20, 20, 26, 0.07);
+  background: linear-gradient(170deg, #fff 55%, #fbfaf7);
+  box-shadow:
+    0 30px 60px -40px rgba(var(--shadow-tint), 0.35),
+    0 0 0 5px rgba(255, 255, 255, 0.45);
+  transform: rotateX(var(--tx)) rotateY(var(--ty));
   transition:
     border-color 0.4s,
+    box-shadow 0.5s var(--ease-out),
     transform 0.6s var(--ease-out);
 }
 
 .aip-inside-card:hover {
-  border-color: rgba(77, 159, 255, 0.45);
-  transform: translateY(-4px);
+  border-color: rgba(31, 111, 224, 0.3);
+  box-shadow:
+    0 40px 70px -36px rgba(var(--shadow-tint), 0.42),
+    0 0 0 5px rgba(255, 255, 255, 0.6);
+  transform: rotateX(var(--tx)) rotateY(var(--ty)) translateY(-4px);
 }
 
 .aip-inside-top {
@@ -517,24 +953,36 @@
 .aip-sys {
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid var(--line-2);
-  color: var(--muted);
+  border: 1px solid rgba(20, 20, 26, 0.12);
+  background: #f7f6f2;
+  color: #4d4d58;
   font-size: 0.68rem;
+}
+
+/* The icon sits on a small raised tile, like an app icon. */
+.aip-icon-tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #fff, #eef2ff);
+  border: 1px solid rgba(31, 111, 224, 0.14);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 10px 20px -12px rgba(31, 111, 224, 0.5);
 }
 
 .aip-icon {
   flex: none;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   fill: none;
-  stroke: #8cc4ff;
+  stroke: #1f6fe0;
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.aip-inside-card:hover .aip-icon {
-  filter: drop-shadow(0 0 8px rgba(77, 159, 255, 0.7));
 }
 
 .aip-card-title {
@@ -572,8 +1020,9 @@
   margin-top: 14px;
   padding: 14px;
   border-radius: 16px;
-  border: 1px solid var(--line);
-  background: rgba(7, 7, 12, 0.45);
+  border: 1px solid rgba(20, 20, 26, 0.06);
+  background: linear-gradient(180deg, #f8f7f3, #f1efe8);
+  box-shadow: inset 0 2px 6px rgba(20, 20, 26, 0.04);
   list-style: none;
 }
 
@@ -591,16 +1040,19 @@
 .aip-flow-step {
   padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid var(--line-2);
-  background: var(--ink-3);
+  border: 1px solid rgba(20, 20, 26, 0.1);
+  background: #fff;
+  box-shadow: 0 6px 14px -8px rgba(var(--shadow-tint), 0.35);
   font-size: 0.85rem;
   line-height: 1.25;
   text-align: center;
 }
 
 .is-end .aip-flow-step {
-  border-color: rgba(77, 159, 255, 0.6);
-  box-shadow: 0 0 18px rgba(77, 159, 255, 0.25);
+  border-color: rgba(31, 111, 224, 0.5);
+  color: #1d4ed8;
+  font-weight: 600;
+  box-shadow: 0 8px 20px -8px rgba(31, 111, 224, 0.45);
 }
 
 /* Dashed thread between steps, running toward the output (the home page weave style). */
@@ -609,13 +1061,13 @@
   min-width: 18px;
   height: 2px;
   margin: 0 6px;
-  background: repeating-linear-gradient(90deg, var(--violet) 0 6px, transparent 6px 14px);
+  background: repeating-linear-gradient(90deg, #6a55f0 0 6px, transparent 6px 14px);
   background-size: 14px 2px;
   animation: aip-flow-x 0.8s linear infinite;
 }
 
 .is-end .aip-flow-thread {
-  background-image: repeating-linear-gradient(90deg, var(--lime) 0 6px, transparent 6px 14px);
+  background-image: repeating-linear-gradient(90deg, #1f6fe0 0 6px, transparent 6px 14px);
 }
 
 @keyframes aip-flow-x {
@@ -648,17 +1100,24 @@
     min-width: 0;
     height: 18px;
     margin: 4px 0 4px 20px;
-    background: repeating-linear-gradient(180deg, var(--violet) 0 6px, transparent 6px 14px);
+    background: repeating-linear-gradient(180deg, #6a55f0 0 6px, transparent 6px 14px);
     background-size: 2px 14px;
     animation-name: aip-flow-y;
   }
 
   .is-end .aip-flow-thread {
-    background-image: repeating-linear-gradient(180deg, var(--lime) 0 6px, transparent 6px 14px);
+    background-image: repeating-linear-gradient(180deg, #1f6fe0 0 6px, transparent 6px 14px);
   }
 }
 
-/* ---------- How we build it ---------- */
+/* ---------- How we build it: a white slab on the cream ---------- */
+.pg.aip .pg-light {
+  background: linear-gradient(180deg, #fff, #fdfcf9);
+  box-shadow:
+    0 60px 120px -70px rgba(var(--shadow-tint), 0.35),
+    0 0 0 1px rgba(20, 20, 26, 0.05);
+}
+
 .aip-how {
   --p: 1;
   --gap: clamp(16px, 2vw, 28px);
@@ -667,56 +1126,67 @@
 
 .aip-how-track {
   position: absolute;
-  left: 7px;
-  right: calc((100% - 4 * var(--gap)) / 5 - 9px);
-  top: 7px;
+  left: 9px;
+  right: calc((100% - 4 * var(--gap)) / 5 - 11px);
+  top: 9px;
   height: 2px;
-  background: var(--line-2);
+  background: rgba(20, 20, 26, 0.1);
 }
 
 .aip-how-fill {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, var(--lime), var(--violet));
+  background: linear-gradient(90deg, #1f6fe0, #6a55f0);
   transform: scaleX(var(--p));
   transform-origin: left center;
-  box-shadow: 0 0 12px rgba(77, 159, 255, 0.6);
+  box-shadow: 0 0 10px rgba(31, 111, 224, 0.4);
 }
 
+/* Each step stands up out of the page as the thread reaches it. */
 .aip-how-steps {
   position: relative;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: var(--gap);
   list-style: none;
+  perspective: 900px;
 }
 
 .aip-how-step {
   display: grid;
   align-content: start;
   gap: 10px;
+  transform-origin: 50% 0;
+  transition:
+    transform 0.9s var(--ease-out),
+    opacity 0.6s var(--ease-out);
+}
+
+.aip-how-step:has(.aip-how-knot:not(.is-on)) {
+  opacity: 0.35;
+  transform: rotateX(42deg) translateY(10px);
 }
 
 .aip-how-knot {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   margin-bottom: 14px;
   border-radius: 50%;
-  border: 2px solid var(--line-2);
-  background: var(--ink);
+  border: 1px solid rgba(20, 20, 26, 0.15);
+  background: radial-gradient(circle at 35% 30%, #fff, #e9e7ef 70%);
   transition:
-    background-color 0.4s,
+    background 0.4s,
     border-color 0.4s,
     box-shadow 0.4s,
     transform 0.5s var(--ease-out);
 }
 
 .aip-how-knot.is-on {
-  border-color: #8cc4ff;
-  background: var(--lime);
+  border-color: rgba(31, 111, 224, 0.4);
+  background: radial-gradient(circle at 35% 28%, #fff 0 8%, #8cc4ff 30%, #1f6fe0 70%, #3b2fb8);
   box-shadow:
-    0 0 0 5px rgba(77, 159, 255, 0.15),
-    0 0 16px rgba(77, 159, 255, 0.8);
+    0 0 0 5px rgba(31, 111, 224, 0.12),
+    0 6px 14px -2px rgba(31, 111, 224, 0.55);
   transform: scale(1.1);
 }
 
@@ -727,7 +1197,7 @@
   letter-spacing: -0.01em;
 }
 
-/* Guardrails */
+/* Guardrails: on the white slab, they sit as soft cream tiles. */
 .aip-guards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -735,12 +1205,14 @@
   margin-top: clamp(48px, 6vw, 88px);
 }
 
-.aip-guard {
+.aip .pg-section .aip-guard {
   display: flex;
   align-items: flex-start;
   gap: 16px;
   padding: 22px 24px;
   border-radius: 22px;
+  background: linear-gradient(170deg, #faf9f5, #f3f1ea);
+  box-shadow: 0 24px 50px -36px rgba(var(--shadow-tint), 0.35);
 }
 
 .aip-guard-title {
@@ -764,18 +1236,22 @@
     grid-template-columns: 1fr;
   }
 
+  .aip-stage {
+    max-width: 560px;
+  }
+
   /* Steps stack; the thread runs down the left. */
   .aip-how-track {
-    left: 7px;
+    left: 9px;
     right: auto;
-    top: 8px;
+    top: 10px;
     bottom: 24px;
     width: 2px;
     height: auto;
   }
 
   .aip-how-fill {
-    background: linear-gradient(180deg, var(--lime), var(--violet));
+    background: linear-gradient(180deg, #1f6fe0, #6a55f0);
     transform: scaleY(var(--p));
     transform-origin: center top;
   }
@@ -787,12 +1263,17 @@
 
   .aip-how-step {
     position: relative;
-    padding-left: 40px;
+    padding-left: 42px;
+    transform-origin: 0 50%;
   }
 
-  /* Hides the thread below the last knot (the page is flat ink this far down). */
+  .aip-how-step:has(.aip-how-knot:not(.is-on)) {
+    transform: rotateY(28deg) translateX(10px);
+  }
+
+  /* Hides the thread below the last knot (the slab is white this far down). */
   .aip-how-step:last-child {
-    background: var(--ink);
+    background: #fdfcf9;
   }
 
   .aip-how-knot {
@@ -809,20 +1290,28 @@
   }
 
   .aip-way-visual {
-    height: 160px;
+    height: 180px;
   }
 }
 
-/* Reduced motion: everything rests in its finished state. */
+/* Reduced motion: everything rests in its finished state; the stage holds its resting angle. */
 @media (prefers-reduced-motion: reduce) {
-  .aip-hero-svg *,
+  .aip-stage *,
+  .aip-stage *::before,
   .aip-win-rows span.is-ai,
   .aip-tool-orb,
   .aip-flow-thread {
     animation: none !important;
   }
 
+  .aip-inside-card,
   .aip-inside-card:hover {
+    transform: none;
+  }
+
+  .aip-how-step,
+  .aip-how-step:has(.aip-how-knot:not(.is-on)) {
+    opacity: 1;
     transform: none;
   }
 }
