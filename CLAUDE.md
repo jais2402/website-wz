@@ -42,6 +42,13 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   a one-page summary (`src/pages/print.css` + print rules in `system.css`).
 - `api/enquiry.ts`: Vercel Function that emails enquiries through Resend (`RESEND_API_KEY`, see
   `docs/enquiry-setup.md`). Without it (e.g. `npm run dev`), both forms fall back to mailto. Adding a page = an `.html` file + an entry in `INPUTS` in `vite.config.ts`.
+- Load order (Lighthouse work): each entry (`src/main.tsx`, `src/pages/main.tsx`, `src/contact/main.tsx`) is tiny and
+  imports its app (`boot.tsx` next to it) only once the first content is on screen (`lib/afterFirstPaint.ts`). The
+  build prerenders the inner pages and contact into `#root` (`scripts/vite-prerender.ts` → `scripts/prerender.mjs`,
+  React `renderToString` inside jsdom, no hydration: createRoot replaces it with the same markup), makes their page
+  CSS real stylesheets and lists their app chunks in `<body data-modulepreload>` to fetch after that paint. The home
+  page is not prerendered (its HTML preloader is the first paint). A page component must render in jsdom without
+  WebGL or layout; a page that fails is shipped without a prerender (warning in the build log).
 - `loom.html` → `src/loom/main.tsx`: the original concept-B page, kept **internal only** (not linked from the
   site). Both entries are listed in `build.rolldownOptions.input` in `vite.config.ts`.
 - The loom visuals are original, inspired by a reference image the client shared: never use Marvel/Loki names or

@@ -112,5 +112,6 @@ export function drawsInSoftware() {
 
 /** `gfx.live`, re-rendering when it turns off. */
 export function useGfxLive() {
-  return useSyncExternalStore(gfx.subscribe, () => gfx.live)
+  // The third argument serves the build-time prerender (scripts/prerender.mjs), which has no live GPU to ask.
+  return useSyncExternalStore(gfx.subscribe, () => gfx.live, () => gfx.live)
 }
