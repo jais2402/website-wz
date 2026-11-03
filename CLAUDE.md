@@ -27,7 +27,9 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   loom from the hero beside the headline (`ContactLoom` → `LoomScene view="contact"`).
 - `about-us.html`, `our-services.html` (systems overview), `ai.html`, `technology.html`, `privacy-policy.html`,
   `terms-and-conditions.html`, `cookie-policy.html` (legal copy in `src/content/legal.ts`, drafts for
-  legal review, see `docs/legal/research.md`; GA4 loads only after the cookie banner's Accept, see `docs/analytics.md`), `portfolio.html` (`/portfolio`, all case studies + earlier systems), `404.html` (Vercel serves it for unknown URLs), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
+  legal review, see `docs/legal/research.md`; GA4 loads only after the cookie banner's Accept, see `docs/analytics.md`), `portfolio.html` (`/portfolio`, all case studies + earlier systems), `404.html` (Vercel serves it for unknown URLs; it names the missing address, offers the closest page from
+  `notFoundPage.suggest` via `lib/notFound.ts`, and reports `page_not_found` to GA after consent), `website-development.html`
+  (`/website-development`, `src/pages/website/`, copy `websitePage` in pages.ts), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
   `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). There is no HTML sitemap:
   `/sitemap.xml` (and `llms.txt`) are generated at build by `scripts/vite-seo.ts` from `src/content/seo.ts`; the
   footer's "Sitemap" link points to it and `/sitemap` redirects there (`vercel.json`). Shared shell, hero, section
@@ -40,7 +42,9 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   `spindle` (diagonal, blue, orbit rings) for About, `frayed` (broken, coral) for 404), the live dashboard (systems), the
   animated SVG (AI), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`; each system page's tool groups are in `src/content/systemTools.ts`, research in `docs/tools-research.md`). System pages print as
   a one-page summary (`src/pages/print.css` + print rules in `system.css`).
-- `api/enquiry.ts`: Vercel Function that emails enquiries through Resend (`RESEND_API_KEY`, see
+- `api/enquiry.ts`: Vercel Function that emails enquiries through Resend and adds each one as a row in a Google Sheet
+  (`api/_sheets.ts`, `GOOGLE_SHEETS_*` / `GOOGLE_SHEET_*`; success when either took it). `npm run dev` serves it from
+  `.env.local` (`scripts/vite-enquiry-dev.ts`). Resend: `RESEND_API_KEY`, see
   `docs/enquiry-setup.md`). Without it (e.g. `npm run dev`), both forms fall back to mailto. Adding a page = an `.html` file + an entry in `INPUTS` in `vite.config.ts`.
 - Load order (Lighthouse work): each entry (`src/main.tsx`, `src/pages/main.tsx`, `src/contact/main.tsx`) is tiny and
   imports its app (`boot.tsx` next to it) only once the first content is on screen (`lib/afterFirstPaint.ts`). The
@@ -143,6 +147,14 @@ src/
 - Every effect must respect `prefers-reduced-motion` (Lenis is disabled, the preloader is a still loader, CSS animations stop).
 - Desktop-only effects (horizontal service pin, cursor ring, pointer repulsion) are gated by `gsap.matchMedia`
   or `(pointer: fine)`.
+
+## Positioning and social cards
+
+- Three offerings, everywhere: websites, custom software, software products (the six Systems pages are the product /
+  SaaS / MVP offering). The "What we build" block (`components/Offer.tsx`, copy `offer` in site.ts) sits on the home
+  page after the stats and on /our-services; `seo.ts` `site.offerings` mirrors it in JSON-LD and llms.txt.
+- Social cards (`public/og/<id>.png`, `npm run og`) show each page's hero, read from `src/content/heroes.ts`; seo.ts
+  `card` is `heroCard(id)`, which is also the image alt text. Re-run `npm run og` after changing a hero.
 
 ## Design system
 
