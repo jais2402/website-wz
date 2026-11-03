@@ -68,3 +68,22 @@
     transition: none;
   }
 }
+
+/* "/pricng is not a page on this site.": its own row above the buttons. */
+.nf-missing {
+  flex-basis: 100%;
+  margin-bottom: 4px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.nf-missing code {
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--line-2);
+  color: var(--text);
+  font-size: 0.9em;
+  /* An address shows exactly as typed (.mono sets capitals). */
+  text-transform: none;
+  letter-spacing: 0;
+}
