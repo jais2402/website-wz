@@ -21,7 +21,6 @@ type Pulse = { start: number; strong: boolean }
 const SEGMENTS = 64
 const FINE_SEGMENTS = 40
 const PULSE_S = 1.6
-const LOOPS = 16
 // The Before/After tangle's colours (loom.css, .ba-tangle).
 const TANGLE = ['255,120,150', '139,123,255', '47,208,255']
 // Solid threads: near-opaque, as the client asked.
@@ -366,35 +365,24 @@ export function ChaosHero({
       ctx.globalAlpha = 0.6 + port * 0.4
       ctx.drawImage(glow, to.x - ps / 2, to.y - ps / 2, ps, ps)
 
-      // The knot: a solid white ball the threads converge into, in a soft glow, with faint thread loops turning on
-      // its surface. It swells and flares as it takes a card in.
+      // The knot: a solid white ball the threads converge into, in a soft glow. It swells and flares as a problem is
+      // solved.
       flash = Math.max(0, flash - 0.035)
       const halo = knot.r * (9 + flash * 3)
       ctx.globalAlpha = 0.6 + flash * 0.35 + 0.06 * Math.sin(time * 1.6)
       ctx.drawImage(glow, knot.x - halo / 2, knot.y - halo / 2, halo, halo)
       ctx.globalAlpha = 1
       ctx.globalCompositeOperation = 'source-over'
+      // Solid white, with only a faint cool rim so it reads as a ball against its glow.
       const R = knot.r * (1 + flash * 0.12)
-      const ball = ctx.createRadialGradient(knot.x - R * 0.25, knot.y - R * 0.3, R * 0.1, knot.x, knot.y, R)
+      const ball = ctx.createRadialGradient(knot.x, knot.y, 0, knot.x, knot.y, R)
       ball.addColorStop(0, '#ffffff')
-      ball.addColorStop(0.6, '#f4f8ff')
-      ball.addColorStop(1, '#d6e6ff')
+      ball.addColorStop(0.82, '#ffffff')
+      ball.addColorStop(1, '#e4eeff')
       ctx.fillStyle = ball
       ctx.beginPath()
       ctx.arc(knot.x, knot.y, R, 0, Math.PI * 2)
       ctx.fill()
-      ctx.save()
-      ctx.clip()
-      ctx.lineWidth = 0.8
-      for (let j = 0; j < LOOPS; j++) {
-        const dir = j % 2 ? 1 : -1
-        const rot = hash(j) * Math.PI + time * (0.2 + hash(j + 9) * 0.35) * dir
-        ctx.strokeStyle = `rgba(120,160,230,${0.1 + hash(j + 11) * 0.12})`
-        ctx.beginPath()
-        ctx.ellipse(knot.x, knot.y, R * (0.7 + 0.3 * hash(j + 3)), R * (0.25 + 0.7 * hash(j + 5)), rot, 0, Math.PI * 2)
-        ctx.stroke()
-      }
-      ctx.restore()
       // A lens streak through the knot, like light caught by a film camera: wide and thin, breathing with the glow.
       ctx.globalCompositeOperation = 'lighter'
       const streak = 0.5 + 0.15 * Math.sin(time * 1.2) + flash * 0.4
