@@ -911,7 +911,8 @@ body:has(main.aip) .grain {
   border-radius: 12px;
   background: #f7f6fa;
   border: 1px solid transparent;
-  opacity: 0.5;
+  /* Waiting rows are dimmed, but their text keeps 4.5:1 contrast. */
+  opacity: 0.72;
   transition:
     opacity 0.3s,
     background-color 0.3s,
