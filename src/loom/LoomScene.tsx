@@ -395,8 +395,12 @@ function ContactRig({ reducedMotion, variant }: { reducedMotion: boolean; varian
 function CameraRig() {
   const look = useRef(new THREE.Vector3())
   const mouth = useRef(new THREE.Vector3())
+  const placed = useRef(false)
   useFrame(({ camera, pointer, size }, delta) => {
-    const dt = Math.min(delta, 0.05)
+    // The first frame places the camera where the scroll already is: remounted when the visitor scrolls back up
+    // into the hero, the scene must not fly in again from its opening framing.
+    const dt = placed.current ? Math.min(delta, 0.05) : 1e3
+    placed.current = true
     const portrait = size.height > size.width
     const p = loomStore.progress
     const baseZ = portrait ? 24 : 14

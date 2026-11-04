@@ -1,5 +1,4 @@
 import { work, pastWork, workSection } from '@/content/site'
-import { CaseArt } from './CaseArt'
 import { SplitReveal } from './Reveal'
 
 type Case = {
@@ -17,10 +16,10 @@ const all: Case[] = [...work, ...pastWork]
 const featured = workSection.featured.map((id) => all.find((c) => c.id === id)).filter((c): c is Case => Boolean(c))
 
 /**
- * Our Work on the home page: five cases in one bento that fits a single screen on desktop. The lead case fills the
- * left half (copy, module window, results); the other four sit in a 2 x 2 beside it with the sector, headline and
- * one result (or the modules when a case has no published result). The rest are on /portfolio, linked from the head.
- * Tablets get two columns and phones one, at natural height.
+ * Our Work on the home page: five cases in one bento that fits a single screen on desktop. Top row: the lead case
+ * as a wide tile (sector, headline and summary on the left, its two results stacked large on the right) and one
+ * case beside it. Bottom row: three cases side by side. Every tile ends on a result, or on its modules when a case
+ * has no published result. The rest are on /portfolio, linked from the head. Tablets get two columns, phones one.
  */
 export function Work() {
   return (
@@ -40,12 +39,13 @@ export function Work() {
           {featured.map((c, i) =>
             i === 0 ? (
               <article key={c.id} className={`case-card wk-tile wk-lead tone-${c.tone}`} data-reveal>
-                <Tag c={c} />
-                <h3>{c.title}</h3>
-                <p className="case-card-body">{c.body}</p>
-                <CaseArt modules={c.tags} />
+                <div className="wk-lead-copy">
+                  <Tag c={c} />
+                  <h3>{c.title}</h3>
+                  <p className="case-card-body">{c.body}</p>
+                </div>
                 {c.metrics?.length ? (
-                  <dl className="case-card-metrics">
+                  <dl className="case-card-metrics wk-lead-metrics">
                     {c.metrics.map((m) => (
                       <div key={m.label}>
                         <dt>{m.value}</dt>

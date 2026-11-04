@@ -30,8 +30,8 @@ import { studio } from './studio'
 
 const LoomScene = lazy(() => import('./LoomScene').then((m) => ({ default: m.LoomScene })))
 const progress = () => loomStore.progress
-/** The camera glides into its resting framing (the poster's) over ~2 s after the scene mounts: fade in after. */
-const CAMERA_SETTLE_MS = 2000
+/** The camera's pointer parallax eases in over a moment after the scene mounts: fade in after it settles. */
+const CAMERA_SETTLE_MS = 600
 /**
  * Longest the live loom may take, from when it starts loading, to be drawn and pass its frame test (~4 s on a
  * normal machine). A slower one is treated as too slow and gets the 2D hero, so the page still opens once, on the
@@ -179,7 +179,14 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
       <div className="loom-sticky">
         {live ? (
           // Shown while the live loom loads under it (and whenever it is re-drawn after the hero comes back).
-          <ScenePoster poster={posters.hero} priority hidden={ready} flow={active && phase < 0} />
+          <ScenePoster
+            poster={posters.hero}
+            priority
+            hidden={ready}
+            flow={active && phase < 0}
+            // Coming back from below, the still waits under the loom zoomed to the scroll's framing, not the opening's.
+            drift={{ progress, active: active && !ready }}
+          />
         ) : (
           <ChaosHero active={active} reducedMotion={reducedMotion} progress={progress} onReady={chaosDrawn} />
         )}

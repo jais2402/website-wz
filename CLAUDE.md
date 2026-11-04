@@ -119,7 +119,7 @@ src/
   hooks/useCountUp.ts  ← count-up numbers (instant under reduced motion)
   components/Areas.tsx ← "The systems we build": six cards (no pin), each a code-drawn scene
                          (`SysArt.tsx`), one sample figure and a link to its system page; data in `areas` in site.ts.
-                         Our Work (`Work.tsx`) is a one-screen bento of five cases (`workSection.featured`)
+                         Our Work (`Work.tsx`) is a one-screen bento of five cases (`workSection.featured`): a wide lead tile with its results, then 1 + 3 tiles; no CaseArt there (it stays on /portfolio)
   components/Charts.tsx ← mini dashboard charts (line/area/bars/ring/gauge/heatmap/funnel/stack/list/dots)
   loom/                ← The Loom page: LoomPage (sections), LoomScene (threads, particles, loom machine, bloom),
                          shaders.ts (shared strandPos() for threads + particles), store.ts, loom.css
