@@ -1,7 +1,6 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import { coverPoint, flyScale, type Pt, zoomInset } from '@/lib/gfx'
 import { type PosterVideo, SceneVideo } from './SceneVideo'
-import { ThreadFlow } from './ThreadFlow'
 
 export type PosterImage = {
   avif: string
@@ -9,7 +8,7 @@ export type PosterImage = {
   width: number
   height: number
   placeholder: string
-  /** Where the loom mouth is in the still (0..1); the thread flow converges on it. */
+  /** Where the loom mouth is in the still (0..1); the scroll drift zooms in on it. */
   mouth?: Pt
   /** A looping video of the live scene (scripts/capture-hero-video.mjs). */
   video?: PosterVideo
@@ -30,16 +29,14 @@ const VIEW_BOX =
  * get the phone still, which matches the scenes' own portrait framing (they switch on height > width).
  *
  * `drift`: the live camera's scroll fly-in (progress 0..1, read every frame from a store, never through React state),
- * as a zoom on the loom mouth, so the still (or its video) travels into the loom the way the live scene does. `flow`: light running along the threads
- * into the loom mouth (ThreadFlow), drawn while the still is showing. `video`: play the scene's looping video over
- * the still instead (SceneVideo); the flow stops while it plays. All off under reduced motion.
+ * as a zoom on the loom mouth, so the still (or its video) travels into the loom the way the live scene does.
+ * `video`: play the scene's looping video over the still instead (SceneVideo). Both off under reduced motion.
  */
 export function ScenePoster({
   poster,
   priority = false,
   hidden = false,
   drift,
-  flow = false,
   video = false,
   onLoad,
   onVideo,
@@ -48,17 +45,15 @@ export function ScenePoster({
   priority?: boolean
   hidden?: boolean
   drift?: { progress: () => number; active: boolean }
-  flow?: boolean
   video?: boolean
   onLoad?: () => void
   /** The video started (true) or stopped (false) playing over the still. */
   onVideo?: (playing: boolean) => void
 }) {
-  const [videoOn, setVideoOn] = useState(false)
   const img = useRef<HTMLImageElement>(null)
   const layer = useRef<HTMLDivElement>(null)
   const root = useRef<HTMLDivElement>(null)
-  // Which still the <picture> shows (same media query as its <source>s), for the flow's mouth position.
+  // Which still the <picture> shows (same media query as its <source>s), for the drift's mouth position.
   const [portrait, setPortrait] = useState(() => window.matchMedia('(orientation: portrait)').matches)
   useEffect(() => {
     const mq = window.matchMedia('(orientation: portrait)')
@@ -162,16 +157,12 @@ export function ScenePoster({
             onError={() => onLoad?.()}
           />
         </picture>
-        {still.mouth && <ThreadFlow mouth={still.mouth} image={still} active={flow && !hidden && !videoOn} />}
       </div>
       {still.video && (
         <SceneVideo
           video={still.video}
           play={video && !hidden}
-          onPlaying={(on) => {
-            setVideoOn(on)
-            onVideo?.(on)
-          }}
+          onPlaying={(on) => onVideo?.(on)}
         />
       )}
     </div>

@@ -67,7 +67,7 @@ async function capture(browser, scene, opts) {
   const png = await page.screenshot()
   const width = await page.evaluate((sel) => document.querySelector(sel).width, scene.canvas)
   // Where the loom mouth is in the still (0..1 of its width and height), published by the live scene each frame:
-  // the poster's thread flow (src/gfx/ThreadFlow.tsx) converges on it.
+  // the poster's scroll drift (src/gfx/ScenePoster.tsx) zooms in on it.
   const mouth = await page.evaluate(async (store) => {
     const { loomStore } = await import(store)
     return { x: +loomStore.mouth.x.toFixed(4), y: +loomStore.mouth.y.toFixed(4) }

@@ -183,7 +183,6 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
             poster={posters.hero}
             priority
             hidden={ready}
-            flow={active && phase < 0}
             // Coming back from below, the still waits under the loom zoomed to the scroll's framing, not the opening's.
             drift={{ progress, active: active && !ready }}
           />

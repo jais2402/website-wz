@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { allowsLive, classifyTier, coverPoint, flowPoint, flyScale, zoomInset, medianMs, parseMode, sustainedSlow } from './gfx'
+import { allowsLive, classifyTier, coverPoint, flyScale, zoomInset, medianMs, parseMode, sustainedSlow } from './gfx'
 
 const gpu = (renderer: string, caveat = true) => ({ context: true, caveat, renderer })
 
@@ -71,29 +71,6 @@ describe('sustainedSlow', () => {
     expect(sustainedSlow([60, 16, 70])).toBe(false)
     expect(sustainedSlow([16, 16, 45, 50])).toBe(true)
     expect(sustainedSlow([40, 40])).toBe(false)
-  })
-})
-
-describe('flowPoint', () => {
-  const start = { x: 0, y: 100 }
-  const mouth = { x: 1000, y: 300 }
-  it('runs from the start to the mouth', () => {
-    expect(flowPoint(start, mouth, 0)).toEqual(start)
-    expect(flowPoint(start, mouth, 1)).toEqual(mouth)
-  })
-  it('moves forward all the way and funnels late', () => {
-    let x = -1
-    for (let t = 0; t <= 1; t += 0.05) {
-      const p = flowPoint(start, mouth, t)
-      expect(p.x).toBeGreaterThan(x)
-      x = p.x
-    }
-    // Halfway along in time, still much nearer the start's height than the mouth's.
-    expect(flowPoint(start, mouth, 0.5).y).toBeLessThan(200)
-  })
-  it('clamps t', () => {
-    expect(flowPoint(start, mouth, -1)).toEqual(start)
-    expect(flowPoint(start, mouth, 2)).toEqual(mouth)
   })
 })
 

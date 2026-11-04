@@ -64,22 +64,6 @@ export function medianMs(samples: readonly number[]): number {
 export type Pt = { x: number; y: number }
 
 /**
- * A point on a rider's path into the loom mouth (poster thread flow): a quadratic curve that keeps the start's
- * height for most of the way and then funnels into the mouth, like the threads in the still. `t` 0..1, eased in
- * so riders speed up as they are drawn into the loom.
- */
-export function flowPoint(start: Pt, mouth: Pt, t: number): Pt {
-  const k = Math.min(1, Math.max(0, t))
-  const e = k * k * (1.6 - 0.6 * k)
-  const c = { x: start.x + (mouth.x - start.x) * 0.7, y: start.y }
-  const u = 1 - e
-  return {
-    x: u * u * start.x + 2 * u * e * c.x + e * e * mouth.x,
-    y: u * u * start.y + 2 * u * e * c.y + e * e * mouth.y,
-  }
-}
-
-/**
  * How much the hero still is magnified at scroll progress `p` (0..1) to match the live camera's fly-in: the loom
  * sits at z = 0 and the camera moves from z 14 to 7.5 (portrait 24 to 13), so things at the loom grow by z0 / z.
  * Mirrors CameraRig in loom/LoomScene.tsx; keep in sync.
