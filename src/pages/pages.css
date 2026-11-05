@@ -433,10 +433,10 @@
   box-shadow: none;
 }
 
-/* The home page's "What we build" block on a sub-page: no panel fill, the page's own background shows. */
+/* The home page's "What we build" block on a sub-page: the same cream block, with room above and below. */
 .offer-in-page {
-  background: transparent;
   padding: clamp(48px, 6vw, 90px) 0;
+  margin-block: clamp(24px, 4vw, 56px);
 }
 
 /* A section heading with a visual beside it (PageSection `aside`): the empty space right of the heading. */

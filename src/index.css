@@ -2312,7 +2312,31 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   }
 }
 
-/* What we build (Offer): websites, custom software, software products. Each card has a small code-drawn picture. */
+/* What we build (Offer): websites, custom software, software products. Each card has a small code-drawn picture.
+   A cream block, like the AI section, with the three dark cards set on it. */
+.offer {
+  background: var(--cream);
+  color: var(--cream-ink);
+  border-radius: 40px;
+  margin: 0 clamp(0px, 1vw, 12px);
+}
+
+.offer :focus-visible {
+  outline-color: #1d4ed8;
+}
+
+.offer .label {
+  color: #5b5b66;
+}
+
+.offer .label::before {
+  background: var(--cream-ink);
+}
+
+.offer .lead {
+  color: #4d4d58;
+}
+
 .offer-head {
   display: grid;
   gap: 4px;
@@ -2333,6 +2357,8 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 .offer-card {
   --tone: var(--lime);
   position: relative;
+  color: var(--text);
+  box-shadow: 0 40px 80px -40px rgba(20, 20, 26, 0.45);
   display: grid;
   grid-template-rows: auto auto auto auto 1fr auto;
   gap: 12px;
