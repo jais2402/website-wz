@@ -12,6 +12,13 @@ describe('storyStage', () => {
     expect(storyStage(0.9)).toBe(3)
   })
 
+  it('gives each step about a third of the story, and Scale a long hold', () => {
+    const held = (stage: number) =>
+      Array.from({ length: 1001 }, (_, i) => i / 1000).filter((p) => storyStage(p) === stage).length
+    expect(held(2)).toBeGreaterThan(250)
+    for (const p of [0.2, 0.5, 0.85]) expect(storyStep(p)).toBe(Math.floor(p * 3))
+  })
+
   it('is monotonic', () => {
     let prev = -1
     for (let p = 0; p <= 1; p += 0.01) {

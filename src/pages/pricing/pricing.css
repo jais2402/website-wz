@@ -1134,9 +1134,8 @@
   max-width: 24ch;
 }
 
-/* ---- Cost questions: the home FAQ, on the page background ---- */
+/* ---- Cost questions: the home FAQ, cream like everywhere else ---- */
 .pr .faq {
-  background: transparent;
   padding: clamp(64px, 9vw, 130px) 0;
 }
 

@@ -6,11 +6,12 @@ import { mapRange } from './math'
  */
 export function storyStage(progress: number): number {
   const p = Math.min(1, Math.max(0, progress))
-  if (p < 0.12) return mapRange(p, 0, 0.12, 0, 1)
-  if (p < 0.32) return 1
-  if (p < 0.44) return mapRange(p, 0.32, 0.44, 1, 2)
+  // Three equal thirds (the copy switches at 1/3 and 2/3), each a short morph then a long hold, like the hero's phases.
+  if (p < 0.06) return mapRange(p, 0, 0.06, 0, 1)
+  if (p < 0.3) return 1
+  if (p < 0.36) return mapRange(p, 0.3, 0.36, 1, 2)
   if (p < 0.64) return 2
-  if (p < 0.76) return mapRange(p, 0.64, 0.76, 2, 3)
+  if (p < 0.7) return mapRange(p, 0.64, 0.7, 2, 3)
   return 3
 }
 

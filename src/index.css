@@ -817,7 +817,9 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
    ========================================================================== */
 .story {
   position: relative;
-  height: 160vh; /* ~0.6 screen of scroll for all three steps, so each changes after about two wheel scrolls */
+  /* Same length as the loom hero (320vh): each of the three steps gets about 0.7 of a screen, ~6 wheel ticks, like
+     each hero phase. 160vh passed Scale in one tick. */
+  height: 320vh;
 }
 
 .story-sticky {
@@ -4133,7 +4135,61 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   white-space: nowrap;
 }
 
-/* FAQ */
+/* FAQ: a cream block, like Pricing, with a white call/email card. Used on home, /pricing and /website-development. */
+.faq {
+  background: var(--cream);
+  color: var(--cream-ink);
+  border-radius: 40px;
+  margin: 0 clamp(0px, 1vw, 12px);
+}
+
+/* The default blue focus ring is 2.4:1 on cream; a deep blue keeps it above 3:1. */
+.faq :focus-visible {
+  outline-color: #1d4ed8;
+}
+
+.faq .faq-item {
+  border-bottom-color: rgba(20, 20, 26, 0.12);
+}
+
+.faq .faq-item button i {
+  border-color: rgba(20, 20, 26, 0.22);
+}
+
+/* Open: deep blue so the knob keeps 3:1 against the cream. */
+.faq .faq-item.is-open button i {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+}
+
+.faq .faq-a p {
+  color: #4d4d58;
+}
+
+.faq .faq-ask {
+  color: var(--cream-ink);
+  background: #fff;
+  border-color: rgba(20, 20, 26, 0.08);
+  box-shadow: 0 30px 60px -40px rgba(20, 20, 26, 0.35);
+  backdrop-filter: none;
+}
+
+.faq .faq-ask-body {
+  color: #4d4d58;
+}
+
+.faq .faq-ask .btn-ghost {
+  color: var(--cream-ink);
+  border-color: rgba(20, 20, 26, 0.2);
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.faq .faq-ask .btn-ghost:hover {
+  background: rgba(20, 20, 26, 0.05);
+}
+
 .faq-grid {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
