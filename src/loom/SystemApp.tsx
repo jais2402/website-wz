@@ -1,10 +1,10 @@
 import { forwardRef } from 'react'
-import { loom, sampleDataLabel } from '@/content/site'
+import { loom } from '@/content/site'
 
 /**
  * The "after" dashboard: one system with live figures, used by the Before/After slider and the 2D hero
  * (ChaosHero). `extended` adds the hero's sync status, reminders and action buttons. Figures and names are
- * invented and the window carries `sampleDataLabel`.
+ * invented.
  */
 export const SystemApp = forwardRef<HTMLDivElement, { className?: string; extended?: boolean }>(function SystemApp(
   { className, extended = false },
@@ -19,7 +19,6 @@ export const SystemApp = forwardRef<HTMLDivElement, { className?: string; extend
         <i />
         <i />
         <span className="mono">{app.url}</span>
-        <span className="mono win-sample">{sampleDataLabel}</span>
       </div>
       <div className="ba-app-body">
         {extended && (

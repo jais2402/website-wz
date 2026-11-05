@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ai, aiDemo, ctas, sampleDataLabel } from '@/content/site'
+import { ai, aiDemo, ctas } from '@/content/site'
 import { SplitReveal } from './Reveal'
 
 const SUGGESTION = aiDemo.suggestion
@@ -65,7 +65,6 @@ export function AIDemo() {
             <i />
             <i />
             <span className="mono">{aiDemo.window}</span>
-            <span className="mono win-sample">{sampleDataLabel}</span>
           </div>
           <table className="ai-table">
             <thead>

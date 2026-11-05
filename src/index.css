@@ -1208,17 +1208,6 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   text-transform: none;
 }
 
-/* "Sample data" chip at the right of a window bar: demo figures must never read as client results. */
-.win-bar .win-sample {
-  margin-left: auto;
-  padding: 2px 7px;
-  border: 1px solid currentColor;
-  border-radius: 6px;
-  font-size: 0.6rem;
-  white-space: nowrap;
-  opacity: 0.85;
-}
-
 .win-body {
   flex: 1;
   display: flex;
@@ -1432,15 +1421,6 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 .areas .display {
   font-size: clamp(2.2rem, 4.2vw, 4rem);
   max-width: none;
-}
-
-.sys-sample {
-  flex: none;
-  padding: 4px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--line-2);
-  color: var(--muted);
-  font-size: 0.62rem;
 }
 
 /* Six system cards (Areas.tsx): 3 x 2 on desktop, 2 columns on tablets, a swipe strip on phones. */

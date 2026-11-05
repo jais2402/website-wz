@@ -3,7 +3,7 @@ import { type CSSProperties, useRef } from 'react'
 import { CountUp, ModuleCard } from '@/components/Charts'
 import { SplitReveal } from '@/components/Reveal'
 import { type SystemPage as Page, type Voice, systemsSection as copy } from '@/content/pages'
-import { type Area, type Chart, areas, brand, ctas, sampleDataLabel, workSection } from '@/content/site'
+import { type Area, type Chart, areas, brand, ctas, workSection } from '@/content/site'
 import { type SystemSlug, systemTools, toolsCopy } from '@/content/systemTools'
 import { gsap, scrollToTarget, usePrefersReducedMotion } from '@/hooks/motion'
 import { CtaStrip } from '@/components/CtaStrip'
@@ -202,7 +202,6 @@ function Dashboard({ area }: { area: Area }) {
         <div className="screen-bar">
           <span className="mono">wezigns / {area.title.toLowerCase()}</span>
           <span className="sy-bar-end">
-            <span className="mono sy-sample">{sampleDataLabel}</span>
             <span className="screen-status mono">
               <i className="live" /> synced
             </span>

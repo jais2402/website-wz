@@ -472,6 +472,7 @@ describe('social profiles', () => {
       'https://www.linkedin.com/company/wezigns/',
       'https://www.instagram.com/wezigns',
       'https://www.facebook.com/wezigns',
+      'https://maps.google.com/?cid=3175231318359952318',
     ])
     expect(headTags(page('home'), site, seoData).join('\n')).not.toContain('twitter:site')
   })
@@ -490,7 +491,13 @@ describe('social profiles', () => {
   it('emits the filled profiles as sameAs and the handle as twitter:site', () => {
     const filled = {
       ...site,
-      social: { ...site.social, instagram: '', facebook: '', linkedin: 'https://www.linkedin.com/company/wezigns' },
+      social: {
+        ...site.social,
+        instagram: '',
+        facebook: '',
+        googleBusiness: '',
+        linkedin: 'https://www.linkedin.com/company/wezigns',
+      },
       twitterHandle: 'wezigns',
       get sameAs(): string[] {
         return Object.values(this.social).filter(Boolean)

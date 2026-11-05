@@ -57,9 +57,6 @@ export const quickContact = { call: 'Call us', email: 'Email', whatsapp: 'WhatsA
 // Screen-reader and keyboard labels for the header.
 export const navA11y = { skip: 'Skip to content', menu: 'Menu', closeMenu: 'Close menu' }
 
-// Shown on every dashboard built from `areas`, so demo figures are never read as client results.
-export const sampleDataLabel = 'Sample data'
-
 // Section headings and labels that several components (and the crawlable snapshot in lib/snapshot.ts) share.
 export const storySection = { kicker: 'How a Wezigns system feels', title: 'Systems that grow with you.' }
 export const proofSection = { toolsLabel: 'Tools we build with', title: 'Building software for growing businesses since 2012.' }
@@ -92,7 +89,7 @@ export const enquirySent = {
   again: 'Send another message',
 }
 
-// The AI demo on the home page. Vendors and amounts are invented, and the window carries `sampleDataLabel`.
+// The AI demo on the home page. Vendors and amounts are invented.
 export const aiDemo = {
   window: 'Purchase approvals',
   columns: ['PO', 'Vendor', 'Amount', 'Status'],
@@ -871,7 +868,7 @@ export const loom = {
   untangle: ['Spreadsheets', 'WhatsApp groups', 'Email approvals', 'Paper forms', 'Legacy databases', 'Copy → paste', 'Monday reports', 'Side tools'],
   stats: { kicker: 'At the loom since 2012', title: 'Woven, shipped and still running.' },
   beforeAfter: {
-    // The "after" dashboard in the slider. Figures and names are invented and carry `sampleDataLabel`.
+    // The "after" dashboard in the slider. Figures and names are invented.
     app: {
       url: 'ops.wezigns.app',
       kpis: [

@@ -1,6 +1,6 @@
 import { useGSAP } from '@gsap/react'
 import { useRef } from 'react'
-import { areas, areasSection, ctas, navSystemsAll, sampleDataLabel } from '@/content/site'
+import { areas, areasSection, ctas, navSystemsAll } from '@/content/site'
 import { gsap } from '@/hooks/motion'
 import { track } from '@/lib/analytics'
 import { CountUp } from './Charts'
@@ -54,7 +54,6 @@ export function Areas() {
             <p className="mono label">{areasSection.kicker}</p>
             <SplitReveal as="h2" className="display" text={areasSection.title} />
           </div>
-          <span className="sys-sample mono">{sampleDataLabel}</span>
         </div>
 
         <ul className="sys-grid">

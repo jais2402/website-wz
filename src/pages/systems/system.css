@@ -87,16 +87,6 @@
   flex-shrink: 0;
 }
 
-/* Demo figures must never read as client results. */
-.sy-sample {
-  padding: 3px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--line-2);
-  color: var(--muted);
-  font-size: 0.62rem;
-  white-space: nowrap;
-}
-
 .sy-doc-icon {
   width: 16px;
   height: 16px;
