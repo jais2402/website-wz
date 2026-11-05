@@ -2354,61 +2354,76 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   gap: clamp(14px, 1.6vw, 22px);
 }
 
+/* Cards on the cream: white, with the picture on a dark screen in the offering's own ground (websites a blue dot
+   grid, software a violet line grid, products coral rings). --tone lights the screen; --tone-ink is the same hue dark
+   enough for text on white. */
 .offer-card {
   --tone: var(--lime);
+  --tone-ink: #1d4ed8;
+  --screen:
+    radial-gradient(90% 70% at 50% 0%, color-mix(in srgb, var(--tone) 30%, transparent), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(140, 196, 255, 0.18) 1px, transparent 1.4px) 0 0 / 16px 16px,
+    linear-gradient(180deg, #0c1528, #0a0d18 75%);
   position: relative;
-  color: var(--text);
-  box-shadow: 0 40px 80px -40px rgba(20, 20, 26, 0.45);
   display: grid;
   grid-template-rows: auto auto auto auto 1fr auto;
   gap: 12px;
-  padding: clamp(20px, 2.2vw, 28px);
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
-  background:
-    radial-gradient(80% 50% at 50% 0%, color-mix(in srgb, var(--tone) 14%, transparent), transparent 70%), var(--ink-3);
+  padding: 10px 10px clamp(20px, 2vw, 26px);
+  border-radius: 30px;
+  border: 1px solid rgba(20, 20, 26, 0.07);
+  background: #fff;
+  color: var(--cream-ink);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 30px 60px -36px rgba(20, 20, 26, 0.35);
   transition:
-    transform 0.4s var(--ease-out),
-    border-color 0.4s;
+    transform 0.45s var(--ease-out),
+    box-shadow 0.45s var(--ease-out);
 }
 
-/* Each card has its own ground: websites a blue dot grid lit from the top, software a violet line grid lit from the
-   bottom left, products coral rings rising from the bottom right. */
-.offer-card.tone-lime {
-  background:
-    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--tone) 26%, transparent), transparent 70%),
-    radial-gradient(circle at 1px 1px, rgba(140, 196, 255, 0.16) 1px, transparent 1.4px) 0 0 / 18px 18px,
-    linear-gradient(180deg, #0c1528, #0a0d18 70%);
+.offer-card > :not(.of-art) {
+  margin-inline: clamp(12px, 1.4vw, 18px);
 }
 
 .offer-card.tone-violet {
   --tone: var(--violet);
-  background:
-    radial-gradient(90% 70% at 0% 100%, color-mix(in srgb, var(--tone) 28%, transparent), transparent 70%),
-    linear-gradient(rgba(139, 123, 255, 0.07) 1px, transparent 1px) 0 0 / 28px 28px,
-    linear-gradient(90deg, rgba(139, 123, 255, 0.07) 1px, transparent 1px) 0 0 / 28px 28px,
-    linear-gradient(160deg, #110f24, #0b0a16 70%);
+  --tone-ink: #5a46d6;
+  --screen:
+    radial-gradient(90% 80% at 0% 100%, color-mix(in srgb, var(--tone) 32%, transparent), transparent 70%),
+    linear-gradient(rgba(139, 123, 255, 0.08) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, rgba(139, 123, 255, 0.08) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(160deg, #13102a, #0b0a16 75%);
 }
 
 .offer-card.tone-coral {
   --tone: var(--coral);
-  background:
-    radial-gradient(80% 60% at 100% 100%, color-mix(in srgb, var(--tone) 26%, transparent), transparent 70%),
-    repeating-radial-gradient(circle at 100% 100%, transparent 0 22px, rgba(255, 122, 89, 0.07) 22px 23px),
-    linear-gradient(200deg, #1d100d, #0f0a0a 70%);
+  --tone-ink: #c2410c;
+  --screen:
+    radial-gradient(80% 70% at 100% 100%, color-mix(in srgb, var(--tone) 30%, transparent), transparent 70%),
+    repeating-radial-gradient(circle at 100% 100%, transparent 0 20px, rgba(255, 122, 89, 0.08) 20px 21px),
+    linear-gradient(200deg, #20110d, #0f0a0a 75%);
 }
 
 .offer-card:hover {
-  transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--tone) 45%, transparent);
+  transform: translateY(-6px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 44px 80px -40px color-mix(in srgb, var(--tone-ink) 55%, transparent);
 }
 
 .offer-kicker {
-  color: var(--tone);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--tone-ink);
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-top: 8px;
+  margin-top: 12px;
+}
+
+.offer-num {
+  color: #6b6b75;
 }
 
 .offer-card h3 {
@@ -2420,36 +2435,44 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 }
 
 .offer-for {
-  color: var(--muted);
+  color: #55555f;
 }
 
 .offer-items {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-content: start;
-  padding-top: 6px;
-  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  border-top: 1px solid rgba(20, 20, 26, 0.08);
 }
 
+/* The three points as soft chips in the card's hue. */
 .offer-items li {
-  padding-top: 2px;
-}
-
-.offer-items li::before {
-  content: '';
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin: 0 10px 2px 0;
-  border-radius: 50%;
-  background: var(--tone);
-  box-shadow: 0 0 10px var(--tone);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: var(--cream-ink);
+  background: color-mix(in srgb, var(--tone-ink) 8%, #fff);
+  border: 1px solid color-mix(in srgb, var(--tone-ink) 16%, transparent);
 }
 
 .offer-link {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 8px;
+  padding: 11px 18px;
+  border-radius: 999px;
   font-weight: 600;
-  color: var(--text);
+  color: #fff;
+  background: var(--cream-ink);
+  transition: background 0.3s;
+}
+
+.offer-card:hover .offer-link {
+  background: var(--tone-ink);
 }
 
 .offer-link span {
@@ -2463,10 +2486,11 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 
 /* The pictures */
 .of-art {
-  height: 168px;
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.025);
+  height: 188px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--screen);
+  color: var(--text);
   overflow: hidden;
   position: relative;
 }
@@ -5004,8 +5028,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   .aip-tool,
   .tech-group,
   .pf-case.is-lead,
-  .wd-case,
-  .offer-card
+  .wd-case
 ) {
   position: relative;
 }
@@ -5041,8 +5064,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   .aip-tool,
   .tech-group,
   .pf-case.is-lead,
-  .wd-case,
-  .offer-card
+  .wd-case
 )::after {
   content: '';
   position: absolute;

@@ -70,10 +70,13 @@ export function Offer({ className = '' }: { className?: string }) {
           <p className="lead">{offer.body}</p>
         </header>
         <ul className="offer-grid">
-          {offer.items.map((o) => (
+          {offer.items.map((o, i) => (
             <li key={o.key} className={`offer-card tone-${o.tone}`}>
               <OfferArt kind={o.key} />
-              <p className="mono offer-kicker">{o.kicker}</p>
+              <p className="mono offer-kicker">
+                {o.kicker}
+                <span className="offer-num">0{i + 1}</span>
+              </p>
               <h3>{o.title}</h3>
               <p className="offer-for">{o.for}</p>
               <ul className="offer-items">
