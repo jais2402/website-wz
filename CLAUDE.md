@@ -160,7 +160,7 @@ src/
 
 - Colours (tokens in `:root`): ink `#07070c` background, **accent blue `#4d9fff`** (token still named `--lime`
   for history; light blue `#8cc4ff` replaced the old gold), primary CTA blue gradient `--cta-1/2/3`, violet
-  `#8b7bff`, coral `#ff7a59`, cream `#f2efe6` for the light sections (AI demo, What we build). No yellow/lime in UI text,
+  `#8b7bff`, coral `#ff7a59`, cream `#f2efe6` for the light sections (AI demo, What we build, Pricing). No yellow/lime in UI text,
   icons or symbols. The 3D threads (loom hero, story) keep their multicolour / gold palette.
 - Type: **Satoshi** (display and body) + **Instrument Serif italic** (accent words, `.serif`, client choice) +
   JetBrains Mono (labels). Self-hosted in `public/fonts` (`src/fonts.css`); Inter stays only as a glyph fallback

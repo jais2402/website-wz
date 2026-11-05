@@ -4,9 +4,9 @@ import { pricing } from '@/content/site'
 import { gsap, scrollToTarget } from '@/hooks/motion'
 
 /**
- * How pricing works: a big statement on the left, an "agreement" card on the right listing what sets the
- * price (and what doesn't), and a thread showing where the price comes from (Understand → Shape → price).
- * A link under the CTA leads to the full page, /pricing.
+ * How pricing works, on cream: the statement on one line across the top with the CTA and a link to /pricing under it,
+ * then a vertical thread showing where the price comes from (Understand → Shape → price) beside an "agreement" card
+ * listing what sets the price (and what doesn't).
  */
 export function Pricing() {
   const root = useRef<HTMLElement>(null)
@@ -34,11 +34,11 @@ export function Pricing() {
       })
       gsap.fromTo(
         '.price-thread-fill',
-        { scaleX: 0 },
+        { scaleY: 0 },
         {
-          scaleX: 1,
+          scaleY: 1,
           ease: 'none',
-          scrollTrigger: { trigger: '.price-steps', start: 'top 85%', end: 'top 45%', scrub: true },
+          scrollTrigger: { trigger: '.price-steps', start: 'top 75%', end: 'bottom 55%', scrub: true },
         },
       )
     },
@@ -48,36 +48,54 @@ export function Pricing() {
   return (
     <section id="pricing" ref={root} className="panel pricing" aria-labelledby="pricing-title">
       <div className="wrap">
-        <div className="pricing-grid">
-          <div className="pricing-copy">
-            <h2 id="pricing-title" className="pricing-title" aria-label={pricing.title.join(' ')}>
-              {pricing.title.map((l, i) => (
-                <Fragment key={l}>
-                  {i > 0 && ' '}
-                  <span className="price-line" aria-hidden="true">
-                    <span className={i === 1 ? 'serif' : undefined}>{l}</span>
-                  </span>
-                </Fragment>
-              ))}
-            </h2>
+        <header className="pricing-head">
+          <h2 id="pricing-title" className="pricing-title" aria-label={pricing.title.join(' ')}>
+            {pricing.title.map((l, i) => (
+              <Fragment key={l}>
+                {i > 0 && ' '}
+                <span className="price-line" aria-hidden="true">
+                  <span className={i === 1 ? 'serif' : undefined}>{l}</span>
+                </span>
+              </Fragment>
+            ))}
+          </h2>
+          <div className="pricing-sub">
             <p className="lead">{pricing.body}</p>
-            <a
-              className="btn btn-lime btn-lg pricing-cta"
-              href={pricing.cta.href}
-              onClick={(e) => {
-                e.preventDefault()
-                scrollToTarget(pricing.cta.href)
-              }}
-            >
-              {pricing.cta.label} <span aria-hidden="true">→</span>
-            </a>
-            <p className="pricing-more">
-              <a className="link-btn" href={pricing.more.href}>
-                {pricing.more.label} <span aria-hidden="true">→</span>
+            <div className="pricing-actions">
+              <a
+                className="btn btn-lime btn-lg pricing-cta"
+                href={pricing.cta.href}
+                onClick={(e) => {
+                  e.preventDefault()
+                  scrollToTarget(pricing.cta.href)
+                }}
+              >
+                {pricing.cta.label} <span aria-hidden="true">→</span>
               </a>
-            </p>
+              <p className="pricing-more">
+                <a className="link-btn" href={pricing.more.href}>
+                  {pricing.more.label} <span aria-hidden="true">→</span>
+                </a>
+              </p>
+            </div>
           </div>
+        </header>
 
+        <div className="pricing-grid">
+          <div className="price-steps">
+            <span className="price-thread" aria-hidden="true">
+              <span className="price-thread-fill" />
+            </span>
+            <ol>
+              {pricing.steps.map((s, i) => (
+                <li key={s.name} className={i === pricing.steps.length - 1 ? 'is-final' : undefined}>
+                  <span className="price-knot" aria-hidden="true" />
+                  <h3>{s.name}</h3>
+                  <p>{s.text}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
           <div className="glass-card price-card">
             <div className="price-card-head mono">
               <span>Your price</span>
@@ -119,21 +137,6 @@ export function Pricing() {
               <b>One date</b>
             </div>
           </div>
-        </div>
-
-        <div className="price-steps">
-          <span className="price-thread" aria-hidden="true">
-            <span className="price-thread-fill" />
-          </span>
-          <ol>
-            {pricing.steps.map((s, i) => (
-              <li key={s.name} className={i === pricing.steps.length - 1 ? 'is-final' : undefined}>
-                <span className="price-knot" aria-hidden="true" />
-                <h3>{s.name}</h3>
-                <p>{s.text}</p>
-              </li>
-            ))}
-          </ol>
         </div>
       </div>
     </section>
