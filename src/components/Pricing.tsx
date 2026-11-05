@@ -4,10 +4,11 @@ import { pricing } from '@/content/site'
 import { gsap, scrollToTarget, ScrollTrigger, usePrefersReducedMotion } from '@/hooks/motion'
 
 /**
- * How pricing works, on cream: the statement on one line across the top; below it a vertical thread showing where the
- * price comes from (Understand → Shape → price) with the lead, CTA and a link to /pricing under it, beside an
- * "agreement" card listing what sets the price (and what doesn't). The steps slide in, the thread fills with scroll
- * and each knot lights as the thread reaches it; the price knot then pulses. All lit and still under reduced motion.
+ * How pricing works, on cream: the statement on one line across the top; below it a vertical thread through the four
+ * stages with the point the price is agreed (Understand → Shape → Your price → Build → Run) and the lead, CTA and a
+ * link to /pricing under it, beside an "agreement" card listing what sets the price (and what doesn't). The steps
+ * slide in, the thread fills with scroll and each knot lights as the thread reaches it; the price knot then pulses.
+ * All lit and still under reduced motion. This is the home page's only telling of the stages.
  */
 export function Pricing() {
   const root = useRef<HTMLElement>(null)
@@ -92,8 +93,8 @@ export function Pricing() {
                 <span className="price-thread-fill" />
               </span>
               <ol>
-                {pricing.steps.map((s, i) => (
-                  <li key={s.name} className={i === pricing.steps.length - 1 ? 'is-final' : undefined}>
+                {pricing.steps.map((s) => (
+                  <li key={s.name} className={'gate' in s && s.gate ? 'is-gate' : undefined}>
                     <span className="price-knot" aria-hidden="true" />
                     <h3>{s.name}</h3>
                     <p>{s.text}</p>

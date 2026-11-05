@@ -194,7 +194,7 @@ export const offer = {
       kicker: 'Custom software',
       title: 'Software that fits your team.',
       for: 'For teams past spreadsheets and chat groups.',
-      items: ['Business systems', 'Customer portals', 'Integrations and AI'],
+      items: ['Business systems', 'Customer portals', 'Integrations and AI', 'Taking over existing software'],
       cta: { label: 'Explore systems', href: '/our-services' },
       tone: 'violet',
     },
@@ -209,11 +209,6 @@ export const offer = {
     },
   ],
 } as const
-
-export const servicesSection = {
-  title: 'A technology partner for every part of your business.',
-  body: 'Operations, sales, finance, HR. We design, build, host and maintain the software behind each of them, from the first workshop to years after launch.',
-}
 
 export const services = [
   {
@@ -390,6 +385,7 @@ export const workSection = {
   featured: ['safety-training', 'tourism', 'engineering-event', 'marketplace', 'car-rental'],
 }
 
+// Used by the internal loom page only (the home page tells the stages in the pricing timeline).
 export const processSection = { kicker: 'How we build', title: 'Four stages. No surprises.' }
 
 // Case studies, from the original site's content (content/site.json on main). Client names are not published.
@@ -641,10 +637,13 @@ export const pricing = {
     { name: 'Process change', text: 'How much the way your team works needs to change.' },
   ],
   doesnt: ['Hours logged', 'The technology we choose'],
+  // The four stages with the point the price is agreed (`gate`), so the home page tells them once, here.
   steps: [
     { name: 'Understand', text: 'We map your people, workflows and systems.' },
     { name: 'Shape', text: 'Scope, priorities and technology are agreed.' },
-    { name: 'Your price', text: 'One price and one timeline, before building starts.' },
+    { name: 'Your price', text: 'One price and one timeline, before building starts.', gate: true },
+    { name: 'Build', text: 'Delivered in working pieces you test and review.' },
+    { name: 'Run', text: 'Hosted, monitored and improved after launch.' },
   ],
 }
 
@@ -751,7 +750,7 @@ export const contactPage = {
 }
 
 export const footer = [
-  { title: 'Explore', links: [['What we build', '#build'], ['How we build', '#process'], ['Work', '/portfolio'], ['How pricing works', '/pricing'], ['Questions', '#faq']] },
+  { title: 'Explore', links: [['What we build', '#offer'], ['How we build', '/pricing#agreed'], ['Work', '/portfolio'], ['How pricing works', '/pricing'], ['Questions', '#faq']] },
   {
     title: 'Systems',
     links: [

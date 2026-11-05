@@ -16,9 +16,9 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
 ## Pages (Vite multi-page)
 
 - `index.html` → `src/main.tsx` → `App.tsx`: **the final site.** Section order: time-loom hero (`loom/hero.tsx`)
-  → weave in/out → thread story (Simplify / Scale / Secure) → tools + stats → services → systems explorer →
-  before/after slider (`loom/sections.tsx`) → AI demo → work → process → pricing (`components/Pricing.tsx`) →
-  integrations → countries globe
+  → weave in/out → thread story (Simplify / Scale / Secure) → tools + stats → what we build (`Offer.tsx`) →
+  systems explorer → AI demo → work → pricing (`components/Pricing.tsx`, also the only telling of the four stages:
+  Understand → Shape → price agreed → Build → Run) → integrations → countries globe
   (`components/Countries.tsx`) → FAQ → loom-style contact
   (`LoomContact`) → footer. `main.tsx` imports both `index.css` and `loom/loom.css`.
 - `contact-us.html` → `src/contact/main.tsx` → `ContactPage.tsx`: `/contact-us` (clean URL in dev, preview and Vercel).
@@ -177,4 +177,4 @@ src/
 2. Add or extend tests for any new logic in `src/lib/` (co-located `*.test.ts`).
 3. Run `npm run validate` and `npm run build` before committing.
 4. Check visually in the browser at desktop (1440×900) and mobile (375×812): loom hero, weave, each story step,
-   services pin, systems explorer, before/after, AI demo, countries globe, contact.
+   what we build, systems explorer, AI demo, pricing, countries globe, contact.

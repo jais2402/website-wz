@@ -12,11 +12,9 @@ import { Nav } from '@/components/Nav'
 import { Preloader } from '@/components/Preloader'
 import { homeGate } from '@/lib/loadGate'
 import { Pricing } from '@/components/Pricing'
-import { Process } from '@/components/Process'
 import { Proof } from '@/components/Proof'
 import { SectionBoundary } from '@/components/SectionBoundary'
 import { Offer } from '@/components/Offer'
-import { Services } from '@/components/Services'
 import { StickyCall } from '@/components/StickyCall'
 import { Story } from '@/components/Story'
 import { StoryStatic } from '@/components/StoryStatic'
@@ -28,7 +26,7 @@ import { webgl } from '@/lib/webgl'
 import { useAfterPaint } from '@/hooks/useAfterPaint'
 import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
 import { LoomHero, Weave } from '@/loom/hero'
-import { BeforeAfter, LoomContact } from '@/loom/sections'
+import { LoomContact } from '@/loom/sections'
 import { preloaderCopy } from '@/content/site'
 
 // The fixed canvas (story threads + countries globe) is the heaviest chunk; it loads right after the hero's first
@@ -108,23 +106,14 @@ export default function App() {
             <SectionBoundary name="Offer">
               <Offer />
             </SectionBoundary>
-            <SectionBoundary name="Services">
-              <Services />
-            </SectionBoundary>
             <SectionBoundary name="Areas">
               <Areas />
-            </SectionBoundary>
-            <SectionBoundary name="BeforeAfter">
-              <BeforeAfter />
             </SectionBoundary>
             <SectionBoundary name="AIDemo">
               <AIDemo />
             </SectionBoundary>
             <SectionBoundary name="Work">
               <Work />
-            </SectionBoundary>
-            <SectionBoundary name="Process">
-              <Process />
             </SectionBoundary>
             <SectionBoundary name="Pricing">
               <Pricing />

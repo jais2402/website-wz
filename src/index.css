@@ -3840,7 +3840,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 
 .price-steps ol {
   display: grid;
-  gap: clamp(24px, 2.8vw, 36px);
+  gap: clamp(18px, 2vw, 26px);
 }
 
 .price-thread {
@@ -3892,14 +3892,14 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   box-shadow: 0 0 14px rgba(77, 159, 255, 0.5);
 }
 
-.price-steps li.is-final.is-lit .price-knot {
+.price-steps li.is-gate.is-lit .price-knot {
   border-color: #1d4ed8;
   background: #4d9fff;
   box-shadow: 0 0 18px rgba(77, 159, 255, 0.7);
 }
 
 /* The price knot keeps a slow pulse once lit. */
-.price-steps li.is-final .price-knot::after {
+.price-steps li.is-gate .price-knot::after {
   content: '';
   position: absolute;
   inset: -2px;
@@ -3908,7 +3908,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   opacity: 0;
 }
 
-.price-steps li.is-final.is-lit .price-knot::after {
+.price-steps li.is-gate.is-lit .price-knot::after {
   animation: priceKnotPulse 2.2s var(--ease-out) infinite;
 }
 
@@ -3925,7 +3925,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 
 .price-steps h3 {
   font-family: var(--f-display);
-  font-size: clamp(1.6rem, 2.4vw, 2.3rem);
+  font-size: clamp(1.4rem, 1.9vw, 1.85rem);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1.1;
@@ -3937,7 +3937,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   color: var(--cream-ink);
 }
 
-.price-steps li.is-final.is-lit h3 {
+.price-steps li.is-gate.is-lit h3 {
   color: #1d4ed8;
 }
 

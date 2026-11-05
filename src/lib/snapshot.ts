@@ -44,12 +44,10 @@ import {
   pricing,
   principles,
   process,
-  processSection,
   proofSection,
   reach,
   offer,
   services,
-  servicesSection,
   stack,
   stats,
   storySection,
@@ -253,13 +251,6 @@ function home(): string {
 
   const offerHtml = offerSection()
 
-  const servicesHtml = section(
-    h2(servicesSection.title) +
-      p(servicesSection.body) +
-      services.map((s) => tag('article', p(s.kicker) + h3(s.title) + ul(s.items))).join(''),
-    'build',
-  )
-
   const explorer = section(
     p(areasSection.kicker) +
       h2(areasSection.title) +
@@ -273,9 +264,6 @@ function home(): string {
         })
         .join(''),
   )
-
-  const ba = loom.beforeAfter
-  const beforeAfter = section(h2(ba.title) + p('Before') + ul(ba.before) + p('After') + ul(ba.after), 'before-after')
 
   const aiHtml = section(
     h2(ai.title) +
@@ -292,16 +280,6 @@ function home(): string {
       tag('p', a(workSection.all.href, workSection.all.label)) +
       featured.map(caseCard).join(''),
     'work',
-  )
-
-  const processHtml = section(
-    p(processSection.kicker) +
-      h2(processSection.title) +
-      ulHtml(
-        process.map((s) => h3(s.title) + p(s.body)),
-        true,
-      ),
-    'process',
   )
 
   const pricingHtml = section(
@@ -352,12 +330,9 @@ function home(): string {
       story +
       proof +
       offerHtml +
-      servicesHtml +
       explorer +
-      beforeAfter +
       aiHtml +
       workHtml +
-      processHtml +
       pricingHtml +
       integrationsHtml +
       countriesHtml +

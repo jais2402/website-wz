@@ -77,7 +77,6 @@ describe('snapshot', () => {
       proofSection.title,
       'Every corner of the business, connected.',
       'Our Work',
-      'Four stages. No surprises.',
       'Priced on outcomes, not hours.',
       'Straight answers.',
       'Hand us the tangle.',
@@ -142,9 +141,9 @@ describe('snapshot', () => {
   })
 
   it('in-page anchors point back to the home page from other pages', () => {
-    expect(hrefs(html('home'))).toContain('#process')
-    expect(hrefs(html('about'))).toContain('/#process')
-    expect(hrefs(html('about'))).not.toContain('#process')
+    expect(hrefs(html('home'))).toContain('#faq')
+    expect(hrefs(html('about'))).toContain('/#faq')
+    expect(hrefs(html('about'))).not.toContain('#faq')
   })
 
   it('pricing is its own page: nothing links to the old home-page anchor, and the home section links to it', () => {
