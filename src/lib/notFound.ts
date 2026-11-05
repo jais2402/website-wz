@@ -18,16 +18,21 @@ export function pathWords(path: string): string[] {
     .filter(Boolean)
 }
 
-/** Edit distance (insertions, deletions, substitutions), for typos like 'pricng' or 'protfolio'. */
+/**
+ * Edit distance (insertions, deletions, substitutions, and two neighbouring letters swapped counting as one edit), for
+ * typos like 'pricng', 'protfolio' or 'peopel'.
+ */
 export function editDistance(a: string, b: string): number {
   if (a === b) return 0
-  let prev = Array.from({ length: b.length + 1 }, (_, i) => i)
-  for (let i = 1; i <= a.length; i++) {
-    const row = [i]
-    for (let j = 1; j <= b.length; j++) row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
-    prev = row
-  }
-  return prev[b.length]
+  const d: number[][] = Array.from({ length: a.length + 1 }, (_, i) => [i])
+  for (let j = 1; j <= b.length; j++) d[0][j] = j
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1])
+        d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1)
+    }
+  return d[a.length][b.length]
 }
 
 /** How well one typed word matches one of a page's words: 1 exact, less for a prefix or a near typo, 0 for none. */
@@ -39,8 +44,26 @@ function wordScore(typed: string, word: string): number {
   return allowed && editDistance(typed, word) <= allowed ? 0.75 : 0
 }
 
-// Words that fit many pages ('crm-software', 'ecommerce-development', the old site's 'portfolio-item-…'): they count a little, so the specific word decides.
-const GENERIC = new Set(['item', 'software', 'development', 'services', 'service', 'solutions', 'solution', 'company', 'online', 'page', 'new', 'custom', 'india', 'chennai'])
+// Words that fit many pages ('crm-software', 'ecommerce-development', '/systems/hr', the old site's 'portfolio-item-…'):
+// they count a little, so the specific word decides.
+const GENERIC = new Set([
+  'item',
+  'software',
+  'development',
+  'services',
+  'service',
+  'solutions',
+  'solution',
+  'systems',
+  'system',
+  'company',
+  'online',
+  'page',
+  'new',
+  'custom',
+  'india',
+  'chennai',
+])
 
 /**
  * The best page for a missing address, or null when nothing is a confident match (the 404 then just lists the main

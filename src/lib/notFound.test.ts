@@ -17,7 +17,9 @@ describe('pathWords', () => {
 describe('editDistance', () => {
   it('counts single-letter edits', () => {
     expect(editDistance('pricng', 'pricing')).toBe(1)
-    expect(editDistance('protfolio', 'portfolio')).toBe(2)
+    expect(editDistance('protfolio', 'portfolio')).toBe(1)
+    expect(editDistance('peopel', 'people')).toBe(1)
+    expect(editDistance('kitten', 'sitting')).toBe(3)
     expect(editDistance('same', 'same')).toBe(0)
   })
 })
@@ -28,6 +30,14 @@ describe('suggestPage', () => {
     expect(best('/protfolio')).toBe('/portfolio')
     expect(best('/contct')).toBe('/contact-us')
     expect(best('/technolgy')).toBe('/technology')
+  })
+  it('sends a system address to its own system page, not the systems list', () => {
+    expect(best('/systems/hr')).toBe('/systems/people')
+    expect(best('/systems/peopel')).toBe('/systems/people')
+    expect(best('/system/crm')).toBe('/systems/revenue')
+    expect(best('/systems/inventry')).toBe('/systems/operations')
+    expect(best('/systems/finance.html')).toBe('/systems/finance')
+    expect(best('/systems')).toBe('/our-services')
   })
   it('maps the words people type to the right page', () => {
     expect(best('/hrms')).toBe('/systems/people')
