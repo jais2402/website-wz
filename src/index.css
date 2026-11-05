@@ -2346,12 +2346,30 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
     border-color 0.4s;
 }
 
+/* Each card has its own ground: websites a blue dot grid lit from the top, software a violet line grid lit from the
+   bottom left, products coral rings rising from the bottom right. */
+.offer-card.tone-lime {
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in srgb, var(--tone) 26%, transparent), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(140, 196, 255, 0.16) 1px, transparent 1.4px) 0 0 / 18px 18px,
+    linear-gradient(180deg, #0c1528, #0a0d18 70%);
+}
+
 .offer-card.tone-violet {
   --tone: var(--violet);
+  background:
+    radial-gradient(90% 70% at 0% 100%, color-mix(in srgb, var(--tone) 28%, transparent), transparent 70%),
+    linear-gradient(rgba(139, 123, 255, 0.07) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, rgba(139, 123, 255, 0.07) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(160deg, #110f24, #0b0a16 70%);
 }
 
 .offer-card.tone-coral {
   --tone: var(--coral);
+  background:
+    radial-gradient(80% 60% at 100% 100%, color-mix(in srgb, var(--tone) 26%, transparent), transparent 70%),
+    repeating-radial-gradient(circle at 100% 100%, transparent 0 22px, rgba(255, 122, 89, 0.07) 22px 23px),
+    linear-gradient(200deg, #1d100d, #0f0a0a 70%);
 }
 
 .offer-card:hover {
