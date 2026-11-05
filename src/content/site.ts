@@ -11,8 +11,7 @@ export const brand = {
   address: ['#4 / 25B, 1st Floor, Block 1', 'Boopathy Street, Arcot Road', 'Virugambakkam, Chennai 600092', 'India'],
   mapsHref: 'https://www.google.com/maps/search/?api=1&query=Boopathy+Street+Arcot+Road+Virugambakkam+Chennai+600092',
   url: 'https://www.wezigns.com',
-  // TODO(client): WhatsApp Business number, digits only with country code (e.g. '919876543210').
-  // Empty keeps every WhatsApp button hidden.
+  // WhatsApp Business number, digits only with country code. Empty keeps every WhatsApp button hidden.
   whatsapp: '918124422205',
 }
 
