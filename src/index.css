@@ -3633,7 +3633,8 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 
 /* Pricing into integrations: two full panel paddings back to back left a ~400px empty band on wide screens. */
 .pricing {
-  padding-bottom: clamp(80px, 9vw, 120px);
+  padding-top: clamp(56px, 6vw, 88px);
+  padding-bottom: clamp(64px, 7vw, 100px);
 }
 
 .integrations {
@@ -3641,9 +3642,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 }
 
 .pricing-head {
-  display: grid;
-  gap: clamp(20px, 2.4vw, 32px);
-  margin-bottom: clamp(48px, 6vw, 88px);
+  margin-bottom: clamp(32px, 4vw, 56px);
 }
 
 .pricing-title {
@@ -3670,18 +3669,22 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   display: inline-block;
 }
 
+.pricing-left {
+  display: grid;
+  gap: clamp(28px, 3vw, 40px);
+}
+
+/* Under the thread: the lead, the CTA and the link to /pricing. */
 .pricing-sub {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px 40px;
-  padding-top: clamp(20px, 2.4vw, 28px);
+  display: grid;
+  justify-items: start;
+  gap: 22px;
+  padding-top: clamp(24px, 2.6vw, 32px);
   border-top: 1px solid rgba(20, 20, 26, 0.12);
 }
 
 .pricing-sub .lead {
-  max-width: 44ch;
+  max-width: 40ch;
   color: #4d4d58;
 }
 
@@ -3837,7 +3840,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 
 .price-steps ol {
   display: grid;
-  gap: clamp(36px, 4.4vw, 60px);
+  gap: clamp(24px, 2.8vw, 36px);
 }
 
 .price-thread {
@@ -3874,12 +3877,50 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   border-radius: 50%;
   background: var(--cream);
   border: 2px solid rgba(20, 20, 26, 0.3);
+  transition:
+    border-color 0.4s,
+    background 0.4s,
+    transform 0.5s var(--ease-out),
+    box-shadow 0.4s;
 }
 
-.price-steps li.is-final .price-knot {
+/* Each knot lights as the thread reaches it: ringed in blue with a filled centre, a small pop. */
+.price-steps li.is-lit .price-knot {
+  border-color: #4d9fff;
+  background: radial-gradient(circle, #4d9fff 0 4px, var(--cream) 5px);
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(77, 159, 255, 0.5);
+}
+
+.price-steps li.is-final.is-lit .price-knot {
   border-color: #1d4ed8;
   background: #4d9fff;
-  box-shadow: 0 0 0 6px rgba(77, 159, 255, 0.2), 0 0 18px rgba(77, 159, 255, 0.6);
+  box-shadow: 0 0 18px rgba(77, 159, 255, 0.7);
+}
+
+/* The price knot keeps a slow pulse once lit. */
+.price-steps li.is-final .price-knot::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid #4d9fff;
+  opacity: 0;
+}
+
+.price-steps li.is-final.is-lit .price-knot::after {
+  animation: priceKnotPulse 2.2s var(--ease-out) infinite;
+}
+
+@keyframes priceKnotPulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
 }
 
 .price-steps h3 {
@@ -3888,9 +3929,15 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1.1;
+  color: #6b6b75;
+  transition: color 0.4s;
 }
 
-.price-steps li.is-final h3 {
+.price-steps li.is-lit h3 {
+  color: var(--cream-ink);
+}
+
+.price-steps li.is-final.is-lit h3 {
   color: #1d4ed8;
 }
 
