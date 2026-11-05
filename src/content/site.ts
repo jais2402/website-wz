@@ -795,7 +795,7 @@ export const preloaderCopy = { label: 'Loading', home: 'Untangling the threads' 
 export const loom = {
   eyebrow: 'Software and websites since 2012',
   title: ['Every loose thread,', 'woven into', 'one system.'],
-  sub: 'From Chennai, we design, build and run websites, custom software and software products for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
+  sub: 'We design, build and run websites, custom software and software products for businesses that have outgrown spreadsheets, chat threads and manual work. Priced on outcomes, agreed before we build.',
   // Links straight to the system pages, which convert best (docs/audience-study/summary.md).
   systemsLine: 'Systems we build',
   // Hero copy chosen by the simulated 5-second persona test (see docs/concept-study.md, "Hero copy test").
