@@ -1,19 +1,8 @@
 // The testing badge (components/TestBadge.tsx): which way this device draws the 3D areas. Pure: no React, no DOM.
 
-/**
- * Whether to show the badge. On by default in dev and on Vercel preview builds (the testing branch), never on
- * production unless the URL asks: ?badge=1 turns it on for the tab, ?badge=0 turns it off again. Returns the value
- * to remember for the tab (null leaves the stored choice as it is).
- */
-export function badgeChoice(
-  build: { dev: boolean; vercelEnv: string },
-  search: string,
-  stored: string | null,
-): { show: boolean; store: '1' | '0' | null } {
-  const asked = new URLSearchParams(search).get('badge')
-  if (asked === '1' || asked === '0') return { show: asked === '1', store: asked }
-  if (stored === '1' || stored === '0') return { show: stored === '1', store: null }
-  return { show: build.dev || build.vercelEnv === 'preview', store: null }
+/** Whether to show the badge: only when the address asks for it with ?badge=1, on any build (dev, preview, production). */
+export function badgeChoice(search: string): boolean {
+  return new URLSearchParams(search).get('badge') === '1'
 }
 
 export type HeroView = '3D' | '2D chaos' | 'Video' | 'Video H.264' | 'Still' | 'Off screen'

@@ -1,19 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { badgeChoice, heroView, shortRenderer } from './testBadge'
 
-const prod = { dev: false, vercelEnv: 'production' }
-
 describe('badgeChoice', () => {
-  it('shows in dev and on preview builds, not on production', () => {
-    expect(badgeChoice({ dev: true, vercelEnv: '' }, '', null).show).toBe(true)
-    expect(badgeChoice({ dev: false, vercelEnv: 'preview' }, '', null).show).toBe(true)
-    expect(badgeChoice(prod, '', null).show).toBe(false)
-    expect(badgeChoice({ dev: false, vercelEnv: '' }, '', null).show).toBe(false)
-  })
-  it('lets the URL turn it on or off for the tab', () => {
-    expect(badgeChoice(prod, '?badge=1', null)).toEqual({ show: true, store: '1' })
-    expect(badgeChoice(prod, '', '1')).toEqual({ show: true, store: null })
-    expect(badgeChoice({ dev: true, vercelEnv: '' }, '?badge=0', null)).toEqual({ show: false, store: '0' })
+  it('shows only when the address asks with ?badge=1', () => {
+    expect(badgeChoice('?badge=1')).toBe(true)
+    expect(badgeChoice('?gfx=poster&badge=1')).toBe(true)
+    expect(badgeChoice('')).toBe(false)
+    expect(badgeChoice('?badge=0')).toBe(false)
+    expect(badgeChoice('?gfx=poster')).toBe(false)
   })
 })
 

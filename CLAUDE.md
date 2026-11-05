@@ -65,7 +65,7 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   drops under ~25 fps: `gfx/gfxMode.ts`, `gfx/frameTest.ts`; `?gfx=live|poster|auto` forces it) get the 2D
   "chaos to system" hero instead (`loom/ChaosHero.tsx`, Before/After style: tangle + problem cards → one glowing knot → a single line into the "after" dashboard, `loom/SystemApp.tsx`, shared with the slider; maths in `lib/chaos.ts`, cards in `loom.chaos`
   in site.ts), the lighter story scene, and no blur or moving grain (`html[data-gfx]` in index.css). A testing
-  badge (`?badge=1`, on by default in dev and preview) shows which version a device gets.
+  badge (only with `?badge=1` in the address, on any build) shows which version a device gets.
   `lib/webgl.ts` checks whether a WebGL context can be created; without one the 3D scenes are not mounted
   and the home preloader does not wait for them. One WebGL canvas at a time
   (`lib/canvasSlot.ts`). `npm run build && npm run perf:audit` measures frame rates with the GPU and with SwiftShader.
