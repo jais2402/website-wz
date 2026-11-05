@@ -4,6 +4,7 @@ import { CtaStrip } from '@/components/CtaStrip'
 import { portfolioPage as p } from '@/content/pages'
 import { ctas, pastWork, work } from '@/content/site'
 import { scrollToTarget } from '@/hooks/motion'
+import { anchorFromName } from '@/lib/hash'
 import { LoomContact } from '@/loom/sections'
 import { PageHero, PageSection, PageShell } from '../shell'
 import { PortfolioArchive } from './PortfolioArchive'
@@ -17,12 +18,16 @@ import './portfolio.css'
  */
 export function PortfolioPage() {
   // A deep link (/portfolio#marketplace) lands on the snapshot before React replaces it: scroll again once rendered.
+  // Old wezigns.com item URLs arrive with the name as written (#Grace, #tech_guy, #Datalogic%20technologies): match
+  // it to the anchor and show the tidy form in the address bar.
   useEffect(() => {
-    const id = window.location.hash.slice(1)
-    if (!id || !/^[a-z0-9-]+$/.test(id)) return
+    const id = anchorFromName(window.location.hash)
+    if (!id) return
     const timer = window.setTimeout(() => {
       const el = document.getElementById(id)
-      if (el) scrollToTarget(el)
+      if (!el) return
+      if (window.location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`)
+      scrollToTarget(el)
     }, 120)
     return () => window.clearTimeout(timer)
   }, [])

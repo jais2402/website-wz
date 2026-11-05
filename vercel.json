@@ -181,6 +181,56 @@
       "statusCode": 301
     },
     {
+      "source": "/portfolio-item-Ish",
+      "destination": "/portfolio#ish",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-Grace",
+      "destination": "/portfolio#grace",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-Blue-root",
+      "destination": "/portfolio#blue-root",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-Software-PHD",
+      "destination": "/portfolio#software-phd",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-Ekubus",
+      "destination": "/portfolio#ekubus",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-summit_global_service",
+      "destination": "/portfolio#summit-global-service",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-tech_guy",
+      "destination": "/portfolio#tech-guy",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-debut_directors",
+      "destination": "/portfolio#debut-directors",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-Rajkumaran_builders",
+      "destination": "/portfolio#rajkumaran-builders",
+      "statusCode": 301
+    },
+    {
+      "source": "/portfolio-item-varrun_sports",
+      "destination": "/portfolio#varrun-sports",
+      "statusCode": 301
+    },
+    {
       "source": "/portfolio-item-:slug",
       "destination": "/portfolio#:slug",
       "statusCode": 301
