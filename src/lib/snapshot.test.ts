@@ -38,8 +38,6 @@ const PAGES = [
   '/privacy-policy',
   '/terms-and-conditions',
   '/cookie-policy',
-  // The sitemap is XML only, linked from the footer's legal row.
-  '/sitemap.xml',
 ]
 
 describe('snapshot', () => {

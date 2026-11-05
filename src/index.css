@@ -817,9 +817,9 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
    ========================================================================== */
 .story {
   position: relative;
-  /* Same length as the loom hero (320vh): each of the three steps gets about 0.7 of a screen, ~6 wheel ticks, like
-     each hero phase. 160vh passed Scale in one tick. */
-  height: 320vh;
+  /* 1.4 screens of scroll for the three steps: each holds for ~4 wheel ticks. 160vh passed Scale in one tick;
+     320vh (the hero's length) felt too long. */
+  height: 240vh;
 }
 
 .story-sticky {

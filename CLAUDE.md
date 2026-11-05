@@ -31,8 +31,8 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   `notFoundPage.suggest` via `lib/notFound.ts`, and reports `page_not_found` to GA after consent), `website-development.html`
   (`/website-development`, `src/pages/website/`, copy `websitePage` in pages.ts), `systems/{people,revenue,operations,ecommerce,finance,industry}.html` → one entry,
   `src/pages/main.tsx`, which picks the page from `<body data-page>` (`PageRouter.tsx`). There is no HTML sitemap:
-  `/sitemap.xml` (and `llms.txt`) are generated at build by `scripts/vite-seo.ts` from `src/content/seo.ts`; the
-  footer's "Sitemap" link points to it and `/sitemap` redirects there (`vercel.json`). Shared shell, hero, section
+  `/sitemap.xml` (and `llms.txt`) are generated at build by `scripts/vite-seo.ts` from `src/content/seo.ts`; search engines find it
+  through robots.txt (no footer link) and `/sitemap` redirects there (`vercel.json`). Shared shell, hero, section
   and CTA in `src/pages/shell.tsx` + `pages.css`; each page has its own folder and prefixed CSS (`ab-`, `aip-`, `sy-`).
   Every `PageSection` gets a light pool + dot field (`.pg-glow`), a numbered thread-and-knot mark that draws in on
   entry (`SectionMark`, CSS counter) and `is-on`/`is-in` classes; cards opt in to a pointer spotlight with `data-spot`
