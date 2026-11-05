@@ -9,7 +9,8 @@ export const brand = {
   city: 'Chennai, India',
   // Head office, from wezigns.com. Brisbane and Stoke-on-Trent offices are not shown until confirmed current.
   address: ['#4 / 25B, 1st Floor, Block 1', 'Boopathy Street, Arcot Road', 'Virugambakkam, Chennai 600092', 'India'],
-  mapsHref: 'https://www.google.com/maps/search/?api=1&query=Boopathy+Street+Arcot+Road+Virugambakkam+Chennai+600092',
+  // The Google Business profile (place id), so the link opens the WEZIGNS listing with reviews and directions.
+  mapsHref: 'https://maps.google.com/?cid=3175231318359952318',
   url: 'https://www.wezigns.com',
   // WhatsApp Business number, digits only with country code. Empty keeps every WhatsApp button hidden.
   whatsapp: '918124422205',

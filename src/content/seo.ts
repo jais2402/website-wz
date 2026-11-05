@@ -80,7 +80,7 @@ export const site = {
     youtube: '',
     clutch: '',
     goodfirms: '',
-    googleBusiness: '',
+    googleBusiness: brand.mapsHref,
   },
   // TODO(client): X / Twitter handle without the @ (the old site used 'wezigns'). Empty leaves twitter:site out.
   twitterHandle: '',
