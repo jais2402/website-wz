@@ -943,7 +943,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 .panel {
   position: relative;
   background: var(--ink);
-  padding: clamp(96px, 14vw, 180px) 0;
+  padding: clamp(72px, 8vw, 112px) 0;
 }
 
 .proof {
@@ -3631,14 +3631,10 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   outline-color: #1d4ed8;
 }
 
-/* Pricing into integrations: two full panel paddings back to back left a ~400px empty band on wide screens. */
+/* Pricing sits a little tighter than other panels so the whole block fits one screen. */
 .pricing {
   padding-top: clamp(56px, 6vw, 88px);
   padding-bottom: clamp(64px, 7vw, 100px);
-}
-
-.integrations {
-  padding-top: clamp(80px, 9vw, 120px);
 }
 
 .pricing-head {

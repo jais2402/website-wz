@@ -178,7 +178,7 @@ export const offer = {
   kicker: 'What we build',
   // Non-breaking spaces keep each offering's name on one line.
   title: 'Websites, Custom\u00a0Software and Software\u00a0Products.',
-  body: 'Three kinds of work, one team that designs, builds and runs all of it, from Chennai since 2012.',
+  body: 'Three kinds of work, one team that designs, builds and runs all of it, for companies from small to enterprise since 2012.',
   items: [
     {
       key: 'web',
