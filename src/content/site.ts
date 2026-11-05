@@ -176,7 +176,8 @@ export const stats = [
 // The three kinds of work people come to us for. `visual` picks the code-drawn picture in components/Offer.tsx.
 export const offer = {
   kicker: 'What we build',
-  title: 'Websites, custom software and software products.',
+  // Non-breaking spaces keep each offering's name on one line.
+  title: 'Websites, Custom\u00a0Software and Software\u00a0Products.',
   body: 'Three kinds of work, one team that designs, builds and runs all of it, from Chennai since 2012.',
   items: [
     {
