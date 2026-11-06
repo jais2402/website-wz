@@ -56,6 +56,12 @@ describe('legal copy', () => {
   const docs = [privacyPolicy, termsOfUse, cookieStatement]
   const allText = docs.flatMap((d) => [d.lead, ...d.sections.flatMap((s) => [s.heading, ...s.body])]).join('\n')
 
+  it('gives the Grievance Officer their own email address', () => {
+    const contact = privacyPolicy.sections.find((s) => s.id === 'contact')!.body.join(' ')
+    expect(contact).toContain('Name: Sivaraj.')
+    expect(contact).toContain('Email: sivaraj@wezigns.com.')
+  })
+
   it('has no placeholders left', () => {
     expect(allText.match(/\[[^\]]+\]/g)).toBeNull()
   })

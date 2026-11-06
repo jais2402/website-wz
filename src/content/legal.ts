@@ -13,6 +13,8 @@ export type LegalDoc = { title: string; lead: string; sections: LegalSection[] }
 
 const address = brand.address.join(', ')
 const privacyEmail = brand.email
+// The Grievance Officer's own mailbox (DPDP Act; client, 2026-11-06). General privacy requests still go to privacyEmail.
+const grievanceEmail = 'sivaraj@wezigns.com'
 
 export const legalMeta = {
   updated: '2026-11-06',
@@ -142,7 +144,7 @@ export const privacyPolicy: LegalDoc = {
       heading: 'Grievance Officer and contact',
       body: [
         'Our Grievance Officer handles privacy questions, requests and complaints.',
-        `Name: Sivaraj. Designation: Chief Financial Officer (CFO). Email: ${privacyEmail}. Phone: ${brand.phone}. Address: ${address}.`,
+        `Name: Sivaraj. Designation: Chief Financial Officer (CFO). Email: ${grievanceEmail}. Phone: ${brand.phone}. Address: ${address}.`,
         'We will acknowledge your message promptly and resolve it within one month of receiving it.',
       ],
     },
