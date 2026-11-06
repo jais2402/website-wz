@@ -2,7 +2,7 @@
 
 | Topic | Decision | Done in code |
 |---|---|---|
-| Legal pages | Remove the visible draft notice; placeholders ([CIN], Grievance Officer name and designation) stay until the details arrive | yes |
+| Legal pages | Remove the visible draft notice; the [CIN] placeholder stays until it arrives (Grievance Officer: Sivaraj, CFO, added 2026-11-06) | yes |
 | GA4 | Client adds `VITE_GA_MEASUREMENT_ID` in Vercel later; policies stay as written | nothing to do |
 | Client names in the portfolio archive | Keep all 100 names; intro and Terms explain they were published on the old site, removal on request | yes |
 | Counts | 20+ business systems (stat) vs over a hundred projects including websites (home tile) | yes |
@@ -30,7 +30,7 @@
 | Price signal, testimonials, security facts | None for now | later |
 
 ## Still with the client
-- Grievance Officer name and designation, CIN; lawyer review of the legal pages (incl. the EU-US Data Privacy Framework line).
+- CIN; lawyer review of the legal pages (incl. the EU-US Data Privacy Framework line).
 - `VITE_GA_MEASUREMENT_ID` in Vercel, then redeploy; GA4 settings (Google signals off, 14-month retention).
 - X / Twitter handle, if there is one.
 - Vercel Domains: http and the bare domain 301 to https://www.wezigns.com; optional HSTS; promote the deployment.

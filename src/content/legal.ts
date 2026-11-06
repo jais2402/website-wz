@@ -141,7 +141,7 @@ export const privacyPolicy: LegalDoc = {
       heading: 'Grievance Officer and contact',
       body: [
         'Our Grievance Officer handles privacy questions, requests and complaints.',
-        `Name: [Grievance Officer name]. Designation: [Designation]. Email: ${privacyEmail}. Phone: ${brand.phone}. Address: ${address}.`,
+        `Name: Sivaraj. Designation: Chief Financial Officer (CFO). Email: ${privacyEmail}. Phone: ${brand.phone}. Address: ${address}.`,
         'We will acknowledge your message promptly and resolve it within one month of receiving it.',
       ],
     },

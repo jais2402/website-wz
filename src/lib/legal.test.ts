@@ -58,7 +58,7 @@ describe('legal copy', () => {
 
   it('keeps only the agreed placeholders', () => {
     const found = new Set(allText.match(/\[[^\]]+\]/g))
-    expect([...found].sort()).toEqual(['[CIN]', '[Designation]', '[Grievance Officer name]'])
+    expect([...found].sort()).toEqual(['[CIN]'])
   })
 
   it('no longer claims the site uses no cookies or no tracking', () => {
