@@ -15,9 +15,9 @@ const address = brand.address.join(', ')
 const privacyEmail = brand.email
 
 export const legalMeta = {
-  updated: '2026-11-04',
-  // The visible draft notice is off (client decision, 2026-10-20). Placeholders such as [CIN] stay until the
-  // details arrive; set a note here again to show it on every legal page.
+  updated: '2026-11-06',
+  // The visible draft notice is off (client decision, 2026-10-20). Set a note here again to show it on every legal
+  // page. Wezigns is identified by its Udyam (MSME) registration; if it is also a company, add the CIN beside it.
   reviewNote: '',
 }
 
@@ -29,8 +29,8 @@ export const privacyPolicy: LegalDoc = {
       id: 'who-we-are',
       heading: 'Who we are',
       body: [
-        `This website, ${brand.url.replace('https://', '')}, is run by ${brand.legal} ("Wezigns", "we", "us"), a company registered in India.`,
-        `Registered office: ${address}. Company registration number (CIN): [CIN]. Phone: ${brand.phone}. Email: ${brand.email}.`,
+        `This website, ${brand.url.replace('https://', '')}, is run by ${brand.legal} ("Wezigns", "we", "us"), a business registered in India.`,
+        `Registered office: ${address}. Udyam registration number: UDYAM-TN-24-0005404. Phone: ${brand.phone}. Email: ${brand.email}.`,
         'For the personal data described here, we decide why and how it is used. Under Indian law that makes us the Data Fiduciary. Under the EU and UK GDPR we are the controller.',
         'This policy covers this website only. When we build software for a client, how personal data is handled in that project is set out in our contract with that client.',
       ],
@@ -173,7 +173,7 @@ export const termsOfUse: LegalDoc = {
       id: 'who-we-are',
       heading: 'Who we are',
       body: [
-        `This website is run by ${brand.legal}, a company registered in India (CIN: [CIN]), with its registered office at ${address}.`,
+        `This website is run by ${brand.legal}, a business registered in India (Udyam registration number: UDYAM-TN-24-0005404), with its registered office at ${address}.`,
         'By using this website you accept these terms. If you do not agree, please do not use it.',
       ],
     },

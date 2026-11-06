@@ -56,9 +56,12 @@ describe('legal copy', () => {
   const docs = [privacyPolicy, termsOfUse, cookieStatement]
   const allText = docs.flatMap((d) => [d.lead, ...d.sections.flatMap((s) => [s.heading, ...s.body])]).join('\n')
 
-  it('keeps only the agreed placeholders', () => {
-    const found = new Set(allText.match(/\[[^\]]+\]/g))
-    expect([...found].sort()).toEqual(['[CIN]'])
+  it('has no placeholders left', () => {
+    expect(allText.match(/\[[^\]]+\]/g)).toBeNull()
+  })
+
+  it('identifies the business by its Udyam registration on the privacy policy and the terms', () => {
+    for (const d of [privacyPolicy, termsOfUse]) expect(d.sections[0].body.join(' ')).toContain('UDYAM-TN-24-0005404')
   })
 
   it('no longer claims the site uses no cookies or no tracking', () => {
