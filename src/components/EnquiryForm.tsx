@@ -39,7 +39,8 @@ export function EnquirySent({
   const ref = useRef<HTMLHeadingElement>(null)
   useEffect(() => ref.current?.focus(), [])
   return (
-    <div className="ef-done" role="status">
+    // Masked in Clarity replays: it shows the visitor's first name (and, for mailto, our address beside their message).
+    <div className="ef-done" role="status" data-clarity-mask="true">
       <span className="ef-done-icon" aria-hidden="true">
         ✓
       </span>

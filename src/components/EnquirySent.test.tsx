@@ -18,6 +18,10 @@ describe('EnquirySent', () => {
     expect(screen.getByRole('heading', { name: 'Thanks, Jais. Your message is with us.' })).toBeTruthy()
     expect(screen.getAllByRole('listitem')).toHaveLength(3)
   })
+  it('is masked in Clarity replays, since it shows the visitor\'s name', () => {
+    render(<EnquirySent name="Jais" via="endpoint" onReset={vi.fn()} />)
+    expect(screen.getByRole('status').getAttribute('data-clarity-mask')).toBe('true')
+  })
   it('asks the visitor to press Send when the email app took over, with email and phone as a fallback', () => {
     render(<EnquirySent name="Jais" via="mailto" onReset={vi.fn()} />)
     expect(screen.getByRole('heading', { name: 'Almost there, Jais.' })).toBeTruthy()
