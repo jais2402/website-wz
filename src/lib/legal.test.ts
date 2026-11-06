@@ -64,13 +64,21 @@ describe('legal copy', () => {
     for (const d of [privacyPolicy, termsOfUse]) expect(d.sections[0].body.join(' ')).toContain('UDYAM-TN-24-0005404')
   })
 
+  it('does not deny the session replays that Clarity records', () => {
+    expect(allText).not.toMatch(/do not use (fingerprinting or )?session recording/i)
+  })
+
+  it('states the 13-month analytics cookie lifetime set in lib/ga.ts', () => {
+    expect(cookieStatement.sections.flatMap((s) => s.body).join('\n')).not.toMatch(/2 years/)
+  })
+
   it('no longer claims the site uses no cookies or no tracking', () => {
     expect(allText).not.toMatch(/no cookies|no tracking|does not use cookies|sets no cookies|GSTIN|confirm\]/i)
   })
 
   it('names every cookie and storage item the site uses', () => {
     const cookies = cookieStatement.sections.flatMap((s) => s.body).join('\n')
-    for (const name of ['wz-consent', '_ga', '_ga_<container-id>', 'Cookie settings']) expect(cookies).toContain(name)
+    for (const name of ['wz-consent', '_ga', '_ga_<container-id>', '_clck', '_clsk', 'CLID', 'MUID', 'Cookie settings']) expect(cookies).toContain(name)
   })
 
   it('uses no em dashes', () => {

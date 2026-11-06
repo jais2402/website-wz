@@ -55,7 +55,7 @@ describe('ga loader', () => {
     const c = calls()
     expect(c.filter((x) => x[0] === 'consent' && x[1] === 'default')).toHaveLength(1)
     expect(c).toContainEqual(['consent', 'update', { analytics_storage: 'granted' }])
-    expect(c).toContainEqual(['config', 'G-TEST123', { anonymize_ip: true }])
+    expect(c).toContainEqual(['config', 'G-TEST123', { anonymize_ip: true, cookie_expires: 395 * 24 * 60 * 60 }])
     expect(c.some((x) => x[0] === 'consent' && JSON.stringify(x).includes('ad_storage":"granted'))).toBe(false)
     track('cta_click', { label: 'Hi', location: 'nav' })
     expect(calls()).toContainEqual(['event', 'cta_click', { label: 'Hi', location: 'nav' }])

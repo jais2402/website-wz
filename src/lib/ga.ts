@@ -27,6 +27,9 @@ export const validId = (id: string) => /^G-[A-Z0-9]{4,16}$/.test(id)
 /** True when a GA ID is configured, i.e. there is something to ask consent for. */
 export const analyticsConfigured = (id = ENV_ID) => validId(id)
 
+/** _ga and _ga_<id> lifetime: 13 months (395 days), stated in the Cookie Policy. */
+export const GA_COOKIE_SECONDS = 395 * 24 * 60 * 60
+
 let started = false
 let configured = false
 
@@ -67,7 +70,8 @@ function apply(id: string, granted: boolean) {
       if (!configured) {
         configured = true
         gtag('js', new Date())
-        gtag('config', id, { anonymize_ip: true })
+        // 13 months, the most EU regulators accept for an analytics cookie (Google's default is 2 years).
+        gtag('config', id, { anonymize_ip: true, cookie_expires: GA_COOKIE_SECONDS })
         loadScript(id)
       }
       setAnalyticsSink((name, params) => gtag('event', name, params ?? {}))

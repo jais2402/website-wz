@@ -39,11 +39,11 @@ export const privacyPolicy: LegalDoc = {
       id: 'what-we-collect',
       heading: 'What we collect and why',
       body: [
-        'Replying to your enquiry. Our forms ask for your name, email address, the topics you need help with and your message. Company and phone number are optional. We also record which page the form was sent from. We use these details to reply to you by email or phone about your enquiry, to understand what you need and, if you ask, to prepare a proposal. We do not use your phone number for sales or promotional calls. Legal basis: you give us this information yourself for this purpose (Digital Personal Data Protection Act 2023, section 7(a)); under the GDPR and UK GDPR, taking steps at your request before a contract and our legitimate interest in answering business enquiries.',
+        'Replying to your enquiry. Our forms ask for your name, email address, the topics you need help with and your message. Company and phone number are optional. Without your name and email address we cannot reply, so those are required. We also record which page the form was sent from. We use these details to reply to you by email or phone about your enquiry, to understand what you need and, if you ask, to prepare a proposal. We do not use your phone number for sales or promotional calls. Legal basis: you give us this information yourself for this purpose (Digital Personal Data Protection Act 2023, section 7(a)); under the GDPR and UK GDPR, taking steps at your request before a contract and our legitimate interest in answering business enquiries.',
         'If you then talk to us by email or phone. We keep that correspondence with your enquiry, for the same purpose and on the same basis.',
         `Marketing emails, only if you ask. Each form has a separate box: "${marketingOptIn.label}" It is optional and unticked. Your enquiry is sent whether you tick it or not. If you tick it, we add your email address to our mailing list and send you occasional news about our work and services. We send these by email only, never by phone call or SMS. Every email has an unsubscribe link. We keep a record of when you agreed and the words you agreed to. Legal basis: your consent (Digital Personal Data Protection Act 2023, section 6; GDPR and UK GDPR, Article 6(1)(a); in the UK, also the Privacy and Electronic Communications Regulations). You can withdraw it at any time with the unsubscribe link or by emailing ${privacyEmail}.`,
         'Website analytics, only if you accept. If you accept analytics cookies in our cookie banner, we use Google Analytics 4 to see how the site is used, so we can improve it. It records the pages you visit, events such as button clicks and forms being sent, your approximate location (such as country and city, worked out from your IP address), and your device, browser, operating system and screen size. We do not send your name, email address, phone number or message to Google Analytics. When a form is sent, it records only that a form was sent, which form, and whether the marketing box was ticked. Google signals and all advertising features are turned off. Legal basis: your consent (Digital Personal Data Protection Act 2023, section 6; GDPR and UK GDPR, Article 6(1)(a), and the EU and UK cookie rules). If you accept, we also use Microsoft Clarity to see how pages are used: where people click and scroll, and replays of visits with every form field masked, so what you type is never recorded. If you reject, or do not choose, neither Google Analytics nor Microsoft Clarity loads and nothing is sent to Google or Microsoft. You can change your choice at any time with the "Cookie settings" link in the footer.',
-        'When you visit any page. Our hosting provider keeps standard server logs: your IP address, browser type, the page requested and the time. These are used only to deliver the site, keep it secure and fix faults. Legal basis: our duty to keep data secure and our legitimate interest in running a safe, reliable website.',
+        'When you visit any page. Our hosting provider keeps standard server logs: your IP address, browser type, the page requested and the time. These are used only to deliver the site, keep it secure and fix faults. Under the GDPR and UK GDPR, the legal basis is our legitimate interest in running a safe, reliable website (Article 6(1)(f)).',
         'Each form also contains a hidden field that people cannot see. It catches automated spam and holds no personal data.',
       ],
     },
@@ -53,7 +53,8 @@ export const privacyPolicy: LegalDoc = {
       body: [
         'We do not sell your personal data, and we do not share it with anyone for their own marketing.',
         'We do not advertise to you. There are no advertising or social media pixels, no remarketing and no ad cookies on this website.',
-        'We do not profile you. We look at analytics only as totals and trends, such as how many people visited a page. We do not use fingerprinting or session recording.',
+        'We do not profile you or use fingerprinting. We look at Google Analytics only as totals and trends, such as how many people visited a page. Microsoft Clarity records replays of visits only if you accept analytics cookies, with every form field masked. We watch them only to find and fix problems with the website, never to identify you.',
+        'We do not make decisions about you by automated means alone, including profiling, that have legal or similarly significant effects.',
         'There are no user accounts and no payments on this website.',
         'Our forms do not ask for sensitive information such as health, financial or identity details. Please do not include it in your message.',
       ],
@@ -87,7 +88,7 @@ export const privacyPolicy: LegalDoc = {
       heading: 'International transfers',
       body: [
         'We are based in India, and our providers are based in the United States or have parent companies there. So your enquiry is handled in India and the United States, server logs may be handled wherever Vercel has a data centre, and analytics data may be handled in the United States.',
-        'Vercel, Resend and Google LLC are certified under the EU-US Data Privacy Framework. Their data processing terms also include the European Commission Standard Contractual Clauses and the UK Addendum.',
+        'Vercel, Resend, Google LLC and Microsoft are certified under the EU-US Data Privacy Framework and its UK Extension. Where a provider\'s data processing terms also include the European Commission Standard Contractual Clauses and the UK Addendum, those apply as a fallback.',
         'If you write to us from the European Economic Area or the United Kingdom, your enquiry comes to us in India so that we can answer the request you have made (GDPR and UK GDPR, Article 49(1)(b)).',
         'Transfers out of India follow section 16 of the Digital Personal Data Protection Act 2023 and any restrictions the Government of India sets.',
       ],
@@ -248,6 +249,14 @@ export const termsOfUse: LegalDoc = {
       ],
     },
     {
+      id: 'general',
+      heading: 'General',
+      body: [
+        'If you sign a written agreement with us, that agreement governs our work together. Where it differs from these terms, the agreement wins.',
+        'If a court finds any part of these terms invalid, the rest stays in force.',
+      ],
+    },
+    {
       id: 'changes',
       heading: 'Changes to these terms',
       body: [
@@ -287,8 +296,8 @@ export const cookieStatement: LegalDoc = {
       id: 'analytics',
       heading: 'Analytics: Google Analytics, only if you accept',
       body: [
-        'Name: _ga. Type: cookie. Set by: Google Analytics, on our domain. Purpose: tells one browser\'s visits apart from another\'s, so we can count visitors. Kept for: about 2 years.',
-        'Name: _ga_<container-id> (the end is our Google Analytics ID). Type: cookie. Set by: Google Analytics, on our domain. Purpose: keeps track of your current visit. Kept for: about 2 years.',
+        'Name: _ga. Type: cookie. Set by: Google Analytics, on our domain. Purpose: tells one browser\'s visits apart from another\'s, so we can count visitors. Kept for: 13 months.',
+        'Name: _ga_<container-id> (the end is our Google Analytics ID). Type: cookie. Set by: Google Analytics, on our domain. Purpose: keeps track of your current visit. Kept for: 13 months.',
         'These cookies are set only after you accept. Until then, and if you reject, Google Analytics does not load and nothing is sent to Google.',
         'Google signals and advertising features are turned off. We use the data only as totals, to see how the site is used and improve it. Google keeps the event data for 14 months. See our Privacy Policy for what is collected.',
       ],
@@ -299,6 +308,8 @@ export const cookieStatement: LegalDoc = {
       body: [
         'Name: _clck. Type: cookie. Set by: Microsoft Clarity, on our domain. Purpose: tells one browser\'s visits apart from another\'s. Kept for: 1 year.',
         'Name: _clsk. Type: cookie. Set by: Microsoft Clarity, on our domain. Purpose: joins the pages of one visit together. Kept for: 1 day.',
+        'Name: CLID. Type: cookie. Set by: Microsoft Clarity, on clarity.ms. Purpose: records when Clarity first saw this browser. Kept for: 1 year.',
+        'Names: MUID, MR, SM and ANONCHK. Type: cookies. Set by: Microsoft, on clarity.ms. Purpose: MUID identifies the browser across Microsoft services; MR and SM refresh and synchronise it; ANONCHK records that it is not passed on for advertising (Clarity does not use it for ads). Kept for: MUID up to 1 year, MR 7 days, SM for the visit, ANONCHK 10 minutes.',
         'Clarity shows us where people click and scroll, and replays of visits with every form field masked, so what you type is never recorded. These cookies are set only after you accept; until then, and if you reject, Clarity does not load and nothing is sent to Microsoft.',
       ],
     },

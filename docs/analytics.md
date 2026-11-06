@@ -87,4 +87,4 @@ stream settings to avoid counting outbound links twice, or ignore `outbound_clic
 - GA4 does not log or store IP addresses; `anonymize_ip` is kept only as a harmless explicit setting.
 
 Keep the cookie policy and privacy policy (`src/content/legal.ts`) in step: they must name Google Analytics, the
-`_ga` / `_ga_*` cookies (up to 2 years), the `wz-consent` storage entry (12 months) and Google as a recipient.
+`_ga` / `_ga_*` cookies (13 months, `cookie_expires` in `lib/ga.ts`), the `wz-consent` storage entry (12 months) and Google as a recipient.
