@@ -1,6 +1,7 @@
 import { relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { type Plugin, type ViteDevServer, runnerImport } from 'vite'
+import { festiveAttrs } from '../src/lib/festive.ts'
 
 // Puts a semantic HTML snapshot of each page's real copy (src/lib/snapshot.ts) inside <div id="root">, so crawlers
 // that do not run JavaScript read the page. React's createRoot replaces it on load.
@@ -16,8 +17,13 @@ const SNAPSHOT = fileURLToPath(new URL('../src/lib/snapshot.ts', import.meta.url
 const ROOT_DIV = /<div id="root">\s*<\/div>/
 
 // vercel.json allows this script by its sha256 in the Content-Security-Policy (api/_vercel.test.ts checks it).
+// It also opens the festive loader: while the window on its data attributes (data-festive, data-from, data-until in
+// ms, home page only, src/lib/festive.ts) is open it adds `festive-<name>` to <html>, so the loader switches itself
+// off at the end date without a redeploy. The attributes are not part of the hash.
 export const HEAD_SCRIPT =
-  "document.documentElement.classList.add('js');setTimeout(function(){if(document.querySelector('#root>.snapshot'))document.documentElement.classList.remove('js')},6000)"
+  "var d=document.documentElement,s=document.currentScript,f=s&&s.dataset,n=Date.now();d.classList.add('js');" +
+  "if(f&&f.festive&&n>=(+f.from||0)&&n<+f.until)d.classList.add('festive-'+f.festive);" +
+  "setTimeout(function(){if(document.querySelector('#root>.snapshot'))d.classList.remove('js')},6000)"
 
 // Minimal reading styles for no-JS visitors (the site CSS still applies), and the visually-hidden rule for JS users.
 // The boot preloader (home only) is for JS users: no-JS visitors, and the fallback above, get the snapshot instead.
@@ -32,6 +38,7 @@ export function snapshotPlugin(): Plugin {
   let root = process.cwd()
   let server: ViteDevServer | undefined
   let built: Promise<SnapshotModule> | undefined
+  let env: Record<string, string | undefined> = {}
 
   // Dev: through the dev server, so copy edits show on the next reload without restarting Vite (and the content files
   // never become config dependencies). Build: Vite's module runner, loaded once without the project config.
@@ -47,6 +54,8 @@ export function snapshotPlugin(): Plugin {
     name: 'html-snapshot',
     configResolved(config) {
       root = config.root
+      // VITE_* from .env files and the process (Vercel's Environment Variables).
+      env = config.env
     },
     configureServer(s) {
       server = s
@@ -60,11 +69,12 @@ export function snapshotPlugin(): Plugin {
         const body = id && mod.snapshot(id)
         if (!body) return html
         // The home preloader goes first, so it paints from the HTML before any script has run.
-        const boot = (id && mod.bootPreloader(id)) || ''
+        const fest = id === 'home' ? mod.festiveFromEnv(env) : null
+        const boot = (id && mod.bootPreloader(id, fest?.festive)) || ''
         return {
           html: html.replace(ROOT_DIV, () => `<div id="root">${boot}${body}</div>`),
           tags: [
-            { tag: 'script', children: HEAD_SCRIPT, injectTo: 'head' },
+            { tag: 'script', attrs: fest ? festiveAttrs(fest) : {}, children: HEAD_SCRIPT, injectTo: 'head' },
             { tag: 'style', children: HEAD_STYLE, injectTo: 'head' },
           ],
         }

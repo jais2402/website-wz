@@ -484,6 +484,291 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   }
 }
 
+/* Diwali loader (lib/festive.ts): a kolam drawn in by the counter round a lit diya, fireworks behind. React renders
+   `.is-diwali`; the HTML copy (is-boot) carries both centres and shows this one while the head script has put
+   `festive-diwali` on <html>, i.e. inside the window. The festive gold is a deliberate, temporary exception to the
+   blue accent. */
+.pre-diwali,
+.dw-sky {
+  display: none;
+}
+
+.preloader.is-diwali .pre-diwali,
+.festive-diwali .preloader.is-boot .pre-diwali {
+  display: grid;
+}
+
+.preloader.is-diwali .dw-sky,
+.festive-diwali .preloader.is-boot .dw-sky {
+  display: block;
+}
+
+.festive-diwali .preloader.is-boot .pre-inner:not(.pre-diwali) {
+  display: none;
+}
+
+.pre-diwali {
+  gap: 14px;
+  /* Keeps the glow below (z-index -1) inside the centre, above the panels. */
+  isolation: isolate;
+}
+
+/* Warm light pooling round the lamp, on top of the panels. */
+.pre-diwali::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  width: min(760px, 160vw);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: radial-gradient(closest-side, rgba(255, 170, 80, 0.16), rgba(255, 122, 89, 0.05) 55%, transparent);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dw-art {
+  display: block;
+  width: clamp(168px, 22vw, 220px);
+  aspect-ratio: 1;
+}
+
+.dw-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.dw-kolam {
+  fill: none;
+  stroke: #ffc46b;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 3px rgba(255, 180, 90, 0.7));
+}
+
+.dw-dots circle {
+  fill: rgba(255, 238, 214, 0.88);
+}
+
+.dw-sparks circle {
+  fill: #ffe2a8;
+  opacity: 0;
+}
+
+.dw-greet {
+  font-size: clamp(2.1rem, 5vw, 2.9rem);
+  line-height: 1.1;
+  padding: 0 0.1em 0.06em;
+  color: #ffe9c7;
+  text-shadow: 0 0 24px rgba(255, 170, 80, 0.45);
+}
+
+.pre-diwali .pre-bar > i {
+  background: linear-gradient(90deg, #ff7a59, #ffc46b);
+}
+
+.pre-diwali .pre-caption {
+  color: #c9b9a6;
+}
+
+/* Fireworks: above the panels, below the centre. */
+.dw-sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dw-burst {
+  /* Reach of the rays: bigger on bigger screens. */
+  --r: clamp(44px, 9vmin, 104px);
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 0;
+  height: 0;
+}
+
+/* The rocket's trail, rising to the burst point. */
+.dw-burst::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: 2px;
+  height: 46px;
+  border-radius: 2px;
+  background: linear-gradient(to top, transparent, var(--c));
+  opacity: 0;
+}
+
+.dw-burst b {
+  position: absolute;
+  left: -1.5px;
+  top: 0;
+  width: 3px;
+  height: calc(var(--r) * 0.4);
+  border-radius: 3px;
+  background: linear-gradient(to top, var(--c), #fff7e6);
+  box-shadow: 0 0 6px var(--c);
+  transform-origin: 50% 0;
+  transform: rotate(var(--a)) translateY(0) scaleY(0.2);
+  opacity: 0;
+}
+
+/* Every other ray flies shorter, so the burst is not a clock face. */
+.dw-burst b:nth-child(even) {
+  --k: 0.68;
+}
+
+/* A bright spark at the tip of each ray. */
+.dw-burst b::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  width: 6px;
+  height: 6px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: #fffaf0;
+  box-shadow: 0 0 8px 2px var(--c);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dw-kolam {
+    stroke-dashoffset: 0;
+  }
+
+  .dw-sky {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dw-flame {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: dw-flicker 1.4s ease-in-out infinite alternate;
+  }
+
+  .dw-halo {
+    animation: dw-halo 2.2s ease-in-out infinite alternate;
+  }
+
+  .dw-sparks circle {
+    animation: dw-spark 2.4s ease-out infinite;
+  }
+
+  .dw-sparks circle:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+
+  .dw-sparks circle:nth-child(3) {
+    animation-delay: 0.8s;
+  }
+
+  .dw-sparks circle:nth-child(4) {
+    animation-delay: 1.2s;
+  }
+
+  .dw-sparks circle:nth-child(5) {
+    animation-delay: 1.6s;
+  }
+
+  .dw-sparks circle:nth-child(6) {
+    animation-delay: 2s;
+  }
+
+  .dw-burst::before {
+    animation: dw-rocket 3.2s var(--d) infinite;
+  }
+
+  .dw-burst b {
+    animation: dw-ray 3.2s var(--d) infinite;
+  }
+}
+
+@keyframes dw-flicker {
+  0% {
+    transform: scale(1, 1) skewX(0deg);
+  }
+  35% {
+    transform: scale(0.94, 1.07) skewX(2deg);
+  }
+  70% {
+    transform: scale(1.03, 0.95) skewX(-2deg);
+  }
+  100% {
+    transform: scale(0.97, 1.05) skewX(1deg);
+  }
+}
+
+@keyframes dw-halo {
+  to {
+    opacity: 0.7;
+  }
+}
+
+@keyframes dw-spark {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-46px);
+  }
+}
+
+/* One firework every 3.2 s: the trail climbs for the first fifth, then the rays open and fade. */
+@keyframes dw-rocket {
+  0% {
+    opacity: 0;
+    transform: translateY(26vh);
+  }
+  4% {
+    opacity: 0.9;
+  }
+  20% {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+  24%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dw-ray {
+  0%,
+  19% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(0) scaleY(0.2);
+  }
+  23% {
+    opacity: 1;
+  }
+  44% {
+    opacity: 0.85;
+    transform: rotate(var(--a)) translateY(calc(var(--r) * var(--k, 1))) scaleY(1);
+  }
+  56%,
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateY(calc(var(--r) * var(--k, 1) * 1.35)) scaleY(0.3);
+  }
+}
+
 /* ==========================================================================
    Nav
    ========================================================================== */

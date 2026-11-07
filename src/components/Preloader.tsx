@@ -1,7 +1,8 @@
 import { useGSAP } from '@gsap/react'
 import { useRef, useState } from 'react'
 import { gsap, lockScroll } from '@/hooks/motion'
-import { preloaderCopy } from '@/content/site'
+import { festive as festiveCopy, preloaderCopy } from '@/content/site'
+import { type Festive, diwaliArt, diwaliSky } from '@/lib/festive'
 import type { Gate } from '@/lib/loadGate'
 import { LogoMark } from './Logo'
 
@@ -9,18 +10,21 @@ import { LogoMark } from './Logo'
  * Counter-driven intro (0 → 100) that wipes away to reveal the scene. With a `gate` it waits until everything is
  * loaded (fonts, the page, both 3D scenes compiled and drawn): the counter follows real progress up to 90, holds
  * there, and finishes once the gate opens (the gate itself times out, so this never hangs). Reduced motion: a
- * still loader that simply disappears when ready.
+ * still loader that simply disappears when ready. With `festive` (Diwali) the centre is a kolam that draws in with
+ * the counter round a lit diya (lib/festive.ts); everything else is the same.
  */
 export function Preloader({
   reducedMotion,
   onDone,
   gate,
   caption = 'Organising the chaos',
+  festive = null,
 }: {
   reducedMotion: boolean
   onDone: () => void
   gate?: Gate | null
   caption?: string
+  festive?: Festive | null
 }) {
   const root = useRef<HTMLDivElement>(null)
   const [gone, setGone] = useState(false)
@@ -54,10 +58,12 @@ export function Preloader({
 
       const num = root.current!.querySelector('.pre-num')!
       const bar = root.current!.querySelector<HTMLElement>('.pre-bar > i')!
+      const kolam = root.current!.querySelector<SVGPathElement>('.dw-kolam')
       const counter = { v: 0 }
       const show = () => {
         num.textContent = String(Math.round(counter.v)).padStart(3, '0')
         bar.style.transform = `scaleX(${counter.v / 100})`
+        kolam?.style.setProperty('stroke-dashoffset', String(1 - counter.v / 100))
       }
       const markIn = gsap.from('.pre-mark', { scale: 0.6, opacity: 0, rotate: -20, duration: 1, ease: 'expo.out' })
       // The HTML copy already played (part of) this intro in CSS since its first paint: carry on from there.
@@ -82,6 +88,8 @@ export function Preloader({
           .timeline({ onComplete: finish })
           .to(counter, { v: 100, duration: 0.45, ease: 'power2.out', onUpdate: show })
           .to('.pre-inner', { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' }, '+=0.15')
+          // The festive fireworks (none on the usual loader: an empty list, so GSAP has nothing to warn about).
+          .to(root.current!.querySelectorAll('.dw-sky'), { opacity: 0, duration: 0.5 }, '<')
           .add(onDone, '<')
           .to('.pre-panel', { yPercent: -100, duration: 1, ease: 'expo.inOut', stagger: 0.06 }, '<0.1')
       })
@@ -96,22 +104,41 @@ export function Preloader({
 
   if (gone) return null
   return (
-    <div ref={root} className="preloader" role="status" aria-label={preloaderCopy.label}>
+    <div
+      ref={root}
+      className={festive ? 'preloader is-diwali' : 'preloader'}
+      role="status"
+      aria-label={festive ? festiveCopy.diwali.label : preloaderCopy.label}
+    >
       <div className="pre-panels" aria-hidden="true">
         {Array.from({ length: 5 }, (_, i) => (
           <span className="pre-panel" key={i} />
         ))}
       </div>
-      <div className="pre-inner">
-        <span className="pre-mark">
-          <LogoMark size={56} />
-        </span>
-        <span className="pre-num mono">000</span>
-        <span className="pre-bar">
-          <i />
-        </span>
-        <span className="pre-caption mono">{caption}</span>
-      </div>
+      {festive && <div className="dw-sky" aria-hidden="true" dangerouslySetInnerHTML={{ __html: diwaliSky() }} />}
+      {festive ? (
+        <div className="pre-inner pre-diwali">
+          {/* Shared markup string (lib/festive.ts), so the HTML copy (lib/snapshot.ts) matches it exactly. */}
+          <span className="pre-mark dw-art" dangerouslySetInnerHTML={{ __html: diwaliArt() }} />
+          <span className="dw-greet serif">{festiveCopy.diwali.greeting}</span>
+          <span className="pre-num mono">000</span>
+          <span className="pre-bar">
+            <i />
+          </span>
+          <span className="pre-caption mono">{festiveCopy.diwali.caption}</span>
+        </div>
+      ) : (
+        <div className="pre-inner">
+          <span className="pre-mark">
+            <LogoMark size={56} />
+          </span>
+          <span className="pre-num mono">000</span>
+          <span className="pre-bar">
+            <i />
+          </span>
+          <span className="pre-caption mono">{caption}</span>
+        </div>
+      )}
     </div>
   )
 }

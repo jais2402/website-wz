@@ -28,6 +28,7 @@ import { usePauseOffscreen } from '@/hooks/usePauseOffscreen'
 import { LoomHero, Weave } from '@/loom/hero'
 import { LoomContact } from '@/loom/sections'
 import { preloaderCopy } from '@/content/site'
+import { activeFestive } from '@/lib/festive'
 
 // The fixed canvas (story threads + countries globe) is the heaviest chunk; it loads right after the hero's first
 // paint, while the preloader is up. The loom hero lazy-loads its own canvas. Each pauses itself while off screen.
@@ -44,6 +45,8 @@ export default function App() {
   const reducedMotion = usePrefersReducedMotion()
   const live = useGfxLive()
   const [ready, setReady] = useState(false)
+  // Diwali (or another festival) while the head script has opened its window, or forced with ?festive=.
+  const [festive] = useState(() => activeFestive(document.documentElement.classList, location.search))
   // Two passes under the preloader: the first render is the hero alone, so it paints sooner; the rest of the page
   // (and the fixed story/globe canvas, which looks up its sections on mount) follows right after that first paint,
   // still under the preloader, so the page it reveals is unchanged.
@@ -65,6 +68,7 @@ export default function App() {
         reducedMotion={reducedMotion}
         gate={homeGate}
         caption={preloaderCopy.home}
+        festive={festive}
         onDone={() => setReady(true)}
       />
       {/* Without WebGL three.js is never downloaded. */}

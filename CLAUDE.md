@@ -61,6 +61,13 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   (contact over the particle globe). They are not rendered.
 - The home preloader waits for `homeGate` (`lib/loadGate.ts`): fonts, window load, and both canvases reporting via
   `scene/Warmup.tsx` (shaders compiled + first frames drawn). It opens after 12 s regardless.
+- Festive loader (Diwali 2026): `VITE_FESTIVE=diwali` in Vercel (then redeploy) turns the home preloader into a
+  kolam drawn in by the counter round a lit diya, with fireworks (`lib/festive.ts`, copy and default end date in
+  `festive` in site.ts, CSS after the preloader rules in index.css). It switches itself off at the end date
+  (default 16 Nov 2026 00:00 IST; `VITE_FESTIVE_UNTIL` / `VITE_FESTIVE_FROM` override, any date `Date.parse` reads)
+  with no redeploy: the build puts the window on the inline head script (`scripts/vite-snapshot.ts`), which adds
+  `festive-diwali` to <html> while it is open; the boot copy and React both follow that class. `?festive=diwali|off`
+  forces it for previews. Changing `HEAD_SCRIPT` changes its CSP hash in vercel.json (api/_vercel.test.ts).
 - Machines that can't run the live loom (no WebGL, a software renderer, or a GPU that fails the frame test or
   drops under ~25 fps: `gfx/gfxMode.ts`, `gfx/frameTest.ts`; `?gfx=live|poster|auto` forces it) get the 2D
   "chaos to system" hero instead (`loom/ChaosHero.tsx`, Before/After style: tangle + problem cards → one glowing knot → a single line into the "after" dashboard, `loom/SystemApp.tsx`, shared with the slider; maths in `lib/chaos.ts`, cards in `loom.chaos`

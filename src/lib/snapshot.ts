@@ -28,6 +28,7 @@ import {
   enquiryCopy,
   faq,
   faqSection,
+  festive,
   footer,
   footerCopy,
   integrations,
@@ -56,6 +57,7 @@ import {
   work,
   workSection,
 } from '../content/site.ts'
+import { type Festive, diwaliArt, diwaliSky, festiveWindow } from './festive.ts'
 import { formatLegalDate, legalAnchor } from './legal.ts'
 
 /** Page ids: one per shipped HTML file. Systems are `system:<slug>`. */
@@ -729,19 +731,31 @@ const PRELOADER_MARK =
   '<path d="M3 8l6.5 16L16 11l6.5 13L29 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>' +
   '<circle cx="16" cy="11" r="3.2" fill="var(--lime)"></circle></svg>'
 
+/** The Diwali loader's fireworks and centre (components/Preloader.tsx renders the same). */
+export const diwaliInner = (): string =>
+  `<div class="dw-sky" aria-hidden="true">${diwaliSky()}</div><div class="pre-inner pre-diwali"><span class="pre-mark dw-art">${diwaliArt()}</span>` +
+  `<span class="dw-greet serif">${t(festive.diwali.greeting)}</span><span class="pre-num mono">000</span>` +
+  `<span class="pre-bar"><i></i></span><span class="pre-caption mono">${t(festive.diwali.caption)}</span></div>`
+
+/** The festive window from the build's env (VITE_FESTIVE, VITE_FESTIVE_FROM, VITE_FESTIVE_UNTIL), or null. */
+export const festiveFromEnv = (env: Record<string, string | undefined>, now = Date.now()) =>
+  festiveWindow({ theme: env.VITE_FESTIVE, from: env.VITE_FESTIVE_FROM, until: env.VITE_FESTIVE_UNTIL }, festive, now)
+
 /**
  * The home preloader (components/Preloader.tsx) as plain HTML, so it paints straight from the HTML instead of after
  * the scripts have run. `is-boot` marks this copy: React's first render replaces it with the identical live one.
- * Null for pages without a preloader.
+ * With a festival it carries both centres; CSS shows the festive one while the head script has put `festive-<name>`
+ * on <html> (inside its window) and the usual one otherwise. Null for pages without a preloader.
  */
-export function bootPreloader(id: string): string | null {
+export function bootPreloader(id: string, fest: Festive | null = null): string | null {
   if (id !== 'home') return null
   const panels = '<span class="pre-panel"></span>'.repeat(5)
   return (
     `<div class="preloader is-boot" role="status" aria-label="${t(preloaderCopy.label)}">` +
     `<div class="pre-panels" aria-hidden="true">${panels}</div>` +
     `<div class="pre-inner"><span class="pre-mark">${PRELOADER_MARK}</span><span class="pre-num mono">000</span>` +
-    `<span class="pre-bar"><i></i></span><span class="pre-caption mono">${t(preloaderCopy.home)}</span></div></div>`
+    `<span class="pre-bar"><i></i></span><span class="pre-caption mono">${t(preloaderCopy.home)}</span></div>` +
+    `${fest === 'diwali' ? diwaliInner() : ''}</div>`
   )
 }
 

@@ -29,6 +29,8 @@
 | Pricing after-launch line | Approved | nothing to do |
 | Price signal, testimonials, security facts | None for now | later |
 
+| Diwali launch loader | Kolam, diya and fireworks on the home loader. On with `VITE_FESTIVE=diwali` (Vercel, Production, then redeploy); off by itself on 16 Nov 2026 00:00 IST (`VITE_FESTIVE_UNTIL` to change). Preview any time with `?festive=diwali` (2026-11-07) | yes |
+
 ## Still with the client
 - Lawyer review of the legal pages (incl. the EU-US Data Privacy Framework line).
 - `VITE_GA_MEASUREMENT_ID` in Vercel, then redeploy; GA4 settings (Google signals off, 14-month retention).

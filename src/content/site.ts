@@ -787,6 +787,17 @@ export const marketingOptIn = {
 // Home preloader. Also written into index.html at build time (lib/snapshot.ts) so it paints before any script runs.
 export const preloaderCopy = { label: 'Loading', home: 'Untangling the threads' }
 
+// Festive home loader (lib/festive.ts). On with VITE_FESTIVE=diwali in Vercel; it switches itself off at `until`
+// (India time) unless VITE_FESTIVE_UNTIL says otherwise. Diwali 2026 is 8 November.
+export const festive = {
+  diwali: {
+    until: '2026-11-16T00:00:00+05:30',
+    label: 'Loading. Happy Diwali from Wezigns',
+    greeting: 'Happy Diwali',
+    caption: 'Lighting every thread',
+  },
+}
+
 // Second page: the time-loom concept (loom.html).
 export const loom = {
   eyebrow: 'Software and websites since 2012',
