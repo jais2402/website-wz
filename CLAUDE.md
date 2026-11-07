@@ -74,8 +74,9 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   in site.ts), the lighter story scene, and no blur or moving grain (`html[data-gfx]` in index.css). A testing
   badge (only with `?badge=1` in the address, on any build) shows which version a device gets.
   `lib/webgl.ts` checks whether a WebGL context can be created; without one the 3D scenes are not mounted
-  and the home preloader does not wait for them. One WebGL canvas at a time
-  (`lib/canvasSlot.ts`). `npm run build && npm run perf:audit` measures frame rates with the GPU and with SwiftShader.
+  and the home preloader does not wait for them. Both canvases stay mounted once built (the fixed one from the
+  preloader on) and only one draws at a time: each pauses (`frameloop="never"`) while off screen. They used to take
+  turns mounting, which rebuilt the story threads as the story arrived and restarted the loom on the way back up. `npm run build && npm run perf:audit` measures frame rates with the GPU and with SwiftShader.
 - 3D render budget (`lib/render.ts`, `hooks/useBudgetDpr.ts`): each canvas renders at most ~1.6M pixels and
   the browser scales it up; bloom runs at half resolution. Built for laptops without a dedicated GPU: keep it.
 - Two WebGL canvases share the page: the loom hero (in its sticky section) and the fixed canvas (story threads +

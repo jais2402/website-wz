@@ -4,7 +4,6 @@ import { Component, type ReactNode, useEffect, useState } from 'react'
 import { useBudgetDpr } from '@/hooks/useBudgetDpr'
 import { useDocumentVisible } from '@/hooks/useDocumentVisible'
 import { damp } from '@/lib/math'
-import { canvasSlot } from '@/lib/canvasSlot'
 import { homeGate } from '@/lib/loadGate'
 import { sceneStore } from '@/lib/sceneStore'
 import { Dust } from './Dust'
@@ -56,15 +55,7 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   const [active, setActive] = useState(true)
   // Keeps rendering until the shaders are compiled and drawn once, even before a 3D zone is on screen.
   const [warm, setWarm] = useState(false)
-  const [heroVisible, setHeroVisible] = useState(canvasSlot.heroVisible)
   const visible = useDocumentVisible()
-  useEffect(() => canvasSlot.subscribe(setHeroVisible), [])
-  // One WebGL context at a time: mounted once while the preloader runs (shaders compiled and cached), then whenever
-  // the hero's loom is off screen. It mounts as soon as the hero leaves (not when a 3D zone arrives), so the shaders
-  // are rebuilt during the sections before the story and the threads are there the moment it scrolls in; between
-  // the story and the globe it stays mounted and only pauses. Unmounting tears down the context and its loop.
-  // Poster mode has no hero WebGL to share with, so the story stays mounted throughout.
-  const mounted = lite || !warm || !heroVisible
 
   useEffect(() => {
     const zones = Array.from(document.querySelectorAll('[data-3d-zone]'))
@@ -85,7 +76,7 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   }, [])
 
   // The story and globe are watched like the hero: kept under ~25 fps, they switch to the lighter scene.
-  const watching = mounted && warm && active && visible && !lite && !reducedMotion && gfx.mode !== 'live'
+  const watching = warm && active && visible && !lite && !reducedMotion && gfx.mode !== 'live'
   useEffect(() => {
     if (!watching) return
     return watchFrames(() => gfx.markSlow())
@@ -94,53 +85,55 @@ export function Scene({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <div className={`canvas-root${active ? '' : ' is-paused'}`} aria-hidden="true">
       <WebGLBoundary>
-        {mounted && (
-          <Canvas
-            // Switching to the lighter scene rebuilds the canvas with its smaller buffers.
-            key={lite ? 'lite' : 'full'}
-            frameloop={(active || !warm) && visible ? 'always' : 'never'}
-            dpr={dpr}
-            camera={{ position: [0, 0, 7.5], fov: 45, near: 0.1, far: 60 }}
-            gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
-          >
-            <Warmup
-              onDone={() => {
-                setWarm(true)
-                homeGate?.done('scene')
-              }}
-            />
-            <CameraRig />
-            <Dust count={mobile ? 425 : 1190} />
-            <ThreadField
-              quality={
-                lite
-                  ? mobile
-                    ? { strands: 150, points: 80, riders: 600 }
-                    : { strands: 300, points: 100, riders: 1200 }
-                  : mobile
-                    ? { strands: 320, points: 90, riders: 1600 }
-                    : { strands: 640, points: 120, riders: 3000 }
-              }
-              size={lite ? 0.78 : 1}
-              reducedMotion={reducedMotion}
-            />
-            <Globe dots={mobile ? 1400 : 2600} reducedMotion={reducedMotion} />
-            {/* Loom-style glow on desktop; phones skip post-processing to keep frame rates up. */}
-            {!mobile && (
-              <EffectComposer multisampling={0}>
-                <Bloom
-                  mipmapBlur
-                  levels={6}
-                  resolutionScale={0.5}
-                  intensity={0.55}
-                  luminanceThreshold={0.32}
-                  luminanceSmoothing={0.4}
-                  radius={0.65}
-                />
-              </EffectComposer>
-            )}
-          </Canvas>
-        )}
+        {/* Mounted from the preloader on (shaders compiled, threads built) and kept: it only pauses (frameloop
+            'never') while no 3D zone is on screen, as the hero's loom does while it is off screen, so only one of the
+            two draws at a time. It used to unmount while the hero was on screen and rebuild when it left, so the
+            threads were recompiled just as the story arrived and showed late. */}
+        <Canvas
+          // Switching to the lighter scene rebuilds the canvas with its smaller buffers.
+          key={lite ? 'lite' : 'full'}
+          frameloop={(active || !warm) && visible ? 'always' : 'never'}
+          dpr={dpr}
+          camera={{ position: [0, 0, 7.5], fov: 45, near: 0.1, far: 60 }}
+          gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
+        >
+          <Warmup
+            onDone={() => {
+              setWarm(true)
+              homeGate?.done('scene')
+            }}
+          />
+          <CameraRig />
+          <Dust count={mobile ? 425 : 1190} />
+          <ThreadField
+            quality={
+              lite
+                ? mobile
+                  ? { strands: 150, points: 80, riders: 600 }
+                  : { strands: 300, points: 100, riders: 1200 }
+                : mobile
+                  ? { strands: 320, points: 90, riders: 1600 }
+                  : { strands: 640, points: 120, riders: 3000 }
+            }
+            size={lite ? 0.78 : 1}
+            reducedMotion={reducedMotion}
+          />
+          <Globe dots={mobile ? 1400 : 2600} reducedMotion={reducedMotion} />
+          {/* Loom-style glow on desktop; phones skip post-processing to keep frame rates up. */}
+          {!mobile && (
+            <EffectComposer multisampling={0}>
+              <Bloom
+                mipmapBlur
+                levels={6}
+                resolutionScale={0.5}
+                intensity={0.55}
+                luminanceThreshold={0.32}
+                luminanceSmoothing={0.4}
+                radius={0.65}
+              />
+            </EffectComposer>
+          )}
+        </Canvas>
       </WebGLBoundary>
     </div>
   )

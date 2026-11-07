@@ -1,5 +1,4 @@
 import { useGSAP } from '@gsap/react'
-import { canvasSlot } from '@/lib/canvasSlot'
 import { homeGate } from '@/lib/loadGate'
 import {
   type CSSProperties,
@@ -46,6 +45,7 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
   const [phase, setPhase] = useState(-1)
   const [active, setActive] = useState(true)
   const [ready, setReady] = useState(false)
+  const [wasActive, setWasActive] = useState(false)
   // Machines that may run it load the live loom under its poster; it passes a frame test, then fades in. Machines
   // that can't (no WebGL, a software renderer, a GPU too slow for it, or WebGL lost) get the 2D "chaos to system"
   // hero instead (ChaosHero), and three.js is let go.
@@ -100,8 +100,8 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
     if (!ready) return
     const canvas = root.current?.querySelector('.loom-canvas canvas')
     if (!canvas) return
-    // Unmounting the scene (hero scrolled away) also loses the context on purpose; only a canvas still on the
-    // page has really lost it.
+    // Unmounting the scene (the page closing) also loses the context on purpose; only a canvas still on the page has
+    // really lost it.
     const lost = () =>
       queueMicrotask(() => {
         if (!canvas.isConnected) return
@@ -125,19 +125,16 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
     return () => window.clearTimeout(t)
   }, [live, active, afterPaint])
 
-  // Unmount the WebGL loom when the hero is fully off screen (and tell the fixed canvas it may mount).
+  // Pause the WebGL loom while the hero is fully off screen. It stays mounted: tearing it
+  // down and rebuilding it on the way back up showed the poster and then a restart, the loom "stopping and
+  // resuming". A paused canvas draws nothing, so keeping it costs memory only.
   useEffect(() => {
     const io = new IntersectionObserver(([e]) => {
       setActive(e.isIntersecting)
-      // The scene unmounts while the hero is off screen; coming back, the poster shows until it is drawn again.
-      if (!e.isIntersecting) setReady(false)
-      canvasSlot.setHeroVisible(e.isIntersecting)
+      if (e.isIntersecting) setWasActive(true)
     })
     if (root.current) io.observe(root.current)
-    return () => {
-      io.disconnect()
-      canvasSlot.setHeroVisible(false)
-    }
+    return () => io.disconnect()
   }, [])
 
   // Headline intro plays once the preloader wipes away (same sequencing as Concept A).
@@ -191,8 +188,8 @@ export function LoomHero({ reducedMotion, introReady }: { reducedMotion: boolean
         )}
         <div className={`loom-canvas has-poster${ready ? ' is-ready' : ''}`} aria-hidden="true">
           {
-            // Mounted only while the hero is on screen: one WebGL context at a time on the page.
-            live && active && afterPaint && (
+            // Mounted once the hero has been on screen, then kept (paused while off screen, see above).
+            live && (active || wasActive) && afterPaint && (
               <Suspense fallback={null}>
                 <LoomScene reducedMotion={reducedMotion} active={active} onReady={onSceneReady} />
               </Suspense>
