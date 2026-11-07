@@ -1,18 +1,35 @@
-/** Wezigns mark: two chevrons forming a W, joined by a node, a "system" glyph. */
+import { brand } from '@/content/site'
+import { LOGO_VIEWBOX, MARK_VIEWBOX, logoPaths, logoViewBox, markViewBox } from '@/content/logo'
+
+/**
+ * The square Wezigns mark: the "ig" pair from the wordmark (the splash over the i, the yellow and blue g). Letters in
+ * currentColor. Decorative: the wordmark or the surrounding text names the company.
+ */
 export function LogoMark({ size = 28 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <path d="M3 8l6.5 16L16 11l6.5 13L29 8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="16" cy="11" r="3.2" fill="var(--lime)" />
-    </svg>
+    <svg
+      width={Math.round((size * MARK_VIEWBOX.w) / MARK_VIEWBOX.h)}
+      height={size}
+      viewBox={markViewBox}
+      aria-hidden="true"
+      // Shared markup string (content/logo.ts), so the HTML copies (lib/snapshot.ts) match it exactly.
+      dangerouslySetInnerHTML={{ __html: logoPaths('mark') }}
+    />
   )
 }
 
-export function Logo({ className }: { className?: string }) {
+/** The Wezigns wordmark (content/logo.ts), `height` px tall, letters in currentColor. */
+export function Logo({ className, height = 30 }: { className?: string; height?: number }) {
   return (
     <span className={className ? `logo ${className}` : 'logo'}>
-      <LogoMark />
-      <span>Wezigns</span>
+      <svg
+        width={Math.round((height * LOGO_VIEWBOX.w) / LOGO_VIEWBOX.h)}
+        height={height}
+        viewBox={logoViewBox}
+        role="img"
+        aria-label={brand.name}
+        dangerouslySetInnerHTML={{ __html: logoPaths('word') }}
+      />
     </span>
   )
 }

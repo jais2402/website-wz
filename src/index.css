@@ -529,9 +529,7 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 
 /* The full Wezigns logo above the lamp: the greeting is from the company. */
 .dw-logo {
-  font-size: 1.35rem;
-  color: var(--text);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .dw-art {
@@ -806,13 +804,14 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 }
 
 .logo {
+  /* The client's wordmark (content/logo.ts): letters take this colour, the dots keep the brand colours. */
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-family: var(--f-display);
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.logo svg {
+  display: block;
 }
 
 .nav-links {

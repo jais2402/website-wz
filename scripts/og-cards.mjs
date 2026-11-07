@@ -4,10 +4,11 @@
 // Run `npm run og` after changing a hero or card, then commit the PNGs. The page itself stays raster-free; these files are only for link previews and JSON-LD.
 import { Resvg } from '@resvg/resvg-js'
 import UPNG from 'upng-js'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { heroFor } from '../src/content/heroes.ts'
 import { pages, site } from '../src/content/seo.ts'
+import { LOGO_VIEWBOX, MARK_VIEWBOX, logoPaths } from '../src/content/logo.ts'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const out = `${root}public/og/`
@@ -102,12 +103,7 @@ function card(page, i) {
   <circle cx="${knot.x}" cy="${knot.y}" r="9" fill="#ffffff"/>
   <circle cx="${knot.x}" cy="${knot.y}" r="26" fill="#8cc4ff" opacity="0.35" filter="url(#glow)"/>
   <rect width="760" height="${H}" fill="url(#fade)"/>
-  <g transform="translate(80 72) scale(1.5)">
-    <rect width="32" height="32" rx="8" fill="#12121b" stroke="#2a2a3a"/>
-    <path d="M5 9l5.5 14L16 12l5.5 11L27 9" stroke="#ededf3" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="16" cy="12" r="3" fill="#4d9fff"/>
-  </g>
-  <text x="146" y="108" font-family="${FONT}" font-size="34" font-weight="700" letter-spacing="-0.5" fill="#f2efe6">${esc(site.name)}</text>
+  <g transform="translate(80 64) scale(${48 / LOGO_VIEWBOX.h})">${logoPaths('word', '#f2efe6')}</g>
   <text x="80" y="${top - lineH - 4}" font-family="${MONO}" font-size="22" letter-spacing="3" fill="#8cc4ff">${esc(hero.kicker.toUpperCase())}</text>
   ${text}
   <text x="80" y="582" font-family="${MONO}" font-size="20" letter-spacing="2" fill="#9a9aae">WEZIGNS.COM, CHENNAI, SINCE ${site.foundingDate}</text>
@@ -160,8 +156,16 @@ pages.forEach((page, i) => {
   if (page.id !== 'loom') render(card(page, i), W, `${page.id}.png`)
 })
 
-// Logo (JSON-LD) and touch icon, from the favicon.
-const favicon = readFileSync(`${root}public/favicon.svg`, 'utf8')
+// The favicon: the square "ig" mark (src/content/logo.ts) on the site's ink, letters light. Written to public/ for
+// browsers that take SVG icons; the logo (JSON-LD), touch icon and favicon.ico are rendered from it.
+const pad = 3
+const k = (32 - 2 * pad) / MARK_VIEWBOX.h
+const markX = (32 - MARK_VIEWBOX.w * k) / 2
+const favicon =
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#07070c"/>` +
+  `<g transform="translate(${markX.toFixed(2)} ${pad}) scale(${k.toFixed(4)}) translate(${-MARK_VIEWBOX.x} ${-MARK_VIEWBOX.y})">` +
+  `${logoPaths('mark', '#ededf3')}</g></svg>\n`
+writeFileSync(`${root}public/favicon.svg`, favicon)
 render(favicon, site.logo.width, 'logo.png')
 render(favicon.replace('rx="8"', 'rx="0"'), 180, 'apple-touch-icon.png')
 writeIco(favicon, [16, 32, 48], `${root}public/favicon.ico`)

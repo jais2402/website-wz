@@ -4,7 +4,7 @@ import { gsap, lockScroll } from '@/hooks/motion'
 import { festive as festiveCopy, preloaderCopy } from '@/content/site'
 import { type Festive, diwaliArt, diwaliSky } from '@/lib/festive'
 import type { Gate } from '@/lib/loadGate'
-import { Logo, LogoMark } from './Logo'
+import { Logo } from './Logo'
 
 /**
  * Counter-driven intro (0 → 100) that wipes away to reveal the scene. With a `gate` it waits until everything is
@@ -131,7 +131,7 @@ export function Preloader({
       ) : (
         <div className="pre-inner">
           <span className="pre-mark">
-            <LogoMark size={56} />
+            <Logo height={44} />
           </span>
           <span className="pre-num mono">000</span>
           <span className="pre-bar">

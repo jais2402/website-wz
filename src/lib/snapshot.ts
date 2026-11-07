@@ -58,6 +58,7 @@ import {
   workSection,
 } from '../content/site.ts'
 import { type Festive, diwaliArt, diwaliSky, festiveWindow } from './festive.ts'
+import { LOGO_VIEWBOX, logoPaths, logoViewBox } from '../content/logo.ts'
 import { formatLegalDate, legalAnchor } from './legal.ts'
 
 /** Page ids: one per shipped HTML file. Systems are `system:<slug>`. */
@@ -725,16 +726,15 @@ export function snapshot(id: string): string | null {
   return id.startsWith('system:') ? systemPageHtml(id.slice('system:'.length)) : null
 }
 
-// The Wezigns mark as components/Logo.tsx's LogoMark renders it: 56 px on the preloader, 28 px in the full logo.
-const logoMark = (size: number) =>
-  `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" aria-hidden="true">` +
-  '<path d="M3 8l6.5 16L16 11l6.5 13L29 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>' +
-  '<circle cx="16" cy="11" r="3.2" fill="var(--lime)"></circle></svg>'
-const PRELOADER_MARK = logoMark(56)
+// The Wezigns wordmark as components/Logo.tsx's Logo renders it (content/logo.ts): 44 px on the preloader, 30 px
+// above the Diwali lamp.
+const logoHtml = (height: number, className = 'logo') =>
+  `<span class="${className}"><svg width="${Math.round((height * LOGO_VIEWBOX.w) / LOGO_VIEWBOX.h)}" height="${height}" ` +
+  `viewBox="${logoViewBox}" role="img" aria-label="${t(brand.name)}">${logoPaths('word')}</svg></span>`
 
 /** The Diwali loader's fireworks and centre (components/Preloader.tsx renders the same). */
 export const diwaliInner = (): string =>
-  `<div class="dw-sky" aria-hidden="true">${diwaliSky()}</div><div class="pre-inner pre-diwali"><span class="logo dw-logo">${logoMark(28)}<span>${t(brand.name)}</span></span><span class="pre-mark dw-art">${diwaliArt()}</span>` +
+  `<div class="dw-sky" aria-hidden="true">${diwaliSky()}</div><div class="pre-inner pre-diwali">${logoHtml(30, 'logo dw-logo')}<span class="pre-mark dw-art">${diwaliArt()}</span>` +
   `<span class="dw-greet serif">${t(festive.diwali.greeting)}</span><span class="pre-num mono">000</span>` +
   `<span class="pre-bar"><i></i></span><span class="pre-caption mono">${t(festive.diwali.caption)}</span></div>`
 
@@ -754,7 +754,7 @@ export function bootPreloader(id: string, fest: Festive | null = null): string |
   return (
     `<div class="preloader is-boot" role="status" aria-label="${t(preloaderCopy.label)}">` +
     `<div class="pre-panels" aria-hidden="true">${panels}</div>` +
-    `<div class="pre-inner"><span class="pre-mark">${PRELOADER_MARK}</span><span class="pre-num mono">000</span>` +
+    `<div class="pre-inner"><span class="pre-mark">${logoHtml(44)}</span><span class="pre-num mono">000</span>` +
     `<span class="pre-bar"><i></i></span><span class="pre-caption mono">${t(preloaderCopy.home)}</span></div>` +
     `${fest === 'diwali' ? diwaliInner() : ''}</div>`
   )
