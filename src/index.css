@@ -884,9 +884,10 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   right: 0;
   padding: 16px;
   border-radius: 24px;
-  background: rgba(13, 13, 21, 0.95);
+  /* Solid: once the page has scrolled, the nav's own backdrop-filter stops this one from blurring, and a
+     see-through sheet let the page's text show behind the links. */
+  background: var(--ink-2);
   border: 1px solid var(--line);
-  backdrop-filter: blur(20px);
   display: grid;
   gap: 4px;
 }
@@ -1198,7 +1199,8 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 
 .story-dots {
   position: absolute;
-  right: var(--gutter);
+  /* Under the copy card, lined up with it: at the right they sat on the 3D shape (the sphere, on Secure). */
+  left: calc(var(--gutter) + max(0px, (100vw - 1320px) / 2));
   bottom: 40px;
   display: flex;
   gap: 20px;
@@ -1228,6 +1230,13 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
 @media (max-width: 899px) {
   .story-dots {
     bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Short screens: the copy card fills the height and the dots would sit on it. They only echo the steps. */
+@media (max-height: 700px) {
+  .story-dots {
+    display: none;
   }
 }
 

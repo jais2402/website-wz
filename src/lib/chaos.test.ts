@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cardRect, chaosScene, knotGate, nodeY, overlapsAny, pickOnThread, strandPoint } from './chaos'
+import { APP_MIN_W, appFit, cardRect, chaosScene, knotGate, nodeY, overlapsAny, pickOnThread, strandPoint } from './chaos'
 
 const W = 1440
 const H = 900
@@ -24,6 +24,21 @@ describe('chaosScene', () => {
   it('gathers the threads inside the knot', () => {
     expect(gate.top).toBeGreaterThan(scene.knot.y - scene.knot.r)
     expect(gate.bottom).toBeLessThan(scene.knot.y + scene.knot.r)
+  })
+})
+
+describe('appFit', () => {
+  it('keeps the dashboard at full size where it fits', () => {
+    expect(appFit(388, 388, 520, 900)).toBe(1)
+  })
+  it('scales a dashboard laid out wider than its slot down to the slot (small windows)', () => {
+    const slot = chaosScene(894, 521).app.w
+    expect(slot).toBeLessThan(APP_MIN_W)
+    expect(appFit(slot, APP_MIN_W, 300, 521)).toBeCloseTo(slot / APP_MIN_W, 2)
+  })
+  it('and down to the screen height when it is too tall, never up', () => {
+    expect(appFit(388, 388, 560, 521)).toBeCloseTo((521 * 0.84) / 560, 2)
+    expect(appFit(500, 360, 200, 900)).toBe(1)
   })
 })
 

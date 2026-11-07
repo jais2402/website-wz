@@ -71,7 +71,7 @@ export function ContactForm() {
   }
 
   return (
-    <form ref={formRef} className="cf ef" noValidate onSubmit={onSubmit} aria-busy={status.kind === 'sending'} data-clarity-mask="true">
+    <form ref={formRef} className="cf ef" method="post" noValidate onSubmit={onSubmit} aria-busy={status.kind === 'sending'} data-clarity-mask="true">
       <div className="cf-row">
         <div className="cf-field">
           <label htmlFor="cf-name">

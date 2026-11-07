@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 import { loom } from '@/content/site'
 import { drawsInSoftware } from '@/gfx/gfxMode'
 import {
+  APP_MIN_W,
+  appFit,
   chaosScene,
   type Gate,
   hash,
@@ -228,10 +230,14 @@ export function ChaosHero({
       // Fewer specks where the processor draws everything.
       dust = software ? 24 : small ? 30 : 50
       // The dashboard: level with the knot (landscape) or under it (phones). The line ends at its edge.
+      // Landscape: laid out at a readable width, then scaled down to its slot and to the screen's height, so on a
+      // small window it shrinks instead of clipping its rows and running off the right edge.
+      const layoutW = scene.portrait ? scene.app.w : Math.max(scene.app.w, APP_MIN_W)
       app.style.left = `${scene.app.x}px`
-      app.style.width = `${scene.app.w}px`
+      app.style.width = `${layoutW}px`
       app.style.top = `${scene.app.y}px`
       app.classList.toggle('is-portrait', scene.portrait)
+      app.style.setProperty('--fit', String(scene.portrait ? 1 : appFit(scene.app.w, layoutW, app.offsetHeight, h)))
       const box = app.getBoundingClientRect()
       to = scene.portrait ? { x: scene.link.to.x, y: box.top - r.top } : { x: box.left - r.left, y: scene.link.to.y }
       const now = performance.now()
@@ -319,10 +325,13 @@ export function ChaosHero({
         const box = canvas.getBoundingClientRect()
         blocked = blockers(box)
         blockedAt = now
-        // On screens too narrow for both, the dashboard waits until the hero copy has scrolled away.
-        const intro = document.querySelector('.loom-intro:not(.is-gone)')?.getBoundingClientRect()
+        // On screens too narrow for both, the dashboard waits while the hero copy (the intro, then each step's card)
+        // would cover it.
         const panel = app.getBoundingClientRect()
-        covered = !!intro && intro.right > panel.left + 8 && intro.bottom > panel.top && intro.top < panel.bottom
+        covered = [...document.querySelectorAll('.loom-intro:not(.is-gone), .loom-phase.is-active')].some((el) => {
+          const c = el.getBoundingClientRect()
+          return c.right > panel.left + 8 && c.bottom > panel.top && c.top < panel.bottom
+        })
         app.classList.toggle('is-covered', covered)
       }
       for (let k = 0; k < cards.length; k++) {

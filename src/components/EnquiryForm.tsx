@@ -218,7 +218,7 @@ export function EnquiryForm() {
   const sending = status.kind === 'sending'
 
   return (
-    <form ref={formRef} className="composer ef" noValidate onSubmit={onSubmit} aria-busy={sending} data-clarity-mask="true">
+    <form ref={formRef} className="composer ef" method="post" noValidate onSubmit={onSubmit} aria-busy={sending} data-clarity-mask="true">
       <fieldset>
         <legend className="mono">I need help with</legend>
         <div className="chip-row">

@@ -760,7 +760,7 @@ export const footer = [
       ['Industry systems', '/systems/industry'],
     ],
   },
-  { title: 'Capabilities', links: [['Websites', '/website-development'], ['Custom software', '/#offer'], ['Software products', '/#offer'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
+  { title: 'Capabilities', links: [['Websites', '/website-development'], ['Custom software', '/#offer-software'], ['Software products', '/#offer-product'], ['System integration', '#integrations'], ['AI', '/ai'], ['Technology', '/technology']] },
   { title: 'Company', links: [['About', '/about-us'], ['Contact', '/contact-us'], ['Email us', 'mailto:contact@wezigns.com']] },
 ] as const
 

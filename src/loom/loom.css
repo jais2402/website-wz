@@ -130,7 +130,9 @@
 .chaos-hero .chaos-app {
   position: absolute;
   max-width: none;
-  transform: translateY(-50%);
+  /* --fit (ChaosHero, lib/chaos.ts appFit): scaled down on small windows, from its left edge where the line ends. */
+  transform: translateY(-50%) scale(var(--fit, 1));
+  transform-origin: 0 50%;
   box-shadow:
     0 0 0 1px rgba(140, 196, 255, 0.08),
     0 0 60px -20px rgba(77, 159, 255, 0.35),
@@ -461,6 +463,14 @@
   /* It sits over the intro panel (same corner, later in the DOM): without this its empty box swallowed clicks on
      the hero buttons and system chips. The phase cards hold no links. */
   pointer-events: none;
+}
+
+/* The 2D hero (ChaosHero), landscape: each step's card stays left of the knot (at 64% of the width), so the dashboard
+   to its right can show beside it instead of waiting behind it. No change on wide screens, where 660px fits. */
+@media (orientation: landscape) {
+  .loom-sticky:has(.chaos-hero) .loom-phases {
+    width: min(660px, calc(60vw - var(--gutter)));
+  }
 }
 
 /* Wide screens: the intro and phase panels line up with the centred page container (1320px .wrap). */

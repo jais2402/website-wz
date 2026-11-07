@@ -36,6 +36,18 @@ export function chaosScene(w: number, h: number) {
 
 export type Scene = ReturnType<typeof chaosScene>
 
+/** The narrowest the landscape dashboard is laid out at; a narrower slot scales it down instead (appFit). */
+export const APP_MIN_W = 360
+
+/**
+ * How much to scale the landscape dashboard: down to its slot's width when it was laid out wider (APP_MIN_W), and
+ * down to 84% of the screen's height when it is taller than that. Never up.
+ */
+export function appFit(slotW: number, layoutW: number, layoutH: number, screenH: number): number {
+  const s = Math.min(1, slotW / layoutW, layoutH ? (screenH * 0.84) / layoutH : 1)
+  return Math.round(s * 1000) / 1000
+}
+
 /** The threads' destination: they all converge on the knot's centre (a hair apart, so they keep their order). */
 export function knotGate(scene: Scene): Gate {
   const { x, y, r } = scene.knot

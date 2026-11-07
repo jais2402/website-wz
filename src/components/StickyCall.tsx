@@ -6,16 +6,25 @@ import './stickyCall.css'
 /**
  * Phones only (CSS hides it from 900px): a floating "Call us / Email" pill. Shows once the first screen has
  * scrolled away and hides again when the contact block (#contact), or a card with its own call and email
- * buttons (`data-own-contact`), comes into view.
+ * buttons (`data-own-contact`), comes into view. It also tucks away while the visitor scrolls down (reading) and
+ * comes back when they scroll up, so it never sits on the text being read.
  */
 export function StickyCall() {
   const [shown, setShown] = useState(false)
 
   useEffect(() => {
     let raf = 0
+    let lastY = window.scrollY
+    let goingDown = false
     const check = () => {
       raf = 0
       const h = window.innerHeight
+      const y = window.scrollY
+      // A few pixels of slack so a jittery touch scroll does not flicker it.
+      if (Math.abs(y - lastY) > 6) {
+        goingDown = y > lastY
+        lastY = y
+      }
       const contact = document.getElementById('contact')
       const atContact = !!contact && contact.getBoundingClientRect().top < h * 0.9
       // Cards with their own call/email buttons (data-own-contact): the pill would only cover them.
@@ -23,7 +32,7 @@ export function StickyCall() {
         const r = el.getBoundingClientRect()
         return r.bottom > 0 && r.top < h
       })
-      setShown(window.scrollY > h * 0.9 && !atContact && !ownContact)
+      setShown(y > h * 0.9 && !goingDown && !atContact && !ownContact)
     }
     const on = () => {
       if (!raf) raf = requestAnimationFrame(check)

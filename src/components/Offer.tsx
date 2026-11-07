@@ -113,7 +113,8 @@ export function Offer({ className = '' }: { className?: string }) {
         </header>
         <ul className="offer-grid">
           {offer.items.map((o, i) => (
-            <li key={o.key} className={`offer-card tone-${o.tone}`}>
+            // Own anchors (#offer-software, #offer-product), so footer links land on their card.
+            <li key={o.key} id={`offer-${o.key}`} className={`offer-card tone-${o.tone}`}>
               <OfferArt kind={o.key} />
               <p className="mono offer-kicker">
                 {o.kicker}
