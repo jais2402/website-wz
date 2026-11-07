@@ -8,9 +8,9 @@ export function LogoMark({ size = 28 }: { size?: number }) {
   )
 }
 
-export function Logo() {
+export function Logo({ className }: { className?: string }) {
   return (
-    <span className="logo">
+    <span className={className ? `logo ${className}` : 'logo'}>
       <LogoMark />
       <span>Wezigns</span>
     </span>

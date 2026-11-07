@@ -527,6 +527,13 @@ html:is([data-gfx='software'], [data-gfx='none']) .grain {
   z-index: -1;
 }
 
+/* The full Wezigns logo above the lamp: the greeting is from the company. */
+.dw-logo {
+  font-size: 1.35rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
 .dw-art {
   display: block;
   width: clamp(168px, 22vw, 220px);

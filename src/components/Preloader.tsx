@@ -4,7 +4,7 @@ import { gsap, lockScroll } from '@/hooks/motion'
 import { festive as festiveCopy, preloaderCopy } from '@/content/site'
 import { type Festive, diwaliArt, diwaliSky } from '@/lib/festive'
 import type { Gate } from '@/lib/loadGate'
-import { LogoMark } from './Logo'
+import { Logo, LogoMark } from './Logo'
 
 /**
  * Counter-driven intro (0 → 100) that wipes away to reveal the scene. With a `gate` it waits until everything is
@@ -118,6 +118,7 @@ export function Preloader({
       {festive && <div className="dw-sky" aria-hidden="true" dangerouslySetInnerHTML={{ __html: diwaliSky() }} />}
       {festive ? (
         <div className="pre-inner pre-diwali">
+          <Logo className="dw-logo" />
           {/* Shared markup string (lib/festive.ts), so the HTML copy (lib/snapshot.ts) matches it exactly. */}
           <span className="pre-mark dw-art" dangerouslySetInnerHTML={{ __html: diwaliArt() }} />
           <span className="dw-greet serif">{festiveCopy.diwali.greeting}</span>

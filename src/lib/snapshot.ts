@@ -725,15 +725,16 @@ export function snapshot(id: string): string | null {
   return id.startsWith('system:') ? systemPageHtml(id.slice('system:'.length)) : null
 }
 
-// The Wezigns mark as components/Logo.tsx's LogoMark renders it at 56 px (the preloader size).
-const PRELOADER_MARK =
-  '<svg width="56" height="56" viewBox="0 0 32 32" fill="none" aria-hidden="true">' +
+// The Wezigns mark as components/Logo.tsx's LogoMark renders it: 56 px on the preloader, 28 px in the full logo.
+const logoMark = (size: number) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="none" aria-hidden="true">` +
   '<path d="M3 8l6.5 16L16 11l6.5 13L29 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>' +
   '<circle cx="16" cy="11" r="3.2" fill="var(--lime)"></circle></svg>'
+const PRELOADER_MARK = logoMark(56)
 
 /** The Diwali loader's fireworks and centre (components/Preloader.tsx renders the same). */
 export const diwaliInner = (): string =>
-  `<div class="dw-sky" aria-hidden="true">${diwaliSky()}</div><div class="pre-inner pre-diwali"><span class="pre-mark dw-art">${diwaliArt()}</span>` +
+  `<div class="dw-sky" aria-hidden="true">${diwaliSky()}</div><div class="pre-inner pre-diwali"><span class="logo dw-logo">${logoMark(28)}<span>${t(brand.name)}</span></span><span class="pre-mark dw-art">${diwaliArt()}</span>` +
   `<span class="dw-greet serif">${t(festive.diwali.greeting)}</span><span class="pre-num mono">000</span>` +
   `<span class="pre-bar"><i></i></span><span class="pre-caption mono">${t(festive.diwali.caption)}</span></div>`
 
