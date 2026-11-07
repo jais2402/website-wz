@@ -8,8 +8,10 @@ import { festiveAttrs } from '../src/lib/festive.ts'
 //
 // For JS users the snapshot is visually hidden from the first paint: an inline head script adds `js` to <html> and an
 // inline style clips `.js .snapshot`. No-JS visitors and crawlers get it in plain view; it is removed (not hidden)
-// once React renders, so screen readers never meet it twice. If the app has not replaced it after a few seconds
-// (a failed chunk, a script error), the script drops the class so the copy shows instead of a blank page.
+// once React renders, so screen readers never meet it twice. If the app has not replaced it (or an inner page's
+// prerender) after 12 s, as long as the home preloader may wait (a failed chunk, a script error), the script drops
+// the class so the copy shows instead of a blank page. Pages the build prerenders (scripts/vite-prerender.ts) drop the
+// snapshot, which sits between the <!--snapshot--> markers, so crawlers do not read every page twice.
 
 type SnapshotModule = typeof import('../src/lib/snapshot.ts')
 
@@ -23,7 +25,7 @@ const ROOT_DIV = /<div id="root">\s*<\/div>/
 export const HEAD_SCRIPT =
   "var d=document.documentElement,s=document.currentScript,f=s&&s.dataset,n=Date.now();d.classList.add('js');" +
   "if(f&&f.festive&&n>=(+f.from||0)&&n<+f.until)d.classList.add('festive-'+f.festive);" +
-  "setTimeout(function(){if(document.querySelector('#root>.snapshot'))d.classList.remove('js')},6000)"
+  "setTimeout(function(){if(document.querySelector('#root>.snapshot,#root>.prerender'))d.classList.remove('js')},12000)"
 
 // Minimal reading styles for no-JS visitors (the site CSS still applies), and the visually-hidden rule for JS users.
 // The boot preloader (home only) is for JS users: no-JS visitors, and the fallback above, get the snapshot instead.
@@ -72,7 +74,7 @@ export function snapshotPlugin(): Plugin {
         const fest = id === 'home' ? mod.festiveFromEnv(env) : null
         const boot = (id && mod.bootPreloader(id, fest?.festive)) || ''
         return {
-          html: html.replace(ROOT_DIV, () => `<div id="root">${boot}${body}</div>`),
+          html: html.replace(ROOT_DIV, () => `<div id="root">${boot}<!--snapshot-->${body}<!--/snapshot--></div>`),
           tags: [
             { tag: 'script', attrs: fest ? festiveAttrs(fest) : {}, children: HEAD_SCRIPT, injectTo: 'head' },
             { tag: 'style', children: HEAD_STYLE, injectTo: 'head' },

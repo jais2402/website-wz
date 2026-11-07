@@ -1,4 +1,4 @@
-import { createGate } from './loadGate'
+import { createGate, homeGateTimeout } from './loadGate'
 
 describe('createGate', () => {
   beforeEach(() => vi.useFakeTimers())
@@ -32,5 +32,12 @@ describe('createGate', () => {
     const g = createGate([])
     await g.ready
     expect(g.isReady()).toBe(true)
+  })
+})
+
+describe('homeGateTimeout', () => {
+  it('waits the full time on the first visit and briefly when coming back to the home page', () => {
+    expect(homeGateTimeout(false)).toBe(12000)
+    expect(homeGateTimeout(true)).toBeLessThanOrEqual(3000)
   })
 })

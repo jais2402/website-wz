@@ -79,7 +79,7 @@ export function ContactPage() {
               <div className="glass-card cp-card">
                 <span className="mono cp-card-label">{quickContact.whatsapp}</span>
                 <a className="cp-big" href={whatsappHref} target="_blank" rel="noopener noreferrer">
-                  {`+${brand.whatsapp}`}
+                  {brand.whatsappDisplay}
                 </a>
                 <span className="cp-card-note">{contactPage.whatsappNote}</span>
               </div>

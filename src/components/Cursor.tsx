@@ -10,7 +10,8 @@ export function Cursor() {
   const ring = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!window.matchMedia('(pointer: fine)').matches) return
+    // A fine pointer only, and no trailing ring for visitors who asked for less motion.
+    if (!window.matchMedia('(pointer: fine)').matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const el = ring.current
     if (!el) return
     let x = window.innerWidth / 2

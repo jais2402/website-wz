@@ -7,22 +7,27 @@ import type { Plugin } from 'vite'
 //
 // scripts/prerender.mjs renders each page's React tree to a string (in a child process, inside jsdom, so the
 // browser-only globals it needs never leak into the Vite build). The markup goes first in <div id="root">, in a
-// `display: contents` wrapper, ahead of the crawlable snapshot. The client still mounts with createRoot, which
-// replaces both on its first commit with the same markup (no hydration, so no mismatch to reconcile): the page
-// looks the same, it just appears sooner. No-JS visitors keep the plain snapshot (the prerender needs the page's
-// scripts for its menus and forms). The home page is not prerendered: its preloader already paints from the HTML.
+// `display: contents` wrapper, in place of the crawlable snapshot (scripts/vite-snapshot.ts): with both, crawlers
+// that do not run JavaScript read every page twice (two h1s, duplicate ids). It carries the same copy, so no-JS
+// visitors and crawlers read the prerender. The client still mounts with createRoot, which replaces it on its first
+// commit with the same markup (no hydration, so no mismatch to reconcile): the page looks the same, it just appears
+// sooner. A page that fails to prerender keeps its snapshot. The home page is not prerendered: its preloader already
+// paints from the HTML.
 //
 // Elements that the page animates in on scroll start in the same hidden state as on the client (data-reveal and
 // SplitReveal words), so nothing shows and then hides again when React takes over.
 
 const SCRIPT = fileURLToPath(new URL('./prerender.mjs', import.meta.url))
 const ROOT_OPEN = '<div id="root">'
+// The crawlable snapshot (scripts/vite-snapshot.ts), replaced by the prerender.
+const SNAPSHOT = /<!--snapshot-->[\s\S]*?<!--\/snapshot-->/
 
+// Scroll-in elements start hidden only for JS users (the app reveals them); no-JS visitors see everything.
 const STYLE =
-  '.prerender{display:contents}html:not(.js) #root>.prerender{display:none}' +
+  '.prerender{display:contents}' +
   '@media (prefers-reduced-motion:no-preference){' +
-  '.prerender [data-reveal]{opacity:0;transform:translateY(36px)}' +
-  '.prerender .w>span{transform:translateY(110%) rotate(4deg)}}'
+  '.js .prerender [data-reveal]{opacity:0;transform:translateY(36px)}' +
+  '.js .prerender .w>span{transform:translateY(110%) rotate(4deg)}}'
 
 /** The page id for an HTML file: its <body data-page>, or `contact` for the contact page. */
 function pageId(html: string, filename: string): string | null {
@@ -83,7 +88,8 @@ export function prerenderPlugin(pages: string[]): Plugin {
               /<link rel="preload" as="style"( crossorigin)? href="([^"]+\.css)">/g,
               '<link rel="stylesheet"$1 href="$2">',
             )
-            .replace(ROOT_OPEN, () => `${ROOT_OPEN}<div class="prerender">${markup}</div>`),
+            .replace(ROOT_OPEN, () => `${ROOT_OPEN}<div class="prerender">${markup}</div>`)
+            .replace(SNAPSHOT, ''),
           tags: [{ tag: 'style', children: STYLE, injectTo: 'head' }],
         }
       },

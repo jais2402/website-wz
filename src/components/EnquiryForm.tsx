@@ -173,7 +173,7 @@ export function EnquiryForm() {
       return
     }
     setStatus({ kind: 'sending' })
-    const result = await submitEnquiry(data, undefined, { source: `${location.pathname} (contact block)` })
+    const result = await submitEnquiry(data, undefined, { source: `${location.pathname.slice(0, 40)} (contact block)` })
     if (result.ok) trackLead('contact_block', data)
     setStatus(result.ok ? { kind: 'sent', via: result.via } : { kind: 'error', message: result.error })
   }

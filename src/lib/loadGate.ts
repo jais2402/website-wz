@@ -41,10 +41,34 @@ export function createGate(jobs: readonly string[], timeoutMs = 12000): Gate {
   }
 }
 
+/**
+ * How long the home preloader may wait for the 3D: the full 12 s on the first visit of a browser session, 2.5 s when
+ * the visitor comes back to the home page from another page (files are cached by then, and waiting the full time
+ * again on every return read as the site "loading" between pages). The 3D finishes warming up behind the page.
+ */
+export const homeGateTimeout = (seenThisSession: boolean) => (seenThisSession ? 2500 : 12000)
+
+const SEEN_KEY = 'wz-home-seen'
+const seenThisSession = () => {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 /** The home page gate: fonts, the window load event, the loom hero canvas and the fixed story/globe canvas. */
-export const homeGate = typeof window === 'undefined' ? null : createGate(['fonts', 'page', 'loom', 'scene'])
+export const homeGate =
+  typeof window === 'undefined' ? null : createGate(['fonts', 'page', 'loom', 'scene'], homeGateTimeout(seenThisSession()))
 
 if (homeGate) {
+  homeGate.ready.then(() => {
+    try {
+      sessionStorage.setItem(SEEN_KEY, '1')
+    } catch {
+      // Storage blocked: every visit waits the full time, as before.
+    }
+  })
   document.fonts?.ready.then(() => homeGate.done('fonts'))
   if (document.readyState === 'complete') homeGate.done('page')
   else window.addEventListener('load', () => homeGate.done('page'), { once: true })

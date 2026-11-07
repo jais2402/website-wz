@@ -118,7 +118,7 @@ export function Preloader({
       {festive && <div className="dw-sky" aria-hidden="true" dangerouslySetInnerHTML={{ __html: diwaliSky() }} />}
       {festive ? (
         <div className="pre-inner pre-diwali">
-          <Logo className="dw-logo" />
+          <Logo className="dw-logo" height={36} />
           {/* Shared markup string (lib/festive.ts), so the HTML copy (lib/snapshot.ts) matches it exactly. */}
           <span className="pre-mark dw-art" dangerouslySetInnerHTML={{ __html: diwaliArt() }} />
           <span className="dw-greet serif">{festiveCopy.diwali.greeting}</span>

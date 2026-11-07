@@ -66,7 +66,9 @@ export function parseEnquiry(input: unknown): { ok: true; value: CleanEnquiry } 
     topics: Array.isArray(o.topics) ? o.topics.map(str).filter(Boolean).map(line) : [],
     message: str(o.message),
     marketing: o.marketing === true,
-    source: line(str(o.source)),
+    // Where it was sent from is ours, not the visitor's: cut to length instead of rejecting the enquiry over it
+    // (the 404 page sends whatever long address the visitor followed).
+    source: line(str(o.source)).slice(0, LIMITS.source),
   }
   const fields: string[] = []
   if (!v.name || v.name.length > LIMITS.name) fields.push('name')
@@ -75,7 +77,6 @@ export function parseEnquiry(input: unknown): { ok: true; value: CleanEnquiry } 
   if (v.phone && (v.phone.length > LIMITS.phone || !PHONE_RE.test(v.phone))) fields.push('phone')
   if (v.message.length < LIMITS.minMessage || v.message.length > LIMITS.message) fields.push('message')
   if (v.topics.length > LIMITS.topics || v.topics.some((t) => t.length > LIMITS.topic)) fields.push('topics')
-  if (v.source.length > LIMITS.source) fields.push('source')
   return fields.length ? { ok: false, fields } : { ok: true, value: v }
 }
 
@@ -162,8 +163,6 @@ export async function handleEnquiry(request: Request, env: Env = process.env): P
     })
   }
   if (!originAllowed(request.headers.get('origin'), request.url)) return json({ ok: false, error: 'forbidden-origin' }, 403)
-  const ip = clientIp(request)
-  if (ip && rateLimited(ip)) return json({ ok: false, error: 'rate-limited' }, 429)
   if (!(request.headers.get('content-type') ?? '').includes('application/json')) return json({ ok: false, error: 'unsupported-type' }, 415)
   if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY) return json({ ok: false, error: 'too-large' }, 413)
 
@@ -188,6 +187,10 @@ export async function handleEnquiry(request: Request, env: Env = process.env): P
 
   const parsed = parseEnquiry(body)
   if (!parsed.ok) return json({ ok: false, error: 'invalid', fields: parsed.fields }, 400)
+  // Counted only once an enquiry is valid, so a visitor fixing a form error (or an office behind one IP) is not
+  // locked out by its own rejected attempts.
+  const ip = clientIp(request)
+  if (ip && rateLimited(ip)) return json({ ok: false, error: 'rate-limited' }, 429)
 
   const key = env.RESEND_API_KEY
   const sheet = sheetConfig(env)
@@ -208,6 +211,8 @@ export async function handleEnquiry(request: Request, env: Env = process.env): P
           html,
           text,
         }),
+        // A hung Resend must not hold the visitor past the client's own timeout (they would resend: duplicates).
+        signal: AbortSignal.timeout(8000),
       })
       if (res.ok) return true
       // Log the status and Resend's reason (no visitor data) for the Vercel logs.

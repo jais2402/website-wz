@@ -87,7 +87,10 @@ function offerSection() {
       h2(offer.title) +
       p(offer.body) +
       offer.items
-        .map((o) => tag('article', p(o.kicker) + h3(o.title) + p(o.for) + ul(o.items) + tag('p', a(o.cta.href, o.cta.label))))
+        .map((o) =>
+          // Same anchors as components/Offer.tsx (the footer links to #offer-software and #offer-product).
+          tag('article', p(o.kicker) + h3(o.title) + p(o.for) + ul(o.items) + tag('p', a(o.cta.href, o.cta.label)), ` id="offer-${o.key}"`),
+        )
         .join(''),
     'offer',
   )
@@ -726,7 +729,7 @@ export function snapshot(id: string): string | null {
   return id.startsWith('system:') ? systemPageHtml(id.slice('system:'.length)) : null
 }
 
-// The Wezigns wordmark as components/Logo.tsx's Logo renders it (content/logo.ts): 44 px on the preloader, 30 px
+// The Wezigns wordmark as components/Logo.tsx's Logo renders it (content/logo.ts): 44 px on the preloader, 36 px
 // above the Diwali lamp.
 const logoHtml = (height: number, className = 'logo') =>
   `<span class="${className}"><svg width="${Math.round((height * LOGO_VIEWBOX.w) / LOGO_VIEWBOX.h)}" height="${height}" ` +
@@ -734,7 +737,7 @@ const logoHtml = (height: number, className = 'logo') =>
 
 /** The Diwali loader's fireworks and centre (components/Preloader.tsx renders the same). */
 export const diwaliInner = (): string =>
-  `<div class="dw-sky" aria-hidden="true">${diwaliSky()}</div><div class="pre-inner pre-diwali">${logoHtml(30, 'logo dw-logo')}<span class="pre-mark dw-art">${diwaliArt()}</span>` +
+  `<div class="dw-sky" aria-hidden="true">${diwaliSky()}</div><div class="pre-inner pre-diwali">${logoHtml(36, 'logo dw-logo')}<span class="pre-mark dw-art">${diwaliArt()}</span>` +
   `<span class="dw-greet serif">${t(festive.diwali.greeting)}</span><span class="pre-num mono">000</span>` +
   `<span class="pre-bar"><i></i></span><span class="pre-caption mono">${t(festive.diwali.caption)}</span></div>`
 

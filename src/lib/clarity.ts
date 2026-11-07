@@ -46,9 +46,10 @@ function apply(id: string, granted: boolean) {
     if (granted) {
       if (!loaded) load(id)
       window.clarity?.('consent')
-    } else if (loaded) {
+    } else {
       // Clarity's own opt-out: stops recording and clears its cookies; ours below catches any left on parent domains.
-      window.clarity?.('consent', false)
+      // Also without Clarity on this page: cookies left from an earlier, since expired or withdrawn, consent go too.
+      if (loaded) window.clarity?.('consent', false)
       clearClarityCookies()
     }
   } catch {

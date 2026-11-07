@@ -75,6 +75,21 @@ describe('consent store', () => {
     expect(cb).toHaveBeenCalledTimes(1)
   })
 
+  it('hears a choice made in another tab, and a cleared choice as no', () => {
+    const cb = vi.fn()
+    const off = onConsentChange(cb)
+    localStorage.setItem(CONSENT_KEY, JSON.stringify({ analytics: false, ts: new Date().toISOString(), v: 1 }))
+    window.dispatchEvent(new StorageEvent('storage', { key: CONSENT_KEY }))
+    expect(cb).toHaveBeenLastCalledWith(expect.objectContaining({ analytics: false }))
+    localStorage.clear()
+    window.dispatchEvent(new StorageEvent('storage', { key: null }))
+    expect(cb).toHaveBeenCalledTimes(2)
+    expect(cb).toHaveBeenLastCalledWith(expect.objectContaining({ analytics: false }))
+    window.dispatchEvent(new StorageEvent('storage', { key: 'something-else' }))
+    expect(cb).toHaveBeenCalledTimes(2)
+    off()
+  })
+
   it('openConsentSettings fires the reopen event', () => {
     const cb = vi.fn()
     window.addEventListener(CONSENT_OPEN_EVENT, cb)

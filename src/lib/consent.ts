@@ -48,12 +48,33 @@ export function setConsent(analytics: boolean, now = Date.now()): Consent {
   return consent
 }
 
-/** Subscribe to choices made on this page. Returns an unsubscribe function. */
+/**
+ * Subscribe to choices made on this page, or in another open tab of the site (so withdrawing consent there stops
+ * analytics here too; a cleared choice counts as no). Returns an unsubscribe function.
+ */
 export function onConsentChange(cb: Listener): () => void {
   listeners.add(cb)
+  watchOtherTabs()
   return () => {
     listeners.delete(cb)
   }
+}
+
+let watching = false
+function watchOtherTabs() {
+  if (watching || typeof window === 'undefined') return
+  watching = true
+  window.addEventListener('storage', (e) => {
+    if (e.key !== CONSENT_KEY && e.key !== null) return
+    const consent = getConsent() ?? { analytics: false, ts: new Date().toISOString(), v: CONSENT_VERSION }
+    listeners.forEach((cb) => {
+      try {
+        cb(consent)
+      } catch {
+        // One bad listener must not stop the others.
+      }
+    })
+  })
 }
 
 /** Reopens the cookie banner (footer "Cookie settings"). */

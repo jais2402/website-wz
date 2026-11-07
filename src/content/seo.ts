@@ -359,7 +359,7 @@ export const pages: SeoPage[] = [
     path: '/cookie-policy',
     title: 'Cookie Policy: Your Choice, Your Control | Wezigns',
     description:
-      'The cookies and browser storage on the Wezigns website: one item that remembers your choice, and Google Analytics only if you accept. How to change it.',
+      'The cookies and browser storage on the Wezigns website: one item that remembers your choice, and Google Analytics and Microsoft Clarity only if you accept.',
     card: heroCard('cookies'),
     breadcrumb: [HOME, { name: 'Cookie policy', path: '/cookie-policy' }],
     schema: 'WebPage',

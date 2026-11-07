@@ -120,8 +120,9 @@ export type SubmitResult =
 
 type SubmitOptions = { source?: string; open?: (url: string) => void; timeoutMs?: number }
 
-// Statuses that mean "no working function here" rather than "your message failed": hand over to mailto.
-const FALLBACK_STATUS = new Set([404, 405, 501, 503])
+// Statuses that mean "no working function here", or that the server could not deliver the enquiry (a crash, both
+// email and Sheet down): hand over to mailto with everything filled in, so the enquiry is never simply lost.
+const FALLBACK_STATUS = new Set([404, 405, 500, 501, 502, 503, 504])
 
 const openUrl = (url: string) => {
   window.location.href = url

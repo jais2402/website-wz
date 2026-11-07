@@ -434,9 +434,18 @@ export function ChaosHero({
 
     // Cards are measured to place them: wait (briefly) for the site's fonts so they are measured at their real size.
     const fonts = document.fonts?.ready ?? Promise.resolve()
-    void Promise.race([fonts, new Promise((r) => setTimeout(r, 1500))]).then(() => alive && start())
+    let waited = false
+    void Promise.race([fonts, new Promise((r) => setTimeout(r, 1500))]).then(() => {
+      waited = true
+      if (alive) start()
+    })
     const ro = new ResizeObserver(() => {
-      if (!w) return
+      // Not laid out yet: before the font wait, start() runs after it; after it (the canvas had no size then), start
+      // now that it has one, or the hero would stay blank and hold the preloader to its timeout.
+      if (!w) {
+        if (waited) start()
+        return
+      }
       const r = canvas.getBoundingClientRect()
       if (Math.abs(r.width - w) < 1 && Math.abs(r.height - h) < 1) return
       start()

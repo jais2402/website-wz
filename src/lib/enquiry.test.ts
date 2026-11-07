@@ -162,11 +162,15 @@ describe('submitEnquiry', () => {
     expect(open).toHaveBeenCalledOnce()
   })
 
-  it('shows an error (no mailto) when the server fails to send (500 / 502)', async () => {
-    fetchSpy.mockResolvedValueOnce(reply({ ok: false, error: 'send-failed' }, 500))
-    const r = await submitEnquiry(valid, cfg, { open })
-    expect(r.ok).toBe(false)
-    if (!r.ok) expect(r.error).toContain('500')
+  it('hands over to mailto when the server crashed or could not deliver (500 / 502 / 504)', async () => {
+    for (const status of [500, 502, 504]) {
+      fetchSpy.mockResolvedValueOnce(reply({ ok: false, error: 'send-failed' }, status))
+      expect(await submitEnquiry(valid, cfg, { open })).toEqual({ ok: true, via: 'mailto', fallback: true })
+    }
+    expect(open).toHaveBeenCalledTimes(3)
+  })
+
+  it('shows an error (no mailto) for a request the server refused (400)', async () => {
     fetchSpy.mockResolvedValueOnce(reply({ ok: false, error: 'invalid', fields: ['email'] }, 400))
     expect((await submitEnquiry(valid, cfg, { open })).ok).toBe(false)
     expect(open).not.toHaveBeenCalled()

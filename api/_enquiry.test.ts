@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { marketingOptIn } from '../src/content/site.ts'
 import {
+  LIMITS,
   MARKETING_WORDING,
   RATE,
   enquiryEmail,
@@ -38,6 +39,12 @@ const post = (body: unknown, headers: Record<string, string> = {}) =>
   })
 
 describe('parseEnquiry (mirrors src/lib/enquiry.ts validateEnquiry)', () => {
+  it('cuts an over-long source to length instead of rejecting the enquiry (404 page addresses)', () => {
+    const r = parseEnquiry({ ...valid, source: `/${'old-blog-post-slug-'.repeat(5)} (contact block)` })
+    expect(r.ok).toBe(true)
+    if (r.ok) expect(r.value.source.length).toBe(LIMITS.source)
+  })
+
   it('accepts a complete enquiry and trims it', () => {
     const r = parseEnquiry({ ...valid, name: '  Asha Rao ' })
     expect(r.ok && r.value.name).toBe('Asha Rao')

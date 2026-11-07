@@ -14,6 +14,8 @@ export const brand = {
   url: 'https://www.wezigns.com',
   // WhatsApp Business number, digits only with country code. Empty keeps every WhatsApp button hidden.
   whatsapp: '918124422205',
+  // The same number as people read it.
+  whatsappDisplay: '+91 81244 22205',
 }
 
 /** wa.me link for the WhatsApp buttons, or '' while no number is set. */
@@ -912,7 +914,7 @@ export const aiSummary = {
     { key: 'chatgpt', name: 'ChatGPT', url: 'https://chatgpt.com/?q={q}' },
     { key: 'claude', name: 'Claude', url: 'https://claude.ai/new?q={q}' },
     { key: 'perplexity', name: 'Perplexity', url: 'https://www.perplexity.ai/search?q={q}' },
-    { key: 'gemini', name: 'Gemini', url: 'https://www.google.com/search?udm=50&q={q}' },
+    { key: 'gemini', name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q={q}' },
     { key: 'grok', name: 'Grok', url: 'https://grok.com/?q={q}' },
   ],
 }

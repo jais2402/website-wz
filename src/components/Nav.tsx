@@ -100,11 +100,17 @@ export function Nav({
     const down = (e: PointerEvent) => {
       if (!header.current?.contains(e.target as Node)) setOpen(false)
     }
+    // Widening past the burger breakpoint (index.css, 1220px: a tablet turned, a window resized) hides the burger:
+    // close the sheet too, or it would stay up with the page locked and focus trapped on a hidden button.
+    const wide = window.matchMedia('(min-width: 1221px)')
+    const widen = () => wide.matches && setOpen(false)
     document.addEventListener('keydown', key)
     document.addEventListener('pointerdown', down)
+    wide.addEventListener('change', widen)
     return () => {
       document.removeEventListener('keydown', key)
       document.removeEventListener('pointerdown', down)
+      wide.removeEventListener('change', widen)
       lockScroll(false)
     }
   }, [open])
@@ -154,7 +160,7 @@ export function Nav({
         ref={trigger}
         href={l.href}
         className={`nav-drop-trigger${inSection(here, '/systems/') || isCurrentPage(here, navSystemsAll.href) ? ' is-current' : ''}`}
-        aria-haspopup="true"
+        // Not aria-haspopup: the panel is a list of links, not an ARIA menu, and would be announced as one.
         aria-expanded={sysOpen}
         aria-controls="nav-systems"
         // A click goes to the systems overview; hover, focus or ArrowDown opens the list of systems.
