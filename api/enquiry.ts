@@ -1,12 +1,14 @@
 // Vercel Function: POST /api/enquiry → validates the enquiry, emails it to Wezigns through Resend and adds it as a
-// row in the enquiries Google Sheet (api/_sheets.ts). Either one is enough: the visitor sees success when at least one
+// row in the enquiries Google Sheet (bottom of this file). Either one is enough: the visitor sees success when at least one
 // configured destination took the enquiry, so a lead is never lost to one service being down.
-// Dependency-free (web-standard Request/Response/fetch). Env: RESEND_API_KEY, ENQUIRY_TO, ENQUIRY_FROM, and the
-// GOOGLE_SHEETS_* / GOOGLE_SHEET_* settings in api/_sheets.ts.
+// Dependency-free (web-standard Request/Response/fetch, node:crypto). Env: RESEND_API_KEY, ENQUIRY_TO, ENQUIRY_FROM,
+// and the GOOGLE_SHEETS_* / GOOGLE_SHEET_* settings below.
+// One file on purpose: Vercel bundles the function from this file alone, and a local import (`./_sheets.ts`) crashed
+// it on load in production (FUNCTION_INVOCATION_FAILED on every request). api/_enquiry.test.ts keeps it import-free.
 // Validation mirrors src/lib/enquiry.ts (duplicated on purpose: that file imports site copy through the
 // `@/` alias, which the function bundle cannot resolve). api/_enquiry.test.ts keeps the two in step.
 
-import { appendRow, sheetConfig } from './_sheets.ts'
+import { createSign } from 'node:crypto'
 
 export const LIMITS = { name: 80, email: 120, company: 120, phone: 30, message: 2000, minMessage: 10, topic: 60, topics: 10, source: 60 }
 const MAX_BODY = 16 * 1024
@@ -105,7 +107,7 @@ export function enquiryEmail(e: CleanEnquiry, receivedAt = new Date()) {
   return { subject, html, text }
 }
 
-/** The enquiry as a Sheet row, in the order of SHEET_HEADER in api/_sheets.ts. */
+/** The enquiry as a Sheet row, in the order of SHEET_HEADER below. */
 export const sheetRow = (e: CleanEnquiry, receivedAt: Date) => [
   formatIst(receivedAt),
   e.name,
@@ -234,4 +236,88 @@ export async function handleEnquiry(request: Request, env: Env = process.env): P
 // Vercel Function: a named POST export with web-standard Request/Response. Other methods get 405 from the platform.
 export function POST(request: Request) {
   return handleEnquiry(request)
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Google Sheet: appends each enquiry as a row, through a service account with Editor access on that Sheet. The
+// service-account JWT is signed with node:crypto and exchanged for an access token, then the row goes in through the
+// Sheets REST API. Env: GOOGLE_SHEETS_CLIENT_EMAIL, GOOGLE_SHEETS_PRIVATE_KEY, GOOGLE_SHEET_ID,
+// GOOGLE_SHEET_TAB_NAME (default Contact_Form).
+
+export type SheetConfig = { clientEmail: string; privateKey: string; sheetId: string; tab: string }
+
+/** The Sheet settings, or null when any required one is missing (then the Sheet is simply skipped). */
+export function sheetConfig(env: Env): SheetConfig | null {
+  const clientEmail = env.GOOGLE_SHEETS_CLIENT_EMAIL?.trim()
+  // Env files and the Vercel dashboard keep the key's line breaks as literal \n.
+  const privateKey = env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n').trim()
+  const sheetId = env.GOOGLE_SHEET_ID?.trim()
+  if (!clientEmail || !privateKey || !sheetId) return null
+  return { clientEmail, privateKey, sheetId, tab: env.GOOGLE_SHEET_TAB_NAME?.trim() || 'Contact_Form' }
+}
+
+export const SHEET_HEADER = ['Received (IST)', 'Name', 'Email', 'Company', 'Phone', 'Help with', 'Message', 'Marketing emails', 'Sent from']
+
+const b64url = (s: string | Buffer) => Buffer.from(s).toString('base64url')
+
+/** A signed service-account assertion for the Sheets scope, valid for one hour. */
+export function signedAssertion(cfg: SheetConfig, nowSec = Math.floor(Date.now() / 1000)): string {
+  const head = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))
+  const claims = b64url(
+    JSON.stringify({
+      iss: cfg.clientEmail,
+      scope: 'https://www.googleapis.com/auth/spreadsheets',
+      aud: 'https://oauth2.googleapis.com/token',
+      iat: nowSec,
+      exp: nowSec + 3600,
+    }),
+  )
+  const signer = createSign('RSA-SHA256')
+  signer.update(`${head}.${claims}`)
+  return `${head}.${claims}.${b64url(signer.sign(cfg.privateKey))}`
+}
+
+// One token per warm function instance, refreshed a minute before it runs out.
+let cached: { token: string; until: number; key: string } | null = null
+export const resetSheetToken = () => {
+  cached = null
+}
+
+async function accessToken(cfg: SheetConfig): Promise<string> {
+  const now = Date.now()
+  if (cached && cached.key === cfg.clientEmail && cached.until > now) return cached.token
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion: signedAssertion(cfg) }),
+    signal: AbortSignal.timeout(8000),
+  })
+  if (!res.ok) throw new Error(`token ${res.status} ${(await res.text()).slice(0, 200)}`)
+  const body = (await res.json()) as { access_token: string; expires_in?: number }
+  cached = { token: body.access_token, until: now + ((body.expires_in ?? 3600) - 60) * 1000, key: cfg.clientEmail }
+  return body.access_token
+}
+
+const range = (cfg: SheetConfig, cells: string) => encodeURIComponent(`'${cfg.tab.replace(/'/g, "''")}'!${cells}`)
+
+/**
+ * Adds one row (and the header row first, if the tab is still empty). Values go in RAW, so a visitor's text that
+ * starts with "=" stays text and never runs as a formula.
+ */
+export async function appendRow(cfg: SheetConfig, row: string[]): Promise<void> {
+  const token = await accessToken(cfg)
+  const base = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(cfg.sheetId)}/values`
+  const auth = { Authorization: `Bearer ${token}` }
+
+  const head = await fetch(`${base}/${range(cfg, 'A1:A1')}`, { headers: auth, signal: AbortSignal.timeout(8000) })
+  if (!head.ok) throw new Error(`read ${head.status} ${(await head.text()).slice(0, 200)}`)
+  const empty = !((await head.json()) as { values?: unknown[] }).values?.length
+
+  const res = await fetch(`${base}/${range(cfg, 'A1')}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
+    method: 'POST',
+    headers: { ...auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values: empty ? [SHEET_HEADER, row] : [row] }),
+    signal: AbortSignal.timeout(8000),
+  })
+  if (!res.ok) throw new Error(`append ${res.status} ${(await res.text()).slice(0, 200)}`)
 }

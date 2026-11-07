@@ -358,6 +358,40 @@
   }
 }
 
+/* Short screens (phones with the browser bar showing, laptops with a small window): the panel is anchored to the
+   bottom, so a tall one grew up under the fixed nav and the logo sat on the headline. Less margin and padding, and
+   the systems row goes (the nav menu lists the same pages). */
+@media (max-height: 820px) {
+  .loom-intro {
+    bottom: max(16px, 3vh);
+    padding: clamp(18px, 2.4vw, 32px);
+  }
+
+  .loom-intro .loom-systems {
+    display: none;
+  }
+
+  .loom-intro .loom-actions {
+    margin-top: 16px;
+  }
+}
+
+/* Very short: the headline and subline scale with the height too. */
+@media (max-height: 620px) {
+  .loom-intro .loom-title {
+    font-size: min(clamp(2.6rem, 5.1vw, 5.1rem), 10.5svh);
+  }
+
+  .loom-intro .loom-sub {
+    font-size: min(clamp(1rem, 1.4vw, 1.2rem), 2.9svh);
+    line-height: 1.45;
+  }
+
+  .loom-eyebrow {
+    padding: 6px 12px;
+  }
+}
+
 .loom-intro.is-gone {
   opacity: 0;
   transform: translateY(-40px);
@@ -424,6 +458,9 @@
   bottom: 9vh;
   width: min(660px, calc(100% - 2 * var(--gutter)));
   display: grid;
+  /* It sits over the intro panel (same corner, later in the DOM): without this its empty box swallowed clicks on
+     the hero buttons and system chips. The phase cards hold no links. */
+  pointer-events: none;
 }
 
 /* Wide screens: the intro and phase panels line up with the centred page container (1320px .wrap). */
@@ -661,7 +698,19 @@
 @media (max-width: 640px) {
   .loom-intro,
   .loom-phases {
+    /* Clear of the floating call pill at the bottom of the screen. */
     bottom: 12vh;
+  }
+}
+
+/* Short phones: with the pill's room kept, the badge goes too so the headline stays clear of the nav. */
+@media (max-width: 640px) and (max-height: 820px) {
+  .loom-intro .loom-eyebrow {
+    display: none;
+  }
+
+  .loom-intro .loom-title {
+    margin-top: 0;
   }
 }
 

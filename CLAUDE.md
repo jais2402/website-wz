@@ -43,7 +43,7 @@ cone that widens as it rises) → **Secure** (a woven sphere round a glowing cor
   AI chat window (AI, a CSS 3D stage looping on the timeline in `lib/aiHero.ts`), the CSS 3D layer stack (`technology/StackVisual.tsx`). Their copy is in `src/content/pages.ts` (Technology copy and `stack` are in `site.ts`; each system page's tool groups are in `src/content/systemTools.ts`, research in `docs/tools-research.md`). System pages print as
   a one-page summary (`src/pages/print.css` + print rules in `system.css`).
 - `api/enquiry.ts`: Vercel Function that emails enquiries through Resend and adds each one as a row in a Google Sheet
-  (`api/_sheets.ts`, `GOOGLE_SHEETS_*` / `GOOGLE_SHEET_*`; success when either took it). `npm run dev` serves it from
+  (Sheet code at the bottom of the same file: a Vercel function must not import local files, `GOOGLE_SHEETS_*` / `GOOGLE_SHEET_*`; success when either took it). `npm run dev` serves it from
   `.env.local` (`scripts/vite-enquiry-dev.ts`). Resend: `RESEND_API_KEY`, see
   `docs/enquiry-setup.md`). Without it (e.g. `npm run dev`), both forms fall back to mailto. Adding a page = an `.html` file + an entry in `INPUTS` in `vite.config.ts`.
 - Load order (Lighthouse work): each entry (`src/main.tsx`, `src/pages/main.tsx`, `src/contact/main.tsx`) is tiny and

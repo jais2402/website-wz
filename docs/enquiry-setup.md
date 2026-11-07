@@ -30,7 +30,7 @@ below are done, the forms still work: they open the visitor's email app with the
 
 ## Saving enquiries to the Google Sheet
 
-Every enquiry can also be added as a row in a Google Sheet (`api/_sheets.ts`). Email and Sheet are independent:
+Every enquiry can also be added as a row in a Google Sheet (the Sheet section at the bottom of `api/enquiry.ts`). Email and Sheet are independent:
 the visitor sees "Your message is with us" when at least one of them took the enquiry, and each failure is logged in
 Vercel as `enquiry: resend …` or `enquiry: sheet failed …` (the service's reason only, no visitor data).
 

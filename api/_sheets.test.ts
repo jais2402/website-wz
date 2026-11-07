@@ -2,8 +2,15 @@
 // Underscore prefix: Vercel does not deploy this file as a function.
 import { createVerify, generateKeyPairSync } from 'node:crypto'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { handleEnquiry, resetRateLimit, sheetRow } from './enquiry.ts'
-import { SHEET_HEADER, resetSheetToken, sheetConfig, signedAssertion } from './_sheets.ts'
+import {
+  SHEET_HEADER,
+  handleEnquiry,
+  resetRateLimit,
+  resetSheetToken,
+  sheetConfig,
+  sheetRow,
+  signedAssertion,
+} from './enquiry.ts'
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 })
 const pem = privateKey.export({ type: 'pkcs8', format: 'pem' }).toString()

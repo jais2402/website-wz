@@ -1,5 +1,6 @@
 // @vitest-environment node
 // Underscore prefix: Vercel does not deploy this file as a function.
+import { readFileSync } from 'node:fs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { marketingOptIn } from '../src/content/site.ts'
 import {
@@ -211,5 +212,12 @@ describe('abuse limits', () => {
     for (let i = 0; i < RATE.max; i++) expect((await handleEnquiry(post(valid, ip), env)).status).toBe(200)
     expect((await handleEnquiry(post(valid, ip), env)).status).toBe(429)
     vi.unstubAllGlobals()
+  })
+})
+
+describe('function bundle', () => {
+  it('imports no local files (a ./_sheets.ts import crashed the deployed function on load)', () => {
+    const src = readFileSync(new URL('./enquiry.ts', import.meta.url), 'utf8')
+    expect(src.match(/^import .* from ['"]\.{1,2}\//gm)).toBeNull()
   })
 })
