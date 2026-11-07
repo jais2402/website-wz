@@ -172,7 +172,7 @@ describe('headTags / applyHead', () => {
     expect(out).toContain('<link rel="canonical" href="https://www.wezigns.com/systems/people" />')
     expect(out).toContain('<meta property="og:image" content="https://www.wezigns.com/og/people.png" />')
     expect(out).toContain('<meta name="twitter:card" content="summary_large_image" />')
-    expect(out).toContain('content="index, follow, max-image-preview:large"')
+    expect(out).toContain(`content="${site.indexing ? 'index, follow, max-image-preview:large' : 'noindex, follow'}"`)
     expect(out).toContain('<script type="application/ld+json">')
     // running twice is stable
     expect(applyHead(out, headTags(page('people'), site, seoData))).toBe(out)
@@ -507,5 +507,13 @@ describe('social profiles', () => {
     expect(headTags(page('home'), filled, seoData).join('\n')).toContain(
       '<meta name="twitter:site" content="@wezigns" />',
     )
+  })
+})
+
+describe('site-wide indexing switch', () => {
+  it('noindexes every page while indexing is off, and follows each page\'s own setting when on', () => {
+    const p = pages.find((x) => x.indexable)!
+    expect(headTags(p, { ...site, indexing: false }, seoData).join('')).toContain('content="noindex, follow"')
+    expect(headTags(p, { ...site, indexing: true }, seoData).join('')).toContain('content="index, follow, max-image-preview:large"')
   })
 })

@@ -381,22 +381,27 @@
   margin: 22px 0 22px;
   font-family: var(--f-display);
   font-weight: 650;
-  font-size: clamp(2.6rem, 5.4vw, 5.8rem);
+  /* Capped so "Every loose thread," fits the 760px panel on one line with room to spare: at 5.4vw / 5.8rem it filled
+     99% of the width in Chrome and wrapped in Firefox (wider text) and on screens over ~1720px. */
+  font-size: clamp(2.6rem, 5.1vw, 5.1rem);
   line-height: 0.9;
   letter-spacing: -0.055em;
 }
 
-/* The mask is padded past the 0.9 line height so ascenders and descenders (the italic y) aren't cut; the margins
-   pull it back so the lines keep their spacing. */
+/* The mask is padded so ascenders and descenders (the italic y) aren't cut; the margins pull it back. Adjacent
+   margins collapse, so the whole pull sits on the bottom (-0.32em = both paddings): line to line is then exactly the
+   1.08 line height, the same as the two rows of a line that wraps on a phone. */
 .loom-line {
   display: block;
   overflow: hidden;
+  line-height: 1.08;
   padding: 0.12em 0.08em 0.2em;
-  margin: -0.12em -0.08em -0.14em;
+  margin: -0.12em -0.08em -0.32em;
 }
 
 .loom-line > span {
-  display: inline-block;
+  /* Block, not inline-block: when a line does wrap (phones), its two rows keep the same spacing as the other lines. */
+  display: block;
 }
 
 .loom-sub {
@@ -406,12 +411,9 @@
   line-height: 1.55;
 }
 
-/* Big monitors: the headline grows a step; the panel keeps its 760px width so the loom mouth stays clear. */
+/* Big monitors: the subline grows a step. The headline stays at its cap: the panel keeps its 760px width so the loom
+   mouth stays clear, and a bigger headline would wrap. */
 @media (min-width: 1921px) {
-  .loom-title {
-    font-size: clamp(5.8rem, 4.2vw, 6.6rem);
-  }
-
   .loom-sub {
     font-size: 1.35rem;
   }

@@ -16,6 +16,9 @@ const COUNTRY_NAMES: Record<string, string> = {
 export const site = {
   // Canonical origin (plan.md: https www). Shared with `brand.url`, so links, canonicals and the AI prompt agree.
   origin: brand.url,
+  // Search engine indexing, site-wide. Off until launch (client, 2026-11-07): every page says noindex. Set true at go-live;
+  // *.vercel.app hosts stay noindex either way (vercel.json).
+  indexing: false,
   name: brand.name,
   legalName: brand.legal,
   email: brand.email,

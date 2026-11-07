@@ -63,7 +63,8 @@ export function headTags(page: SeoPage, site: SeoSite, data: SeoData, opts: { ap
   const tags = [
     `<title>${a(page.title)}</title>`,
     `<meta name="description" content="${a(page.description)}" />`,
-    `<meta name="robots" content="${page.indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow'}" />`,
+    // noindex everywhere while site.indexing is off (pre-launch); otherwise only the pages marked not indexable.
+    `<meta name="robots" content="${page.indexable && site.indexing ? 'index, follow, max-image-preview:large' : 'noindex, follow'}" />`,
     // A noindex page has no canonical: it should not point search engines anywhere.
     page.indexable ? `<link rel="canonical" href="${a(url)}" />` : '',
     `<meta property="og:type" content="website" />`,

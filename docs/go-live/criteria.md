@@ -81,7 +81,7 @@ Viewports: **375x812** phone, **768x1024** and **1024x1366** tablet, **1440x900*
 | SEO-06 | Internal links | Every page reachable from nav, footer or `/sitemap` within 2 clicks; no broken internal links (crawl returns 0 x 4xx); descriptive anchor text (no "click here"). |
 | SEO-07 | `sitemap.xml` | Lists every indexable page with absolute canonical URLs, valid XML, excludes `loom`, `404`, `/api`; referenced in `robots.txt`. |
 | SEO-08 | `robots.txt` | Allows search and AI crawlers, disallows `/api/`, points to the sitemap; no stray `Disallow: /`. |
-| SEO-09 | No staging noindex leak | Production pages have no `noindex` meta or `X-Robots-Tag`; preview host `website-wz.vercel.app` does send `noindex`; `/loom.html` is `noindex`. |
+| SEO-09 | No staging noindex leak | `site.indexing` in `src/content/seo.ts` is `true` (it is `false` until launch, client 2026-11-07). Production pages have no `noindex` meta or `X-Robots-Tag`; preview host `website-wz.vercel.app` does send `noindex`; `/loom.html` is `noindex`. |
 | SEO-10 | Structured data | JSON-LD parses and passes Rich Results Test / Schema validator with zero errors: `Organization` (or `ProfessionalService`/`LocalBusiness` with Chennai address), `WebSite`, `BreadcrumbList` on inner pages, `FAQPage` only where the FAQ is visible, `Service` on service/system pages. |
 | SEO-11 | hreflang | Single English site serving 11 countries: no hreflang needed (N/A) unless country or language variants exist; if added, they are reciprocal with `x-default`. |
 | SEO-12 | 404 | Unknown URLs return HTTP 404 (not 200) with the custom `404.html`, which links home and to key pages. |
