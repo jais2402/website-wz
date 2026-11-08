@@ -4,11 +4,11 @@
 // Run `npm run og` after changing a hero or card, then commit the PNGs. The page itself stays raster-free; these files are only for link previews and JSON-LD.
 import { Resvg } from '@resvg/resvg-js'
 import UPNG from 'upng-js'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { heroFor } from '../src/content/heroes.ts'
 import { pages, site } from '../src/content/seo.ts'
-import { LOGO_VIEWBOX, MARK_VIEWBOX, logoPaths } from '../src/content/logo.ts'
+import { LOGO_VIEWBOX, logoPaths } from '../src/content/logo.ts'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const out = `${root}public/og/`
@@ -156,16 +156,14 @@ pages.forEach((page, i) => {
   if (page.id !== 'loom') render(card(page, i), W, `${page.id}.png`)
 })
 
-// The favicon: the square "ig" mark (src/content/logo.ts) on the site's ink, letters light. Written to public/ for
-// browsers that take SVG icons; the logo (JSON-LD), touch icon and favicon.ico are rendered from it.
-const pad = 3
-const k = (32 - 2 * pad) / MARK_VIEWBOX.h
-const markX = (32 - MARK_VIEWBOX.w * k) / 2
-const favicon =
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#07070c"/>` +
-  `<g transform="translate(${markX.toFixed(2)} ${pad}) scale(${k.toFixed(4)}) translate(${-MARK_VIEWBOX.x} ${-MARK_VIEWBOX.y})">` +
-  `${logoPaths('mark', '#ededf3')}</g></svg>\n`
+// The icons are the client's files (docs/brand): the favicon (the white W on a dark rounded square) is copied to
+// public/ for browsers that take SVG icons and rendered into favicon.ico; the app icon (more padding, for home-screen
+// masks) becomes the touch icon and the JSON-LD logo.
+const brand = (f) => readFileSync(`${root}docs/brand/${f}`, 'utf8')
+const favicon = brand('wezigns-favicon.svg')
+const appIcon = brand('wezigns-app-icon.svg')
 writeFileSync(`${root}public/favicon.svg`, favicon)
-render(favicon, site.logo.width, 'logo.png')
-render(favicon.replace('rx="8"', 'rx="0"'), 180, 'apple-touch-icon.png')
+render(appIcon, site.logo.width, 'logo.png')
+// iOS rounds the corners itself: a full square, so no light corners show under its mask.
+render(appIcon.replace('rx="112"', 'rx="0"'), 180, 'apple-touch-icon.png')
 writeIco(favicon, [16, 32, 48], `${root}public/favicon.ico`)

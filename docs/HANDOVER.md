@@ -102,8 +102,6 @@ Do these in order, at a quiet time of day.
 - **Car Rental case study** has no result figure (the others do). Needs a real number from the client.
 - **Portfolio archive names** "Os Tickests" and "Tec Guy" are kept as written on the old site (client decision);
   worth confirming they are the real names.
-- **Square logo:** the favicon and app icon use the "ig" from the wordmark. Swap in an official square icon if one
-  exists (`src/content/logo.ts`, then `npm run og`).
 - **X / Twitter handle**, if Wezigns has one (`socials` in `src/content/site.ts`).
 
 ---
@@ -114,7 +112,8 @@ Do these in order, at a quiet time of day.
   `.env.local` (copy `.env.example`); never commit it.
 - Before every commit: `npm run validate` (tests, lint, typecheck) and `npm run build`.
 - All copy lives in `src/content/` (`site.ts`, `pages.ts`, `legal.ts`, `seo.ts`), not in components.
-- After changing a page's hero or the logo, run `npm run og` to redraw the social cards and icons.
+- Brand files are in `docs/brand/` (wordmark, W icon, favicon, app icon). After changing one, or a page's hero, run
+  `npm run og` to redraw the social cards and icons.
 - Preview any change on the `testing` branch's Vercel preview before merging to `main`.
 - Useful address switches: `?festive=diwali|off` (Diwali loader), `?gfx=live|poster` (3D or 2D hero),
   `?badge=1` (shows which version a device gets).

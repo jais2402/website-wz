@@ -2,8 +2,8 @@ import { brand } from '@/content/site'
 import { LOGO_VIEWBOX, MARK_VIEWBOX, logoPaths, logoViewBox, markViewBox } from '@/content/logo'
 
 /**
- * The square Wezigns mark: the "ig" pair from the wordmark (the splash over the i, the yellow and blue g). Letters in
- * currentColor. Decorative: the wordmark or the surrounding text names the company.
+ * The square Wezigns mark: the client's "W" icon (the wordmark's W in a square frame), in currentColor. Decorative:
+ * the wordmark or the surrounding text names the company.
  */
 export function LogoMark({ size = 28 }: { size?: number }) {
   return (

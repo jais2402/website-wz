@@ -1,7 +1,8 @@
 // The Wezigns logo (docs/brand/wezigns-logo.svg, the client's file): a typewriter wordmark with coloured dots.
 // Letters are drawn in currentColor (white on the dark site; the file has them black), the dots keep the brand
-// colours. The square mark is the "ig" pair (the splash over the i, the yellow and blue g) cut from the same
-// wordmark, for the favicon, the loader and the integrations orbit. Pure data and string builders, no React, so
+// colours. The square mark is the client's "W" icon (docs/brand/wezigns-icon-w-black.svg): the wordmark's own W in
+// a square frame, for the integrations orbit; the favicon and app icon are the client's files in docs/brand,
+// rendered by scripts/og-cards.mjs. Pure data and string builders, no React, so
 // lib/snapshot.ts, scripts/og-cards.mjs and components/Logo.tsx all draw the same logo. Regenerate from the SVG if
 // the client sends a new one.
 
@@ -38,10 +39,10 @@ export const logoParts: LogoPart[] = [
 ]
 
 export const LOGO_VIEWBOX = { x: 0, y: 0, w: 276.15, h: 71.4 }
-/** The "ig" pair: a near-square cut of the wordmark. */
-export const MARK_VIEWBOX = { x: 132, y: 0, w: 67, h: 71.4 }
-/** Indexes into logoParts of the shapes inside the mark. */
-export const markParts: number[] = [1, 2, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+/** The "W" icon's frame (wezigns-icon-w-black.svg): the W sits inside this square. */
+export const MARK_VIEWBOX = { x: -4.15, y: 1.9, w: 70, h: 70 }
+/** Indexes into logoParts of the shapes inside the mark: the W. */
+export const markParts: number[] = [4]
 
 const vb = (b: typeof LOGO_VIEWBOX) => `${b.x} ${b.y} ${b.w} ${b.h}`
 
